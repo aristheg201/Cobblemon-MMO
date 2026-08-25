@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Black_Hole extends ScriptSkillHandler{public Black_Hole(){super("BLACK_HOLE");}public Black_Hole(ConfigObject config){super("BLACK_HOLE",config);}}

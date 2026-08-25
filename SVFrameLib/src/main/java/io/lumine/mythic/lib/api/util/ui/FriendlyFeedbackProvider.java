@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.api.util.ui; import java.util.*; public class FriendlyFeedbackProvider { private final List<String> messages=new ArrayList<>(); public void log(String s){if(s!=null)messages.add(s);} public void provide(String s){log(s);} public List<String> getFeedback(){return List.copyOf(messages);} public boolean isEmpty(){return messages.isEmpty();} }

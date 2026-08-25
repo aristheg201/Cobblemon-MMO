@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Present_Throw extends ScriptSkillHandler{public Present_Throw(){super("PRESENT_THROW");}public Present_Throw(ConfigObject config){super("PRESENT_THROW",config);}}

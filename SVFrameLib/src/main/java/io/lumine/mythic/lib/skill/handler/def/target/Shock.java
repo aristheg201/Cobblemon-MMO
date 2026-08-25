@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Shock extends ScriptSkillHandler{public Shock(){super("SHOCK");}public Shock(ConfigObject config){super("SHOCK",config);}}

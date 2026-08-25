@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Targeted_Fireball extends ScriptSkillHandler{public Targeted_Fireball(){super("TARGETED_FIREBALL");}public Targeted_Fireball(ConfigObject config){super("TARGETED_FIREBALL",config);}}

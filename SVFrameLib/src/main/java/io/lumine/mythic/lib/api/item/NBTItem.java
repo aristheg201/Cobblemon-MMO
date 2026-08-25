@@ -1,0 +1,38 @@
+package io.lumine.mythic.lib.api.item;
+
+import net.minecraft.block.Block;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
+import net.minecraft.item.BlockPredicatesChecker;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.*;
+import net.minecraft.predicate.BlockPredicate;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+
+import java.util.*;
+
+/** Native 1.21.1 data-component implementation of MythicLib's item NBT facade. */
+public class NBTItem {
+    protected final ItemStack item;
+    public NBTItem(ItemStack item){this.item=Objects.requireNonNull(item,"item");}
+    public ItemStack getItem(){return item;}
+    public Object get(String path){NbtElement element=getElement(path);if(element==null)return null;if(element instanceof NbtString s)return s.asString();if(element instanceof NbtByte b)return b.byteValue();if(element instanceof NbtShort s)return s.shortValue();if(element instanceof NbtInt i)return i.intValue();if(element instanceof NbtLong l)return l.longValue();if(element instanceof NbtFloat f)return f.floatValue();if(element instanceof NbtDouble d)return d.doubleValue();return element.copy();}
+    public String getString(String path){PathRef ref=read(path);return ref==null?"":ref.parent.getString(ref.key);}public boolean hasTag(String path){return read(path)!=null;}public boolean getBoolean(String path){PathRef ref=read(path);return ref!=null&&ref.parent.getBoolean(ref.key);}public double getDouble(String path){PathRef ref=read(path);return ref==null?0d:ref.parent.getDouble(ref.key);}public int getInteger(String path){PathRef ref=read(path);return ref==null?0:ref.parent.getInt(ref.key);}
+    public NBTItem setInteger(String path,int value){mutate(path,(p,k)->p.putInt(k,value));return this;}public NBTItem setDouble(String path,double value){mutate(path,(p,k)->p.putDouble(k,value));return this;}public NBTItem setString(String path,String value){mutate(path,(p,k)->p.putString(k,Objects.requireNonNull(value)));return this;}public NBTItem setBoolean(String path,boolean value){mutate(path,(p,k)->p.putBoolean(k,value));return this;}
+    public NBTCompound getNBTCompound(String path){PathRef ref=read(path);NbtCompound compound=ref==null?new NbtCompound():ref.parent.getCompound(ref.key).copy();return new FabricCompound(compound);}
+    public NBTItem addTag(List<ItemTag> tags){if(tags==null)return this;NbtComponent.set(DataComponentTypes.CUSTOM_DATA,item,root->{for(ItemTag tag:tags)putPath(root,tag.getPath(),tag.getValue());});return this;}public NBTItem addTag(ItemTag...tags){return addTag(tags==null?List.of():Arrays.asList(tags));}
+    public NBTItem removeTag(String...paths){if(paths==null)return this;NbtComponent.set(DataComponentTypes.CUSTOM_DATA,item,root->{for(String path:paths)removePath(root,path);});return this;}public Set<String> getTags(){return Set.copyOf(data().getKeys());}public ItemStack toItem(){return item;}public int getTypeId(String path){PathRef ref=read(path);return ref==null?NbtElement.END_TYPE:ref.parent.getType(ref.key);}public double getStat(String stat){return getDouble("MMOITEMS_"+stat);}public boolean hasType(){return hasTag("MMOITEMS_ITEM_TYPE");}public String getType(){String type=getString("MMOITEMS_ITEM_TYPE");return type.isEmpty()?null:type;}
+    public void setCanMine(Collection<Block> blocks){if(blocks==null||blocks.isEmpty()){item.remove(DataComponentTypes.CAN_BREAK);return;}List<RegistryEntry<Block>> entries=new ArrayList<>();for(Block block:blocks)entries.add(block.getRegistryEntry());BlockPredicate predicate=new BlockPredicate(Optional.of(RegistryEntryList.of(entries)),Optional.empty(),Optional.empty());item.set(DataComponentTypes.CAN_BREAK,new BlockPredicatesChecker(List.of(predicate),true));}
+    public static NBTItem get(ItemStack item){return new NBTItem(item);}
+    private NbtCompound data(){NbtComponent component=item.get(DataComponentTypes.CUSTOM_DATA);return component==null?new NbtCompound():component.copyNbt();}
+    private NbtElement getElement(String path){PathRef ref=read(path);return ref==null?null:ref.parent.get(ref.key);}
+    private PathRef read(String path){String[] parts=parts(path);NbtCompound current=data();for(int i=0;i<parts.length-1;i++){if(!current.contains(parts[i],NbtElement.COMPOUND_TYPE))return null;current=current.getCompound(parts[i]);}String key=parts[parts.length-1];return current.contains(key)?new PathRef(current,key):null;}
+    private void mutate(String path,Mutator mutator){NbtComponent.set(DataComponentTypes.CUSTOM_DATA,item,root->{String[] parts=parts(path);NbtCompound current=root;for(int i=0;i<parts.length-1;i++){String p=parts[i];NbtCompound next=current.contains(p,NbtElement.COMPOUND_TYPE)?current.getCompound(p):new NbtCompound();current.put(p,next);current=next;}mutator.apply(current,parts[parts.length-1]);});}
+    private static void putPath(NbtCompound root,String path,Object value){String[] parts=parts(path);NbtCompound current=root;for(int i=0;i<parts.length-1;i++){String p=parts[i];NbtCompound next=current.contains(p,NbtElement.COMPOUND_TYPE)?current.getCompound(p):new NbtCompound();current.put(p,next);current=next;}put(current,parts[parts.length-1],value);}
+    private static void removePath(NbtCompound root,String path){String[] parts=parts(path);NbtCompound current=root;for(int i=0;i<parts.length-1;i++){if(!current.contains(parts[i],NbtElement.COMPOUND_TYPE))return;current=current.getCompound(parts[i]);}current.remove(parts[parts.length-1]);}
+    private static void put(NbtCompound c,String key,Object value){if(value==null){c.remove(key);return;}if(value instanceof NbtElement n){c.put(key,n.copy());return;}if(value instanceof String s){c.putString(key,s);return;}if(value instanceof Boolean b){c.putBoolean(key,b);return;}if(value instanceof Byte b){c.putByte(key,b);return;}if(value instanceof Short s){c.putShort(key,s);return;}if(value instanceof Integer i){c.putInt(key,i);return;}if(value instanceof Long l){c.putLong(key,l);return;}if(value instanceof Float f){c.putFloat(key,f);return;}if(value instanceof Double d){c.putDouble(key,d);return;}if(value instanceof byte[] a){c.putByteArray(key,a);return;}if(value instanceof int[] a){c.putIntArray(key,a);return;}if(value instanceof long[] a){c.putLongArray(key,a);return;}if(value instanceof Iterable<?> it){NbtList list=new NbtList();for(Object o:it)list.add(NbtString.of(String.valueOf(o)));c.put(key,list);return;}c.putString(key,String.valueOf(value));}
+    private static String[] parts(String path){if(path==null||path.isBlank())throw new IllegalArgumentException("NBT path cannot be blank");return Arrays.stream(path.split("\\.")).filter(s->!s.isEmpty()).toArray(String[]::new);}
+    @FunctionalInterface private interface Mutator{void apply(NbtCompound parent,String key);}private record PathRef(NbtCompound parent,String key){}
+    private static final class FabricCompound extends NBTCompound {private final NbtCompound nbt;private FabricCompound(NbtCompound nbt){this.nbt=nbt;}public boolean hasTag(String k){return nbt.contains(k);}public Object get(String k){NbtElement e=nbt.get(k);return e==null?null:e.copy();}public String getString(String k){return nbt.getString(k);}public boolean getBoolean(String k){return nbt.getBoolean(k);}public double getDouble(String k){return nbt.getDouble(k);}public int getInteger(String k){return nbt.getInt(k);}public NBTCompound getNBTCompound(String k){return new FabricCompound(nbt.getCompound(k).copy());}public Set<String> getTags(){return Set.copyOf(nbt.getKeys());}public int getTypeId(String k){return nbt.getType(k);}}
+}

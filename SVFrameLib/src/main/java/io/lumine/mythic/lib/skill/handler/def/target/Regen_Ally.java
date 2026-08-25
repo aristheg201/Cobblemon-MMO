@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Regen_Ally extends ScriptSkillHandler{public Regen_Ally(){super("REGEN_ALLY");}public Regen_Ally(ConfigObject config){super("REGEN_ALLY",config);}}

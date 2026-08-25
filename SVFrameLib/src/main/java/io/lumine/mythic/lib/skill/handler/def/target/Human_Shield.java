@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Human_Shield extends ScriptSkillHandler{public Human_Shield(){super("HUMAN_SHIELD");}public Human_Shield(ConfigObject config){super("HUMAN_SHIELD",config);}}

@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.script.condition.type;import io.lumine.mythic.lib.script.condition.Condition;import io.lumine.mythic.lib.util.configobject.ConfigObject;public abstract class LocationCondition extends Condition{protected LocationCondition(ConfigObject c){super(c);}}

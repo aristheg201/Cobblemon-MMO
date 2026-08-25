@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Stun extends ScriptSkillHandler{public Stun(){super("STUN");}public Stun(ConfigObject config){super("STUN",config);}}

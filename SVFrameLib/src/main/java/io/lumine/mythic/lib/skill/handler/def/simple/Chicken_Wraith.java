@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Chicken_Wraith extends ScriptSkillHandler{public Chicken_Wraith(){super("CHICKEN_WRAITH");}public Chicken_Wraith(ConfigObject config){super("CHICKEN_WRAITH",config);}}

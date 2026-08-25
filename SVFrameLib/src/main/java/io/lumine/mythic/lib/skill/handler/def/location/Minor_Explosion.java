@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Minor_Explosion extends ScriptSkillHandler{public Minor_Explosion(){super("MINOR_EXPLOSION");}public Minor_Explosion(ConfigObject config){super("MINOR_EXPLOSION",config);}}

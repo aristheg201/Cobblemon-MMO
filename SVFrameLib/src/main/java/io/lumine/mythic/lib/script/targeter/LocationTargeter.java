@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.script.targeter;import io.lumine.mythic.lib.skill.SkillMetadata;import net.minecraft.util.math.Vec3d;import java.util.*;public abstract class LocationTargeter{public abstract List<Vec3d> findTargets(SkillMetadata metadata);}

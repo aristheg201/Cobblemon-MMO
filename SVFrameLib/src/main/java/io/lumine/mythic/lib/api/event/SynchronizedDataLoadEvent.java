@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.api.event;import io.lumine.mythic.lib.api.player.MMOPlayerData;public record SynchronizedDataLoadEvent(MMOPlayerData playerData){}

@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Heavy_Charge extends ScriptSkillHandler{public Heavy_Charge(){super("HEAVY_CHARGE");}public Heavy_Charge(ConfigObject config){super("HEAVY_CHARGE",config);}}

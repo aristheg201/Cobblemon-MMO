@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Grand_Heal extends ScriptSkillHandler{public Grand_Heal(){super("GRAND_HEAL");}public Grand_Heal(ConfigObject config){super("GRAND_HEAL",config);}}

@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.manager;import io.lumine.mythic.lib.module.MMOPlugin;import io.lumine.mythic.lib.module.Module;public class FakeEventManager extends Module{public FakeEventManager(MMOPlugin plugin){super(plugin,"fake-event");}}

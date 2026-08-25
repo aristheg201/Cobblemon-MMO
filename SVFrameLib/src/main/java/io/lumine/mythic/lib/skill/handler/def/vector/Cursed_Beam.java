@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Cursed_Beam extends ScriptSkillHandler{public Cursed_Beam(){super("CURSED_BEAM");}public Cursed_Beam(ConfigObject config){super("CURSED_BEAM",config);}}

@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.parameter.value;public class FormulaFailsafeException extends RuntimeException{public FormulaFailsafeException(String message){super(message);}public FormulaFailsafeException(String message,Throwable cause){super(message,cause);}}

@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.script.variable;public interface VariableRegistry<T extends Variable<?>>{Variable<?> get(T variable,String path);String stringify(T variable);}

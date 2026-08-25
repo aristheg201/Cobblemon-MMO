@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Magical_Path extends ScriptSkillHandler{public Magical_Path(){super("MAGICAL_PATH");}public Magical_Path(ConfigObject config){super("MAGICAL_PATH",config);}}

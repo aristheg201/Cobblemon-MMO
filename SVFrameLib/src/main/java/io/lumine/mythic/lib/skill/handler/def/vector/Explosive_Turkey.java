@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Explosive_Turkey extends ScriptSkillHandler{public Explosive_Turkey(){super("EXPLOSIVE_TURKEY");}public Explosive_Turkey(ConfigObject config){super("EXPLOSIVE_TURKEY",config);}}

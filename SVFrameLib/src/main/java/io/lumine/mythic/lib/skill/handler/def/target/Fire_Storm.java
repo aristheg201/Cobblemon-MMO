@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Fire_Storm extends ScriptSkillHandler{public Fire_Storm(){super("FIRE_STORM");}public Fire_Storm(ConfigObject config){super("FIRE_STORM",config);}}

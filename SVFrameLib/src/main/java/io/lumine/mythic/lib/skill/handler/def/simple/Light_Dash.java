@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Light_Dash extends ScriptSkillHandler{public Light_Dash(){super("LIGHT_DASH");}public Light_Dash(ConfigObject config){super("LIGHT_DASH",config);}}

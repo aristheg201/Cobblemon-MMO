@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Burning_Hands extends ScriptSkillHandler{public Burning_Hands(){super("BURNING_HANDS");}public Burning_Hands(ConfigObject config){super("BURNING_HANDS",config);}}

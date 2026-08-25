@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Thrust extends ScriptSkillHandler{public Thrust(){super("THRUST");}public Thrust(ConfigObject config){super("THRUST",config);}}

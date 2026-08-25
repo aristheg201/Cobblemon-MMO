@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Hoearthquake extends ScriptSkillHandler{public Hoearthquake(){super("HOEARTHQUAKE");}public Hoearthquake(ConfigObject config){super("HOEARTHQUAKE",config);}}

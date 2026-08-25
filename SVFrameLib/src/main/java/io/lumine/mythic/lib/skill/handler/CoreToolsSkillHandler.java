@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class CoreToolsSkillHandler extends ScriptSkillHandler{public CoreToolsSkillHandler(String id){super(id);}public CoreToolsSkillHandler(ConfigObject cfg){super("CoreToolsSkillHandler",cfg);}}

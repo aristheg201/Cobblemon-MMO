@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.module;import java.lang.annotation.*;@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface ModuleListener{}

@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Death_Mark extends ScriptSkillHandler{public Death_Mark(){super("DEATH_MARK");}public Death_Mark(ConfigObject config){super("DEATH_MARK",config);}}

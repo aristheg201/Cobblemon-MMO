@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.item;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Item_Throw extends ScriptSkillHandler{public Item_Throw(){super("ITEM_THROW");}public Item_Throw(ConfigObject config){super("ITEM_THROW",config);}}

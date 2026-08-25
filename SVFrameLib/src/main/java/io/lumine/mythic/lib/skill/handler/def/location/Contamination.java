@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Contamination extends ScriptSkillHandler{public Contamination(){super("CONTAMINATION");}public Contamination(ConfigObject config){super("CONTAMINATION",config);}}

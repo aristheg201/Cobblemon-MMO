@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Sparkle extends ScriptSkillHandler{public Sparkle(){super("SPARKLE");}public Sparkle(ConfigObject config){super("SPARKLE",config);}}

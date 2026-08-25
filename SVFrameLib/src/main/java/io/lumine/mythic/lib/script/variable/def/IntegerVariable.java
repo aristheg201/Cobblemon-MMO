@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.script.variable.def;import io.lumine.mythic.lib.script.variable.*;public class IntegerVariable extends Variable<Integer>{private static final VariableRegistry REG=new SimpleVariableRegistry<>();public IntegerVariable(String name,Integer value){super(name,value);}@Override public VariableRegistry<Variable<Integer>> getVariableRegistry(){return REG;}}

@@ -1,0 +1,3 @@
+package io.lumine.mythic.lib.skill.parameter.value;
+import net.minecraft.server.network.ServerPlayerEntity;
+public interface ScalingFormula { ScalingFormula ZERO=new NonScalingFormula(0); double evaluate(int level,ServerPlayerEntity player); boolean isInteger(); static ScalingFormula fromConfig(Object o){return fromConfig(o,ZERO);} static ScalingFormula fromConfig(Object o,ScalingFormula fallback){if(o instanceof Number n)return new NonScalingFormula(n.doubleValue());if(o instanceof String s){try{return new NonScalingFormula(Double.parseDouble(s));}catch(Exception ignored){}}return fallback;} }

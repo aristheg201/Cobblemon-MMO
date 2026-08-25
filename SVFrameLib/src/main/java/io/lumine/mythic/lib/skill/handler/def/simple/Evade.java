@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Evade extends ScriptSkillHandler{public Evade(){super("EVADE");}public Evade(ConfigObject config){super("EVADE",config);}}

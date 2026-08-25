@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Corrupt extends ScriptSkillHandler{public Corrupt(){super("CORRUPT");}public Corrupt(ConfigObject config){super("CORRUPT",config);}}

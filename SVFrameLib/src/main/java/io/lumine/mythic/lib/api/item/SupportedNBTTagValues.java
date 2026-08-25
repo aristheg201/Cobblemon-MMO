@@ -1,0 +1,2 @@
+package io.lumine.mythic.lib.api.item;
+public enum SupportedNBTTagValues {BYTE,SHORT,INT,LONG,FLOAT,DOUBLE,BYTE_ARRAY,STRING,LIST,COMPOUND,INT_ARRAY,LONG_ARRAY,BOOLEAN,UNKNOWN}

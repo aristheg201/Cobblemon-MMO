@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Fire_Rage extends ScriptSkillHandler{public Fire_Rage(){super("FIRE_RAGE");}public Fire_Rage(ConfigObject config){super("FIRE_RAGE",config);}}

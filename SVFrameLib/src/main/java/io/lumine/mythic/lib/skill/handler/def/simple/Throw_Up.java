@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Throw_Up extends ScriptSkillHandler{public Throw_Up(){super("THROW_UP");}public Throw_Up(ConfigObject config){super("THROW_UP",config);}}

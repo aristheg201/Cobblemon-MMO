@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Life_Ender extends ScriptSkillHandler{public Life_Ender(){super("LIFE_ENDER");}public Life_Ender(ConfigObject config){super("LIFE_ENDER",config);}}

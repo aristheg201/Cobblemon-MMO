@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.script.condition;import java.lang.annotation.*;@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface ConditionMetadata{String source() default "mythiclib";}

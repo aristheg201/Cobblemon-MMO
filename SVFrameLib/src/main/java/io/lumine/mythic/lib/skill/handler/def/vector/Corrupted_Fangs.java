@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Corrupted_Fangs extends ScriptSkillHandler{public Corrupted_Fangs(){super("CORRUPTED_FANGS");}public Corrupted_Fangs(ConfigObject config){super("CORRUPTED_FANGS",config);}}

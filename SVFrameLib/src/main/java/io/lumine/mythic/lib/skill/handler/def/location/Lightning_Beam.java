@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Lightning_Beam extends ScriptSkillHandler{public Lightning_Beam(){super("LIGHTNING_BEAM");}public Lightning_Beam(ConfigObject config){super("LIGHTNING_BEAM",config);}}

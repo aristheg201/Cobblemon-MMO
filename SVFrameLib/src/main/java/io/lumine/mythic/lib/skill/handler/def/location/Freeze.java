@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Freeze extends ScriptSkillHandler{public Freeze(){super("FREEZE");}public Freeze(ConfigObject config){super("FREEZE",config);}}

@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.script.variable.def;import io.lumine.mythic.lib.script.variable.*;public class WorldVariable extends Variable<String>{private static final VariableRegistry REG=new SimpleVariableRegistry<>();public WorldVariable(String name,String value){super(name,value);}@Override public VariableRegistry<Variable<String>> getVariableRegistry(){return REG;}}

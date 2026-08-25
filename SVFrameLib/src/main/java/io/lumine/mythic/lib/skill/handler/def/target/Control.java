@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Control extends ScriptSkillHandler{public Control(){super("CONTROL");}public Control(ConfigObject config){super("CONTROL",config);}}

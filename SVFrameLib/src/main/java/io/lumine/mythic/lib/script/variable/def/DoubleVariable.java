@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.script.variable.def;import io.lumine.mythic.lib.script.variable.*;public class DoubleVariable extends Variable<Double>{private static final VariableRegistry REG=new SimpleVariableRegistry<>();public DoubleVariable(String name,Double value){super(name,value);}@Override public VariableRegistry<Variable<Double>> getVariableRegistry(){return REG;}}

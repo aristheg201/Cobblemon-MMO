@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class MythicMobsSkillHandler extends ScriptSkillHandler{public MythicMobsSkillHandler(String id){super(id);}public MythicMobsSkillHandler(ConfigObject cfg){super("MythicMobsSkillHandler",cfg);}}

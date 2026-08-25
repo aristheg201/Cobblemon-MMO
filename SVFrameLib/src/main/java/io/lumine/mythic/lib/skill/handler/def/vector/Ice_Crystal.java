@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Ice_Crystal extends ScriptSkillHandler{public Ice_Crystal(){super("ICE_CRYSTAL");}public Ice_Crystal(ConfigObject config){super("ICE_CRYSTAL",config);}}

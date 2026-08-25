@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.script.targeter;import io.lumine.mythic.lib.skill.SkillMetadata;import java.util.*;public interface EntityTargeter{List<UUID> findTargets(SkillMetadata metadata);}

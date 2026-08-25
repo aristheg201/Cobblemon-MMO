@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.script.variable;public interface VariableContainer{Variable<?> getVariable(String path);}

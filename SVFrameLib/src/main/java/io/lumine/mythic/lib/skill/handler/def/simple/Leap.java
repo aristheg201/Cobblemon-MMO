@@ -1,0 +1,1 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Leap extends ScriptSkillHandler{public Leap(){super("LEAP");}public Leap(ConfigObject config){super("LEAP",config);}}
