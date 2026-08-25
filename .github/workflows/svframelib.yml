@@ -23,7 +23,7 @@ jobs:
           ref: svframelib-fabric-1.21.1
           path: target
 
-      - name: Checkout Mod-dev source workspace
+      - name: Checkout canonical source
         uses: actions/checkout@v4
         with:
           repository: aristheg201/Mod-dev
@@ -39,110 +39,26 @@ jobs:
         with:
           gradle-version: '8.8'
 
-      - name: Reconstruct canonical SVFrameLib source
+      - name: Materialize expanded SVFrameLib source
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf work
-          mkdir -p work
-
-          cat moddev/fabric-mmo-ports/bootstrap-m0.8/chunks/part* | base64 -d > base.tar.gz
-          echo '99f090bc86fe3e57215e009d55ff3eadf7582cf1418d98052a978922872fa75c  base.tar.gz' | sha256sum -c -
-          tar -xzf base.tar.gz -C work
-
-          cp -a moddev/fabric-mmo-ports/overlay-m0.9/. work/
-          cp -a moddev/fabric-mmo-ports/overlay-m1.0/. work/
-          patch -d work -p1 < moddev/fabric-mmo-ports/overlay-m1.1/mmocore-brigadier.patch
-          cp -a moddev/fabric-mmo-ports/overlay-m1.2/. work/
-          patch -d work -p1 < moddev/fabric-mmo-ports/overlay-m1.3/mythiclib-brigadier.patch
-          tar -xzf moddev/fabric-mmo-ports/overlay-m1.3/source.tar.gz -C work
-          cp -a moddev/fabric-mmo-ports/overlay-m1.4/. work/
-          cp -a moddev/fabric-mmo-ports/overlay-m1.5/. work/
-          cp -a moddev/fabric-mmo-ports/overlay-m1.6/. work/
-          base64 -d moddev/fabric-mmo-ports/overlay-m1.7/source.tar.gz.b64 > m17.tar.gz
-          tar -xzf m17.tar.gz -C work
-          base64 -d moddev/fabric-mmo-ports/overlay-m1.8/source.tar.gz.b64 > m18.tar.gz
-          tar -xzf m18.tar.gz -C work
-          cat moddev/fabric-mmo-ports/overlay-m2.0/source.tar.gz.b64.part* | base64 -d > m20.tar.gz
-          tar -xzf m20.tar.gz -C work
-          cat moddev/fabric-mmo-ports/overlay-m2.1/source.tar.gz.b64.part* | base64 -d > m21.tar.gz
-          tar -xzf m21.tar.gz -C work
-
-          rm -rf work/fabric-platform/mythiclib-fabric/src
-          cp -a moddev/fabric-mmo-ports/fabric-platform/mythiclib-fabric/src work/fabric-platform/mythiclib-fabric/src
-          cp -a moddev/fabric-mmo-ports/mythiclib-runtime/. work/mythiclib-runtime/
-          if [ -d moddev/fabric-mmo-ports/common-runtime ]; then
-            cp -a moddev/fabric-mmo-ports/common-runtime/. work/common-runtime/
-          fi
 
           cat moddev/fabric-mmo-ports/svframelib-final/text-overlay/part* | base64 -d > final-overlay.tar.gz
           echo '30ec6e8bbdc4e9403dc8f32d689971812863b9417c8c39f7a19244b0caa89e80  final-overlay.tar.gz' | sha256sum -c -
-          tar -xzf final-overlay.tar.gz -C work
+          tar -xzf final-overlay.tar.gz -C moddev/fabric-mmo-ports
+
+          gradle --no-daemon -p moddev/fabric-mmo-ports/fabric-platform :mythiclib-fabric:mergeLegacyApiSources
 
           rm -rf target/SVFrameLib
-          mkdir -p target/SVFrameLib/src/main/java target/SVFrameLib/src/main/resources target/SVFrameLib/build/legacy-v2 target/SVFrameLib/build/legacy-v3 target/SVFrameLib/build/legacy-v4
-
-          cp -a work/fabric-platform/mythiclib-fabric/src/main/java/. target/SVFrameLib/src/main/java/
-          cp -a work/fabric-platform/mythiclib-fabric/src/main/resources/. target/SVFrameLib/src/main/resources/
-          cp -a work/mythiclib-runtime/src/main/java/. target/SVFrameLib/src/main/java/
-          if [ -d work/mythiclib-runtime/src/main/resources ]; then cp -a work/mythiclib-runtime/src/main/resources/. target/SVFrameLib/src/main/resources/; fi
-          if [ -d work/common-runtime/src/main/java ]; then cp -a work/common-runtime/src/main/java/. target/SVFrameLib/src/main/java/; fi
-          if [ -d work/common-runtime/src/main/resources ]; then cp -a work/common-runtime/src/main/resources/. target/SVFrameLib/src/main/resources/; fi
-
-          decode_bundle() {
-            local src="$1" out="$2"
-            cat "$src"/source.tar.gz.b64.part* | base64 -d > bundle.tar.gz
-            rm -rf "$out" && mkdir -p "$out"
-            tar -xzf bundle.tar.gz -C "$out"
-          }
-
-          decode_bundle moddev/fabric-mmo-ports/fabric-platform/mythiclib-fabric/legacy-api-source-v2 target/SVFrameLib/build/legacy-v2
-          decode_bundle moddev/fabric-mmo-ports/fabric-platform/mythiclib-fabric/legacy-api-v3-fixed2 target/SVFrameLib/build/legacy-v3
-          decode_bundle moddev/fabric-mmo-ports/fabric-platform/mythiclib-fabric/legacy-api-v4-parity target/SVFrameLib/build/legacy-v4
-
-          python3 <<'PY'
-          from pathlib import Path
-          import shutil
-
-          root = Path('target/SVFrameLib')
-          v2 = root/'build/legacy-v2'
-          v3 = root/'build/legacy-v3'
-          v4 = root/'build/legacy-v4'
-          dst = root/'src/main/java'
-
-          for source in sorted((v3/'io/lumine/mythic/lib/manager').glob('*.java')):
-              text = source.read_text()
-              text = text.replace('import io.lumine.mythic.lib.module.*;', 'import io.lumine.mythic.lib.module.MMOPlugin;import io.lumine.mythic.lib.module.Module;')
-              source.write_text(text)
-
-          bridge = v3/'io/lumine/mythic/lib/skill/SkillMetadataContextBridge.java'
-          bridge.parent.mkdir(parents=True, exist_ok=True)
-          bridge.write_text('''package io.lumine.mythic.lib.skill;\n\nimport io.lumine.mythic.lib.skill.handler.SkillHandler;\nimport vn.svframe.mythiclibfabric.runtime.script.ScriptContext;\n\nimport java.util.UUID;\n\npublic final class SkillMetadataContextBridge {\n    private SkillMetadataContextBridge() {}\n    public static ScriptContext context(SkillMetadata metadata) {\n        if (metadata == null || metadata.getCaster() == null) throw new IllegalArgumentException("Skill metadata/caster cannot be null");\n        UUID caster = metadata.getCaster().getData().getUniqueId();\n        var targetEntity = metadata.getTargetEntityOrNull();\n        UUID target = targetEntity == null ? caster : targetEntity.getUuid();\n        ScriptContext context = new ScriptContext(caster, target);\n        if (metadata.getCast() != null) {\n            SkillHandler<?> handler = metadata.getCast().getHandler();\n            if (handler != null) for (String key : handler.getParameters()) {\n                double value = metadata.getParameter(key);\n                context.numbers().put(key, value);\n                context.numbers().put("parameter." + key, value);\n                context.numbers().put("modifier." + key, value);\n                context.objects().put(key, value);\n                context.objects().put("parameter." + key, value);\n                context.objects().put("modifier." + key, value);\n            }\n        }\n        if (metadata.hasAttackSource()) context.objects().put("attack", metadata.getAttackSource());\n        context.objects().put("skill_metadata", metadata);\n        return context;\n    }\n}\n''')
-
-          mq = v3/'io/lumine/mythic/lib/script/MechanicQueue.java'
-          mq.write_text('''package io.lumine.mythic.lib.script;\n\nimport io.lumine.mythic.lib.script.mechanic.Mechanic;\nimport io.lumine.mythic.lib.script.mechanic.RawMechanic;\nimport io.lumine.mythic.lib.skill.SkillMetadata;\nimport vn.svframe.mythiclibfabric.MythicLibFabricMod;\nimport vn.svframe.mythiclibfabric.runtime.script.ExpressionRuntime;\nimport vn.svframe.mythiclibfabric.runtime.script.ScriptLineParser;\nimport java.util.Iterator;\nimport java.util.logging.Level;\nimport java.util.logging.Logger;\npublic class MechanicQueue {\n    private static final Logger LOG = Logger.getLogger("SVFrameLib");\n    private final Iterator<Mechanic> queue;\n    private final SkillMetadata metadata;\n    private final Script script;\n    private int counter;\n    public MechanicQueue(SkillMetadata metadata, Script script) { this.metadata=metadata; this.script=script; this.queue=script.getMechanics().iterator(); }\n    public boolean next() {\n        while (queue.hasNext()) {\n            counter++; Mechanic mechanic=queue.next();\n            if (mechanic instanceof RawMechanic raw) {\n                ScriptLineParser.Call call=ScriptLineParser.parse(raw.raw());\n                if (call.name().equals("delay")) { MythicLibFabricMod.schedule((int)Math.min(Integer.MAX_VALUE,Math.max(1L,delayTicks(call))),this::next); return false; }\n            }\n            try { mechanic.cast(metadata); } catch (RuntimeException exception) { LOG.log(Level.WARNING,"Could not execute mechanic n"+counter+" from script '"+script.getId()+"': "+exception.getMessage()); return true; }\n        }\n        return true;\n    }\n    private long delayTicks(ScriptLineParser.Call call) {\n        String expression=call.params().getOrDefault("amount","0");\n        try { var context=io.lumine.mythic.lib.skill.SkillMetadataContextBridge.context(metadata); return (long)new ExpressionRuntime().evaluate(expression,context.numbers()); }\n        catch (RuntimeException ignored) { try { return (long)Double.parseDouble(expression); } catch (NumberFormatException invalid) { return 0L; } }\n    }\n}\n''')
-
-          script = v3/'io/lumine/mythic/lib/script/Script.java'
-          script.write_text('''package io.lumine.mythic.lib.script;\n\nimport io.lumine.mythic.lib.api.player.MMOPlayerData;\nimport io.lumine.mythic.lib.script.condition.Condition;\nimport io.lumine.mythic.lib.script.mechanic.Mechanic;\nimport io.lumine.mythic.lib.script.condition.RawCondition;\nimport io.lumine.mythic.lib.script.mechanic.RawMechanic;\nimport io.lumine.mythic.lib.skill.SkillMetadata;\nimport io.lumine.mythic.lib.util.PostLoadAction;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.Objects;\npublic class Script {\n    private final String id; private final boolean pub; private final List<String> conditions; private final List<String> mechanics;\n    public Script(String id,List<String> mechanics){this(id,true,List.of(),mechanics);}\n    public Script(String id,boolean pub){this(id,pub,List.of(),List.of());}\n    public Script(String id,boolean pub,List<String> conditions,List<String> mechanics){this.id=Objects.requireNonNull(id);this.pub=pub;this.conditions=List.copyOf(conditions);this.mechanics=List.copyOf(mechanics);}\n    public PostLoadAction getPostLoadAction(){return new PostLoadAction(x -> {});}\n    public String getId(){return id;} public boolean isPublic(){return pub;}\n    public List<Mechanic> getMechanics(){List<Mechanic> out=new ArrayList<>();for(String line:mechanics)out.add(new RawMechanic(line));return List.copyOf(out);}\n    public List<Condition> getConditions(){List<Condition> out=new ArrayList<>();for(String line:conditions)out.add(new RawCondition(line));return List.copyOf(out);}\n    public boolean cast(MMOPlayerData data){return cast(SkillMetadata.of(data));}\n    public boolean cast(SkillMetadata metadata){for(Condition condition:getConditions())if(!condition.checkIfMet(metadata))return false;new MechanicQueue(metadata,this).next();return true;}\n    public List<String> rawConditions(){return conditions;} public List<String> rawMechanics(){return mechanics;}\n}\n''')
-
-          for rel in ['io/lumine/mythic/lib/script/mechanic/RawMechanic.java','io/lumine/mythic/lib/script/condition/RawCondition.java']:
-              p=v3/rel
-              p.write_text(p.read_text().replace('metadata.context()','io.lumine.mythic.lib.skill.SkillMetadataContextBridge.context(metadata)'))
-
-          (v3/'io/lumine/mythic/lib/skill/handler/ScriptSkillHandler.java').write_text('''package io.lumine.mythic.lib.skill.handler;\nimport io.lumine.mythic.lib.skill.SkillMetadata;\nimport io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;\nimport io.lumine.mythic.lib.util.configobject.ConfigObject;\nimport vn.svframe.mythiclibfabric.MythicLibFabricMod;\nimport java.util.LinkedHashMap;import java.util.Map;import java.util.UUID;\npublic class ScriptSkillHandler extends SkillHandler<SimpleSkillResult>{\n public ScriptSkillHandler(String id){super(id);}\n public ScriptSkillHandler(String id,ConfigObject cfg){super(id);if(cfg!=null&&cfg.contains("modifiers")){String raw=cfg.getString("modifiers","");for(String modifier:raw.split("[,;\\\\s]+"))if(!modifier.isBlank())registerModifiers(modifier.trim());}}\n @Override public SimpleSkillResult getResult(SkillMetadata metadata){return new SimpleSkillResult(metadata!=null&&metadata.getCaster()!=null);}\n @Override public void whenCast(SimpleSkillResult result,SkillMetadata metadata){if(!result.isSuccessful())return;Map<String,Object> params=new LinkedHashMap<>();for(String key:getParameters())params.put(key,metadata.getParameter(key));var entity=metadata.getTargetEntityOrNull();UUID target=entity==null?null:entity.getUuid();MythicLibFabricMod.castSkill(getId(),metadata.getCaster().getData().getUniqueId(),target,params);}\n}\n''')
-
-          (v3/'io/lumine/mythic/lib/skill/handler/MythicLibSkillHandler.java').write_text('''package io.lumine.mythic.lib.skill.handler;\nimport io.lumine.mythic.lib.script.MechanicQueue;import io.lumine.mythic.lib.script.Script;import io.lumine.mythic.lib.script.condition.Condition;import io.lumine.mythic.lib.skill.SkillMetadata;import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;import io.lumine.mythic.lib.util.configobject.ConfigObject;import java.util.Objects;\npublic class MythicLibSkillHandler extends ScriptSkillHandler{\n private final Script script;\n public MythicLibSkillHandler(String id){super(id);this.script=null;} public MythicLibSkillHandler(ConfigObject cfg){super("MythicLibSkillHandler",cfg);this.script=null;} public MythicLibSkillHandler(Script script){super(Objects.requireNonNull(script,"script").getId());this.script=script;}\n @Override public SimpleSkillResult getResult(SkillMetadata metadata){if(script==null)return super.getResult(metadata);if(metadata==null||metadata.getCaster()==null)return new SimpleSkillResult(false);for(Condition condition:script.getConditions())if(!condition.checkIfMet(metadata))return new SimpleSkillResult(false);return new SimpleSkillResult(true);}\n @Override public void whenCast(SimpleSkillResult result,SkillMetadata metadata){if(!result.isSuccessful())return;if(script==null){super.whenCast(result,metadata);return;}new MechanicQueue(metadata,script).next();}\n}\n''')
-
-          (v3/'io/lumine/mythic/lib/skill/result/def/AttackSkillResult.java').write_text('''package io.lumine.mythic.lib.skill.result.def;\nimport io.lumine.mythic.lib.damage.AttackMetadata;import io.lumine.mythic.lib.skill.result.SkillResult;\npublic class AttackSkillResult implements SkillResult{private final AttackMetadata attack;public AttackSkillResult(AttackMetadata attack){this.attack=attack;}public AttackMetadata getAttack(){return attack;}public boolean isSuccessful(){return attack!=null;}}\n''')
-
-          for tree in (v2,v3,v4):
-              for p in sorted(tree.rglob('*.java')):
-                  rel=p.relative_to(tree)
-                  out=dst/rel
-                  out.parent.mkdir(parents=True,exist_ok=True)
-                  shutil.copy2(p,out)
-          shutil.rmtree(root/'build')
-          PY
+          mkdir -p target/SVFrameLib/src/main/java target/SVFrameLib/src/main/resources
+          cp -a moddev/fabric-mmo-ports/fabric-platform/mythiclib-fabric/src/main/java/. target/SVFrameLib/src/main/java/
+          cp -a moddev/fabric-mmo-ports/fabric-platform/mythiclib-fabric/src/main/resources/. target/SVFrameLib/src/main/resources/
+          cp -a moddev/fabric-mmo-ports/mythiclib-runtime/src/main/java/. target/SVFrameLib/src/main/java/
+          if [ -d moddev/fabric-mmo-ports/mythiclib-runtime/src/main/resources ]; then cp -a moddev/fabric-mmo-ports/mythiclib-runtime/src/main/resources/. target/SVFrameLib/src/main/resources/; fi
+          if [ -d moddev/fabric-mmo-ports/common-runtime/src/main/java ]; then cp -a moddev/fabric-mmo-ports/common-runtime/src/main/java/. target/SVFrameLib/src/main/java/; fi
+          if [ -d moddev/fabric-mmo-ports/common-runtime/src/main/resources ]; then cp -a moddev/fabric-mmo-ports/common-runtime/src/main/resources/. target/SVFrameLib/src/main/resources/; fi
+          cp -a moddev/fabric-mmo-ports/fabric-platform/mythiclib-fabric/build/generated/legacy-api-merged-src/. target/SVFrameLib/src/main/java/
 
           cat > target/SVFrameLib/settings.gradle <<'EOF'
           pluginManagement {
@@ -200,13 +116,13 @@ jobs:
           # SVFrameLib
 
           Native Fabric 1.21.1 port of MythicLib 1.7.1 for Fabric Loader >= 0.18.4.
-          This branch contains expanded Java source, not source-part archives.
+          All compatibility/API Java sources are expanded in this branch; no source-part archive is required to build it.
           EOF
 
-          find target/SVFrameLib/src/main/java -name '*.java' | sort > target/SVFrameLib/SOURCE-LIST.txt
+          find target/SVFrameLib/src/main/java -type f -name '*.java' | sort > target/SVFrameLib/SOURCE-LIST.txt
           echo "Expanded Java sources: $(wc -l < target/SVFrameLib/SOURCE-LIST.txt)"
 
-      - name: Commit expanded Java source to branch
+      - name: Commit real source
         shell: bash
         run: |
           set -euo pipefail
@@ -253,7 +169,7 @@ jobs:
           ! grep -q 'Could not execute entrypoint stage' build/svframelib-server.log
           ! grep -q 'Exception in server tick loop' build/svframelib-server.log
 
-      - name: Publish final jar into branch
+      - name: Publish validated jar
         shell: bash
         run: |
           set -euo pipefail
@@ -267,7 +183,7 @@ jobs:
           git commit -m 'SVFrameLib: publish validated Fabric 1.21.1 jar'
           git push origin HEAD:svframelib-fabric-1.21.1
 
-      - name: Upload SVFrameLib artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: SVFrameLib-1.7.1-fabric
