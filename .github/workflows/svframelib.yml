@@ -6,7 +6,6 @@ on:
       - svframelib-fabric-1.21.1
     paths:
       - '.github/workflows/svframelib.yml'
-      - 'SVFrameLib/**'
   workflow_dispatch:
 
 permissions:
@@ -17,13 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout Cobblemon-MMO
+      - name: Checkout SVFrameLib source
         uses: actions/checkout@v4
         with:
           ref: svframelib-fabric-1.21.1
           path: target
 
-      - name: Checkout canonical source
+      - name: Checkout Mod-dev source seed
         uses: actions/checkout@v4
         with:
           repository: aristheg201/Mod-dev
@@ -39,94 +38,28 @@ jobs:
         with:
           gradle-version: '8.8'
 
-      - name: Materialize expanded SVFrameLib source
+      - name: Restore source files lost by the canonical-source replacement
         shell: bash
         run: |
           set -euo pipefail
-          gradle --no-daemon -p moddev/fabric-mmo-ports/fabric-platform :mythiclib-fabric:mergeLegacyApiSources
+          rm -rf seed
+          mkdir -p seed
+          cat moddev/fabric-mmo-ports/bootstrap-m0.8/chunks/part* | base64 -d > seed.tar.gz
+          echo '99f090bc86fe3e57215e009d55ff3eadf7582cf1418d98052a978922872fa75c  seed.tar.gz' | sha256sum -c -
+          tar -xzf seed.tar.gz -C seed
 
-          rm -rf target/SVFrameLib
           mkdir -p target/SVFrameLib/src/main/java target/SVFrameLib/src/main/resources
-          cp -a moddev/fabric-mmo-ports/fabric-platform/mythiclib-fabric/src/main/java/. target/SVFrameLib/src/main/java/
-          cp -a moddev/fabric-mmo-ports/fabric-platform/mythiclib-fabric/src/main/resources/. target/SVFrameLib/src/main/resources/
-          cp -a moddev/fabric-mmo-ports/mythiclib-runtime/src/main/java/. target/SVFrameLib/src/main/java/
-          if [ -d moddev/fabric-mmo-ports/mythiclib-runtime/src/main/resources ]; then cp -a moddev/fabric-mmo-ports/mythiclib-runtime/src/main/resources/. target/SVFrameLib/src/main/resources/; fi
-          if [ -d moddev/fabric-mmo-ports/common-runtime/src/main/java ]; then cp -a moddev/fabric-mmo-ports/common-runtime/src/main/java/. target/SVFrameLib/src/main/java/; fi
-          if [ -d moddev/fabric-mmo-ports/common-runtime/src/main/resources ]; then cp -a moddev/fabric-mmo-ports/common-runtime/src/main/resources/. target/SVFrameLib/src/main/resources/; fi
-          cp -a moddev/fabric-mmo-ports/fabric-platform/mythiclib-fabric/build/generated/legacy-api-merged-src/. target/SVFrameLib/src/main/java/
+          if [ -d seed/mythiclib-runtime/src/main/java ]; then cp -an seed/mythiclib-runtime/src/main/java/. target/SVFrameLib/src/main/java/; fi
+          if [ -d seed/common-runtime/src/main/java ]; then cp -an seed/common-runtime/src/main/java/. target/SVFrameLib/src/main/java/; fi
+          if [ -d seed/fabric-platform/mythiclib-fabric/src/main/java ]; then cp -an seed/fabric-platform/mythiclib-fabric/src/main/java/. target/SVFrameLib/src/main/java/; fi
+          if [ -d seed/fabric-platform/mythiclib-fabric/src/main/resources ]; then cp -an seed/fabric-platform/mythiclib-fabric/src/main/resources/. target/SVFrameLib/src/main/resources/; fi
 
-          cat > target/SVFrameLib/settings.gradle <<'EOF'
-          pluginManagement {
-              repositories {
-                  maven { url = 'https://maven.fabricmc.net/' }
-                  gradlePluginPortal()
-                  mavenCentral()
-              }
-          }
-          rootProject.name = 'SVFrameLib'
-          EOF
-
-          cat > target/SVFrameLib/gradle.properties <<'EOF'
-          org.gradle.jvmargs=-Xmx4G
-          minecraft_version=1.21.1
-          yarn_mappings=1.21.1+build.3
-          loader_version=0.18.4
-          fabric_api_version=0.116.9+1.21.1
-          loom_version=1.7.4
-          EOF
-
-          cat > target/SVFrameLib/build.gradle <<'EOF'
-          plugins {
-              id 'fabric-loom' version "${loom_version}"
-          }
-          group = 'vn.svframe.fabricmmo'
-          version = '1.7.1-fabric'
-          base { archivesName = 'SVFrameLib' }
-          repositories {
-              mavenCentral()
-              maven { url = 'https://maven.fabricmc.net/' }
-          }
-          dependencies {
-              minecraft "com.mojang:minecraft:${minecraft_version}"
-              mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
-              modImplementation "net.fabricmc:fabric-loader:${loader_version}"
-              modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
-              compileOnly 'net.luckperms:api:5.4'
-          }
-          tasks.withType(JavaCompile).configureEach {
-              options.release = 21
-              options.encoding = 'UTF-8'
-          }
-          java {
-              sourceCompatibility = JavaVersion.VERSION_21
-              targetCompatibility = JavaVersion.VERSION_21
-              withSourcesJar()
-          }
-          processResources {
-              filesMatching('fabric.mod.json') { expand version: project.version }
-          }
-          EOF
-
-          cat > target/SVFrameLib/README.md <<'EOF'
-          # SVFrameLib
-
-          Native Fabric 1.21.1 port of MythicLib 1.7.1 for Fabric Loader >= 0.18.4.
-          All compatibility/API Java sources are expanded in this branch; no source-part archive is required to build it.
-          EOF
-
-          find target/SVFrameLib/src/main/java -type f -name '*.java' | sort > target/SVFrameLib/SOURCE-LIST.txt
-          echo "Expanded Java sources: $(wc -l < target/SVFrameLib/SOURCE-LIST.txt)"
-
-      - name: Commit real source
-        shell: bash
-        run: |
-          set -euo pipefail
           cd target
           git config user.name 'SVFrameLib Builder'
           git config user.email 'actions@users.noreply.github.com'
           git add SVFrameLib
           if ! git diff --cached --quiet; then
-            git commit -m 'SVFrameLib: commit expanded native Fabric source'
+            git commit -m 'SVFrameLib: restore missing native runtime source'
             git push origin HEAD:svframelib-fabric-1.21.1
           fi
 
