@@ -42,7 +42,6 @@ jobs:
           if [ -d _moddev/fabric-mmo-ports/common-runtime ]; then
             cp -a _moddev/fabric-mmo-ports/common-runtime SVFrameLib/
           fi
-
           cp _moddev/fabric-mmo-ports/fabric-platform/gradle.properties SVFrameLib/fabric-platform/gradle.properties
 
           cat > SVFrameLib/fabric-platform/settings.gradle <<'EOF'
@@ -87,7 +86,16 @@ jobs:
           }
           EOF
 
-          cat _moddev/fabric-mmo-ports/svframelib-final/text-overlay/part* | base64 -d > /tmp/svframelib-final-overlay.tar.gz
+          cat \
+            svframelib-bootstrap/final-overlay-part00 \
+            _moddev/fabric-mmo-ports/svframelib-final/text-overlay/part01 \
+            _moddev/fabric-mmo-ports/svframelib-final/text-overlay/part02 \
+            _moddev/fabric-mmo-ports/svframelib-final/text-overlay/part03 \
+            svframelib-bootstrap/final-overlay-part04 \
+            _moddev/fabric-mmo-ports/svframelib-final/text-overlay/part05 \
+            _moddev/fabric-mmo-ports/svframelib-final/text-overlay/part06 \
+            _moddev/fabric-mmo-ports/svframelib-final/text-overlay/part07 \
+            | base64 -d > /tmp/svframelib-final-overlay.tar.gz
           echo '30ec6e8bbdc4e9403dc8f32d689971812863b9417c8c39f7a19244b0caa89e80  /tmp/svframelib-final-overlay.tar.gz' | sha256sum -c -
           tar -xzf /tmp/svframelib-final-overlay.tar.gz -C SVFrameLib
 
@@ -115,7 +123,6 @@ jobs:
 
           This dedicated branch contains only SVFrameLib and its shared runtime. MMOCore, MMOItems and MythicMobs are intentionally excluded until SVFrameLib is complete.
           EOF
-
           rm -rf _moddev
 
       - name: Full Loom build and remap
