@@ -1,0 +1,2 @@
+package vn.svframe.mythiclibfabric.runtime.script;
+public record Vector3(double x,double y,double z){public Vector3 add(Vector3 o){return new Vector3(x+o.x,y+o.y,z+o.z);}public Vector3 subtract(Vector3 o){return new Vector3(x-o.x,y-o.y,z-o.z);}public Vector3 multiply(double c){return new Vector3(x*c,y*c,z*c);}public double length(){return Math.sqrt(x*x+y*y+z*z);}public Vector3 normalize(){double l=length();return l==0?this:multiply(1/l);}public Vector3 withY(double y){return new Vector3(x,y,z);}}
