@@ -1,0 +1,186 @@
+name: SVFrameLib Fabric 1.21.1 Final
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - svframelib-fabric-1.21.1
+    paths:
+      - '.github/workflows/svframelib-final.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: svframelib-fabric-1.21.1
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
+      - name: Materialize canonical SVFrameLib source
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _moddev SVFrameLib
+          git clone --depth 1 --branch feature/fabric-mmo-ports https://github.com/aristheg201/Mod-dev.git _moddev
+
+          mkdir -p SVFrameLib/fabric-platform
+          cp -a _moddev/fabric-mmo-ports/fabric-platform/mythiclib-fabric SVFrameLib/fabric-platform/
+          cp -a _moddev/fabric-mmo-ports/mythiclib-runtime SVFrameLib/
+          if [ -d _moddev/fabric-mmo-ports/common-runtime ]; then
+            cp -a _moddev/fabric-mmo-ports/common-runtime SVFrameLib/
+          fi
+
+          cp _moddev/fabric-mmo-ports/fabric-platform/gradle.properties SVFrameLib/fabric-platform/gradle.properties
+
+          cat > SVFrameLib/fabric-platform/settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  maven { url = 'https://maven.fabricmc.net/' }
+                  gradlePluginPortal()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = 'svframelib-fabric'
+          include 'mythiclib-fabric'
+          EOF
+
+          cat > SVFrameLib/fabric-platform/build.gradle <<'EOF'
+          plugins {
+              id 'fabric-loom' version "${loom_version}" apply false
+          }
+          subprojects {
+              apply plugin: 'fabric-loom'
+              group = rootProject.maven_group
+              repositories {
+                  mavenCentral()
+                  maven { url = 'https://maven.fabricmc.net/' }
+                  maven { url = 'https://maven.nucleoid.xyz/' }
+              }
+              dependencies {
+                  minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+                  mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}:v2"
+                  modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+                  modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+              }
+              tasks.withType(JavaCompile).configureEach {
+                  options.release = 21
+                  options.encoding = 'UTF-8'
+              }
+              java {
+                  sourceCompatibility = JavaVersion.VERSION_21
+                  targetCompatibility = JavaVersion.VERSION_21
+                  withSourcesJar()
+              }
+          }
+          EOF
+
+          cat _moddev/fabric-mmo-ports/svframelib-final/text-overlay/part* | base64 -d > /tmp/svframelib-final-overlay.tar.gz
+          echo '30ec6e8bbdc4e9403dc8f32d689971812863b9417c8c39f7a19244b0caa89e80  /tmp/svframelib-final-overlay.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/svframelib-final-overlay.tar.gz -C SVFrameLib
+
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('SVFrameLib/fabric-platform/mythiclib-fabric/build.gradle')
+          s = p.read_text()
+          if "base { archivesName = 'MythicLib-Fabric' }" in s:
+              s = s.replace("base { archivesName = 'MythicLib-Fabric' }", "base { archivesName = 'SVFrameLib' }\nversion = '1.7.1-fabric'", 1)
+          elif "base { archivesName = 'SVFrameLib' }" in s and "version = '1.7.1-fabric'" not in s[:200]:
+              s = s.replace("base { archivesName = 'SVFrameLib' }", "base { archivesName = 'SVFrameLib' }\nversion = '1.7.1-fabric'", 1)
+          p.write_text(s)
+          meta = Path('SVFrameLib/fabric-platform/mythiclib-fabric/src/main/resources/fabric.mod.json')
+          m = meta.read_text().replace('"id": "mythiclib"', '"id": "svframelib"').replace('"name": "MythicLib Fabric"', '"name": "SVFrameLib"')
+          m = m.replace('"version": "${version}"', '"version": "1.7.1-fabric"')
+          meta.write_text(m)
+          PY
+
+          cat > SVFrameLib/README-Cobblemon-MMO.md <<'EOF'
+          # SVFrameLib Fabric 1.21.1
+          Native Fabric port of MythicLib 1.7.1.
+
+          Target: Minecraft 1.21.1, Fabric Loader >= 0.18.4, Java 21.
+          Mod id: `svframelib`; version: `1.7.1-fabric`.
+
+          This dedicated branch contains only SVFrameLib and its shared runtime. MMOCore, MMOItems and MythicMobs are intentionally excluded until SVFrameLib is complete.
+          EOF
+
+          rm -rf _moddev
+
+      - name: Full Loom build and remap
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameLib/fabric-platform
+          gradle --no-daemon --stacktrace :mythiclib-fabric:clean :mythiclib-fabric:remapJar
+
+      - name: Verify final SVFrameLib JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          JAR="$(find SVFrameLib/fabric-platform/mythiclib-fabric/build/libs -maxdepth 1 -type f -name 'SVFrameLib-*.jar' ! -name '*sources*' | head -1)"
+          test -s "$JAR"
+          unzip -p "$JAR" fabric.mod.json | grep -q '"id": "svframelib"'
+          unzip -p "$JAR" fabric.mod.json | grep -q '"name": "SVFrameLib"'
+          unzip -p "$JAR" fabric.mod.json | grep -q '"version": "1.7.1-fabric"'
+          unzip -l "$JAR" | grep -q 'io/lumine/mythic/lib/api/player/MMOPlayerData.class'
+          unzip -l "$JAR" | grep -q 'io/lumine/mythic/lib/damage/AttackMetadata.class'
+          unzip -l "$JAR" | grep -q 'io/lumine/mythic/lib/manager/SkillManager.class'
+          unzip -l "$JAR" | grep -q 'vn/svframe/mythiclibfabric/runtime/script/ScriptEngine.class'
+          mkdir -p dist
+          cp "$JAR" dist/SVFrameLib-1.7.1-fabric.jar
+          sha256sum dist/SVFrameLib-1.7.1-fabric.jar | tee dist/SVFrameLib-1.7.1-fabric.jar.sha256
+
+      - name: Dedicated Fabric server boot gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameLib/fabric-platform
+          mkdir -p run mythiclib-fabric/run
+          printf 'eula=true\n' > run/eula.txt
+          printf 'eula=true\n' > mythiclib-fabric/run/eula.txt
+          set +e
+          timeout 90s gradle --no-daemon --stacktrace :mythiclib-fabric:runServer > ../../svframelib-server-boot.log 2>&1
+          status=$?
+          set -e
+          cat ../../svframelib-server-boot.log
+          if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
+          grep -Eq 'SVFrameLib|MythicLib Fabric online' ../../svframelib-server-boot.log
+          ! grep -q 'Mixin apply failed' ../../svframelib-server-boot.log
+          ! grep -q 'Could not execute entrypoint stage' ../../svframelib-server-boot.log
+          ! grep -q 'Exception in server tick loop' ../../svframelib-server-boot.log
+
+      - name: Commit validated source and JAR to dedicated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf SVFrameLib/fabric-platform/mythiclib-fabric/build SVFrameLib/fabric-platform/.gradle SVFrameLib/fabric-platform/run SVFrameLib/fabric-platform/mythiclib-fabric/run
+          mkdir -p SVFrameLib/dist
+          cp dist/SVFrameLib-1.7.1-fabric.jar SVFrameLib/dist/
+          cp dist/SVFrameLib-1.7.1-fabric.jar.sha256 SVFrameLib/dist/
+          git config user.name 'SVFrameLib Build'
+          git config user.email 'actions@github.com'
+          git add SVFrameLib
+          git commit -m 'SVFrameLib 1.7.1 Fabric: validated source and JAR'
+          git push origin HEAD:svframelib-fabric-1.21.1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SVFrameLib-1.7.1-fabric
+          path: |
+            dist/SVFrameLib-1.7.1-fabric.jar
+            dist/SVFrameLib-1.7.1-fabric.jar.sha256
+            svframelib-server-boot.log
+          if-no-files-found: error
+          retention-days: 14
