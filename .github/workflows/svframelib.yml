@@ -43,11 +43,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
-          cat moddev/fabric-mmo-ports/svframelib-final/text-overlay/part* | base64 -d > final-overlay.tar.gz
-          echo '30ec6e8bbdc4e9403dc8f32d689971812863b9417c8c39f7a19244b0caa89e80  final-overlay.tar.gz' | sha256sum -c -
-          tar -xzf final-overlay.tar.gz -C moddev/fabric-mmo-ports
-
           gradle --no-daemon -p moddev/fabric-mmo-ports/fabric-platform :mythiclib-fabric:mergeLegacyApiSources
 
           rm -rf target/SVFrameLib
