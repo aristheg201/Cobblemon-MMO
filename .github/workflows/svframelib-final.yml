@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/svframelib-final.yml'
       - 'svframelib-bootstrap/native-final-overlay-part*'
+      - 'svframelib-bootstrap/loom-generic-fix.b64'
       - 'svframelib-bootstrap/svframelib-required-classes.txt'
   workflow_dispatch:
 
@@ -42,9 +43,13 @@ jobs:
           cat svframelib-bootstrap/native-final-overlay-part* | base64 -d > /tmp/svframelib-native-final.tar.gz
           echo '5bdcb85d04cc59fd9bc459f5005e87f4b104d4ccdf572044b18e3991b8adb7bc  /tmp/svframelib-native-final.tar.gz' | sha256sum -c -
           tar -xzf /tmp/svframelib-native-final.tar.gz -C .
+          base64 -d svframelib-bootstrap/loom-generic-fix.b64 > /tmp/svframelib-loom-generic-fix.tar.gz
+          echo 'b049b311cf9accbb52eb0ea1e55fb0c05bd9aec6bc963ea10c96d08c37e7b21c  /tmp/svframelib-loom-generic-fix.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/svframelib-loom-generic-fix.tar.gz -C .
           test -f SVFrameLib/src/main/java/io/lumine/mythic/lib/MythicLib.java
           test -f SVFrameLib/src/main/java/io/lumine/mythic/lib/script/variable/def/AttributesVariable.java
           test -f SVFrameLib/src/main/java/io/lumine/mythic/lib/data/SynchronizedDataManager.java
+          grep -q 'List<Text> parsed=new ArrayList' SVFrameLib/src/main/java/io/lumine/mythic/lib/util/AdventureUtils.java
 
       - name: Full tests, Loom build and remap
         shell: bash
