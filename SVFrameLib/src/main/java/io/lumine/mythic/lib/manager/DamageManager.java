@@ -5,6 +5,8 @@ import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.damage.AttackHandler;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.damage.MeleeAttackMetadata;
+import io.lumine.mythic.lib.damage.ProjectileAttackMetadata;
 import io.lumine.mythic.lib.module.MMOPlugin;
 import io.lumine.mythic.lib.module.Module;
 import net.minecraft.entity.Entity;
@@ -61,9 +63,22 @@ public class DamageManager extends Module {
     public void damage(AttackMetadata attack,LivingEntity target){ damage(attack,target,true); }
     public void damage(AttackMetadata attack,LivingEntity target,boolean applyDamage){ damage(attack,target,applyDamage,false); }
     public void damage(AttackMetadata attack,LivingEntity target,boolean applyDamage,boolean ignoreKnockback){
-        AttackMetadata actual = attack.getTarget()==target?attack:new AttackMetadata(attack.getDamage(),target,attack.getAttacker());
-        registerAttack(actual,applyDamage,ignoreKnockback);
+        registerAttack(retarget(attack,target),applyDamage,ignoreKnockback);
     }
+
+    private AttackMetadata retarget(AttackMetadata attack, LivingEntity target) {
+        if (attack.getTarget() == target) return attack;
+        if (attack instanceof ProjectileAttackMetadata projectile) {
+            return new ProjectileAttackMetadata(
+                    attack.getDamage(), target, attack.getAttacker(),
+                    projectile.getProjectile(), projectile.getProjectileMetadata());
+        }
+        if (attack instanceof MeleeAttackMetadata) {
+            return new MeleeAttackMetadata(attack.getDamage(), target, attack.getAttacker());
+        }
+        return new AttackMetadata(attack.getDamage(), target, attack.getAttacker());
+    }
+
     public DamageMetadata findDamage(Object event){ AttackMetadata attack=findAttack(event);return attack==null?null:attack.getDamage(); }
     public void unmarkAsMetadata(AttackMetadata attack){ if(attack!=null&&attack.getTarget()!=null)unmarkAsMetadata(attack.getTarget()); }
 }
