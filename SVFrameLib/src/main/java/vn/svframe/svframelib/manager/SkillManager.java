@@ -5,8 +5,20 @@ import vn.svframe.svframelib.module.Module;
 import vn.svframe.svframelib.script.Script;
 import vn.svframe.svframelib.script.condition.Condition;
 import vn.svframe.svframelib.script.condition.RawCondition;
+import vn.svframe.svframelib.script.condition.generic.*;
+import vn.svframe.svframelib.script.condition.location.*;
+import vn.svframe.svframelib.script.condition.misc.*;
 import vn.svframe.svframelib.script.mechanic.Mechanic;
 import vn.svframe.svframelib.script.mechanic.RawMechanic;
+import vn.svframe.svframelib.script.mechanic.buff.*;
+import vn.svframe.svframelib.script.mechanic.buff.stat.*;
+import vn.svframe.svframelib.script.mechanic.gui.*;
+import vn.svframe.svframelib.script.mechanic.misc.*;
+import vn.svframe.svframelib.script.mechanic.movement.*;
+import vn.svframe.svframelib.script.mechanic.offense.*;
+import vn.svframe.svframelib.script.mechanic.other.*;
+import vn.svframe.svframelib.script.mechanic.projectile.*;
+import vn.svframe.svframelib.script.mechanic.visual.*;
 import vn.svframe.svframelib.script.targeter.EntityTargeter;
 import vn.svframe.svframelib.script.targeter.LocationTargeter;
 import vn.svframe.svframelib.script.targeter.entity.*;
@@ -102,9 +114,7 @@ public class SkillManager extends Module implements MMOManager {
         return source.getConstructor().apply(config, sourceText.substring(colon + 1));
     }
 
-    public SkillHandler<?> getHandlerOrThrow(String id) {
-        return Objects.requireNonNull(getHandler(id), "Could not find skill handler with ID '" + id + "'");
-    }
+    public SkillHandler<?> getHandlerOrThrow(String id) { return Objects.requireNonNull(getHandler(id), "Could not find skill handler with ID '" + id + "'"); }
     public SkillHandler<?> getHandler(String id) { return handlers.get(norm(id)); }
     public Collection<SkillHandler<?>> getHandlers() { return List.copyOf(handlers.values()); }
 
@@ -124,16 +134,13 @@ public class SkillManager extends Module implements MMOManager {
             List<String> conditionLines = lines(config, "conditions");
             List<String> mechanicLines = lines(config, "mechanics");
             boolean pub = config.getBoolean("public", true);
-            return new Script(id == null ? Objects.requireNonNullElse(config.getKey(), UNIDENTIFIED_SCRIPT_ID) : id,
-                    pub, conditionLines, mechanicLines);
+            return new Script(id == null ? Objects.requireNonNullElse(config.getKey(), UNIDENTIFIED_SCRIPT_ID) : id, pub, conditionLines, mechanicLines);
         }
         if (input instanceof Map<?, ?> raw) return loadScript(id, mapObject(id, raw));
         throw new IllegalArgumentException("Unsupported script input type " + input.getClass().getSimpleName());
     }
 
-    public Script getScriptOrThrow(String id) {
-        return Objects.requireNonNull(getScript(id), "Could not find script with ID '" + id + "'");
-    }
+    public Script getScriptOrThrow(String id) { return Objects.requireNonNull(getScript(id), "Could not find script with ID '" + id + "'"); }
     public Script getScript(String id) { return scripts.get(norm(id)); }
     public Collection<Script> getScripts() { return List.copyOf(scripts.values()); }
 
@@ -178,15 +185,13 @@ public class SkillManager extends Module implements MMOManager {
     public void registerSkillHandler(SkillHandler<?> handler) {
         Objects.requireNonNull(handler, "handler");
         String key = norm(handler.getId());
-        if (handlers.putIfAbsent(key, handler) != null)
-            throw new IllegalArgumentException("A skill handler with ID '" + handler.getId() + "' already exists");
+        if (handlers.putIfAbsent(key, handler) != null) throw new IllegalArgumentException("A skill handler with ID '" + handler.getId() + "' already exists");
     }
 
     public void registerScript(Script script) {
         Objects.requireNonNull(script, "script");
         String key = norm(script.getId());
-        if (scripts.putIfAbsent(key, script) != null)
-            throw new IllegalArgumentException("A script with ID '" + script.getId() + "' already exists");
+        if (scripts.putIfAbsent(key, script) != null) throw new IllegalArgumentException("A script with ID '" + script.getId() + "' already exists");
     }
 
     public void registerCondition(String id, Function<ConfigObject, Condition> factory, String... aliases) { putAliases(conditions, id, factory, aliases); }
@@ -198,12 +203,10 @@ public class SkillManager extends Module implements MMOManager {
     public void registerBuiltinSkillHandlerType(Class<? extends SkillHandler<?>> type) {
         Objects.requireNonNull(type, "type");
         String key = enumName(type.getSimpleName());
-        if (builtInSkillHandlerTypes.putIfAbsent(key, type) != null)
-            throw new IllegalArgumentException("A builtin skill handler type with ID '" + key + "' already exists");
+        if (builtInSkillHandlerTypes.putIfAbsent(key, type) != null) throw new IllegalArgumentException("A builtin skill handler type with ID '" + key + "' already exists");
     }
 
-    @Override
-    public synchronized void initialize(boolean clear) {
+    @Override public synchronized void initialize(boolean clear) {
         if (clear) {
             handlers.clear(); scripts.clear(); mechanics.clear(); conditions.clear(); entityTargets.clear(); locationTargets.clear(); builtInSkillHandlerTypes.clear(); skillHandlerSources.clear();
             registerNativeBuiltins();
@@ -215,29 +218,75 @@ public class SkillManager extends Module implements MMOManager {
     public boolean isRegistrationOpen() { return registration; }
 
     private void registerNativeBuiltins() {
-        String[] conditionIds = {"boolean","compare","has_variable","in_between","string_contains","string_equals","biome","cuboid","distance","world","can_target","cooldown","food","has_ammo","has_damage_type","is_living","on_fire","permission","random_chance","time"};
-        for (String id : conditionIds) conditions.put(id, cfg -> new RawCondition(render(id, cfg)));
-        aliasCondition("can_target","can_tgt","cantarget","ctgt");
-        aliasCondition("has_ammo","ammo");
+        registerCondition("boolean", BooleanCondition::new);
+        registerCondition("compare", CompareCondition::new);
+        registerCondition("has_variable", HasVariableCondition::new);
+        registerCondition("in_between", InBetweenCondition::new);
+        registerCondition("string_contains", StringContainsCondition::new);
+        registerCondition("string_equals", StringEqualsCondition::new);
+        registerCondition("biome", BiomeCondition::new);
+        registerCondition("cuboid", CuboidCondition::new);
+        registerCondition("distance", DistanceCondition::new);
+        registerCondition("world", WorldCondition::new);
+        registerCondition("can_target", CanTargetCondition::new, "can_tgt", "cantarget", "ctgt");
+        registerCondition("cooldown", CooldownCondition::new);
+        registerCondition("food", FoodCondition::new);
+        registerCondition("has_ammo", HasAmmoCondition::new, "ammo");
+        registerCondition("has_damage_type", HasDamageTypeCondition::new);
+        registerCondition("is_living", IsLivingCondition::new);
+        registerCondition("on_fire", OnFireCondition::new);
+        registerCondition("permission", PermissionCondition::new);
+        registerCondition("random_chance", RandomChanceCondition::new);
+        registerCondition("time", TimeCondition::new);
 
-        registerRawMechanic("add_stat","add_stat_modifier");
-        registerRawMechanic("remove_stat","remove_stat_modifier");
-        registerRawMechanic("feed"); registerRawMechanic("heal");
-        registerRawMechanic("reduce_cooldown","reduce_cd","decrease_cooldown","decrease_cd"); registerRawMechanic("saturate");
-        registerRawMechanic("apply_cooldown","apply_cd"); registerRawMechanic("consume_ammo","take_ammo"); registerRawMechanic("delay");
-        registerRawMechanic("dispatch_command","c","dispatch_cmd","cmd","command","execute_command","execute_cmd","run_command","run_cmd");
-        registerRawMechanic("entity_effect"); registerRawMechanic("lightning","lightning_strike"); registerRawMechanic("script","skill","cast");
-        registerRawMechanic("teleport","tp","set_position","set_pos","setpos","setposition","set_location","setlocation","set_loc","setloc","move","moveto","move_to");
-        registerRawMechanic("set_velocity","velocity","setvel","set_vel","setvelocity");
-        registerRawMechanic("additive_damage_buff"); registerRawMechanic("damage","deal_damage","dmg","deal_dmg","dealdamage","dealdmg","attack","atk");
-        registerRawMechanic("multiply_damage"); registerRawMechanic("potion"); registerRawMechanic("remove_potion"); registerRawMechanic("set_on_fire"); registerRawMechanic("set_no_damage_ticks"); registerRawMechanic("mark_crit");
-        registerRawMechanic("give_item"); registerRawMechanic("sudo"); registerRawMechanic("kick"); registerRawMechanic("close_inventory"); registerRawMechanic("go_back"); registerRawMechanic("call_trigger"); registerRawMechanic("cancel_event");
-        registerRawMechanic("shoot_arrow","fire_arrow","bowshoot","bow_shoot","shoot_bow"); registerRawMechanic("shulker_bullet");
-        registerRawMechanic("raytrace_blocks"); registerRawMechanic("raytrace_entities");
-        registerRawMechanic("draw_helix","helix"); registerRawMechanic("draw_line","line"); registerRawMechanic("draw_parabola","parabola","spawn_parabola"); registerRawMechanic("projectile"); registerRawMechanic("ray_trace","raytrace","cast_ray","ray_cast","raycast"); registerRawMechanic("slash"); registerRawMechanic("draw_sphere","sphere");
-        registerRawMechanic("add_vector","add_vec"); registerRawMechanic("cross_product"); registerRawMechanic("dot_product"); registerRawMechanic("hadamard_product"); registerRawMechanic("multiply_vector"); registerRawMechanic("normalize_vector","normalize"); registerRawMechanic("orient_vector","orient_vec"); registerRawMechanic("save_vector","copy_vector","save_vec","copy_vec"); registerRawMechanic("set_x"); registerRawMechanic("set_y"); registerRawMechanic("set_z"); registerRawMechanic("subtract_vector","sub_vec","sub_vector","subvec");
-        registerRawMechanic("increment","incr"); registerRawMechanic("set_boolean","set_bool"); registerRawMechanic("set_double","set_float"); registerRawMechanic("set_integer","set_int"); registerRawMechanic("set_string","set_str"); registerRawMechanic("set_vector","set_vec");
-        registerRawMechanic("action_bar"); registerRawMechanic("particle","spawn_particle","par"); registerRawMechanic("sound","play_world_sound","play_sound","world_sound"); registerRawMechanic("player_sound","play_player_sound"); registerRawMechanic("tell","message","msg","send","send_message","send_msg");
+        registerMechanic("add_stat", AddStatModifierMechanic::new, "add_stat_modifier");
+        registerMechanic("remove_stat", RemoveStatModifierMechanic::new, "remove_stat_modifier");
+        registerMechanic("feed", FeedMechanic::new);
+        registerMechanic("heal", HealMechanic::new);
+        registerMechanic("reduce_cooldown", ReduceCooldownMechanic::new, "reduce_cd", "decrease_cooldown", "decrease_cd");
+        registerMechanic("saturate", SaturateMechanic::new);
+        registerMechanic("apply_cooldown", ApplyCooldownMechanic::new, "apply_cd");
+        registerMechanic("consume_ammo", ConsumeAmmoMechanic::new, "take_ammo");
+        registerMechanic("delay", DelayMechanic::new);
+        registerMechanic("dispatch_command", DispatchCommandMechanic::new, "c", "dispatch_cmd", "cmd", "command", "execute_command", "execute_cmd", "run_command", "run_cmd");
+        registerMechanic("entity_effect", EntityEffectMechanic::new);
+        registerMechanic("lightning", LightningStrikeMechanic::new, "lightning_strike");
+        registerMechanic("script", ScriptMechanic::new, "skill", "cast");
+        registerMechanic("teleport", TeleportMechanic::new, "tp", "set_position", "set_pos", "setpos", "setposition", "set_location", "setlocation", "set_loc", "setloc", "move", "moveto", "move_to");
+        registerMechanic("set_velocity", VelocityMechanic::new, "velocity", "setvel", "set_vel", "setvelocity");
+        registerMechanic("additive_damage_buff", AdditiveDamageBuffMechanic::new);
+        registerMechanic("damage", DamageMechanic::new, "deal_damage", "dmg", "deal_dmg", "dealdamage", "dealdmg", "attack", "atk");
+        registerMechanic("multiply_damage", MultiplyDamageMechanic::new);
+        registerMechanic("potion", PotionMechanic::new);
+        registerMechanic("remove_potion", RemovePotionMechanic::new);
+        registerMechanic("set_on_fire", SetFireMechanic::new);
+        registerMechanic("set_no_damage_ticks", SetNoDamageTicksMechanic::new);
+        registerMechanic("mark_crit", MarkCritMechanic::new);
+        registerMechanic("give_item", GiveItemMechanic::new);
+        registerRawMechanic("sudo");
+        registerMechanic("kick", KickMechanic::new);
+        registerMechanic("close_inventory", CloseInventoryMechanic::new);
+        registerMechanic("go_back", GoBackMechanic::new);
+        registerMechanic("call_trigger", CallTriggerMechanic::new);
+        registerMechanic("cancel_event", CancelEventMechanic::new);
+        registerMechanic("shoot_arrow", ShootArrowMechanic::new, "fire_arrow", "bowshoot", "bow_shoot", "shoot_bow");
+        registerMechanic("shulker_bullet", ShulkerBulletMechanic::new);
+        registerRawMechanic("raytrace_blocks");
+        registerRawMechanic("raytrace_entities");
+        registerMechanic("draw_helix", HelixMechanic::new, "helix");
+        registerRawMechanic("draw_line", "line");
+        registerRawMechanic("draw_parabola", "parabola", "spawn_parabola");
+        registerMechanic("projectile", ProjectileMechanic::new);
+        registerMechanic("ray_trace", RaytraceMechanic::new, "raytrace", "cast_ray", "ray_cast", "raycast");
+        registerRawMechanic("slash");
+        registerRawMechanic("draw_sphere", "sphere");
+        registerRawMechanic("add_vector", "add_vec"); registerRawMechanic("cross_product"); registerRawMechanic("dot_product"); registerRawMechanic("hadamard_product"); registerRawMechanic("multiply_vector"); registerRawMechanic("normalize_vector", "normalize"); registerRawMechanic("orient_vector", "orient_vec"); registerRawMechanic("save_vector", "copy_vector", "save_vec", "copy_vec"); registerRawMechanic("set_x"); registerRawMechanic("set_y"); registerRawMechanic("set_z"); registerRawMechanic("subtract_vector", "sub_vec", "sub_vector", "subvec");
+        registerRawMechanic("increment", "incr"); registerRawMechanic("set_boolean", "set_bool"); registerRawMechanic("set_double", "set_float"); registerRawMechanic("set_integer", "set_int"); registerRawMechanic("set_string", "set_str"); registerRawMechanic("set_vector", "set_vec");
+        registerMechanic("action_bar", ActionBarMechanic::new);
+        registerMechanic("particle", ParticleMechanic::new, "spawn_particle", "par");
+        registerMechanic("sound", SoundMechanic::new, "play_world_sound", "play_sound", "world_sound");
+        registerRawMechanic("player_sound", "play_player_sound");
+        registerMechanic("tell", MessageMechanic::new, "message", "msg", "send", "send_message", "send_msg");
 
         registerEntityTargeter("caster", cfg -> new CasterTargeter());
         registerEntityTargeter("cone", ConeTargeter::new);
@@ -259,10 +308,7 @@ public class SkillManager extends Module implements MMOManager {
 
     private void registerRawMechanic(String id, String... aliases) {
         Function<ConfigObject, Mechanic> factory = cfg -> new RawMechanic(render(id, cfg));
-        putAliases(mechanics,id,factory,aliases);
-    }
-    private void aliasCondition(String id, String... aliases) {
-        Function<ConfigObject, Condition> factory = conditions.get(id); if(factory!=null) for(String alias:aliases) conditions.putIfAbsent(norm(alias),factory);
+        putAliases(mechanics, id, factory, aliases);
     }
 
     private static <T> void putAliases(Map<String, T> map, String id, T value, String... aliases) {
@@ -281,15 +327,28 @@ public class SkillManager extends Module implements MMOManager {
     }
 
     private static List<String> lines(ConfigObject config, String key) {
-        if (!config.contains(key)) return List.of(); String raw = config.getString(key, "").trim(); if (raw.isEmpty()) return List.of();
-        if (raw.indexOf('\n') >= 0) return raw.lines().map(String::trim).filter(s -> !s.isEmpty()).toList(); return List.of(raw);
+        if (!config.contains(key)) return List.of();
+        String raw = config.getString(key, "").trim();
+        if (raw.isEmpty()) return List.of();
+        if (raw.indexOf('\n') >= 0) return raw.lines().map(String::trim).filter(s -> !s.isEmpty()).toList();
+        return List.of(raw);
     }
 
-    private static MapConfigObject mapObject(String key, Map<?, ?> raw) { Map<String, Object> map = new LinkedHashMap<>(); raw.forEach((k, v) -> map.put(String.valueOf(k), v)); return new MapConfigObject(key, map); }
+    private static MapConfigObject mapObject(String key, Map<?, ?> raw) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        raw.forEach((k, v) -> map.put(String.valueOf(k), v));
+        return new MapConfigObject(key, map);
+    }
 
     private static String render(String id, ConfigObject config) {
-        StringBuilder out = new StringBuilder(id == null ? "" : id); if (config == null || config.getKeys().isEmpty()) return out.toString(); out.append('{'); boolean first = true;
-        for (String key : config.getKeys()) { if ("type".equals(key)) continue; if (!first) out.append(';'); first = false; out.append(key).append('=').append(config.getString(key, "")); }
+        StringBuilder out = new StringBuilder(id == null ? "" : id);
+        if (config == null || config.getKeys().isEmpty()) return out.toString();
+        out.append('{'); boolean first = true;
+        for (String key : config.getKeys()) {
+            if ("type".equals(key)) continue;
+            if (!first) out.append(';'); first = false;
+            out.append(key).append('=').append(config.getString(key, ""));
+        }
         return out.append('}').toString();
     }
 
