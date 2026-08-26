@@ -1,13 +1,13 @@
 package vn.svframe.compat;
 
-import vn.svframe.mythiclibfabric.NativeDefaultSkillRuntime;
+import vn.svframe.mythiclibfabric.BuiltinSkillOwnership;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/** CI smoke which prevents truncating or silently leaving bundled default skills without a native executor. */
+/** CI smoke for bundled skill definition count and real MythicLib/external handler ownership. */
 public final class YamlSkillCountSmoke {
     private YamlSkillCountSmoke() { }
 
@@ -21,27 +21,40 @@ public final class YamlSkillCountSmoke {
 
         List<String> missing = new ArrayList<>();
         int defaultSources = 0;
+        int nativeSources = 0;
+        int externalSources = 0;
         for (Map.Entry<String,Object> entry : root.entrySet()) {
             if (!(entry.getValue() instanceof Map<?,?> section)) continue;
             Object rawSource = section.get("source");
             if (rawSource == null) continue;
-            String source = String.valueOf(rawSource).trim();
-            if (source.length() >= 2 && ((source.startsWith("'") && source.endsWith("'")) || (source.startsWith("\"") && source.endsWith("\""))))
-                source = source.substring(1, source.length() - 1).trim();
+            String source = unquote(String.valueOf(rawSource).trim());
             int colon = source.indexOf(':');
             String provider = colon < 0 ? "default" : source.substring(0, colon).trim();
             String internal = colon < 0 ? source : source.substring(colon + 1).trim();
             if (!provider.equalsIgnoreCase("default")) continue;
             defaultSources++;
-            if (!NativeDefaultSkillRuntime.supports(internal)) missing.add(entry.getKey() + " -> " + source);
+            if (BuiltinSkillOwnership.isNative(internal)) nativeSources++;
+            else if (BuiltinSkillOwnership.isExternalProvider(internal)) externalSources++;
+            else missing.add(entry.getKey() + " -> " + source);
         }
-        System.out.println("DEFAULT_SKILL_EXECUTORS=" + defaultSources);
-        if (!missing.isEmpty()) throw new IllegalStateException("Missing native default skill executors: " + missing);
+        System.out.println("DEFAULT_SKILL_SOURCES=" + defaultSources + ",MYTHICLIB_NATIVE=" + nativeSources + ",EXTERNAL_PROVIDER=" + externalSources);
+        if (!missing.isEmpty()) throw new IllegalStateException("Unowned default skill sources: " + missing);
 
-        // A pure default:* corpus (the bundled default_skills.yml) must have one native executor per definition.
-        // Mixed/non-default corpora such as example_skills.yml are still count-checked without incorrectly
-        // comparing their entry count to the global default runtime ID set.
-        if (defaultSources == actual && actual > 0 && NativeDefaultSkillRuntime.ids().size() != actual)
-            throw new IllegalStateException("Native runtime exposes " + NativeDefaultSkillRuntime.ids().size() + " IDs, expected " + actual);
+        // Bundled 1.7.1 default_skills.yml has 93 definitions, but only 90 are MythicLib classes.
+        // AMBERS, NEPTUNE_GIFT and SNEAKY_PICKY are MMOCore-owned registrations and must never be faked by SVFrameLib.
+        if (actual == 93 && defaultSources == 93) {
+            if (nativeSources != 90 || externalSources != 3)
+                throw new IllegalStateException("Expected ownership 90 MythicLib + 3 external, got " + nativeSources + " + " + externalSources);
+            if (BuiltinSkillOwnership.nativeIds().size() != 90)
+                throw new IllegalStateException("Native runtime exposes " + BuiltinSkillOwnership.nativeIds().size() + " IDs, expected 90");
+            if (BuiltinSkillOwnership.externalProviderIds().size() != 3)
+                throw new IllegalStateException("External provider registry exposes " + BuiltinSkillOwnership.externalProviderIds().size() + " IDs, expected 3");
+        }
+    }
+
+    private static String unquote(String source) {
+        if (source.length() >= 2 && ((source.startsWith("'") && source.endsWith("'")) || (source.startsWith("\"") && source.endsWith("\""))))
+            return source.substring(1, source.length() - 1).trim();
+        return source;
     }
 }
