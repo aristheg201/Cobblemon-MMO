@@ -6,7 +6,7 @@ on:
       - svframelib-fabric-1.21.1
     paths:
       - '.github/workflows/svframelib-final.yml'
-      - 'svframelib-bootstrap/full-functional-parity-overlay.b64'
+      - 'svframelib-bootstrap/full-functional-parity.tar.xz'
   workflow_dispatch:
 
 permissions:
@@ -23,11 +23,6 @@ jobs:
           ref: svframelib-fabric-1.21.1
           fetch-depth: 0
 
-      - name: Remove accidental helper branch
-        shell: bash
-        run: |
-          git push origin --delete __noop__ 2>/dev/null || true
-
       - name: Set up Java 21
         uses: actions/setup-java@v5
         with:
@@ -39,23 +34,32 @@ jobs:
         with:
           gradle-version: '8.8'
 
-      - name: Apply full functional parity source
+      - name: Apply complete native parity source
         shell: bash
         run: |
           set -euo pipefail
-          base64 -d svframelib-bootstrap/full-functional-parity-overlay.b64 > /tmp/svframelib-full-parity.tar.gz
-          sha256sum /tmp/svframelib-full-parity.tar.gz
-          tar -xzf /tmp/svframelib-full-parity.tar.gz -C .
+          echo 'd9abed2a97e54fbdc0bcd9df7f7f7862f3b93fa734113e5cc3e671402464f495  svframelib-bootstrap/full-functional-parity.tar.xz' | sha256sum -c -
+          tar -xJf svframelib-bootstrap/full-functional-parity.tar.xz -C .
+
           test -f SVFrameLib/src/main/java/vn/svframe/svframelib/crunch/Crunch.java
           test -f SVFrameLib/src/main/java/vn/svframe/svframelib/script/targeter/entity/NearbyEntitiesTargeter.java
           test -f SVFrameLib/src/main/java/vn/svframe/svframelib/data/json/JSONFlatDatabase.java
           test -f SVFrameLib/src/main/java/vn/svframe/svframelib/comp/adventure/AdventureParser.java
+          test -f SVFrameLib/src/main/java/vn/svframe/svframelib/command/mythiclib/mythiclib/debug/NBTCommand.java
+          test -f SVFrameLib/src/main/java/vn/svframe/svframelib/gui/builtin/AttributeExplorer.java
+          test -f SVFrameLib/src/main/java/vn/svframe/mythiclibfabric/SVFrameLibParityMod.java
+
+          test "$(wc -l < svframelib-bootstrap/svframelib-functional-required-classes.txt)" -eq 812
           if grep -RIn --binary-files=without-match -E 'io[.]lumine[.]mythic[.]lib|io/lumine/mythic/lib' SVFrameLib/src/main svframelib-bootstrap/svframelib-functional-required-classes.txt; then
             echo 'Legacy io.lumine MythicLib namespace remains in parity source' >&2
             exit 1
           fi
           if grep -RIn --binary-files=without-match -Ei 'mythicmobs|mythicmobsfabric|castMythicMobs' SVFrameLib/src/main; then
             echo 'MythicMobs integration remains in active SVFrameLib source' >&2
+            exit 1
+          fi
+          if grep -RIn -E 'throw new UnsupportedOperationException|TODO|FIXME|placeholder implementation|stub implementation' SVFrameLib/src/main/java; then
+            echo 'Unfinished implementation marker remains in parity source' >&2
             exit 1
           fi
           grep -q '"fabricloader": ">=0.18.4"' SVFrameLib/src/main/resources/fabric.mod.json
@@ -68,7 +72,7 @@ jobs:
           cd SVFrameLib
           gradle --no-daemon --stacktrace clean test remapJar
 
-      - name: Verify full functional parity surface
+      - name: Verify complete functional surface
         shell: bash
         run: |
           set -euo pipefail
@@ -85,13 +89,16 @@ jobs:
               missing=$((missing + 1))
             fi
           done < svframelib-bootstrap/svframelib-functional-required-classes.txt
-          echo "Functional surface required=$required missing=$missing"
+          echo "Functional surface: required=$required missing=$missing"
+          test "$required" -eq 812
           test "$missing" -eq 0
           ! grep -q '^io/lumine/mythic/lib/' /tmp/svframelib-jar-entries.txt
           ! grep -iEq 'mythicmobs|mythicmobsfabric' /tmp/svframelib-jar-entries.txt
           grep -Fxq 'vn/svframe/svframelib/crunch/Crunch.class' /tmp/svframelib-jar-entries.txt
           grep -Fxq 'vn/svframe/svframelib/script/targeter/entity/NearbyEntitiesTargeter.class' /tmp/svframelib-jar-entries.txt
           grep -Fxq 'vn/svframe/svframelib/data/json/JSONFlatDatabase.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/gui/builtin/AttributeExplorer.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/command/mythiclib/mythiclib/debug/NBTCommand.class' /tmp/svframelib-jar-entries.txt
           sha256sum "$JAR" | tee SVFrameLib/build/SVFrameLib-SHA256.txt
 
       - name: Dedicated Fabric server boot gate
@@ -107,7 +114,8 @@ jobs:
           set -e
           cat build/svframelib-server.log
           if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
-          grep -Eq 'SVFrameLib functional parity online|SVFrameLib online|MythicLib Fabric online' build/svframelib-server.log
+          grep -q 'SVFrameLib functional parity online; namespace=vn.svframe.svframelib' build/svframelib-server.log
+          grep -Eq 'SVFrameLib online|MythicLib Fabric online' build/svframelib-server.log
           ! grep -q 'Mixin apply failed' build/svframelib-server.log
           ! grep -q 'Could not execute entrypoint stage' build/svframelib-server.log
           ! grep -q 'Exception in server tick loop' build/svframelib-server.log
@@ -125,7 +133,10 @@ jobs:
           cp SVFrameLib/build/SVFrameLib-SHA256.txt SVFrameLib/dist/SVFrameLib-1.7.1-fabric.sha256
           cp SVFrameLib/build/svframelib-server.log SVFrameLib/dist/server-boot.log
           rm -rf SVFrameLib/build SVFrameLib/run SVFrameLib/.gradle
+          rm -f svframelib-bootstrap/full-functional-parity.tar.xz
           rm -f svframelib-bootstrap/full-functional-parity-overlay.b64
+          rm -f svframelib-bootstrap/full-functional-parity-part*
+          rm -f svframelib-bootstrap/final-overlay-part*
           git config user.name 'SVFrameLib Parity Builder'
           git config user.email 'actions@users.noreply.github.com'
           git add -A SVFrameLib svframelib-bootstrap
