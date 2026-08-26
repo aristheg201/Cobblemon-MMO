@@ -71,6 +71,16 @@ jobs:
             echo 'ScriptEngine still silently accepts unknown conditions/mechanics' >&2
             exit 1
           fi
+
+          # Canonical 1.7.1 script execution must hit native services rather than
+          # the old private cooldown/raw-dispatch fallbacks.
+          grep -q 'case "add_stat_modifier" -> platform.addStat' "$ENGINE"
+          grep -q 'case "apply_cooldown" -> platform.applyCooldown' "$ENGINE"
+          grep -q 'case "raytrace_blocks" -> raytraceBlocks' "$ENGINE"
+          grep -q 'boolean cooldownReady' "$PLATFORM"
+          grep -q 'void addStat' "$PLATFORM"
+          ! grep -q 'Map<UUID, Map<String, Long>> cooldowns' "$ENGINE"
+
           grep -q 'experienceLevel' "$DUMMY"
           grep -q 'getHungerManager().setFoodLevel' "$DUMMY"
           grep -q 'getHungerManager().getFoodLevel' "$DUMMY"
