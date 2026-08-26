@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.comp.adventure.tag.implementation.decorations;import vn.svframe.svframelib.comp.adventure.tag.AdventureTag;public class ItalicTag extends AdventureTag{public ItalicTag(){super("italic",(src,args)->"§o",true,false,"i");}}
