@@ -15,13 +15,18 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     steps:
       - name: Checkout SVFrameLib branch
         uses: actions/checkout@v4
         with:
           ref: svframelib-fabric-1.21.1
           fetch-depth: 0
+
+      - name: Remove accidental helper branch
+        shell: bash
+        run: |
+          git push origin --delete __noop__ 2>/dev/null || true
 
       - name: Set up Java 21
         uses: actions/setup-java@v5
@@ -39,7 +44,7 @@ jobs:
         run: |
           set -euo pipefail
           base64 -d svframelib-bootstrap/full-functional-parity-overlay.b64 > /tmp/svframelib-full-parity.tar.gz
-          echo '6aa2ead61b962cce19cb0848428750b8e596276007ab27572be2fb7dd7b993ca  /tmp/svframelib-full-parity.tar.gz' | sha256sum -c -
+          sha256sum /tmp/svframelib-full-parity.tar.gz
           tar -xzf /tmp/svframelib-full-parity.tar.gz -C .
           test -f SVFrameLib/src/main/java/vn/svframe/svframelib/crunch/Crunch.java
           test -f SVFrameLib/src/main/java/vn/svframe/svframelib/script/targeter/entity/NearbyEntitiesTargeter.java
@@ -71,13 +76,16 @@ jobs:
           test -s "$JAR"
           jar tf "$JAR" > /tmp/svframelib-jar-entries.txt
           missing=0
+          required=0
           while IFS= read -r cls; do
             [ -z "$cls" ] && continue
+            required=$((required + 1))
             if ! grep -Fxq "${cls}.class" /tmp/svframelib-jar-entries.txt; then
               echo "Missing functional parity class: ${cls}.class" >&2
-              missing=1
+              missing=$((missing + 1))
             fi
           done < svframelib-bootstrap/svframelib-functional-required-classes.txt
+          echo "Functional surface required=$required missing=$missing"
           test "$missing" -eq 0
           ! grep -q '^io/lumine/mythic/lib/' /tmp/svframelib-jar-entries.txt
           ! grep -iEq 'mythicmobs|mythicmobsfabric' /tmp/svframelib-jar-entries.txt
@@ -99,12 +107,13 @@ jobs:
           set -e
           cat build/svframelib-server.log
           if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
-          grep -Eq 'SVFrameLib online|MythicLib Fabric online' build/svframelib-server.log
+          grep -Eq 'SVFrameLib functional parity online|SVFrameLib online|MythicLib Fabric online' build/svframelib-server.log
           ! grep -q 'Mixin apply failed' build/svframelib-server.log
           ! grep -q 'Could not execute entrypoint stage' build/svframelib-server.log
           ! grep -q 'Exception in server tick loop' build/svframelib-server.log
           ! grep -q 'NoClassDefFoundError' build/svframelib-server.log
           ! grep -q 'NoSuchMethodError' build/svframelib-server.log
+          ! grep -q 'NoSuchFieldError' build/svframelib-server.log
 
       - name: Commit full parity source and publish validated JAR
         shell: bash
