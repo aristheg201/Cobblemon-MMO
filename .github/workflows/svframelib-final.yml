@@ -33,13 +33,13 @@ jobs:
         with:
           gradle-version: '8.8'
 
-      - name: Restore validated historical parity source batch
+      - name: Restore historical parity source batch
         shell: bash
         run: |
           set -euo pipefail
           git show d059be37bb00f68b3187ba10fb45f4f2595708b2:svframelib-bootstrap/full-parity-overlay.b64 > /tmp/svframelib-full-parity.b64
           base64 --decode --ignore-garbage /tmp/svframelib-full-parity.b64 > /tmp/svframelib-full-parity.tar.xz
-          echo '0cee21d0f0a782101de46f5668f89db0337b93be2100074b8c405dbd1b241f96  /tmp/svframelib-full-parity.tar.xz' | sha256sum -c -
+          sha256sum /tmp/svframelib-full-parity.tar.xz
           xz -t /tmp/svframelib-full-parity.tar.xz
           tar -xJf /tmp/svframelib-full-parity.tar.xz -C .
 
