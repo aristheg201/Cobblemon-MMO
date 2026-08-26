@@ -1,5 +1,6 @@
 package vn.svframe.mythiclibfabric.mixin;
 
+import io.lumine.mythic.lib.entity.ProjectileMetadata;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
@@ -24,6 +25,13 @@ public abstract class PersistentProjectileTriggerMixin {
     private void mythiclib$projectileTick(CallbackInfo ci) {
         PersistentProjectileEntity projectile = self();
         if (projectile.getWorld().isClient) return;
+
+        ProjectileMetadata metadata = ProjectileMetadata.get(projectile);
+        if (metadata != null) {
+            metadata.triggerTick();
+            return;
+        }
+
         ServerPlayerEntity owner = playerOwner(projectile);
         if (owner == null) return;
         fireSnapshot(projectile, owner, trigger("TICK"), owner.getUuid(), projectileContext(projectile));
@@ -33,10 +41,18 @@ public abstract class PersistentProjectileTriggerMixin {
     private void mythiclib$projectileHit(EntityHitResult hit, CallbackInfo ci) {
         PersistentProjectileEntity projectile = self();
         if (projectile.getWorld().isClient) return;
+
+        Entity target = hit.getEntity();
+        ProjectileMetadata metadata = ProjectileMetadata.get(projectile);
+        if (metadata != null) {
+            metadata.triggerHit(target);
+            metadata.unregisterOnHit(projectile);
+            return;
+        }
+
         ServerPlayerEntity owner = playerOwner(projectile);
         if (owner == null) return;
         Map<String, Object> context = projectileContext(projectile);
-        Entity target = hit.getEntity();
         context.put("target-uuid", target.getUuidAsString());
         context.put("target-type", target.getType().toString());
         fireSnapshot(projectile, owner, trigger("HIT"), target.getUuid(), context);
@@ -46,6 +62,14 @@ public abstract class PersistentProjectileTriggerMixin {
     private void mythiclib$projectileLand(BlockHitResult hit, CallbackInfo ci) {
         PersistentProjectileEntity projectile = self();
         if (projectile.getWorld().isClient) return;
+
+        ProjectileMetadata metadata = ProjectileMetadata.get(projectile);
+        if (metadata != null) {
+            metadata.triggerLand(projectile);
+            metadata.unregisterOnHit(projectile);
+            return;
+        }
+
         ServerPlayerEntity owner = playerOwner(projectile);
         if (owner == null) return;
         Map<String, Object> context = projectileContext(projectile);
