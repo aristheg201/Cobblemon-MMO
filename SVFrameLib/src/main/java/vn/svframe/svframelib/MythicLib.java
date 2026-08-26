@@ -13,6 +13,7 @@ import vn.svframe.svframelib.profile.handler.ProfileHandler;
 import vn.svframe.svframelib.rpg.ClassModule;
 import vn.svframe.svframelib.rpg.LevelModule;
 import vn.svframe.svframelib.rpg.ManaModule;
+import vn.svframe.svframelib.skill.handler.NativeBuiltinSkillBootstrap;
 import vn.svframe.svframelib.version.ServerVersion;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
@@ -49,7 +50,7 @@ public class MythicLib extends MMOPlugin {
     private volatile LevelModule levelModule;
     private volatile ManaModule manaModule;
 
-    public MythicLib() { plugin = this; }
+    public MythicLib() { plugin = this; NativeBuiltinSkillBootstrap.register(skillManager); }
     public static synchronized MythicLib bootstrap() { return plugin == null ? new MythicLib() : plugin; }
     public static MythicLib inst() { return bootstrap(); }
 
