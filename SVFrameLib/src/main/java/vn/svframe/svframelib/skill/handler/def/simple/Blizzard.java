@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Blizzard extends ScriptSkillHandler{public Blizzard(){super("BLIZZARD");}public Blizzard(ConfigObject config){super("BLIZZARD",config);}}

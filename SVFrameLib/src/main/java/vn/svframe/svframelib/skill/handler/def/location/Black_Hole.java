@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.location;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Black_Hole extends ScriptSkillHandler{public Black_Hole(){super("BLACK_HOLE");}public Black_Hole(ConfigObject config){super("BLACK_HOLE",config);}}

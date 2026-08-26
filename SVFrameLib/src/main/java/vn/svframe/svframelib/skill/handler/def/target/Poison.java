@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Poison extends ScriptSkillHandler{public Poison(){super("POISON");}public Poison(ConfigObject config){super("POISON",config);}}

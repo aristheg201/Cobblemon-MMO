@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.vector;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class TNT_Throw extends ScriptSkillHandler{public TNT_Throw(){super("TNT_THROW");}public TNT_Throw(ConfigObject config){super("TNT_THROW",config);}}

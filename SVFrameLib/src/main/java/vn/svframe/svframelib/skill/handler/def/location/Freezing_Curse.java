@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.location;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Freezing_Curse extends ScriptSkillHandler{public Freezing_Curse(){super("FREEZING_CURSE");}public Freezing_Curse(ConfigObject config){super("FREEZING_CURSE",config);}}

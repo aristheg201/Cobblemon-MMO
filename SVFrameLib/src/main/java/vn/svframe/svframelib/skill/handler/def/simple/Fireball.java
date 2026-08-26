@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Fireball extends ScriptSkillHandler{public Fireball(){super("FIREBALL");}public Fireball(ConfigObject config){super("FIREBALL",config);}}

@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.script.variable;public enum VariableScope{SERVER,PLAYER,PROFILE,SKILL}

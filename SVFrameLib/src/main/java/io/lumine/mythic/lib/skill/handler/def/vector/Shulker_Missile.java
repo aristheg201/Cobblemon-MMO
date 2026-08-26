@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Shulker_Missile extends ScriptSkillHandler{public Shulker_Missile(){super("SHULKER_MISSILE");}public Shulker_Missile(ConfigObject config){super("SHULKER_MISSILE",config);}}

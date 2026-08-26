@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Blind extends ScriptSkillHandler{public Blind(){super("BLIND");}public Blind(ConfigObject config){super("BLIND",config);}}

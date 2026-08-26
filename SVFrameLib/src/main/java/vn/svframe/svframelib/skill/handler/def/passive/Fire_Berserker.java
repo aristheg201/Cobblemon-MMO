@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.passive;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Fire_Berserker extends ScriptSkillHandler{public Fire_Berserker(){super("FIRE_BERSERKER");}public Fire_Berserker(ConfigObject config){super("FIRE_BERSERKER",config);}}

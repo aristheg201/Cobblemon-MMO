@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Grand_Heal extends ScriptSkillHandler{public Grand_Heal(){super("GRAND_HEAL");}public Grand_Heal(ConfigObject config){super("GRAND_HEAL",config);}}

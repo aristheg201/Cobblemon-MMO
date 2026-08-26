@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class CoreToolsSkillHandler extends ScriptSkillHandler{public CoreToolsSkillHandler(String id){super(id);}public CoreToolsSkillHandler(ConfigObject cfg){super("CoreToolsSkillHandler",cfg);}}

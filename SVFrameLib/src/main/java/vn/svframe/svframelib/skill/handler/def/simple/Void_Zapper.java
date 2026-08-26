@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Void_Zapper extends ScriptSkillHandler{public Void_Zapper(){super("VOID_ZAPPER");}public Void_Zapper(ConfigObject config){super("VOID_ZAPPER",config);}}

@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Magical_Shield extends ScriptSkillHandler{public Magical_Shield(){super("MAGICAL_SHIELD");}public Magical_Shield(ConfigObject config){super("MAGICAL_SHIELD",config);}}

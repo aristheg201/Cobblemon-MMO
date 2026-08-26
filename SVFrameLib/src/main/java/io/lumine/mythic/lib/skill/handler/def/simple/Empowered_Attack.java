@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Empowered_Attack extends ScriptSkillHandler{public Empowered_Attack(){super("EMPOWERED_ATTACK");}public Empowered_Attack(ConfigObject config){super("EMPOWERED_ATTACK",config);}}

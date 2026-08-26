@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.passive;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Backstab extends ScriptSkillHandler{public Backstab(){super("BACKSTAB");}public Backstab(ConfigObject config){super("BACKSTAB",config);}}

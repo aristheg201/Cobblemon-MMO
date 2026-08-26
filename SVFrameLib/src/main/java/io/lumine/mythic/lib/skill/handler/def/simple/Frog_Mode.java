@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Frog_Mode extends ScriptSkillHandler{public Frog_Mode(){super("FROG_MODE");}public Frog_Mode(ConfigObject config){super("FROG_MODE",config);}}

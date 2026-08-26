@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Corrosion extends ScriptSkillHandler{public Corrosion(){super("CORROSION");}public Corrosion(ConfigObject config){super("CORROSION",config);}}

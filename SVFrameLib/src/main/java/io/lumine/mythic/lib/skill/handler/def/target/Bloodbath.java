@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Bloodbath extends ScriptSkillHandler{public Bloodbath(){super("BLOODBATH");}public Bloodbath(ConfigObject config){super("BLOODBATH",config);}}

@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Shock extends ScriptSkillHandler{public Shock(){super("SHOCK");}public Shock(ConfigObject config){super("SHOCK",config);}}

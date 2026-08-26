@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Bouncy_Fireball extends ScriptSkillHandler{public Bouncy_Fireball(){super("BOUNCY_FIREBALL");}public Bouncy_Fireball(ConfigObject config){super("BOUNCY_FIREBALL",config);}}

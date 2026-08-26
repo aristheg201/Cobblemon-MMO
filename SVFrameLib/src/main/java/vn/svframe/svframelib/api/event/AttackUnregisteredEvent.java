@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.api.event;import vn.svframe.svframelib.damage.AttackMetadata;public record AttackUnregisteredEvent(AttackMetadata attack){}

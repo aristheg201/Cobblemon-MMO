@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Heal extends ScriptSkillHandler{public Heal(){super("HEAL");}public Heal(ConfigObject config){super("HEAL",config);}}

@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Sky_Smash extends ScriptSkillHandler{public Sky_Smash(){super("SKY_SMASH");}public Sky_Smash(ConfigObject config){super("SKY_SMASH",config);}}

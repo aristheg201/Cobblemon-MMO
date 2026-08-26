@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Ice_Spikes extends ScriptSkillHandler{public Ice_Spikes(){super("ICE_SPIKES");}public Ice_Spikes(ConfigObject config){super("ICE_SPIKES",config);}}

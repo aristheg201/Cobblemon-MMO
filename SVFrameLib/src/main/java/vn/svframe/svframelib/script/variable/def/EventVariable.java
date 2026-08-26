@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.script.variable.def;import vn.svframe.svframelib.script.variable.*;public class EventVariable extends Variable<Object>{private static final VariableRegistry REG=new SimpleVariableRegistry<>();public EventVariable(String name,Object value){super(name,value);}@Override public VariableRegistry<Variable<Object>> getVariableRegistry(){return REG;}}

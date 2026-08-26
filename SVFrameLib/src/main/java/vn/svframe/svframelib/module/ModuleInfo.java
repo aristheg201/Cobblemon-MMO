@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.module;import java.lang.annotation.*;@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface ModuleInfo{String key();}

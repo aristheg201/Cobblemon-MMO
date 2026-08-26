@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Power_Mark extends ScriptSkillHandler{public Power_Mark(){super("POWER_MARK");}public Power_Mark(ConfigObject config){super("POWER_MARK",config);}}

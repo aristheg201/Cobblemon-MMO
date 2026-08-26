@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Tactical_Grenade extends ScriptSkillHandler{public Tactical_Grenade(){super("TACTICAL_GRENADE");}public Tactical_Grenade(ConfigObject config){super("TACTICAL_GRENADE",config);}}

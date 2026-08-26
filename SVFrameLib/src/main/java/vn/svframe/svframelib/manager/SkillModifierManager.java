@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.manager;import vn.svframe.svframelib.module.MMOPlugin;import vn.svframe.svframelib.module.Module;public class SkillModifierManager extends Module{public SkillModifierManager(MMOPlugin plugin){super(plugin,"skill-modifier");}}

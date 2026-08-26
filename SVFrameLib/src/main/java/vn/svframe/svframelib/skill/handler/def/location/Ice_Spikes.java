@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.location;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Ice_Spikes extends ScriptSkillHandler{public Ice_Spikes(){super("ICE_SPIKES");}public Ice_Spikes(ConfigObject config){super("ICE_SPIKES",config);}}

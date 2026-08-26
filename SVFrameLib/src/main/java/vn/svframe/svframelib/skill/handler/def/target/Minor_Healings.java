@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Minor_Healings extends ScriptSkillHandler{public Minor_Healings(){super("MINOR_HEALINGS");}public Minor_Healings(ConfigObject config){super("MINOR_HEALINGS",config);}}

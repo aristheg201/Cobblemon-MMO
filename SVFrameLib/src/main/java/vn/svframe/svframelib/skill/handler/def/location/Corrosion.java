@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.location;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Corrosion extends ScriptSkillHandler{public Corrosion(){super("CORROSION");}public Corrosion(ConfigObject config){super("CORROSION",config);}}

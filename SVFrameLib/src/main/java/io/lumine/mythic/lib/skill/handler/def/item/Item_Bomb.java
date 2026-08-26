@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.item;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Item_Bomb extends ScriptSkillHandler{public Item_Bomb(){super("ITEM_BOMB");}public Item_Bomb(ConfigObject config){super("ITEM_BOMB",config);}}

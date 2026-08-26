@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Burn extends ScriptSkillHandler{public Burn(){super("BURN");}public Burn(ConfigObject config){super("BURN",config);}}

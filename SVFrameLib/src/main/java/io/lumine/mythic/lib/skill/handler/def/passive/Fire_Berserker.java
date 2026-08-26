@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.passive;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Fire_Berserker extends ScriptSkillHandler{public Fire_Berserker(){super("FIRE_BERSERKER");}public Fire_Berserker(ConfigObject config){super("FIRE_BERSERKER",config);}}

@@ -43,7 +43,7 @@ public final class MythicLibRuntimeSmoke {
         require(skillEngine.cast("blink", sm, 100).success(), "skill first cast");
         require(!skillEngine.cast("blink", sm, 200).success(), "skill cooldown");
         require(skillEngine.cast("blink", sm, 1200).success(), "skill cooldown expiry");
-        String legacyYaml = "TEST:\n  source: mythicmobs:TEST_WRAP\n  name: Test\n  trigger: TIMER\n  parameters:\n    damage:\n      player:\n        base: 10\n        per-level: 2\n        min: 0\n        max: 100\n      item: 3\n";
+        String legacyYaml = "TEST:\n  source: script:TEST_WRAP\n  name: Test\n  trigger: TIMER\n  parameters:\n    damage:\n      player:\n        base: 10\n        per-level: 2\n        min: 0\n        max: 100\n      item: 3\n";
         Map<String,Object> ly = YamlLite.map(YamlLite.parse(legacyYaml));
         LegacySkillDefinition ld = LegacySkillDefinition.from("TEST", YamlLite.map(ly.get("TEST")));
         require(close(ld.parameters().get("damage").player().evaluate(5), 18), "legacy skill yaml");

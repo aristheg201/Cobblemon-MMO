@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.item;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Item_Throw extends ScriptSkillHandler{public Item_Throw(){super("ITEM_THROW");}public Item_Throw(ConfigObject config){super("ITEM_THROW",config);}}

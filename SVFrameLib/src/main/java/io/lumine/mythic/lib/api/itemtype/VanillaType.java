@@ -1,3 +1,0 @@
-package io.lumine.mythic.lib.api.itemtype;
-import net.minecraft.item.Item;import net.minecraft.item.ItemStack;import net.minecraft.registry.Registries;import java.util.Objects;
-public final class VanillaType implements ItemType {private final Item item;public VanillaType(Item item){this.item=Objects.requireNonNull(item);}public boolean matches(ItemStack stack){return stack!=null&&stack.isOf(item);}public String display(){return Registries.ITEM.getId(item).toString();}@Override public boolean equals(Object o){return o instanceof VanillaType v&&item==v.item;}@Override public int hashCode(){return item.hashCode();}public Item item(){return item;}}

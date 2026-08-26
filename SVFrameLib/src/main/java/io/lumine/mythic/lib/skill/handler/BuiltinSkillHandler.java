@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class BuiltinSkillHandler extends ScriptSkillHandler{public BuiltinSkillHandler(String id){super(id);}public BuiltinSkillHandler(ConfigObject cfg){super("BuiltinSkillHandler",cfg);}}

@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.script.mechanic;import io.lumine.mythic.lib.skill.SkillMetadata;public abstract class Mechanic{public abstract void cast(SkillMetadata metadata);}

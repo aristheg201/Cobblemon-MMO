@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Regen_Ally extends ScriptSkillHandler{public Regen_Ally(){super("REGEN_ALLY");}public Regen_Ally(ConfigObject config){super("REGEN_ALLY",config);}}

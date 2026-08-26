@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class TNT_Throw extends ScriptSkillHandler{public TNT_Throw(){super("TNT_THROW");}public TNT_Throw(ConfigObject config){super("TNT_THROW",config);}}

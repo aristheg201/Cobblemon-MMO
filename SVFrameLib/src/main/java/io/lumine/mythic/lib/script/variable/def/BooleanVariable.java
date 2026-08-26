@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.script.variable.def;import io.lumine.mythic.lib.script.variable.*;public class BooleanVariable extends Variable<Boolean>{private static final VariableRegistry REG=new SimpleVariableRegistry<>();public BooleanVariable(String name,Boolean value){super(name,value);}@Override public VariableRegistry<Variable<Boolean>> getVariableRegistry(){return REG;}}

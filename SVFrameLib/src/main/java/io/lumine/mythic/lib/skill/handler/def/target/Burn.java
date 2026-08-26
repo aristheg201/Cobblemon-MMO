@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Burn extends ScriptSkillHandler{public Burn(){super("BURN");}public Burn(ConfigObject config){super("BURN",config);}}

@@ -1,0 +1,3 @@
+package vn.svframe.svframelib.rpg.provided;
+import vn.svframe.svframelib.api.player.MMOPlayerData;import vn.svframe.svframelib.player.resource.ResourceUpdateReason;import vn.svframe.svframelib.rpg.*;
+public class DummyModule implements ClassModule,LevelModule,ManaModule {public static DummyModule INSTANCE=new DummyModule();public String getClass(MMOPlayerData d){return "";}public int getLevel(MMOPlayerData d){return 1;}public boolean setMana(MMOPlayerData d,double v,ResourceUpdateReason r){return false;}public boolean setStamina(MMOPlayerData d,double v,ResourceUpdateReason r){return false;}public double getMana(MMOPlayerData d){return 0;}public double getStamina(MMOPlayerData d){return 0;}}

@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.script.variable;public interface VariableContainer{Variable<?> getVariable(String path);}

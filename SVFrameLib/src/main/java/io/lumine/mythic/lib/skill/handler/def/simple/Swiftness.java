@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Swiftness extends ScriptSkillHandler{public Swiftness(){super("SWIFTNESS");}public Swiftness(ConfigObject config){super("SWIFTNESS",config);}}

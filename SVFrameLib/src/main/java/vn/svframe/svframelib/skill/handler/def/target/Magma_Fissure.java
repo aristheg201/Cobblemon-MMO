@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Magma_Fissure extends ScriptSkillHandler{public Magma_Fissure(){super("MAGMA_FISSURE");}public Magma_Fissure(ConfigObject config){super("MAGMA_FISSURE",config);}}

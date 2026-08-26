@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Furtive_Strike extends ScriptSkillHandler{public Furtive_Strike(){super("FURTIVE_STRIKE");}public Furtive_Strike(ConfigObject config){super("FURTIVE_STRIKE",config);}}

@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Magma_Fissure extends ScriptSkillHandler{public Magma_Fissure(){super("MAGMA_FISSURE");}public Magma_Fissure(ConfigObject config){super("MAGMA_FISSURE",config);}}

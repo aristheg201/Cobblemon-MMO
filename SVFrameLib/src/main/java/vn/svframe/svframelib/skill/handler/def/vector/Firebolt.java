@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.vector;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Firebolt extends ScriptSkillHandler{public Firebolt(){super("FIREBOLT");}public Firebolt(ConfigObject config){super("FIREBOLT",config);}}

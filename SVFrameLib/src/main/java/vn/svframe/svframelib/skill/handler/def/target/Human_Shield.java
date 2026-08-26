@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Human_Shield extends ScriptSkillHandler{public Human_Shield(){super("HUMAN_SHIELD");}public Human_Shield(ConfigObject config){super("HUMAN_SHIELD",config);}}

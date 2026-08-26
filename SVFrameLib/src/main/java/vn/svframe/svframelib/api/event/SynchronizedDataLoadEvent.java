@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.api.event;import vn.svframe.svframelib.api.player.MMOPlayerData;public record SynchronizedDataLoadEvent(MMOPlayerData playerData){}

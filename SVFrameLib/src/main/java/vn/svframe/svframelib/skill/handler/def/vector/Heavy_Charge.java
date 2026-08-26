@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.vector;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Heavy_Charge extends ScriptSkillHandler{public Heavy_Charge(){super("HEAVY_CHARGE");}public Heavy_Charge(ConfigObject config){super("HEAVY_CHARGE",config);}}

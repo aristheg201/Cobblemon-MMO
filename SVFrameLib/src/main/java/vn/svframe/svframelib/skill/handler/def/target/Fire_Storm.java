@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Fire_Storm extends ScriptSkillHandler{public Fire_Storm(){super("FIRE_STORM");}public Fire_Storm(ConfigObject config){super("FIRE_STORM",config);}}

@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Firebolt extends ScriptSkillHandler{public Firebolt(){super("FIREBOLT");}public Firebolt(ConfigObject config){super("FIREBOLT",config);}}

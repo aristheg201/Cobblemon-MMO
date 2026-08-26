@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.player.modifier; import vn.svframe.svframelib.api.player.EquipmentSlot; import java.util.Collection; public interface ModifierSupplier { EquipmentSlot getEquipmentSlot(); ModifierSource getModifierSource(); Collection<PlayerModifier> getModifierCache(); }

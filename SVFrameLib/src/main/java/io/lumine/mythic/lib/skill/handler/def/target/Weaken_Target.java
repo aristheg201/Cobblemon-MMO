@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Weaken_Target extends ScriptSkillHandler{public Weaken_Target(){super("WEAKEN_TARGET");}public Weaken_Target(ConfigObject config){super("WEAKEN_TARGET",config);}}

@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.result;public class CoreToolsSkillResult implements SkillResult{private final boolean success;public CoreToolsSkillResult(boolean success){this.success=success;}public boolean isSuccessful(){return success;}}

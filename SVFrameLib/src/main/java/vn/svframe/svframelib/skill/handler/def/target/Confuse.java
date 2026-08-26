@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Confuse extends ScriptSkillHandler{public Confuse(){super("CONFUSE");}public Confuse(ConfigObject config){super("CONFUSE",config);}}

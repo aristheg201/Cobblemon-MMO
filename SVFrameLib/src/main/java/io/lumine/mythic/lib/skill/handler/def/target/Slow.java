@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Slow extends ScriptSkillHandler{public Slow(){super("SLOW");}public Slow(ConfigObject config){super("SLOW",config);}}

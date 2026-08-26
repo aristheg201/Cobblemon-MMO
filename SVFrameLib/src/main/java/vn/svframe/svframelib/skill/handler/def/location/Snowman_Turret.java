@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.location;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Snowman_Turret extends ScriptSkillHandler{public Snowman_Turret(){super("SNOWMAN_TURRET");}public Snowman_Turret(ConfigObject config){super("SNOWMAN_TURRET",config);}}

@@ -1,0 +1,2 @@
+package vn.svframe.svframelib.player.cooldown;
+public enum CooldownType implements CooldownObject {DODGE,PARRY,BLOCK,WEAPON_CRIT,SKILL_CRIT;@Override public String getCooldownPath(){return name();}}

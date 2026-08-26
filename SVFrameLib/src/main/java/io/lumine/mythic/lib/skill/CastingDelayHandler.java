@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill;import vn.svframe.mythiclibfabric.MythicLibCastingDelayManager;import java.util.UUID;public final class CastingDelayHandler{public boolean isCasting(UUID id){return MythicLibCastingDelayManager.isCasting(id);}public void clear(){MythicLibCastingDelayManager.clear();}}

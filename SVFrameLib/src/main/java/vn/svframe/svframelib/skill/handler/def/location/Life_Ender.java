@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.location;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Life_Ender extends ScriptSkillHandler{public Life_Ender(){super("LIFE_ENDER");}public Life_Ender(ConfigObject config){super("LIFE_ENDER",config);}}

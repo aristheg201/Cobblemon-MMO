@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.misc;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Warp extends ScriptSkillHandler{public Warp(){super("WARP");}public Warp(ConfigObject config){super("WARP",config);}}

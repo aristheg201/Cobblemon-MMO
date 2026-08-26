@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Fire_Meteor extends ScriptSkillHandler{public Fire_Meteor(){super("FIRE_METEOR");}public Fire_Meteor(ConfigObject config){super("FIRE_METEOR",config);}}

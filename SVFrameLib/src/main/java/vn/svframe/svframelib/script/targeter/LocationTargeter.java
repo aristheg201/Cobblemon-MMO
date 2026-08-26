@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.script.targeter;import vn.svframe.svframelib.skill.SkillMetadata;import net.minecraft.util.math.Vec3d;import java.util.*;public abstract class LocationTargeter{public abstract List<Vec3d> findTargets(SkillMetadata metadata);}

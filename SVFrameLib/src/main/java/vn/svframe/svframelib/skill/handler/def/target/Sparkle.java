@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Sparkle extends ScriptSkillHandler{public Sparkle(){super("SPARKLE");}public Sparkle(ConfigObject config){super("SPARKLE",config);}}

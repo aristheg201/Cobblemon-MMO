@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.vector;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Ice_Crystal extends ScriptSkillHandler{public Ice_Crystal(){super("ICE_CRYSTAL");}public Ice_Crystal(ConfigObject config){super("ICE_CRYSTAL",config);}}

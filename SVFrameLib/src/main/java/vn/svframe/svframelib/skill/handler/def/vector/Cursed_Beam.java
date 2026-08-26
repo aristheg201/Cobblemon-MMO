@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.vector;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Cursed_Beam extends ScriptSkillHandler{public Cursed_Beam(){super("CURSED_BEAM");}public Cursed_Beam(ConfigObject config){super("CURSED_BEAM",config);}}

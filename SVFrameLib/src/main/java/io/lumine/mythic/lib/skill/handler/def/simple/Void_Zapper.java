@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Void_Zapper extends ScriptSkillHandler{public Void_Zapper(){super("VOID_ZAPPER");}public Void_Zapper(ConfigObject config){super("VOID_ZAPPER",config);}}

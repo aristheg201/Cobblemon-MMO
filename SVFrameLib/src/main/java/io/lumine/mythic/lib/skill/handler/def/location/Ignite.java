@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Ignite extends ScriptSkillHandler{public Ignite(){super("IGNITE");}public Ignite(ConfigObject config){super("IGNITE",config);}}

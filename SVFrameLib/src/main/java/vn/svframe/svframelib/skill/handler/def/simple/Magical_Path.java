@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Magical_Path extends ScriptSkillHandler{public Magical_Path(){super("MAGICAL_PATH");}public Magical_Path(ConfigObject config){super("MAGICAL_PATH",config);}}

@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Throw_Up extends ScriptSkillHandler{public Throw_Up(){super("THROW_UP");}public Throw_Up(ConfigObject config){super("THROW_UP",config);}}

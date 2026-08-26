@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.location;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Minor_Explosion extends ScriptSkillHandler{public Minor_Explosion(){super("MINOR_EXPLOSION");}public Minor_Explosion(ConfigObject config){super("MINOR_EXPLOSION",config);}}

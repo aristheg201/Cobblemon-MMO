@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Circular_Slash extends ScriptSkillHandler{public Circular_Slash(){super("CIRCULAR_SLASH");}public Circular_Slash(ConfigObject config){super("CIRCULAR_SLASH",config);}}

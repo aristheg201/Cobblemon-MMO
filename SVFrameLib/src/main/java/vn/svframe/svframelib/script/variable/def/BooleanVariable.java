@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.script.variable.def;import vn.svframe.svframelib.script.variable.*;public class BooleanVariable extends Variable<Boolean>{private static final VariableRegistry REG=new SimpleVariableRegistry<>();public BooleanVariable(String name,Boolean value){super(name,value);}@Override public VariableRegistry<Variable<Boolean>> getVariableRegistry(){return REG;}}

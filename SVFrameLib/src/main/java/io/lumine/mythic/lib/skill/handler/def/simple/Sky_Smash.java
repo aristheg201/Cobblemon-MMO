@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Sky_Smash extends ScriptSkillHandler{public Sky_Smash(){super("SKY_SMASH");}public Sky_Smash(ConfigObject config){super("SKY_SMASH",config);}}

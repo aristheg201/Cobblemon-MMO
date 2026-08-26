@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.script.mechanic;import vn.svframe.svframelib.skill.SkillMetadata;public abstract class Mechanic{public abstract void cast(SkillMetadata metadata);}

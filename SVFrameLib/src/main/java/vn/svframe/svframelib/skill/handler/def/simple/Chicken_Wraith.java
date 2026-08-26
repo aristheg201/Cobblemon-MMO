@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Chicken_Wraith extends ScriptSkillHandler{public Chicken_Wraith(){super("CHICKEN_WRAITH");}public Chicken_Wraith(ConfigObject config){super("CHICKEN_WRAITH",config);}}

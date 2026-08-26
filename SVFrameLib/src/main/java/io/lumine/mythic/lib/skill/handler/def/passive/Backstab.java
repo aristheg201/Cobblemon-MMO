@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.passive;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Backstab extends ScriptSkillHandler{public Backstab(){super("BACKSTAB");}public Backstab(ConfigObject config){super("BACKSTAB",config);}}

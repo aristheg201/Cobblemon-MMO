@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.location;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Power_Mark extends ScriptSkillHandler{public Power_Mark(){super("POWER_MARK");}public Power_Mark(ConfigObject config){super("POWER_MARK",config);}}

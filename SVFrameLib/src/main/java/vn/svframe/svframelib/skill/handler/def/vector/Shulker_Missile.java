@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.vector;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Shulker_Missile extends ScriptSkillHandler{public Shulker_Missile(){super("SHULKER_MISSILE");}public Shulker_Missile(ConfigObject config){super("SHULKER_MISSILE",config);}}

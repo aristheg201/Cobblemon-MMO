@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Slow extends ScriptSkillHandler{public Slow(){super("SLOW");}public Slow(ConfigObject config){super("SLOW",config);}}

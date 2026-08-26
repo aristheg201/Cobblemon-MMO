@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.api.event;import io.lumine.mythic.lib.damage.AttackMetadata;public record AttackUnregisteredEvent(AttackMetadata attack){}

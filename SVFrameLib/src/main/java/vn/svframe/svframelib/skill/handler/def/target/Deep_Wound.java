@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Deep_Wound extends ScriptSkillHandler{public Deep_Wound(){super("DEEP_WOUND");}public Deep_Wound(ConfigObject config){super("DEEP_WOUND",config);}}

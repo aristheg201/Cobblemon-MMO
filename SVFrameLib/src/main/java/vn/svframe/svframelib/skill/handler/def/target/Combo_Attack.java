@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Combo_Attack extends ScriptSkillHandler{public Combo_Attack(){super("COMBO_ATTACK");}public Combo_Attack(ConfigObject config){super("COMBO_ATTACK",config);}}

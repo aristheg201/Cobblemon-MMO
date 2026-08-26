@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.location;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Arcane_Hail extends ScriptSkillHandler{public Arcane_Hail(){super("ARCANE_HAIL");}public Arcane_Hail(ConfigObject config){super("ARCANE_HAIL",config);}}

@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Wither extends ScriptSkillHandler{public Wither(){super("WITHER");}public Wither(ConfigObject config){super("WITHER",config);}}

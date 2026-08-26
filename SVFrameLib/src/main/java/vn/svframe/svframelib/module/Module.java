@@ -1,0 +1,2 @@
+package vn.svframe.svframelib.module;
+public abstract class Module {private final MMOPlugin plugin;private final String key;private volatile boolean enabled=true;protected Module(){this(null,null);}protected Module(MMOPlugin plugin){this(plugin,null);}protected Module(MMOPlugin plugin,String key){this.plugin=plugin;this.key=key==null?getClass().getSimpleName():key;}public boolean isEnabled(){return enabled;}public void setEnabled(boolean enabled){this.enabled=enabled;}public void reload(){}public String getModuleKey(){return key;}public MMOPlugin getPlugin(){return plugin;}}

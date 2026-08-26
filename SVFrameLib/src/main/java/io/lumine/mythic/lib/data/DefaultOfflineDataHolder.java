@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.data; import java.util.UUID; public class DefaultOfflineDataHolder implements OfflineDataHolder { private final UUID uuid; public DefaultOfflineDataHolder(UUID uuid){this.uuid=uuid;} @Override public UUID getUniqueId(){return uuid;} }

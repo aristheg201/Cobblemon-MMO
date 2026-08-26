@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.passive;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Vampirism extends ScriptSkillHandler{public Vampirism(){super("VAMPIRISM");}public Vampirism(ConfigObject config){super("VAMPIRISM",config);}}

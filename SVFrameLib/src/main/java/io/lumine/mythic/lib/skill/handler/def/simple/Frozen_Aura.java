@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Frozen_Aura extends ScriptSkillHandler{public Frozen_Aura(){super("FROZEN_AURA");}public Frozen_Aura(ConfigObject config){super("FROZEN_AURA",config);}}

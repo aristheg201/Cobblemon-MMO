@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.vector;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Arcane_Rift extends ScriptSkillHandler{public Arcane_Rift(){super("ARCANE_RIFT");}public Arcane_Rift(ConfigObject config){super("ARCANE_RIFT",config);}}

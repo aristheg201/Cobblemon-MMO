@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Evade extends ScriptSkillHandler{public Evade(){super("EVADE");}public Evade(ConfigObject config){super("EVADE",config);}}

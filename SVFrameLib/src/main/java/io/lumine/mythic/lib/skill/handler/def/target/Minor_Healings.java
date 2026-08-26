@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.target;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Minor_Healings extends ScriptSkillHandler{public Minor_Healings(){super("MINOR_HEALINGS");}public Minor_Healings(ConfigObject config){super("MINOR_HEALINGS",config);}}

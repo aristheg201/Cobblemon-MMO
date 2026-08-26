@@ -1,6 +1,6 @@
 package vn.svframe.mythiclibfabric.mixin;
 
-import io.lumine.mythic.lib.entity.ProjectileMetadata;
+import vn.svframe.svframelib.entity.ProjectileMetadata;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;

@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.script.variable.def;import vn.svframe.svframelib.script.variable.*;public class IntegerVariable extends Variable<Integer>{private static final VariableRegistry REG=new SimpleVariableRegistry<>();public IntegerVariable(String name,Integer value){super(name,value);}@Override public VariableRegistry<Variable<Integer>> getVariableRegistry(){return REG;}}

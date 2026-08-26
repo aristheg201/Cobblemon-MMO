@@ -1,3 +1,0 @@
-package io.lumine.mythic.lib.skill;
-import io.lumine.mythic.lib.skill.handler.SkillHandler; import io.lumine.mythic.lib.skill.result.SkillResult;
-public class ModifiableSkill extends Skill { public ModifiableSkill(SkillHandler<?> h){super(h);} public boolean getResult(SkillMetadata m){SkillHandler<?> h=getHandler();return h==null||h.getResult(m).isSuccessful(m);} @SuppressWarnings({"rawtypes","unchecked"}) public void whenCast(SkillMetadata m){SkillHandler h=getHandler();if(h!=null){SkillResult r=(SkillResult)h.getResult(m);h.whenCast(r,m);}} public double getParameter(String id){return super.getParameter(id);} public void registerModifier(String id,double value){modifiers.put(id,value);} }

@@ -1,6 +1,6 @@
 package vn.svframe.mythiclibfabric;
 
-import io.lumine.mythic.lib.MythicLib;
+import vn.svframe.svframelib.MythicLib;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 

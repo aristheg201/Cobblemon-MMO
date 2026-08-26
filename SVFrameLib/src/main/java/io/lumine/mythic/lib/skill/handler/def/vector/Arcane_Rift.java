@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Arcane_Rift extends ScriptSkillHandler{public Arcane_Rift(){super("ARCANE_RIFT");}public Arcane_Rift(ConfigObject config){super("ARCANE_RIFT",config);}}

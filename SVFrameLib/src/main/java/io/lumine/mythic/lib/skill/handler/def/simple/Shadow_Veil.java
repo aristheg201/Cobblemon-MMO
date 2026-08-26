@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Shadow_Veil extends ScriptSkillHandler{public Shadow_Veil(){super("SHADOW_VEIL");}public Shadow_Veil(ConfigObject config){super("SHADOW_VEIL",config);}}

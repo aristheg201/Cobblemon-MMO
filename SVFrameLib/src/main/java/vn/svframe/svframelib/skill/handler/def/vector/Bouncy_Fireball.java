@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.vector;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Bouncy_Fireball extends ScriptSkillHandler{public Bouncy_Fireball(){super("BOUNCY_FIREBALL");}public Bouncy_Fireball(ConfigObject config){super("BOUNCY_FIREBALL",config);}}

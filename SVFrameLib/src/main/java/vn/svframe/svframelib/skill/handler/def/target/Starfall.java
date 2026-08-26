@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Starfall extends ScriptSkillHandler{public Starfall(){super("STARFALL");}public Starfall(ConfigObject config){super("STARFALL",config);}}

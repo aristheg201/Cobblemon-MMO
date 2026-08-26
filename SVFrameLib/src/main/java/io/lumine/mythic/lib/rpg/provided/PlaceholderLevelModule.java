@@ -1,3 +1,0 @@
-package io.lumine.mythic.lib.rpg.provided;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;import io.lumine.mythic.lib.rpg.LevelModule;import vn.svframe.mythiclibfabric.runtime.NativePlaceholderRegistry;
-public class PlaceholderLevelModule implements LevelModule {private final String placeholder;public PlaceholderLevelModule(String placeholder){this.placeholder=placeholder;}public int getLevel(MMOPlayerData data){String v=resolve(data);try{return Integer.parseInt(v.trim());}catch(Exception e){return 1;}}private String resolve(MMOPlayerData d){String p=placeholder; if(p.startsWith("%")&&p.endsWith("%")&&p.length()>2)p=p.substring(1,p.length()-1);return NativePlaceholderRegistry.resolve(d.getUniqueId(),p);}}

@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.script.variable.def;import vn.svframe.svframelib.script.variable.*;public class StringVariable extends Variable<String>{private static final VariableRegistry REG=new SimpleVariableRegistry<>();public StringVariable(String name,String value){super(name,value);}@Override public VariableRegistry<Variable<String>> getVariableRegistry(){return REG;}}

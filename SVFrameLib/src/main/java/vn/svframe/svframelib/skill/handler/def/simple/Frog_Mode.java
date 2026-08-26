@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Frog_Mode extends ScriptSkillHandler{public Frog_Mode(){super("FROG_MODE");}public Frog_Mode(ConfigObject config){super("FROG_MODE",config);}}

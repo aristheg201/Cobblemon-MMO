@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.manager;import vn.svframe.svframelib.module.MMOPlugin;import vn.svframe.svframelib.module.Module;public class FakeEventManager extends Module{public FakeEventManager(MMOPlugin plugin){super(plugin,"fake-event");}}

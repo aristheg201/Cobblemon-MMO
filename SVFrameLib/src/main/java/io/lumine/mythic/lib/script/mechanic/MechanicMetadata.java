@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.script.mechanic;import java.lang.annotation.*;@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface MechanicMetadata{String source() default "mythiclib";}

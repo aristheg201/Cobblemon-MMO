@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Overload extends ScriptSkillHandler{public Overload(){super("OVERLOAD");}public Overload(ConfigObject config){super("OVERLOAD",config);}}

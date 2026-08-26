@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.vector;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Holy_Missile extends ScriptSkillHandler{public Holy_Missile(){super("HOLY_MISSILE");}public Holy_Missile(ConfigObject config){super("HOLY_MISSILE",config);}}

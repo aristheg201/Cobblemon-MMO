@@ -1,3 +1,0 @@
-package io.lumine.mythic.lib.rpg.provided;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;import io.lumine.mythic.lib.player.resource.ResourceUpdateReason;import io.lumine.mythic.lib.rpg.*;
-public class DummyModule implements ClassModule,LevelModule,ManaModule {public static DummyModule INSTANCE=new DummyModule();public String getClass(MMOPlayerData d){return "";}public int getLevel(MMOPlayerData d){return 1;}public boolean setMana(MMOPlayerData d,double v,ResourceUpdateReason r){return false;}public boolean setStamina(MMOPlayerData d,double v,ResourceUpdateReason r){return false;}public double getMana(MMOPlayerData d){return 0;}public double getStamina(MMOPlayerData d){return 0;}}

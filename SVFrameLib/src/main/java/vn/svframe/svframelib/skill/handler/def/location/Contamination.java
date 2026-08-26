@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.location;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Contamination extends ScriptSkillHandler{public Contamination(){super("CONTAMINATION");}public Contamination(ConfigObject config){super("CONTAMINATION",config);}}

@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Circular_Slash extends ScriptSkillHandler{public Circular_Slash(){super("CIRCULAR_SLASH");}public Circular_Slash(ConfigObject config){super("CIRCULAR_SLASH",config);}}

@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class FabledSkillHandler extends ScriptSkillHandler{public FabledSkillHandler(String id){super(id);}public FabledSkillHandler(ConfigObject cfg){super("FabledSkillHandler",cfg);}}

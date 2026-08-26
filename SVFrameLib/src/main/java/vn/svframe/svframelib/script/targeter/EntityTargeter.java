@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.script.targeter;import vn.svframe.svframelib.skill.SkillMetadata;import java.util.*;public interface EntityTargeter{List<UUID> findTargets(SkillMetadata metadata);}

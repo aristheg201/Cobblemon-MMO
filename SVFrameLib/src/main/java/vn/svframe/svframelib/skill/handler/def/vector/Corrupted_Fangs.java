@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.vector;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Corrupted_Fangs extends ScriptSkillHandler{public Corrupted_Fangs(){super("CORRUPTED_FANGS");}public Corrupted_Fangs(ConfigObject config){super("CORRUPTED_FANGS",config);}}

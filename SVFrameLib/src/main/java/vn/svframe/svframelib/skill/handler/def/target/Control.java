@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Control extends ScriptSkillHandler{public Control(){super("CONTROL");}public Control(ConfigObject config){super("CONTROL",config);}}

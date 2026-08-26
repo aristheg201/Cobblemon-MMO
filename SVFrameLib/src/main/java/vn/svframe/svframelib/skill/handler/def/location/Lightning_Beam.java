@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.location;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Lightning_Beam extends ScriptSkillHandler{public Lightning_Beam(){super("LIGHTNING_BEAM");}public Lightning_Beam(ConfigObject config){super("LIGHTNING_BEAM",config);}}

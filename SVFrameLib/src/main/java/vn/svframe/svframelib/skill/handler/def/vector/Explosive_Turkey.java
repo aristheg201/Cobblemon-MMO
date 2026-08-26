@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.vector;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Explosive_Turkey extends ScriptSkillHandler{public Explosive_Turkey(){super("EXPLOSIVE_TURKEY");}public Explosive_Turkey(ConfigObject config){super("EXPLOSIVE_TURKEY",config);}}

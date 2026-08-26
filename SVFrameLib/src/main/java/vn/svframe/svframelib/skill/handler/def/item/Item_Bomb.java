@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.item;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Item_Bomb extends ScriptSkillHandler{public Item_Bomb(){super("ITEM_BOMB");}public Item_Bomb(ConfigObject config){super("ITEM_BOMB",config);}}

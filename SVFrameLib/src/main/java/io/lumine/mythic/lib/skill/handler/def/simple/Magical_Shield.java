@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Magical_Shield extends ScriptSkillHandler{public Magical_Shield(){super("MAGICAL_SHIELD");}public Magical_Shield(ConfigObject config){super("MAGICAL_SHIELD",config);}}

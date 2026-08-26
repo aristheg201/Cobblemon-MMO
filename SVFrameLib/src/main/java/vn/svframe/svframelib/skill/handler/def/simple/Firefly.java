@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.simple;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Firefly extends ScriptSkillHandler{public Firefly(){super("FIREFLY");}public Firefly(ConfigObject config){super("FIREFLY",config);}}

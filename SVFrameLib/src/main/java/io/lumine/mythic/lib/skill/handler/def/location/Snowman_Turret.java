@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Snowman_Turret extends ScriptSkillHandler{public Snowman_Turret(){super("SNOWMAN_TURRET");}public Snowman_Turret(ConfigObject config){super("SNOWMAN_TURRET",config);}}

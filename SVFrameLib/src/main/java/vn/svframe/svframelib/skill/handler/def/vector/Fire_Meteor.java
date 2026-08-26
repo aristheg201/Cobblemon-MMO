@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.vector;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Fire_Meteor extends ScriptSkillHandler{public Fire_Meteor(){super("FIRE_METEOR");}public Fire_Meteor(ConfigObject config){super("FIRE_METEOR",config);}}

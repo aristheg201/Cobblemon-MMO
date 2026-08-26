@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.location;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Arcane_Hail extends ScriptSkillHandler{public Arcane_Hail(){super("ARCANE_HAIL");}public Arcane_Hail(ConfigObject config){super("ARCANE_HAIL",config);}}

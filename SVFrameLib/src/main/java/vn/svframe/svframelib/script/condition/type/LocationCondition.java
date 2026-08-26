@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.script.condition.type;import vn.svframe.svframelib.script.condition.Condition;import vn.svframe.svframelib.util.configobject.ConfigObject;public abstract class LocationCondition extends Condition{protected LocationCondition(ConfigObject c){super(c);}}

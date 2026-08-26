@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.player.modifier; import io.lumine.mythic.lib.api.player.EquipmentSlot; import java.util.Collection; public interface ModifierSupplier { EquipmentSlot getEquipmentSlot(); ModifierSource getModifierSource(); Collection<PlayerModifier> getModifierCache(); }

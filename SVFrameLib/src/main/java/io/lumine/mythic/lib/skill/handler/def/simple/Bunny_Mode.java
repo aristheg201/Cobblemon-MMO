@@ -1,1 +1,0 @@
-package io.lumine.mythic.lib.skill.handler.def.simple;import io.lumine.mythic.lib.skill.handler.ScriptSkillHandler;import io.lumine.mythic.lib.util.configobject.ConfigObject;public class Bunny_Mode extends ScriptSkillHandler{public Bunny_Mode(){super("BUNNY_MODE");}public Bunny_Mode(ConfigObject config){super("BUNNY_MODE",config);}}

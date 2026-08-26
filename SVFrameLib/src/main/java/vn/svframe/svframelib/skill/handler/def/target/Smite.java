@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler.def.target;import vn.svframe.svframelib.skill.handler.ScriptSkillHandler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class Smite extends ScriptSkillHandler{public Smite(){super("SMITE");}public Smite(ConfigObject config){super("SMITE",config);}}

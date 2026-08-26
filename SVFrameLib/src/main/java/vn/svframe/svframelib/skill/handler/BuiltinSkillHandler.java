@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.skill.handler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class BuiltinSkillHandler extends ScriptSkillHandler{public BuiltinSkillHandler(String id){super(id);}public BuiltinSkillHandler(ConfigObject cfg){super("BuiltinSkillHandler",cfg);}}
