@@ -121,3 +121,5 @@ jobs:
             target/SVFrameLib/dist/server-boot.log
           if-no-files-found: error
           retention-days: 14
+
+# build trigger: 2026-08-26 current branch head
