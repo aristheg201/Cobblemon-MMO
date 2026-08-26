@@ -36,50 +36,30 @@ public abstract class PlayerModifier {
         this.source = source;
     }
 
-    public UUID getUniqueId() {
-        return uniqueId;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public EquipmentSlot getSlot() {
-        return slot;
-    }
-
-    public ModifierSource getSource() {
-        return source;
-    }
+    public UUID getUniqueId() { return uniqueId; }
+    public String getKey() { return key; }
+    public EquipmentSlot getSlot() { return slot; }
+    public ModifierSource getSource() { return source; }
 
     public abstract void register(MMOPlayerData playerData);
-
     public abstract void unregister(MMOPlayerData playerData);
 
+    /** Legacy helper retained for modifier implementations which expose a ModifierMap. */
     public ModifierMap<?> getMap(MMOPlayerData playerData) {
         throw new NotImplementedException();
     }
 
     @Override
     public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
-        PlayerModifier that = (PlayerModifier) object;
-        return uniqueId.equals(that.uniqueId);
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        return uniqueId.equals(((PlayerModifier) object).uniqueId);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(uniqueId);
-    }
+    public int hashCode() { return Objects.hash(uniqueId); }
 
-    public static void registerPlayerModifierType(String key,
-                                                  Function<ConfigObject, PlayerModifier> resolver,
-                                                  String... aliases) {
+    public static void registerPlayerModifierType(String key, Function<ConfigObject, PlayerModifier> resolver, String... aliases) {
         Objects.requireNonNull(key, "Key cannot be null");
         Objects.requireNonNull(resolver, "Resolver cannot be null");
         BY_KEY.put(key, resolver);
@@ -92,20 +72,16 @@ public abstract class PlayerModifier {
     public static PlayerModifier from(ConfigObject config) {
         Objects.requireNonNull(config, "Config cannot be null");
         String key = config.getKey();
-        if (key == null) {
-            key = config.getString("type");
-        }
+        if (key == null) key = config.getString("type");
         Function<ConfigObject, PlayerModifier> resolver = BY_KEY.get(key);
-        if (resolver == null) {
-            throw new IllegalArgumentException(String.format("Could not match player modifier type to %s", key));
-        }
+        if (resolver == null) throw new IllegalArgumentException(String.format("Could not match player modifier type to %s", key));
         return resolver.apply(config);
     }
 
     static {
         registerPlayerModifierType("particle_effect", ParticleEffect::fromConfig, "particle", "particles");
         registerPlayerModifierType("potion_effect", PermanentPotionEffect::fromConfig, "potion", "potioneffect", "pot");
-        registerPlayerModifierType("stat", StatModifier::fromConfig, "stats", "mmostat");
+        registerPlayerModifierType("stat", StatModifier::new, "stats", "mmostat");
         registerPlayerModifierType("skill", PassiveSkill::fromConfig, "ability", "passive_skill", "passive");
         registerPlayerModifierType("skill_modifier", SkillModifier::fromConfig, "skill_mod", "skillmod", "skillmodifier");
         registerPlayerModifierType("permission", PermissionModifier::fromConfig, "perm", "perm_node", "permnode");

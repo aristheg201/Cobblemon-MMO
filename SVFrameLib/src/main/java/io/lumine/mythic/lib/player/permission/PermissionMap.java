@@ -11,40 +11,26 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Fabric permission lifecycle backed by LuckPerms transient user data.
- * Bukkit PermissionAttachment semantics are transient: modifiers are granted for
- * the open player session and are removed when the session closes.
- */
+/** Native equivalent of Bukkit PermissionAttachment using LuckPerms transient session nodes. */
 public class PermissionMap extends ModifierMap<PermissionModifier> {
     private final Map<String, Node> grantedNodes = new HashMap<>();
 
-    public PermissionMap(MMOPlayerData playerData) {
-        super(playerData);
-    }
+    public PermissionMap(MMOPlayerData playerData) { super(playerData); }
 
     @Override
-    protected void onSessionOpen() {
-        // MythicLib 1.7.1 intentionally performs no eager permission attachment work here.
-    }
+    protected void onSessionOpen() { }
 
     @Override
     protected void onSessionClose() {
         User user = user();
-        if (user != null) {
-            for (Node node : grantedNodes.values()) {
-                user.getTransientData().remove(node);
-            }
-        }
+        if (user != null) for (Node node : grantedNodes.values()) user.transientData().remove(node);
         grantedNodes.clear();
     }
 
     @Override
     public PermissionModifier addModifier(PermissionModifier modifier) {
         PermissionModifier previous = super.addModifier(modifier);
-        if (previous != null) {
-            take(previous.getPermission());
-        }
+        if (previous != null) take(previous.getPermission());
         give(modifier.getPermission());
         return previous;
     }
@@ -52,45 +38,38 @@ public class PermissionMap extends ModifierMap<PermissionModifier> {
     @Override
     public PermissionModifier removeModifier(UUID uniqueId) {
         PermissionModifier previous = super.removeModifier(uniqueId);
-        if (previous != null) {
-            take(previous.getPermission());
-        }
+        if (previous != null) take(previous.getPermission());
         return previous;
     }
 
     private void give(String permission) {
         User user = requireUser();
         Node existing = grantedNodes.remove(permission);
-        if (existing != null) {
-            user.getTransientData().remove(existing);
-        }
-
+        if (existing != null) user.transientData().remove(existing);
         Node node = Node.builder(permission).value(true).build();
-        user.getTransientData().add(node);
+        user.transientData().add(node);
         grantedNodes.put(permission, node);
     }
 
     private void take(String permission) {
         Node node = grantedNodes.remove(permission);
-        if (node == null) {
-            return;
-        }
+        if (node == null) return;
         User user = user();
-        if (user != null) {
-            user.getTransientData().remove(node);
-        }
+        if (user != null) user.transientData().remove(node);
     }
 
     private User requireUser() {
         User user = user();
-        if (user == null) {
-            throw new IllegalStateException("LuckPerms user is not loaded for " + getPlayerData().getUniqueId());
-        }
+        if (user == null) throw new IllegalStateException("LuckPerms user is not loaded for " + getPlayerData().getUniqueId());
         return user;
     }
 
     private User user() {
-        LuckPerms luckPerms = LuckPermsProvider.get();
-        return luckPerms.getUserManager().getUser(getPlayerData().getUniqueId());
+        try {
+            LuckPerms luckPerms = LuckPermsProvider.get();
+            return luckPerms.getUserManager().getUser(getPlayerData().getUniqueId());
+        } catch (IllegalStateException unavailable) {
+            return null;
+        }
     }
 }

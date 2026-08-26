@@ -10,6 +10,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Vector3f;
 
 import java.util.Locale;
 import java.util.Map;
@@ -32,12 +33,8 @@ public class ParticleInformation {
     private final double xOffset, yOffset, zOffset, speed;
 
     public ParticleInformation(ParticleEffect particle) { this(particle, 1, 0f, 0d, 0d, 0d); }
-    public ParticleInformation(ParticleEffect particle, int amount, float speed, double offset, Object ignoredData) {
-        this(particle, amount, speed, offset, offset, offset);
-    }
-    public ParticleInformation(ParticleEffect particle, int amount, float speed, double xOffset, double yOffset, double zOffset, Object ignoredData) {
-        this(particle, amount, speed, xOffset, yOffset, zOffset);
-    }
+    public ParticleInformation(ParticleEffect particle, int amount, float speed, double offset, Object ignoredData) { this(particle, amount, speed, offset, offset, offset); }
+    public ParticleInformation(ParticleEffect particle, int amount, float speed, double xOffset, double yOffset, double zOffset, Object ignoredData) { this(particle, amount, speed, xOffset, yOffset, zOffset); }
     public ParticleInformation(ParticleEffect particle, int amount, double speed, double xOffset, double yOffset, double zOffset) {
         this.particle = Objects.requireNonNull(particle, "particle");
         this.amount = Math.max(0, amount);
@@ -46,12 +43,9 @@ public class ParticleInformation {
     }
 
     public ParticleEffect particle() { return particle; }
-
     public void display(ServerWorld world, Vec3d pos) { display(world, pos, amount, xOffset, yOffset, zOffset, speed); }
     public void display(ServerWorld world, Vec3d pos, double speed) { display(world, pos, amount, xOffset, yOffset, zOffset, speed); }
-    public void display(ServerWorld world, Vec3d pos, int amount, double x, double y, double z, double speed) {
-        world.spawnParticles(particle, pos.x, pos.y, pos.z, Math.max(0, amount), x, y, z, speed);
-    }
+    public void display(ServerWorld world, Vec3d pos, int amount, double x, double y, double z, double speed) { world.spawnParticles(particle, pos.x, pos.y, pos.z, Math.max(0, amount), x, y, z, speed); }
 
     public static ParticleInformation fromConfig(Object raw) {
         if (raw instanceof ParticleInformation info) return info;
@@ -75,8 +69,10 @@ public class ParticleInformation {
                 ConfigObject color = config.getObject("color");
                 red = color.getInt("red", red); green = color.getInt("green", green); blue = color.getInt("blue", blue);
             }
-            int rgb = (Math.max(0, Math.min(255, red)) << 16) | (Math.max(0, Math.min(255, green)) << 8) | Math.max(0, Math.min(255, blue));
-            return new DustParticleEffect(rgb, (float) config.getDouble("size", 1d));
+            float r = Math.max(0, Math.min(255, red)) / 255.0f;
+            float g = Math.max(0, Math.min(255, green)) / 255.0f;
+            float b = Math.max(0, Math.min(255, blue)) / 255.0f;
+            return new DustParticleEffect(new Vector3f(r, g, b), (float) config.getDouble("size", 1d));
         }
         Identifier id = Identifier.tryParse(path.contains(":") ? path : "minecraft:" + path);
         if (id == null) throw new IllegalArgumentException("Invalid particle '" + raw + "'");

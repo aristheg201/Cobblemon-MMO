@@ -23,6 +23,7 @@ public class StatMap extends PlayerDataMap implements PlayerStatProvider {
         this.data = data;
     }
 
+    @Override
     public MMOPlayerData getData() {
         return data;
     }
@@ -80,6 +81,7 @@ public class StatMap extends PlayerDataMap implements PlayerStatProvider {
         }
     }
 
+    @Override
     public PlayerMetadata cache(EquipmentSlot actionHand) {
         return new PlayerMetadata(this, actionHand);
     }
@@ -89,7 +91,8 @@ public class StatMap extends PlayerDataMap implements PlayerStatProvider {
         if (instance != null) instance.update();
     }
 
-    @Override
+    /** @deprecated retained for the 1.7.1 API surface. */
+    @Deprecated
     public MMOPlayerData getPlayerData() {
         return data;
     }
