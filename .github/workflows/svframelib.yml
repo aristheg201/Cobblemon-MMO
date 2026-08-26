@@ -21,48 +21,37 @@ jobs:
         with:
           ref: svframelib-fabric-1.21.1
           path: target
-
       - name: Checkout Mod-dev source seed
         uses: actions/checkout@v4
         with:
           repository: aristheg201/Mod-dev
           ref: feature/fabric-mmo-ports
           path: moddev
-
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
-
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.8'
-
       - name: Restore source files lost by the canonical-source replacement
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf seed
-          mkdir -p seed
+          rm -rf seed && mkdir -p seed
           cat moddev/fabric-mmo-ports/bootstrap-m0.8/chunks/part* | base64 -d > seed.tar.gz
           echo '99f090bc86fe3e57215e009d55ff3eadf7582cf1418d98052a978922872fa75c  seed.tar.gz' | sha256sum -c -
           tar -xzf seed.tar.gz -C seed
-
           mkdir -p target/SVFrameLib/src/main/java target/SVFrameLib/src/main/resources
           if [ -d seed/mythiclib-runtime/src/main/java ]; then cp -an seed/mythiclib-runtime/src/main/java/. target/SVFrameLib/src/main/java/; fi
           if [ -d seed/common-runtime/src/main/java ]; then cp -an seed/common-runtime/src/main/java/. target/SVFrameLib/src/main/java/; fi
           if [ -d seed/fabric-platform/mythiclib-fabric/src/main/java ]; then cp -an seed/fabric-platform/mythiclib-fabric/src/main/java/. target/SVFrameLib/src/main/java/; fi
           if [ -d seed/fabric-platform/mythiclib-fabric/src/main/resources ]; then cp -an seed/fabric-platform/mythiclib-fabric/src/main/resources/. target/SVFrameLib/src/main/resources/; fi
-
           cd target
           git config user.name 'SVFrameLib Builder'
           git config user.email 'actions@users.noreply.github.com'
           git add SVFrameLib
-          if ! git diff --cached --quiet; then
-            git commit -m 'SVFrameLib: restore missing native runtime source'
-            git push origin HEAD:svframelib-fabric-1.21.1
-          fi
-
+          if ! git diff --cached --quiet; then git commit -m 'SVFrameLib: restore missing native runtime source'; git push origin HEAD:svframelib-fabric-1.21.1; fi
       - name: Full build and remap
         shell: bash
         run: |
@@ -78,7 +67,6 @@ jobs:
           unzip -l "$JAR" | grep -q 'io/lumine/mythic/lib/manager/SkillManager.class'
           unzip -l "$JAR" | grep -q 'vn/svframe/mythiclibfabric/MythicLibFabricMod.class'
           sha256sum "$JAR" | tee build/SVFrameLib-SHA256.txt
-
       - name: Dedicated Fabric server boot
         shell: bash
         run: |
@@ -96,7 +84,6 @@ jobs:
           ! grep -q 'Mixin apply failed' build/svframelib-server.log
           ! grep -q 'Could not execute entrypoint stage' build/svframelib-server.log
           ! grep -q 'Exception in server tick loop' build/svframelib-server.log
-
       - name: Publish validated jar
         shell: bash
         run: |
@@ -110,7 +97,6 @@ jobs:
           git add SVFrameLib/dist
           git commit -m 'SVFrameLib: publish validated Fabric 1.21.1 jar'
           git push origin HEAD:svframelib-fabric-1.21.1
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -122,4 +108,4 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-# build trigger: 2026-08-26 current branch head
+# build trigger: native API batch 1
