@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.comp.adventure.tag.implementation.decorations;import vn.svframe.svframelib.comp.adventure.tag.AdventureTag;public class ResetTag extends AdventureTag{public ResetTag(){super("reset",(src,args)->"§r",true,true,"r");}}
