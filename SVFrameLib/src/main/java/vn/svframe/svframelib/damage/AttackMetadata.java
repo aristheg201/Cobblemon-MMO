@@ -1,11 +1,11 @@
 package vn.svframe.svframelib.damage;
 
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import vn.svframe.svframelib.MythicLib;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframelib.api.stat.provider.StatProvider;
 import vn.svframe.svframelib.player.PlayerMetadata;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -16,9 +16,8 @@ public class AttackMetadata {
     private final LivingEntity target;
     private final StatProvider attacker;
 
-    public AttackMetadata(DamageMetadata damage, StatProvider attacker) {
-        this(damage, null, attacker);
-    }
+    @Deprecated
+    public AttackMetadata(DamageMetadata damage, StatProvider attacker) { this(damage, null, attacker); }
 
     public AttackMetadata(DamageMetadata damage, LivingEntity target, StatProvider attacker) {
         this.attacker = attacker;
@@ -26,70 +25,32 @@ public class AttackMetadata {
         this.damage = Objects.requireNonNull(damage, "Damage cannot be null");
     }
 
-    public DamageMetadata getDamage() {
-        return damage;
+    public DamageMetadata getDamage() { return damage; }
+    public LivingEntity getTarget() { return target; }
+    public StatProvider getAttacker() { return attacker; }
+    public boolean hasAttacker() { return attacker != null; }
+    public boolean isPlayer() { return attacker instanceof vn.svframe.svframelib.api.stat.provider.PlayerStatProvider; }
+
+    @Deprecated public boolean hasExpired() { return false; }
+    @Deprecated public void expire() { }
+    @Deprecated @Override public AttackMetadata clone() { return new AttackMetadata(damage.clone(), target, attacker); }
+
+    @Deprecated public void damage(LivingEntity entity) { damage(entity, true); }
+
+    /** @deprecated The boolean is knockback, matching MythicLib 1.7.1. */
+    @Deprecated public void damage(LivingEntity entity, boolean knockback) {
+        MythicLib.plugin.getDamage().damage(this, entity, knockback);
     }
 
-    public LivingEntity getTarget() {
-        return target;
-    }
+    @Deprecated public ServerPlayerEntity getPlayer() { return playerMetadata().getPlayer(); }
+    @Deprecated public MMOPlayerData getData() { return playerMetadata().getData(); }
+    @Deprecated public double getStat(String id) { return requireAttacker().getStat(id); }
+    @Deprecated public void setStat(String id, double value) { playerMetadata().setStat(id, value); }
+    @Deprecated public AttackMetadata attack(LivingEntity target, double damage, DamageType... damageTypes) { return playerMetadata().attack(target, damage, Arrays.asList(damageTypes)); }
 
-    public StatProvider getAttacker() {
-        return attacker;
-    }
-
-    public boolean hasAttacker() {
-        return attacker != null;
-    }
-
-    public boolean isPlayer() {
-        return attacker instanceof vn.svframe.svframelib.api.stat.provider.PlayerStatProvider;
-    }
-
-    /** Kept for exact 1.7.1 API compatibility; attacks do not expire in this version. */
-    public boolean hasExpired() {
-        return false;
-    }
-
-    /** Kept for exact 1.7.1 API compatibility; attacks do not expire in this version. */
-    public void expire() {
-    }
-
-    @Override
-    public AttackMetadata clone() {
-        return new AttackMetadata(damage.clone(), target, attacker);
-    }
-
-    public void damage(LivingEntity entity) {
-        damage(entity, true);
-    }
-
-    public void damage(LivingEntity entity, boolean applyDamage) {
-        MythicLib.plugin.getDamage().damage(this, entity, applyDamage);
-    }
-
-    public ServerPlayerEntity getPlayer() {
-        return playerMetadata().getPlayer();
-    }
-
-    public MMOPlayerData getData() {
-        return playerMetadata().getData();
-    }
-
-    public double getStat(String id) {
-        return requireAttacker().getStat(id);
-    }
-
-    public void setStat(String id, double value) {
-        playerMetadata().setStat(id, value);
-    }
-
-    public AttackMetadata attack(LivingEntity target, double damage, DamageType... damageTypes) {
-        return playerMetadata().attack(target, damage, Arrays.asList(damageTypes));
-    }
-
-    public AttackMetadata attack(LivingEntity target, double damage, boolean registerDamage, DamageType... damageTypes) {
-        return playerMetadata().attack(target, damage, registerDamage, Arrays.asList(damageTypes));
+    /** @deprecated The boolean is knockback, matching MythicLib 1.7.1. */
+    @Deprecated public AttackMetadata attack(LivingEntity target, double damage, boolean knockback, DamageType... damageTypes) {
+        return playerMetadata().attack(target, damage, knockback, Arrays.asList(damageTypes));
     }
 
     private StatProvider requireAttacker() {
@@ -99,9 +60,7 @@ public class AttackMetadata {
 
     private PlayerMetadata playerMetadata() {
         StatProvider provider = requireAttacker();
-        if (!(provider instanceof PlayerMetadata metadata)) {
-            throw new IllegalArgumentException("Attacker is not a player");
-        }
+        if (!(provider instanceof PlayerMetadata metadata)) throw new IllegalArgumentException("Attacker is not a player");
         return metadata;
     }
 }
