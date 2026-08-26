@@ -41,7 +41,7 @@ jobs:
           set -euo pipefail
           python3 <<'PY'
           from pathlib import Path
-          import re, shutil
+          import shutil
 
           repo = Path('.')
           java_root = repo / 'SVFrameLib' / 'src' / 'main' / 'java'
@@ -89,6 +89,21 @@ jobs:
               replaced = text.replace(old_dot, new_dot).replace(old_slash, new_slash)
               if replaced != text:
                   path.write_text(replaced, encoding='utf-8')
+
+          # Temporarily remove MythicMobs-specific adapters and fixtures.
+          for rel in (
+              ('vn','svframe','svframelib','skill','handler','MythicMobsSkillHandler.java'),
+              ('vn','svframe','svframelib','skill','result','MythicMobsSkillResult.java'),
+          ):
+              path = java_root.joinpath(*rel)
+              if path.exists():
+                  path.unlink()
+
+          smoke = java_root / 'vn' / 'svframe' / 'mythiclibfabric' / 'runtime' / 'MythicLibRuntimeSmoke.java'
+          if smoke.exists():
+              text = smoke.read_text(encoding='utf-8')
+              text = text.replace('source: mythicmobs:TEST_WRAP', 'source: script:TEST_WRAP')
+              smoke.write_text(text, encoding='utf-8')
 
           runtime = repo / 'SVFrameLib' / 'src' / 'main' / 'java' / 'vn' / 'svframe' / 'mythiclibfabric' / 'MythicLibFabricMod.java'
           if runtime.exists():
