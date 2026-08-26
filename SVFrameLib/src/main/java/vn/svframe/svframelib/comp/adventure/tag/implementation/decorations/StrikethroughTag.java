@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.comp.adventure.tag.implementation.decorations;import vn.svframe.svframelib.comp.adventure.tag.AdventureTag;public class StrikethroughTag extends AdventureTag{public StrikethroughTag(){super("strikethrough",(src,args)->"§m",true,false,"st");}}
