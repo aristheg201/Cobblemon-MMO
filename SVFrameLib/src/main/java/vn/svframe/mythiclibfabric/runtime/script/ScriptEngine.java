@@ -57,7 +57,7 @@ public final class ScriptEngine {
             }
             case "ammo" -> platform.hasAmmo(context.caster(), (int) number(call, "amount", 1, context));
             case "cooldown" -> ready(context.caster(), call.params().getOrDefault("path", "default"), System.currentTimeMillis());
-            default -> true;
+            default -> throw new IllegalArgumentException("Unknown script condition: " + call.name());
         };
     }
 
@@ -87,10 +87,22 @@ public final class ScriptEngine {
             case "heal" -> platform.heal(target(params, context), number(call, "amount", 1, context));
             case "particle", "spawn_particle" -> platform.particle(target(params, context), params.getOrDefault("particle", "CRIT"), (int) number(call, "amount", 1, context), number(call, "x", number(call, "offset_x", 0, context), context), number(call, "y", number(call, "offset_y", 0, context), context), number(call, "z", number(call, "offset_z", 0, context), context), number(call, "speed", 0, context));
             case "sound", "play_sound" -> platform.sound(target(params, context), params.getOrDefault("sound", params.getOrDefault("s", "")), (float) number(call, "volume", 1, context), (float) number(call, "pitch", 1, context));
-            case "potion" -> platform.potion(target(params, context), params.getOrDefault("effect", params.getOrDefault("type", "SLOW")), (int) number(call, "level", 1, context), (int) number(call, "duration", 20, context));
+            case "potion" -> platform.potion(
+                    target(params, context),
+                    first(params, "SLOW", "effect", "eff", "e", "type", "pe"),
+                    (int) numberAny(call, 1, context, "level", "lvl", "l"),
+                    (int) numberAny(call, 20, context, "ticks", "t", "duration", "dur", "d", "time"),
+                    boolAny(call, false, "ambient", "amb"),
+                    boolAny(call, true, "particles", "part"),
+                    boolAny(call, true, "icon", "ic"));
             case "set_on_fire" -> platform.setOnFire(target(params, context), (int) number(call, "ticks", 20, context));
             case "cancel_event" -> context.cancel();
-            case "set_no_damage_ticks" -> platform.noDamageTicks(target(params, context), (int) number(call, "ticks", 10, context));
+            case "set_no_damage_ticks" -> platform.noDamageTicks(
+                    target(params, context),
+                    (int) numberAny(call, 10, context, "ticks", "t", "duration", "dur", "d", "time"),
+                    boolAny(call, false, "stack", "add"),
+                    boolAny(call, false, "min"),
+                    boolAny(call, false, "max"));
             case "action_bar" -> platform.actionBar(target(params, context), params.getOrDefault("m", params.getOrDefault("message", "")), (int) number(call, "priority", 0, context), (int) number(call, "duration", 20, context));
             case "script", "cast" -> {
                 String name = params.getOrDefault("name", params.getOrDefault("s", ""));
@@ -145,7 +157,10 @@ public final class ScriptEngine {
             case "entity_effect" -> platform.entityEffect(target(params, context), params.getOrDefault("effect", "HURT"));
             case "remove_potion" -> platform.removePotion(target(params, context), params.getOrDefault("effect", params.getOrDefault("type", "")));
             case "take_ammo" -> platform.takeAmmo(context.caster(), (int) number(call, "amount", 1, context));
-            case "shoot_arrow" -> platform.shootArrow(context.caster(), number(call, "speed", 3, context), number(call, "damage", context.damage(), context));
+            case "shoot_arrow" -> platform.shootArrow(
+                    context.caster(),
+                    numberAny(call, 1, context, "velocity", "vel", "speed", "sp"),
+                    number(call, "damage", context.damage(), context));
             case "shulker_bullet" -> platform.shulkerBullet(context.caster(), context.target(), number(call, "damage", context.damage(), context));
             case "helix" -> {
                 double radius = number(call, "radius", 1, context), height = number(call, "height", 2, context);
@@ -193,7 +208,7 @@ public final class ScriptEngine {
                     if (!hit.isBlank()) { ScriptContext nested = context.copy(); nested.target(entity); cast(hit, nested, depth + 1); }
                 }, () -> {});
             }
-            default -> { }
+            default -> throw new IllegalArgumentException("Unknown script mechanic: " + call.name());
         }
     }
 
@@ -226,6 +241,32 @@ public final class ScriptEngine {
     private UUID target(Map<String, String> params, ScriptContext context) {
         String target = params.getOrDefault("target", "").toLowerCase(Locale.ROOT);
         return target.equals("caster") ? context.caster() : context.target() != null ? context.target() : context.caster();
+    }
+
+    private static String first(Map<String, String> params, String fallback, String... keys) {
+        for (String key : keys) {
+            String value = params.get(key);
+            if (value != null) return value;
+        }
+        return fallback;
+    }
+
+    private double numberAny(ScriptLineParser.Call call, double fallback, ScriptContext context, String... keys) {
+        for (String key : keys) if (call.params().containsKey(key)) return number(call, key, fallback, context);
+        return fallback;
+    }
+
+    private static boolean boolAny(ScriptLineParser.Call call, boolean fallback, String... keys) {
+        for (String key : keys) {
+            String raw = call.params().get(key);
+            if (raw == null) continue;
+            return switch (raw.trim().toLowerCase(Locale.ROOT)) {
+                case "true", "yes", "on", "1" -> true;
+                case "false", "no", "off", "0" -> false;
+                default -> throw new IllegalArgumentException("Invalid boolean for '" + key + "': " + raw);
+            };
+        }
+        return fallback;
     }
 
     private double number(ScriptLineParser.Call call, String key, double fallback, ScriptContext context) {
