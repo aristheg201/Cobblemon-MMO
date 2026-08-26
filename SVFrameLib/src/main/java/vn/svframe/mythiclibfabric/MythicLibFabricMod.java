@@ -70,7 +70,7 @@ public final class MythicLibFabricMod implements ModInitializer {
         if (caster != null && MythicLibCastingDelayManager.isCasting(caster)) return false;
         LegacySkillDefinition definition = SKILLS.get(norm(id));
         if (definition == null) return castScript(id, caster, target, parameters);
-        Map<String,Object> resolved=definition.resolveParameters(parameters); ScriptContext context=context(caster,target,resolved); double delay=number(resolved.get("delay"),0d);
+        Map<String,Object> resolved=definition.resolveParameters(parameters,caster); ScriptContext context=context(caster,target,resolved); double delay=number(resolved.get("delay"),0d);
         if (delay>0d) { int ticks=Math.max(1,(int)(delay*20d)); return MythicLibCastingDelayManager.begin(caster,ticks,context,()->castResolved(definition,caster,target,resolved,context)); }
         return castResolved(definition,caster,target,resolved,context);
     }
