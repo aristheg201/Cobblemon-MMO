@@ -33,7 +33,7 @@ public class MapConfigObject implements ConfigObject {
     @Override public boolean bool(String...keys){for(String k:keys)if(contains(k))return getBoolean(k);throw new MissingArgumentException(keys);}
     @Override public boolean bool(boolean fallback,String...keys){for(String k:keys)if(contains(k))return getBoolean(k);return fallback;}
     @Override public ConfigObject getObject(String key){Object v=value(key);if(v==null)throw new MissingArgumentException(key);if(v instanceof ConfigObject c)return c;if(v instanceof Map<?,?> m)return fromMap(key,m);throw new IllegalArgumentException("Not an object: "+key);}
-    @Override public ConfigObject adaptObject(String key){Object v=value(key);if(v==null)return new EmptyConfigObject();if(v instanceof ConfigObject c)return c;if(v instanceof Map<?,?> m)return fromMap(key,m);return new MapConfigObject(key,Map.of("value",v));}
+    @Override public ConfigObject adaptObject(String key){Object v=value(key);if(v==null)throw new MissingArgumentException(key);if(v instanceof ConfigObject c)return c;if(v instanceof Map<?,?> m)return fromMap(key,m);return new MapConfigObject(key,Map.of("type",String.valueOf(v)));}
     @Override public boolean contains(String key){return values.containsKey(key);}
     @Override public Set<String> getKeys(){return Set.copyOf(values.keySet());}
     @Override public String getKey(){return key;}
