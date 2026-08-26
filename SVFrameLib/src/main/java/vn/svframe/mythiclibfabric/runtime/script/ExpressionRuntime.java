@@ -1,17 +1,268 @@
 package vn.svframe.mythiclibfabric.runtime.script;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * Dependency-free expression runtime used by the native script and 1.7.1
+ * compatibility expression APIs.
+ */
 public final class ExpressionRuntime {
- public double evaluate(String expr,Map<String,Double> vars){return new Parser(substitute(expr,vars)).parseNumber();}
- public boolean evaluateBoolean(String expr,Map<String,Double> vars){return new Parser(substitute(expr,vars)).parseBoolean();}
- private static String substitute(String expr,Map<String,Double> vars){String s=expr==null?"0":expr.trim();if((s.startsWith("\"")&&s.endsWith("\""))||(s.startsWith("'")&&s.endsWith("'")))s=s.substring(1,s.length()-1);for(var e:vars.entrySet())s=s.replace("<"+e.getKey()+">",Double.toString(e.getValue()));s=s.replaceAll("<random\\.double>",Double.toString(Math.random()));return s;}
- private static final class Parser{final String s;int i;Parser(String s){this.s=s;}
-  double parseNumber(){double v=add();skip();if(i!=s.length())throw new IllegalArgumentException("bad expression at "+i+" in "+s);return v;}
-  boolean parseBoolean(){skip();int save=i;double a=add();skip();if(eat("=="))return a==add();if(eat("!="))return a!=add();if(eat(">="))return a>=add();if(eat("<="))return a<=add();if(eat(">"))return a>add();if(eat("<"))return a<add();skip();if(i==s.length())return a!=0;i=save;String w=word();if(w.equalsIgnoreCase("true"))return true;if(w.equalsIgnoreCase("false"))return false;throw new IllegalArgumentException("bad boolean "+s);}
-  double add(){double v=mul();for(;;){skip();if(eat("+"))v+=mul();else if(eat("-"))v-=mul();else return v;}}
-  double mul(){double v=pow();for(;;){skip();if(eat("*"))v*=pow();else if(eat("/"))v/=pow();else if(eat("%"))v%=pow();else return v;}}
-  double pow(){double v=unary();skip();if(eat("^"))v=Math.pow(v,pow());return v;}
-  double unary(){skip();if(eat("+"))return unary();if(eat("-"))return-unary();if(eat("(")){double v=add();if(!eat(")"))throw new IllegalArgumentException("missing )");return v;}if(i<s.length()&&(Character.isLetter(s.charAt(i))||s.charAt(i)=='_')){String fn=word().toLowerCase(Locale.ROOT);if(fn.equals("pi"))return Math.PI;if(fn.equals("e"))return Math.E;if(eat("(")){List<Double>a=new ArrayList<>();if(!peek(')')){do{a.add(add());}while(eat(","));}if(!eat(")"))throw new IllegalArgumentException("missing ) after "+fn);return function(fn,a);}throw new IllegalArgumentException("unknown symbol "+fn);}int st=i;while(i<s.length()&&(Character.isDigit(s.charAt(i))||s.charAt(i)=='.'||s.charAt(i)=='e'||s.charAt(i)=='E'||((s.charAt(i)=='+'||s.charAt(i)=='-')&&i>st&&(s.charAt(i-1)=='e'||s.charAt(i-1)=='E'))))i++;if(st==i)throw new IllegalArgumentException("number expected at "+i+" in "+s);return Double.parseDouble(s.substring(st,i));}
-  double function(String f,List<Double>a){return switch(f){case"sin"->Math.sin(one(f,a));case"cos"->Math.cos(one(f,a));case"tan"->Math.tan(one(f,a));case"sqrt"->Math.sqrt(one(f,a));case"abs"->Math.abs(one(f,a));case"floor"->Math.floor(one(f,a));case"ceil"->Math.ceil(one(f,a));case"round"->Math.rint(one(f,a));case"min"->a.stream().mapToDouble(Double::doubleValue).min().orElseThrow();case"max"->a.stream().mapToDouble(Double::doubleValue).max().orElseThrow();case"non_zero"->a.isEmpty()?0:(Math.abs(a.get(0))<1e-12?(a.size()>1?a.get(1):1):a.get(0));case"clamp"->Math.max(a.get(1),Math.min(a.get(2),a.get(0)));default->throw new IllegalArgumentException("unknown function "+f);};}
-  double one(String f,List<Double>a){if(a.size()!=1)throw new IllegalArgumentException(f+" expects 1 arg");return a.get(0);}String word(){skip();int st=i;while(i<s.length()&&(Character.isLetterOrDigit(s.charAt(i))||s.charAt(i)=='_'||s.charAt(i)=='.'))i++;return s.substring(st,i);}void skip(){while(i<s.length()&&Character.isWhitespace(s.charAt(i)))i++;}boolean eat(String x){skip();if(s.startsWith(x,i)){i+=x.length();return true;}return false;}boolean peek(char c){skip();return i<s.length()&&s.charAt(i)==c;}
- }
+    public double evaluate(String expression, Map<String, Double> variables) {
+        return new Parser(substitute(expression, variables)).parseNumber();
+    }
+
+    public boolean evaluateBoolean(String expression, Map<String, Double> variables) {
+        return new Parser(substitute(expression, variables)).parseBooleanExpression();
+    }
+
+    private static String substitute(String expression, Map<String, Double> variables) {
+        String value = expression == null ? "0" : expression.trim();
+        if ((value.startsWith("\"") && value.endsWith("\"")) ||
+                (value.startsWith("'") && value.endsWith("'"))) {
+            value = value.substring(1, value.length() - 1);
+        }
+        if (variables != null) {
+            for (Map.Entry<String, Double> entry : variables.entrySet()) {
+                value = value.replace("<" + entry.getKey() + ">", Double.toString(entry.getValue()));
+            }
+        }
+        value = value.replaceAll("(?i)<random\\.double>", Double.toString(Math.random()));
+        return value;
+    }
+
+    private static final class Parser {
+        private static final double BOOLEAN_EPSILON = 1.0E-10d;
+        private final String input;
+        private int index;
+
+        private Parser(String input) {
+            this.input = input;
+        }
+
+        private double parseNumber() {
+            double value = add();
+            skipWhitespace();
+            if (index != input.length()) {
+                throw new IllegalArgumentException("Bad expression at " + index + " in " + input);
+            }
+            return value;
+        }
+
+        private boolean parseBooleanExpression() {
+            boolean value = or();
+            skipWhitespace();
+            if (index != input.length()) {
+                throw new IllegalArgumentException("Bad boolean expression at " + index + " in " + input);
+            }
+            return value;
+        }
+
+        private boolean or() {
+            boolean value = and();
+            while (true) {
+                if (eat("||")) value = value | and();
+                else return value;
+            }
+        }
+
+        private boolean and() {
+            boolean value = booleanUnary();
+            while (true) {
+                if (eat("&&")) value = value & booleanUnary();
+                else return value;
+            }
+        }
+
+        private boolean booleanUnary() {
+            skipWhitespace();
+            if (eat("!")) return !booleanUnary();
+            if (peekWord("true")) {
+                word();
+                return true;
+            }
+            if (peekWord("false")) {
+                word();
+                return false;
+            }
+            if (eat("(")) {
+                int checkpoint = index;
+                try {
+                    boolean nested = or();
+                    if (!eat(")")) throw new IllegalArgumentException("Missing )");
+                    return nested;
+                } catch (IllegalArgumentException ignored) {
+                    index = checkpoint - 1;
+                }
+            }
+
+            double left = add();
+            if (eat("==")) return Math.abs(left - add()) <= BOOLEAN_EPSILON;
+            if (eat("!=")) return Math.abs(left - add()) > BOOLEAN_EPSILON;
+            if (eat(">=")) return left >= add();
+            if (eat("<=")) return left <= add();
+            if (eat(">")) return left > add();
+            if (eat("<")) return left < add();
+            return Math.abs(left) > BOOLEAN_EPSILON;
+        }
+
+        private double add() {
+            double value = multiply();
+            while (true) {
+                if (eat("+")) value += multiply();
+                else if (eat("-")) value -= multiply();
+                else return value;
+            }
+        }
+
+        private double multiply() {
+            double value = power();
+            while (true) {
+                if (eat("*")) value *= power();
+                else if (eat("/")) value /= power();
+                else if (eat("%")) value %= power();
+                else return value;
+            }
+        }
+
+        private double power() {
+            double value = unary();
+            if (eat("^")) value = Math.pow(value, power());
+            return value;
+        }
+
+        private double unary() {
+            skipWhitespace();
+            if (eat("+")) return unary();
+            if (eat("-")) return -unary();
+            if (eat("(")) {
+                double value = add();
+                if (!eat(")")) throw new IllegalArgumentException("Missing )");
+                return value;
+            }
+
+            if (index < input.length() && (Character.isLetter(input.charAt(index)) || input.charAt(index) == '_')) {
+                String symbol = word().toLowerCase(Locale.ROOT);
+                if (symbol.equals("pi")) return Math.PI;
+                if (symbol.equals("e")) return Math.E;
+                if (!eat("(")) throw new IllegalArgumentException("Unknown symbol " + symbol);
+
+                List<Double> args = new ArrayList<>();
+                if (!peek(')')) {
+                    do {
+                        args.add(add());
+                    } while (eat(","));
+                }
+                if (!eat(")")) throw new IllegalArgumentException("Missing ) after " + symbol);
+                return function(symbol, args);
+            }
+
+            int start = index;
+            while (index < input.length()) {
+                char current = input.charAt(index);
+                if (Character.isDigit(current) || current == '.') {
+                    index++;
+                    continue;
+                }
+                if (current == 'e' || current == 'E') {
+                    index++;
+                    if (index < input.length() && (input.charAt(index) == '+' || input.charAt(index) == '-')) index++;
+                    continue;
+                }
+                break;
+            }
+            if (start == index) throw new IllegalArgumentException("Number expected at " + index + " in " + input);
+            return Double.parseDouble(input.substring(start, index));
+        }
+
+        private double function(String function, List<Double> args) {
+            return switch (function) {
+                case "random" -> {
+                    arity(function, args, 0);
+                    yield Math.random();
+                }
+                case "atan2" -> {
+                    arity(function, args, 2);
+                    yield Math.atan2(args.get(0), args.get(1));
+                }
+                case "pow" -> {
+                    arity(function, args, 2);
+                    yield Math.pow(args.get(0), args.get(1));
+                }
+                case "min" -> {
+                    arity(function, args, 2);
+                    yield Math.min(args.get(0), args.get(1));
+                }
+                case "max" -> {
+                    arity(function, args, 2);
+                    yield Math.max(args.get(0), args.get(1));
+                }
+                case "clamp" -> {
+                    arity(function, args, 3);
+                    // MythicLib 1.7.1 signature is clamp(min, value, max).
+                    yield Math.min(args.get(2), Math.max(args.get(0), args.get(1)));
+                }
+                case "non_zero" -> {
+                    arity(function, args, 2);
+                    yield args.get(0) == 0d ? args.get(1) : args.get(0);
+                }
+                case "sin" -> Math.sin(one(function, args));
+                case "cos" -> Math.cos(one(function, args));
+                case "tan" -> Math.tan(one(function, args));
+                case "sqrt" -> Math.sqrt(one(function, args));
+                case "abs" -> Math.abs(one(function, args));
+                case "floor" -> Math.floor(one(function, args));
+                case "ceil" -> Math.ceil(one(function, args));
+                case "round" -> Math.rint(one(function, args));
+                default -> throw new IllegalArgumentException("Unknown function " + function);
+            };
+        }
+
+        private static double one(String function, List<Double> args) {
+            arity(function, args, 1);
+            return args.get(0);
+        }
+
+        private static void arity(String function, List<Double> args, int expected) {
+            if (args.size() != expected) {
+                throw new IllegalArgumentException(function + " expects " + expected + " argument" + (expected == 1 ? "" : "s"));
+            }
+        }
+
+        private boolean peekWord(String expected) {
+            skipWhitespace();
+            if (!input.regionMatches(true, index, expected, 0, expected.length())) return false;
+            int end = index + expected.length();
+            return end == input.length() || !Character.isLetterOrDigit(input.charAt(end));
+        }
+
+        private String word() {
+            skipWhitespace();
+            int start = index;
+            while (index < input.length()) {
+                char current = input.charAt(index);
+                if (Character.isLetterOrDigit(current) || current == '_' || current == '.') index++;
+                else break;
+            }
+            return input.substring(start, index);
+        }
+
+        private void skipWhitespace() {
+            while (index < input.length() && Character.isWhitespace(input.charAt(index))) index++;
+        }
+
+        private boolean eat(String token) {
+            skipWhitespace();
+            if (!input.startsWith(token, index)) return false;
+            index += token.length();
+            return true;
+        }
+
+        private boolean peek(char token) {
+            skipWhitespace();
+            return index < input.length() && input.charAt(index) == token;
+        }
+    }
 }
