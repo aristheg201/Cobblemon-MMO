@@ -47,6 +47,7 @@ public interface ScriptPlatform {
     void entityEffect(UUID target, String effect);
     boolean hasItem(UUID player, String item, int amount);
     boolean takeItem(UUID player, String item, int amount);
+    boolean heldBooleanTag(UUID player, String tag);
     boolean takeAmmo(UUID player, int amount);
     boolean hasAmmo(UUID player, int amount);
 
