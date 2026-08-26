@@ -60,6 +60,8 @@ public class MMOPlayerData {
     private UUID nextSessionProfileBuffer;
     private final Object sessionLock = new Object();
     private final Map<UUID, ProfileSession> savedProfileSessions = new HashMap<>();
+    /** External plugin data cache used by MMOCore/MMOItems and other MMO modules. */
+    private final Map<String, Object> externalData = new HashMap<>();
     private long nextLeftClick;
     private final ProfileSession fallbackProfileSession = new ProfileSession(this, UUID.randomUUID());
 
@@ -109,7 +111,6 @@ public class MMOPlayerData {
     public UUID getOfficialId() { return officialId; }
 
     public void setOfficialId(UUID officialId) {
-        // Proxy-only profile ID remapping is retained when the native profile mode supports it.
         if (MythicLib.plugin.getProfileMode() != vn.svframe.svframelib.comp.profile.ProfileMode.PROXY) {
             throw new IllegalArgumentException("Player official IDs can only change in proxy profile mode");
         }
@@ -264,7 +265,6 @@ public class MMOPlayerData {
 
     public void triggerSkills(TriggerMetadata metadata, Iterable<PassiveSkill> passives, boolean checkFlags) {
         if (getPlayer().isSpectator()) return;
-        // Bukkit/WorldGuard flag integration is intentionally absent on Fabric when no native provider exists.
         for (PassiveSkill passive : passives) {
             SkillHandler<?> handler = passive.getTriggeredSkill().getHandler();
             if (handler.isTriggerable() && passive.getTrigger().equals(metadata.getTriggerType())) {
@@ -319,9 +319,6 @@ public class MMOPlayerData {
     }
 
     public static MMOPlayerData online(ServerPlayerEntity player) {
-        // Bukkit 1.7.1 checks Player#isOnline() before consulting the data cache.
-        // On Fabric the network handler is the authoritative equivalent: a stale
-        // ServerPlayerEntity must never make an offline MMOPlayerData look online.
         if (!player.networkHandler.isConnectionOpen()) return null;
         MMOPlayerData data = PLAYER_DATA.get(player.getUuid());
         return data != null && data.isOnline() ? data : null;
@@ -348,9 +345,25 @@ public class MMOPlayerData {
         PLAYER_DATA.values().removeIf(MMOPlayerData::isTimedOut);
     }
 
-    public <T> T getExternalData(String id, Class<T> type) { return null; }
-    public void setExternalData(String id, Object value) { }
-    public boolean hasExternalData(String id) { return false; }
+    @SuppressWarnings("unchecked")
+    public <T> T getExternalData(String id, Class<T> type) {
+        Objects.requireNonNull(id, "External data key cannot be null");
+        Objects.requireNonNull(type, "External data type cannot be null");
+        Object found = externalData.get(id);
+        if (found == null) return null;
+        if (!type.isInstance(found)) {
+            throw new ClassCastException("External data '" + id + "' is " + found.getClass().getName() + ", not " + type.getName());
+        }
+        return (T) found;
+    }
+
+    public void setExternalData(String id, Object value) {
+        externalData.put(Objects.requireNonNull(id, "External data key cannot be null"), value);
+    }
+
+    public boolean hasExternalData(String id) {
+        return externalData.containsKey(Objects.requireNonNull(id, "External data key cannot be null"));
+    }
 
     public static void forEachOnline(Consumer<MMOPlayerData> consumer) {
         for (MMOPlayerData data : PLAYER_DATA.values()) if (data.isOnline()) consumer.accept(data);
