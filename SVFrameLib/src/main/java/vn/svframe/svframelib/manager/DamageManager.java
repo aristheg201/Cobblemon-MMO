@@ -203,7 +203,7 @@ public class DamageManager extends Module {
     public synchronized AttackMetadata markAsMetadata(AttackMetadata attack) {
         Objects.requireNonNull(attack, "Attack metadata cannot be null");
         AttackMetadata previous = attackMetadatas.put(attack.getTarget().getUuid(), attack);
-        if (previous != null) plugin.getLogger().warning("Persistent attack metadata was found for " + attack.getTarget().getUuid());
+        if (previous != null) getPlugin().logger().warning("Persistent attack metadata was found for " + attack.getTarget().getUuid());
         return previous;
     }
 
