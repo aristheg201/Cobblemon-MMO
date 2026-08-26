@@ -43,10 +43,12 @@ jobs:
           PLATFORM="$SRC/java/vn/svframe/mythiclibfabric/runtime/script/ScriptPlatform.java"
           ENGINE="$SRC/java/vn/svframe/mythiclibfabric/runtime/script/ScriptEngine.java"
           DUMMY="$SRC/java/vn/svframe/svframelib/rpg/provided/DummyModule.java"
+          TARGET_STATUS="$SRC/java/vn/svframe/mythiclibfabric/NativeTargetStatusSkillRuntime.java"
 
           test -f "$PLATFORM"
           test -f "$ENGINE"
           test -f "$DUMMY"
+          test -f "$TARGET_STATUS"
           grep -q '"fabricloader": ">=0.18.4"' "$SRC/resources/fabric.mod.json"
           grep -q '"minecraft": "~1.21.1"' "$SRC/resources/fabric.mod.json"
 
@@ -82,6 +84,12 @@ jobs:
           grep -q 'experienceLevel' "$DUMMY"
           grep -q 'getHungerManager().setFoodLevel' "$DUMMY"
           grep -q 'getHungerManager().getFoodLevel' "$DUMMY"
+
+          grep -q 'minecraft:entity.enderman.hurt' "$TARGET_STATUS"
+          grep -q 'minecraft:entity.blaze.hurt' "$TARGET_STATUS"
+          grep -q 'minecraft:block.brewing_stand.brew' "$TARGET_STATUS"
+          grep -q 'minecraft:entity.llama.angry' "$TARGET_STATUS"
+          grep -q 'burnFireTicks(target.getFireTicks()' "$TARGET_STATUS"
 
       - name: Full tests, Loom build and remap
         shell: bash
