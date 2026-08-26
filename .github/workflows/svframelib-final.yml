@@ -72,8 +72,6 @@ jobs:
             exit 1
           fi
 
-          # Canonical 1.7.1 script execution must hit native services rather than
-          # the old private cooldown/raw-dispatch fallbacks.
           grep -q 'case "add_stat_modifier" -> platform.addStat' "$ENGINE"
           grep -q 'case "apply_cooldown" -> platform.applyCooldown' "$ENGINE"
           grep -q 'case "raytrace_blocks" -> raytraceBlocks' "$ENGINE"
@@ -91,6 +89,18 @@ jobs:
           set -euo pipefail
           cd SVFrameLib
           gradle --no-daemon --stacktrace clean test remapJar 2>&1 | tee build-parity.log
+
+      - name: Verify bundled 1.7.1 YAML corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/sv-defaults /tmp/sv-defaults-unpacked
+          cat SVFrameLib/src/main/resources/mythiclib-1.7.1-defaults.zip.part{1,2,3,4} > /tmp/sv-defaults/defaults.zip
+          echo 'fc68b690ccdd874c2c8c5ce6207218d19af6904938c1cd9437cfa4e7341ba86e  /tmp/sv-defaults/defaults.zip' | sha256sum -c -
+          unzip -q /tmp/sv-defaults/defaults.zip -d /tmp/sv-defaults-unpacked
+          java -cp SVFrameLib/build/classes/java/main vn.svframe.compat.YamlCorpusSmoke /tmp/sv-defaults-unpacked
+          java -cp SVFrameLib/build/classes/java/main vn.svframe.compat.YamlSkillCountSmoke /tmp/sv-defaults-unpacked/default/skill/default_skills.yml 93
+          java -cp SVFrameLib/build/classes/java/main vn.svframe.compat.YamlSkillCountSmoke /tmp/sv-defaults-unpacked/default/skill/example_skills.yml 1
 
       - name: Verify compatibility surface and JAR namespace
         shell: bash
@@ -130,6 +140,7 @@ jobs:
           cat build/svframelib-server.log
           if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
           grep -Eq 'SVFrameLib online|MythicLib Fabric online' build/svframelib-server.log
+          grep -Eq 'MythicLib Fabric online; skills=94,scripts=100,customTriggers=1' build/svframelib-server.log
           ! grep -q 'Mixin apply failed' build/svframelib-server.log
           ! grep -q 'Could not execute entrypoint stage' build/svframelib-server.log
           ! grep -q 'Exception in server tick loop' build/svframelib-server.log
@@ -157,5 +168,6 @@ jobs:
             SVFrameLib/validated
             SVFrameLib/build-parity.log
             SVFrameLib/build/svframelib-server.log
+            SVFrameLib/src/main/java
           if-no-files-found: warn
           retention-days: 14
