@@ -14,10 +14,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SkillMetadata {
     public final SkillOrientation orientation;
     public static final List<String> RESERVED_VARIABLE_NAMES = List.of("modifier", "parameter", "source", "targetLocation", "targetLoc", "target_loc", "target_location", "targetloc", "targetl", "caster", "attack", "stat", "target", "var", "rand", "random", "rdm");
+    public static final Pattern INTERNAL_PLACEHOLDER_PATTERN = Pattern.compile("<([^#&|!=<>]+)>");
 
     private final Skill cast;
     private final PlayerMetadata caster;
@@ -68,9 +71,75 @@ public class SkillMetadata {
     public SkillMetadata withTargetEntity(Entity next){return new SkillMetadata(cast,caster,next,sourceLocation,targetLocation,orientation,attackSource);}
     public SkillMetadata withTargetLocation(Vec3d next){return new SkillMetadata(cast,caster,targetEntity,sourceLocation,next,orientation,attackSource);}
 
-    public String parseString(String input){if(input==null)return "";String out=input;for(var e:vars.entrySet())out=out.replace("<"+e.getKey()+">",String.valueOf(e.getValue()));return out;}
-    public Object getVariable(String key){return vars.get(key);}
+    public String parseString(String input){
+        if(input==null)return "";
+        Matcher matcher=INTERNAL_PLACEHOLDER_PATTERN.matcher(input);
+        StringBuffer output=new StringBuffer(input.length());
+        while(matcher.find()){
+            String key=matcher.group(1);
+            Object value=resolveNumericOrObject(key);
+            if(value==null) continue;
+            matcher.appendReplacement(output,Matcher.quoteReplacement(String.valueOf(value)));
+        }
+        matcher.appendTail(output);
+        return output.toString();
+    }
+
+    /** Native compatibility variable lookup used by expression placeholders. */
+    public Object getVariable(String key){return resolveNumericOrObject(key);}
     public void setVariable(String key,Object value){if(value==null)vars.remove(key);else vars.put(key,value);}
+
+    private Object resolveNumericOrObject(String key){
+        if(key==null||key.isBlank())return null;
+        Object direct=vars.get(key);
+        if(direct!=null)return direct;
+        String[] path=key.split("\\.");
+        if(path.length==0)return null;
+        return switch(path[0]){
+            case "modifier","parameter" -> path.length>1?getParameter(path[1]):null;
+            case "stat" -> path.length>1?caster.getStat(path[1]):null;
+            case "random","rand","rdm" -> path.length>1&&path[1].equalsIgnoreCase("double")?Math.random():null;
+            case "source" -> coordinate(sourceLocation,path);
+            case "targetLocation","targetLoc","target_loc","target_location","targetloc","targetl" -> targetLocation==null?null:coordinate(targetLocation,path);
+            case "caster" -> casterValue(path);
+            case "target" -> targetValue(path);
+            case "var" -> path.length>1?vars.get(path[1]):null;
+            default -> direct;
+        };
+    }
+
+    private static Object coordinate(Vec3d location,String[] path){
+        if(path.length<2)return location;
+        return switch(path[1].toLowerCase(java.util.Locale.ROOT)){
+            case "x" -> location.x;
+            case "y" -> location.y;
+            case "z" -> location.z;
+            default -> null;
+        };
+    }
+
+    private Object casterValue(String[] path){
+        if(path.length<2)return caster.getPlayer();
+        return switch(path[1].toLowerCase(java.util.Locale.ROOT)){
+            case "x" -> caster.getPlayer().getX();
+            case "y" -> caster.getPlayer().getY();
+            case "z" -> caster.getPlayer().getZ();
+            case "health","hp" -> caster.getPlayer().getHealth();
+            default -> null;
+        };
+    }
+
+    private Object targetValue(String[] path){
+        if(targetEntity==null)return null;
+        if(path.length<2)return targetEntity;
+        return switch(path[1].toLowerCase(java.util.Locale.ROOT)){
+            case "x" -> targetEntity.getX();
+            case "y" -> targetEntity.getY();
+            case "z" -> targetEntity.getZ();
+            case "health","hp" -> targetEntity instanceof LivingEntity living?living.getHealth():null;
+            default -> null;
+        };
+    }
 
     public static SkillMetadata of(MMOPlayerData data){return of(data,EquipmentSlot.MAIN_HAND);}
     public static SkillMetadata of(MMOPlayerData data, EquipmentSlot actionHand){return of(data,actionHand,null,null,null,null,null,null);}
