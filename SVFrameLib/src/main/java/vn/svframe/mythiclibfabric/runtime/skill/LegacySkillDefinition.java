@@ -69,7 +69,6 @@ public record LegacySkillDefinition(String id, String source, String name, Strin
                     : modifier != null ? number(modifier, parameter.itemDefaultValue())
                     : parameter.itemDefaultValue();
             double resolved = playerValue + itemValue;
-            if (parameter.player().isInteger()) resolved = Math.floor(resolved);
             result.put(key, resolved);
             result.put("parameter." + key, resolved);
             result.put("modifier." + key, itemValue);
