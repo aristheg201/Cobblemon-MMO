@@ -26,6 +26,8 @@ public final class YamlSkillCountSmoke {
             Object rawSource = section.get("source");
             if (rawSource == null) continue;
             String source = String.valueOf(rawSource).trim();
+            if (source.length() >= 2 && ((source.startsWith("'") && source.endsWith("'")) || (source.startsWith("\"") && source.endsWith("\""))))
+                source = source.substring(1, source.length() - 1).trim();
             int colon = source.indexOf(':');
             String provider = colon < 0 ? "default" : source.substring(0, colon).trim();
             String internal = colon < 0 ? source : source.substring(colon + 1).trim();
@@ -35,8 +37,11 @@ public final class YamlSkillCountSmoke {
         }
         System.out.println("DEFAULT_SKILL_EXECUTORS=" + defaultSources);
         if (!missing.isEmpty()) throw new IllegalStateException("Missing native default skill executors: " + missing);
-        if (defaultSources != expected) throw new IllegalStateException("Expected " + expected + " default:* sources, got " + defaultSources);
-        if (NativeDefaultSkillRuntime.ids().size() != expected)
-            throw new IllegalStateException("Native runtime exposes " + NativeDefaultSkillRuntime.ids().size() + " IDs, expected " + expected);
+
+        // A pure default:* corpus (the bundled default_skills.yml) must have one native executor per definition.
+        // Mixed/non-default corpora such as example_skills.yml are still count-checked without incorrectly
+        // comparing their entry count to the global default runtime ID set.
+        if (defaultSources == actual && actual > 0 && NativeDefaultSkillRuntime.ids().size() != actual)
+            throw new IllegalStateException("Native runtime exposes " + NativeDefaultSkillRuntime.ids().size() + " IDs, expected " + actual);
     }
 }

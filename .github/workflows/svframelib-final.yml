@@ -101,6 +101,7 @@ jobs:
           java -cp SVFrameLib/build/classes/java/main vn.svframe.compat.YamlCorpusSmoke /tmp/sv-defaults-unpacked
           java -cp SVFrameLib/build/classes/java/main vn.svframe.compat.YamlSkillCountSmoke /tmp/sv-defaults-unpacked/default/skill/default_skills.yml 93
           java -cp SVFrameLib/build/classes/java/main vn.svframe.compat.YamlSkillCountSmoke /tmp/sv-defaults-unpacked/default/skill/example_skills.yml 1
+          java -cp SVFrameLib/build/classes/java/main vn.svframe.mythiclibfabric.NativeTargetStatusSemanticsSmoke
 
       - name: Verify compatibility surface and JAR namespace
         shell: bash
