@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.comp.adventure.tag.implementation.decorations;import vn.svframe.svframelib.comp.adventure.tag.AdventureTag;public class BoldTag extends AdventureTag{public BoldTag(){super("bold",(src,args)->"§l",true,false,"b");}}
