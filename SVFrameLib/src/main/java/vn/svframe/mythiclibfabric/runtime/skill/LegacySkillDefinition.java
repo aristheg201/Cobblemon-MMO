@@ -1,8 +1,12 @@
 package vn.svframe.mythiclibfabric.runtime.skill;
 
+import net.minecraft.server.network.ServerPlayerEntity;
+import vn.svframe.mythiclibfabric.MythicLibFabricMod;
+
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 /** Parsed legacy MythicLib skill definition and parameter resolver. */
 public record LegacySkillDefinition(String id, String source, String name, String trigger, String passiveType,
@@ -17,30 +21,20 @@ public record LegacySkillDefinition(String id, String source, String name, Strin
             for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
                 String key = String.valueOf(entry.getKey());
                 Object rawValue = entry.getValue();
-                if (rawValue instanceof Number number) {
-                    parsed.put(key, new Parameter(inferName(key), new ScalingFormula(number.doubleValue(), 0, -Double.MAX_VALUE, Double.MAX_VALUE), number.doubleValue()));
+                if (rawValue instanceof Number || rawValue instanceof String) {
+                    ScalingFormula formula = ScalingFormula.fromConfig(rawValue);
+                    parsed.put(key, new Parameter(inferName(key), formula,
+                            rawValue instanceof Number number ? number.doubleValue() : 0d));
                     continue;
                 }
                 if (!(rawValue instanceof Map<?, ?> rawSection)) continue;
                 Map<String, Object> parameter = (Map<String, Object>) rawSection;
                 Object rawPlayer = parameter.get("player");
-                ScalingFormula player;
-                if (rawPlayer instanceof Number number) {
-                    player = new ScalingFormula(number.doubleValue(), 0, -Double.MAX_VALUE, Double.MAX_VALUE);
-                } else if (rawPlayer instanceof Map<?, ?> rawPlayerMap) {
-                    Map<String, Object> values = (Map<String, Object>) rawPlayerMap;
-                    player = new ScalingFormula(
-                            number(values.get("base"), 0),
-                            number(first(values, "per-level", "per_level"), 0),
-                            number(values.get("min"), -Double.MAX_VALUE),
-                            number(values.get("max"), Double.MAX_VALUE));
-                } else {
-                    player = new ScalingFormula(0, 0, -Double.MAX_VALUE, Double.MAX_VALUE);
-                }
+                ScalingFormula player = ScalingFormula.fromConfig(rawPlayer);
                 parsed.put(key, new Parameter(
                         string(parameter.get("name"), inferName(key)),
                         player,
-                        number(parameter.get("item"), 0)));
+                        number(parameter.get("item"), 0d)));
             }
         }
         return new LegacySkillDefinition(
@@ -53,19 +47,29 @@ public record LegacySkillDefinition(String id, String source, String name, Strin
     }
 
     public Map<String, Object> resolveParameters(Map<String, ?> supplied) {
+        return resolveParameters(supplied, null);
+    }
+
+    public Map<String, Object> resolveParameters(Map<String, ?> supplied, UUID casterId) {
         LinkedHashMap<String, Object> result = new LinkedHashMap<>();
         if (supplied != null) result.putAll(supplied);
-        int level = Math.max(1, (int) Math.floor(supplied == null ? 1.0d : number(first(supplied, "skill-level", "skill_level", "level"), 1.0d)));
+        int level = Math.max(1, (int) Math.floor(supplied == null ? 1.0d
+                : number(first(supplied, "skill-level", "skill_level", "level"), 1.0d)));
+        ServerPlayerEntity player = null;
+        if (casterId != null && MythicLibFabricMod.server() != null)
+            player = MythicLibFabricMod.server().getPlayerManager().getPlayer(casterId);
+
         for (Map.Entry<String, Parameter> entry : parameters.entrySet()) {
             String key = entry.getKey();
             Parameter parameter = entry.getValue();
-            double playerValue = parameter.player().evaluate(level);
+            double playerValue = parameter.player().evaluate(level, player);
             Object direct = supplied == null ? null : supplied.get(key);
             Object modifier = supplied == null ? null : first(supplied, "modifier." + key, "item." + key);
-            double itemValue = direct instanceof Number n ? n.doubleValue()
-                    : modifier instanceof Number n ? n.doubleValue()
+            double itemValue = direct != null ? number(direct, parameter.itemDefaultValue())
+                    : modifier != null ? number(modifier, parameter.itemDefaultValue())
                     : parameter.itemDefaultValue();
             double resolved = playerValue + itemValue;
+            if (parameter.player().isInteger()) resolved = Math.floor(resolved);
             result.put(key, resolved);
             result.put("parameter." + key, resolved);
             result.put("modifier." + key, itemValue);
