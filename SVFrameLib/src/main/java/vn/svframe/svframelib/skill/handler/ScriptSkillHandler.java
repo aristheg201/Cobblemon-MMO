@@ -9,15 +9,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/** Bridge used while native Fabric implementations retain the 1.7.1 handler surface. */
 public class ScriptSkillHandler extends SkillHandler<SimpleSkillResult> {
     public ScriptSkillHandler(String id) { super(id); }
 
     public ScriptSkillHandler(String id, ConfigObject cfg) {
-        super(id);
+        super(id, cfg);
         if (cfg != null && cfg.contains("modifiers")) {
             String raw = cfg.getString("modifiers", "");
-            for (String modifier : raw.split("[,;\s]+"))
-                if (!modifier.isBlank()) registerModifiers(modifier.trim());
+            for (String modifier : raw.split("[,;\\s]+"))
+                if (!modifier.isBlank() && !getParameters().contains(modifier.trim())) registerModifiers(modifier.trim());
         }
     }
 
