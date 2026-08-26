@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.util;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
 
 /** Native Fabric equivalent of MythicLib 1.7.1 entity anchor locations. */
@@ -19,7 +18,6 @@ public enum EntityLocationType {
 
     public Vec3d getLocation(Entity entity) {
         if (entity == null) throw new NullPointerException("Entity cannot be null");
-        if (this == EYES && entity instanceof LivingEntity living) return living.getEyePos();
         return entity.getPos().add(0d, entity.getHeight() * heightPercentage, 0d);
     }
 }
