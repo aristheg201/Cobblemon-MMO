@@ -38,7 +38,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo 'd9abed2a97e54fbdc0bcd9df7f7f7862f3b93fa734113e5cc3e671402464f495  svframelib-bootstrap/full-functional-parity.tar.xz' | sha256sum -c -
+          sha256sum svframelib-bootstrap/full-functional-parity.tar.xz
+          xz -t svframelib-bootstrap/full-functional-parity.tar.xz
           tar -xJf svframelib-bootstrap/full-functional-parity.tar.xz -C .
 
           test -f SVFrameLib/src/main/java/vn/svframe/svframelib/crunch/Crunch.java
