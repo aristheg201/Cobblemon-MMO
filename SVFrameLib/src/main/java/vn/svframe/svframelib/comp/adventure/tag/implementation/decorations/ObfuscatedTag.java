@@ -1,0 +1,1 @@
+package vn.svframe.svframelib.comp.adventure.tag.implementation.decorations;import vn.svframe.svframelib.comp.adventure.tag.AdventureTag;public class ObfuscatedTag extends AdventureTag{public ObfuscatedTag(){super("obfuscated",(src,args)->"§k",true,false,"obf");}}
