@@ -47,6 +47,42 @@ public final class MythicLibRuntimeSmoke {
         Map<String,Object> ly = YamlLite.map(YamlLite.parse(legacyYaml));
         LegacySkillDefinition ld = LegacySkillDefinition.from("TEST", YamlLite.map(ly.get("TEST")));
         require(close(ld.parameters().get("damage").player().evaluate(5), 18), "legacy skill yaml");
+
+        String formulaYaml = "FORMULA:\n"
+                + "  source: default:FIREBALL\n"
+                + "  parameters:\n"
+                + "    mana:\n"
+                + "      player: 15 + 1.0 * {level}\n"
+                + "      item: 0\n"
+                + "    ignite:\n"
+                + "      player: min(2 + 1.1 * {level}, 10)\n"
+                + "      item: 0\n"
+                + "    decimal:\n"
+                + "      player:\n"
+                + "        formula: 1.5\n"
+                + "        int: true\n"
+                + "      item: 0\n"
+                + "    invalid-range:\n"
+                + "      player:\n"
+                + "        base: 10\n"
+                + "        per-level: 2\n"
+                + "        min: 100\n"
+                + "        max: 1\n"
+                + "      item: 0\n"
+                + "    fallback:\n"
+                + "      player:\n"
+                + "        formula: (\n"
+                + "        failsafe: 42\n"
+                + "      item: 0\n";
+        Map<String,Object> fy = YamlLite.map(YamlLite.parse(formulaYaml));
+        LegacySkillDefinition fd = LegacySkillDefinition.from("FORMULA", YamlLite.map(fy.get("FORMULA")));
+        Map<String,Object> resolvedFormula = fd.resolveParameters(Map.of("level", 5d));
+        require(close(number(resolvedFormula.get("mana")), 20d), "custom level formula");
+        require(close(number(resolvedFormula.get("ignite")), 7.5d), "custom function formula");
+        require(close(number(resolvedFormula.get("decimal")), 1.5d), "integer metadata does not truncate formula");
+        require(close(number(resolvedFormula.get("invalid-range")), 18d), "invalid linear range disables clamps");
+        require(close(number(resolvedFormula.get("fallback")), 42d), "custom formula failsafe");
+
         ExpressionRuntime expr = new ExpressionRuntime();
         require(close(expr.evaluate("(<x>+2)*3", Map.of("x",4d)),18), "expression runtime");
         TriggerRuntime triggers = new TriggerRuntime();
@@ -61,6 +97,7 @@ public final class MythicLibRuntimeSmoke {
         return out;
     }
 
+    private static double number(Object value) { return value instanceof Number number ? number.doubleValue() : Double.parseDouble(String.valueOf(value)); }
     private static boolean close(double a, double b) { return Math.abs(a - b) < 1e-9; }
     private static void require(boolean ok, String label) { if (!ok) throw new AssertionError(label); }
 }
