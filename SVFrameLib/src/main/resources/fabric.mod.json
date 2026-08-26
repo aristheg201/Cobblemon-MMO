@@ -1,11 +1,13 @@
 {
   "schemaVersion": 1,
-  "id": "mythiclibfabric",
+  "id": "svframelib",
   "version": "${version}",
-  "name": "MythicLib Fabric",
+  "name": "SVFrameLib",
+  "description": "Native Fabric 1.21.1 port of MythicLib 1.7.1.",
   "environment": "server",
   "entrypoints": {
     "main": [
+      "vn.svframe.mythiclibfabric.SVFrameLibBootstrap",
       "vn.svframe.mythiclibfabric.MythicLibFabricMod",
       "vn.svframe.mythiclibfabric.MythicLibStatMod",
       "vn.svframe.mythiclibfabric.MythicLibCombatMod",
@@ -15,9 +17,7 @@
       "vn.svframe.mythiclibfabric.MythicLibCraftingBootstrap"
     ]
   },
-  "mixins": [
-    "mythiclibfabric.mixins.json"
-  ],
+  "mixins": ["mythiclibfabric.mixins.json"],
   "depends": {
     "fabricloader": ">=0.18.4",
     "minecraft": "~1.21.1",
