@@ -62,11 +62,13 @@ public class Argument<T> {
         return Registries.ITEM.get(id);
     });
     public static final Argument<String> STAT = new Argument<>("stat", (explorer, out) -> out.addAll(MythicLib.plugin.getStats().getRegisteredStats()), (explorer, input) -> UtilityMethods.enumName(input));
-    public static final Argument<Boolean> BOOLEAN = choices("boolean", BooleanChoice.class).withAutoComplete((explorer, out) -> { out.add("true"); out.add("false"); }).withParser((explorer, input) -> {
-        if (input.equalsIgnoreCase("true")) return true;
-        if (input.equalsIgnoreCase("false")) return false;
-        throw new ArgumentParseException("Expected true or false, got '" + input + "'");
-    });
+    public static final Argument<Boolean> BOOLEAN = new Argument<>("boolean",
+            (explorer, out) -> { out.add("true"); out.add("false"); },
+            (explorer, input) -> {
+                if (input.equalsIgnoreCase("true")) return Boolean.TRUE;
+                if (input.equalsIgnoreCase("false")) return Boolean.FALSE;
+                throw new ArgumentParseException("Expected true or false, got '" + input + "'");
+            });
     public static final Argument<RegistryEntry<EntityAttribute>> VANILLA_ATTRIBUTE = new Argument<>("attribute", (explorer, out) -> Attributes.getAll().forEach(attribute -> out.add(Attributes.name(attribute))), (explorer, input) -> {
         try { return Attributes.fromName(input); }
         catch (IllegalArgumentException exception) { throw new ArgumentParseException("Could not find attribute '" + input + "'", exception); }
@@ -90,7 +92,11 @@ public class Argument<T> {
         this(key, -1, autoComplete, parser, fallback);
     }
     private Argument(String key, int index, BiConsumer<CommandTreeExplorer, List<String>> autoComplete, BiFunction<CommandTreeExplorer, String, T> parser, Function<CommandTreeExplorer, T> fallback) {
-        this.key = Objects.requireNonNull(key, "key"); this.indexInNode = index; this.autoComplete = autoComplete == null ? (e,l)->{} : autoComplete; this.parser = parser; this.fallback = fallback;
+        this.key = Objects.requireNonNull(key, "key");
+        this.indexInNode = index;
+        this.autoComplete = autoComplete == null ? (e, l) -> { } : autoComplete;
+        this.parser = parser;
+        this.fallback = fallback;
     }
 
     public String getKey() { return key; }
@@ -104,19 +110,19 @@ public class Argument<T> {
     public Argument<T> withKey(String value) { return new Argument<>(value, indexInNode, autoComplete, parser, fallback); }
     public Argument<T> withFallback(Function<CommandTreeExplorer, T> value) { return new Argument<>(key, indexInNode, autoComplete, parser, value); }
     public Argument<T> withDynamicFallback() { return withFallback(explorer -> { throw new ArgumentParseException("No dynamic fallback provided"); }); }
-    public Argument<T> empty() { return new Argument<>(key, indexInNode, (e,l)->{}, (e,s)->null, e->null); }
+    public Argument<T> empty() { return new Argument<>(key, indexInNode, (e, l) -> { }, (e, s) -> null, e -> null); }
     public void autoComplete(CommandTreeExplorer explorer, List<String> list) { autoComplete.accept(explorer, list); }
 
     public static <E extends Enum<E>> Argument<E> choices(String key, Class<E> type) {
         List<E> values = Arrays.asList(type.getEnumConstants());
-        return new Argument<>(key, (e,out) -> values.forEach(value -> out.add(value.name().toLowerCase(Locale.ROOT))), (e,input) -> {
+        return new Argument<>(key, (e, out) -> values.forEach(value -> out.add(value.name().toLowerCase(Locale.ROOT))), (e, input) -> {
             try { return Enum.valueOf(type, UtilityMethods.enumName(input)); }
             catch (IllegalArgumentException exception) { throw new ArgumentParseException("Invalid choice '" + input + "'", exception); }
         });
     }
     public static Argument<String> choices(String key, String... choices) {
         List<String> values = Arrays.asList(choices);
-        return new Argument<>(key, (e,out) -> out.addAll(values), (e,input) -> {
+        return new Argument<>(key, (e, out) -> out.addAll(values), (e, input) -> {
             if (!values.contains(input)) throw new ArgumentParseException("Invalid choice '" + input + "'");
             return input;
         });
@@ -125,20 +131,34 @@ public class Argument<T> {
     public Argument(String key, boolean ignored, BiConsumer<CommandTreeExplorer, List<String>> autoComplete) { this(key, autoComplete, null, explorer -> null); }
     public Argument(String key, Boolean ignored, BiConsumer<CommandTreeExplorer, List<String>> autoComplete) { this(key, autoComplete, null, explorer -> null); }
 
-    private Argument<T> withParser(BiFunction<CommandTreeExplorer, String, T> parser) { return new Argument<>(key, indexInNode, autoComplete, parser, fallback); }
-    private static void players(CommandTreeExplorer explorer, List<String> out) { explorer.getSender().getServer().getPlayerManager().getPlayerList().forEach(player -> out.add(player.getName().getString())); }
-    private static void amounts(CommandTreeExplorer explorer, List<String> out) { for (int i = 1; i <= 10; i++) out.add(Integer.toString(i)); }
-    private static Integer parseInt(String value) { try { return Integer.parseInt(value); } catch (NumberFormatException e) { throw new ArgumentParseException("Invalid integer '" + value + "'", e); } }
-    private static Double parseDouble(String value) { try { return Double.parseDouble(value); } catch (NumberFormatException e) { throw new ArgumentParseException("Invalid number '" + value + "'", e); } }
-    private static Long parseLong(String value) { try { return Long.parseLong(value); } catch (NumberFormatException e) { throw new ArgumentParseException("Invalid duration '" + value + "'", e); } }
+    private static void players(CommandTreeExplorer explorer, List<String> out) {
+        explorer.getSender().getServer().getPlayerManager().getPlayerList().forEach(player -> out.add(player.getName().getString()));
+    }
+    private static void amounts(CommandTreeExplorer explorer, List<String> out) {
+        for (int i = 1; i <= 10; i++) out.add(Integer.toString(i));
+    }
+    private static Integer parseInt(String value) {
+        try { return Integer.parseInt(value); }
+        catch (NumberFormatException e) { throw new ArgumentParseException("Invalid integer '" + value + "'", e); }
+    }
+    private static Double parseDouble(String value) {
+        try { return Double.parseDouble(value); }
+        catch (NumberFormatException e) { throw new ArgumentParseException("Invalid number '" + value + "'", e); }
+    }
+    private static Long parseLong(String value) {
+        try { return Long.parseLong(value); }
+        catch (NumberFormatException e) { throw new ArgumentParseException("Invalid duration '" + value + "'", e); }
+    }
     private static Entity resolveEntity(CommandTreeExplorer explorer, String input) {
         ServerPlayerEntity player = explorer.getSender().getServer().getPlayerManager().getPlayer(input);
         if (player != null) return player;
         try {
             java.util.UUID uuid = java.util.UUID.fromString(input);
-            for (var world : explorer.getSender().getServer().getWorlds()) { Entity entity = world.getEntity(uuid); if (entity != null) return entity; }
+            for (var world : explorer.getSender().getServer().getWorlds()) {
+                Entity entity = world.getEntity(uuid);
+                if (entity != null) return entity;
+            }
         } catch (IllegalArgumentException ignored) { }
         return null;
     }
-    private enum BooleanChoice { TRUE, FALSE }
 }

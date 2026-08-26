@@ -3,12 +3,10 @@ package io.lumine.mythic.lib.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import io.lumine.mythic.lib.command.argument.ArgumentParseException;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -36,8 +34,11 @@ public abstract class CommandTreeRoot extends CommandTreeNode {
     public CommandTreeRoot(String name, String description) { this(name, description, "", List.of(), VerboseMode.ALL); }
     private CommandTreeRoot(String name, String description, String permission, List<String> aliases, VerboseMode verbose) {
         super(null, Objects.requireNonNull(name, "name").toLowerCase(Locale.ROOT));
-        this.name = name; this.description = Objects.requireNonNullElse(description, ""); this.permission = Objects.requireNonNullElse(permission, "");
-        this.aliases = aliases == null ? List.of() : List.copyOf(aliases); this.verbose = Objects.requireNonNullElse(verbose, VerboseMode.ALL);
+        this.name = name;
+        this.description = Objects.requireNonNullElse(description, "");
+        this.permission = Objects.requireNonNullElse(permission, "");
+        this.aliases = aliases == null ? List.of() : List.copyOf(aliases);
+        this.verbose = Objects.requireNonNullElse(verbose, VerboseMode.ALL);
         this.usageMessage = "/" + name + " " + formatParameters();
     }
 
@@ -49,7 +50,9 @@ public abstract class CommandTreeRoot extends CommandTreeNode {
     public List<String> getAliases() { return aliases; }
     public String getUsageMessage() { return usageMessage; }
 
-    public static void setPermissionResolver(BiPredicate<ServerCommandSource, String> resolver) { permissionResolver = Objects.requireNonNull(resolver); }
+    public static void setPermissionResolver(BiPredicate<ServerCommandSource, String> resolver) {
+        permissionResolver = Objects.requireNonNull(resolver, "resolver");
+    }
 
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         registerLiteral(dispatcher, name);
@@ -58,7 +61,7 @@ public abstract class CommandTreeRoot extends CommandTreeNode {
 
     private void registerLiteral(CommandDispatcher<ServerCommandSource> dispatcher, String label) {
         LiteralArgumentBuilder<ServerCommandSource> literal = CommandManager.literal(label)
-                .requires(source -> permitted(source))
+                .requires(this::permitted)
                 .executes(context -> run(context.getSource(), new String[0]));
         literal.then(CommandManager.argument("args", StringArgumentType.greedyString())
                 .suggests((context, builder) -> {
@@ -66,7 +69,8 @@ public abstract class CommandTreeRoot extends CommandTreeNode {
                     String[] args = splitForCompletion(raw);
                     CommandTreeExplorer explorer = new CommandTreeExplorer(context.getSource(), this, true, args);
                     String prefix = args.length == 0 ? "" : args[args.length - 1].toLowerCase(Locale.ROOT);
-                    for (String suggestion : explorer.calculateTabCompletion()) if (suggestion.toLowerCase(Locale.ROOT).startsWith(prefix)) builder.suggest(suggestion);
+                    for (String suggestion : explorer.calculateTabCompletion())
+                        if (suggestion.toLowerCase(Locale.ROOT).startsWith(prefix)) builder.suggest(suggestion);
                     return builder.buildFuture();
                 })
                 .executes(context -> run(context.getSource(), split(StringArgumentType.getString(context, "args")))));
@@ -79,13 +83,16 @@ public abstract class CommandTreeRoot extends CommandTreeNode {
     }
 
     public int run(ServerCommandSource source, String[] args) {
-        if (!permitted(source)) { source.sendError(Text.literal("You don't have permission to use this command")); return 0; }
+        if (!permitted(source)) {
+            source.sendError(Text.literal("You don't have permission to use this command"));
+            return 0;
+        }
         CommandTreeExplorer explorer = new CommandTreeExplorer(source, this, false, args);
         try {
             CommandTreeNode.CommandResult result = explorer.getNode().execute(explorer, source, args);
             if (result == CommandTreeNode.CommandResult.THROW_USAGE) sendCommandUsage(explorer, explorer.getNode());
             return result == CommandTreeNode.CommandResult.FAILURE ? 0 : 1;
-        } catch (CommandException | ArgumentParseException exception) {
+        } catch (CommandException exception) {
             explorer.fail(exception.getMessage());
             return 0;
         } catch (RuntimeException exception) {
@@ -98,15 +105,29 @@ public abstract class CommandTreeRoot extends CommandTreeNode {
         for (String usage : node.calculateUsageList()) explorer.verbose("§e/" + usage);
     }
 
-    public List<String> calculateTabCompletion(ServerCommandSource source, String[] args) { return new CommandTreeExplorer(source, this, true, args).calculateTabCompletion(); }
+    public List<String> calculateTabCompletion(ServerCommandSource source, String[] args) {
+        return new CommandTreeExplorer(source, this, true, args).calculateTabCompletion();
+    }
 
-    private static String[] split(String raw) { return raw == null || raw.isBlank() ? new String[0] : raw.trim().split("\\s+"); }
+    private static String[] split(String raw) {
+        return raw == null || raw.isBlank() ? new String[0] : raw.trim().split("\\s+");
+    }
     private static String[] splitForCompletion(String raw) {
         if (raw == null || raw.isEmpty()) return new String[]{""};
         String[] values = raw.split("\\s+", -1);
         return values.length == 0 ? new String[]{""} : values;
     }
-    private static String string(Map<String, ?> map, String key, String fallback) { Object value = map == null ? null : map.get(key); return value == null ? fallback : String.valueOf(value); }
-    private static List<String> list(Map<String, ?> map, String key) { Object value = map == null ? null : map.get(key); if (value instanceof List<?> list) return list.stream().map(String::valueOf).toList(); return List.of(); }
-    private static VerboseMode verbose(Map<String, ?> map) { try { return VerboseMode.valueOf(string(map, "verbose", "ALL").toUpperCase(Locale.ROOT)); } catch (IllegalArgumentException ignored) { return VerboseMode.ALL; } }
+    private static String string(Map<String, ?> map, String key, String fallback) {
+        Object value = map == null ? null : map.get(key);
+        return value == null ? fallback : String.valueOf(value);
+    }
+    private static List<String> list(Map<String, ?> map, String key) {
+        Object value = map == null ? null : map.get(key);
+        if (value instanceof List<?> list) return list.stream().map(String::valueOf).toList();
+        return List.of();
+    }
+    private static VerboseMode verbose(Map<String, ?> map) {
+        try { return VerboseMode.valueOf(string(map, "verbose", "ALL").toUpperCase(Locale.ROOT)); }
+        catch (IllegalArgumentException ignored) { return VerboseMode.ALL; }
+    }
 }

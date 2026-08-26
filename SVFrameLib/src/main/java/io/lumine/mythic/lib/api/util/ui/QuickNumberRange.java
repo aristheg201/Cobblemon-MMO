@@ -1,31 +1,25 @@
 package io.lumine.mythic.lib.api.util.ui;
 
-public class QuickNumberRange {
-    private final double min, max;
-
-    public QuickNumberRange(double value) { this(value, value); }
-    public QuickNumberRange(double min, double max) { this.min = Math.min(min, max); this.max = Math.max(min, max); }
-    public double getMin() { return min; }
-    public double getMax() { return max; }
-    public boolean inRange(double value) { return value >= min && value <= max; }
-
-    public static QuickNumberRange fromString(String input) {
-        if (input == null || input.isBlank()) return new QuickNumberRange(1);
-        String value = input.trim();
-        int split = value.indexOf("..");
-        int separatorLength = 2;
-        if (split < 0) { split = value.indexOf('-'); separatorLength = 1; }
-        try {
-            return split > 0
-                    ? new QuickNumberRange(Double.parseDouble(value.substring(0, split).trim()), Double.parseDouble(value.substring(split + separatorLength).trim()))
-                    : new QuickNumberRange(Double.parseDouble(value));
-        } catch (RuntimeException ignored) {
-            return new QuickNumberRange(1);
-        }
+public class QuickNumberRange implements Cloneable {
+    private final Double minimumInclusive, maximumInclusive;
+    public QuickNumberRange(double value){this(value,value);} public QuickNumberRange(double min,double max){this(Double.valueOf(min),Double.valueOf(max));}
+    public QuickNumberRange(Double minimumInclusive,Double maximumInclusive){this.minimumInclusive=minimumInclusive;this.maximumInclusive=maximumInclusive;}
+    public Double getMinimumInclusive(){return minimumInclusive;} public Double getMaximumInclusive(){return maximumInclusive;}
+    public double getMin(){return minimumInclusive==null?Double.NEGATIVE_INFINITY:minimumInclusive;} public double getMax(){return maximumInclusive==null?Double.POSITIVE_INFINITY:maximumInclusive;}
+    public boolean hasMin(){return minimumInclusive!=null;} public boolean hasMax(){return maximumInclusive!=null;}
+    public boolean isSimple(){return hasMin()&&hasMax()&&maximumInclusive.equals(minimumInclusive);}
+    public double getAsDouble(double fallback){return hasMin()?minimumInclusive:hasMax()?maximumInclusive:fallback;}
+    public boolean inRange(double value){return (!hasMin()||value>=minimumInclusive)&&(!hasMax()||value<=maximumInclusive);}
+    public static QuickNumberRange getFromString(String input){return getFromString(input,null);} public static QuickNumberRange fromString(String input){return getFromString(input);}
+    public static QuickNumberRange getFromString(String input,FriendlyFeedbackProvider feedback){
+        if(input==null){FriendlyFeedbackProvider.log(feedback,FriendlyFeedbackCategory.ERROR,"No value provided to parse QuickNumberRange.");return null;}
+        String raw=input.trim(); if(raw.equals(".."))return new QuickNumberRange(null,null);
+        Double simple=parse(raw); if(simple!=null)return new QuickNumberRange(simple,simple);
+        int sep=raw.indexOf(".."); if(sep>=0&&raw.indexOf("..",sep+2)<0){String left=raw.substring(0,sep),right=raw.substring(sep+2);Double min=left.isEmpty()?null:parse(left),max=right.isEmpty()?null:parse(right);if((left.isEmpty()||min!=null)&&(right.isEmpty()||max!=null))return new QuickNumberRange(min,max);}
+        FriendlyFeedbackProvider.log(feedback,FriendlyFeedbackCategory.ERROR,"Invalid number range: {0}",raw);return null;
     }
-
-    /** MythicLib 1.7.1 public factory name retained for binary/source compatibility. */
-    public static QuickNumberRange getFromString(String input) { return fromString(input); }
-
-    @Override public String toString() { return min == max ? Double.toString(min) : min + ".." + max; }
+    private static Double parse(String value){try{return Double.parseDouble(value);}catch(RuntimeException ignored){return null;}}
+    @Override public String toString(){if(isSimple())return String.valueOf(maximumInclusive);return (hasMin()?minimumInclusive.toString():"")+".."+(hasMax()?maximumInclusive.toString():"");}
+    public String toStringColored(){if(isSimple())return "§e"+maximumInclusive;return "§e"+(hasMin()?minimumInclusive:"-?")+"§7..§e"+(hasMax()?maximumInclusive:"?");}
+    @Override public QuickNumberRange clone(){return new QuickNumberRange(minimumInclusive,maximumInclusive);}
 }

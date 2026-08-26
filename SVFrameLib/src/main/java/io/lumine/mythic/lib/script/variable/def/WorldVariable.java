@@ -1,1 +1,15 @@
-package io.lumine.mythic.lib.script.variable.def;import io.lumine.mythic.lib.script.variable.*;public class WorldVariable extends Variable<String>{private static final VariableRegistry REG=new SimpleVariableRegistry<>();public WorldVariable(String name,String value){super(name,value);}@Override public VariableRegistry<Variable<String>> getVariableRegistry(){return REG;}}
+package io.lumine.mythic.lib.script.variable.def;
+
+import io.lumine.mythic.lib.script.variable.*;
+import net.minecraft.server.world.ServerWorld;
+
+public class WorldVariable extends Variable<ServerWorld> {
+    public static final SimpleVariableRegistry<ServerWorld> VARIABLE_REGISTRY = new SimpleVariableRegistry<>();
+    static {
+        VARIABLE_REGISTRY.registerVariable("time", w -> new IntegerVariable("temp", (int)(w.getTimeOfDay()%24000L)));
+        VARIABLE_REGISTRY.registerVariable("name", w -> new StringVariable("temp", w.getRegistryKey().getValue().toString()));
+    }
+    public WorldVariable(String name, ServerWorld value){super(name,value);}
+    @Override public VariableRegistry<Variable<ServerWorld>> getVariableRegistry(){return VARIABLE_REGISTRY;}
+    @Override public String toString(){return getStored()==null?"None":getStored().getRegistryKey().getValue().toString();}
+}
