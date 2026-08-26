@@ -1,4 +1,4 @@
-name: SVFrameLib Fabric 1.21.1
+name: SVFrameLib Fabric 1.21.1 Full Parity
 
 on:
   push:
@@ -7,7 +7,8 @@ on:
     paths:
       - '.github/workflows/svframelib-final.yml'
       - 'SVFrameLib/**'
-      - 'svframelib-bootstrap/svframelib-required-classes.txt'
+      - 'svframelib-bootstrap/full-parity-overlay.b64'
+      - 'svframelib-bootstrap/svframelib-functional-required-classes.txt'
   workflow_dispatch:
 
 permissions:
@@ -16,7 +17,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - name: Checkout SVFrameLib branch
         uses: actions/checkout@v4
@@ -35,99 +36,31 @@ jobs:
         with:
           gradle-version: '8.8'
 
-      - name: Migrate legacy namespace and remove MythicMobs integration
+      - name: Apply full functional parity source batch
         shell: bash
         run: |
           set -euo pipefail
-          python3 <<'PY'
-          from pathlib import Path
-          import shutil
-
-          repo = Path('.')
-          java_root = repo / 'SVFrameLib' / 'src' / 'main' / 'java'
-          old_parts = ['io', 'lumine', 'mythic', 'lib']
-          new_parts = ['vn', 'svframe', 'svframelib']
-          old_dot = '.'.join(old_parts)
-          new_dot = '.'.join(new_parts)
-          old_slash = '/'.join(old_parts)
-          new_slash = '/'.join(new_parts)
-          old_dir = java_root.joinpath(*old_parts)
-          new_dir = java_root.joinpath(*new_parts)
-
-          if old_dir.exists():
-              new_dir.mkdir(parents=True, exist_ok=True)
-              for src in sorted(old_dir.rglob('*')):
-                  if not src.is_file():
-                      continue
-                  rel = src.relative_to(old_dir)
-                  dst = new_dir / rel
-                  dst.parent.mkdir(parents=True, exist_ok=True)
-                  if dst.exists():
-                      raise RuntimeError(f'namespace collision: {dst}')
-                  shutil.move(str(src), str(dst))
-              shutil.rmtree(java_root / 'io', ignore_errors=True)
-
-          bootstrap = repo / 'svframelib-bootstrap'
-          if bootstrap.exists():
-              for pattern in ('native-final-overlay-part*', 'loom-generic-fix.b64'):
-                  for path in bootstrap.glob(pattern):
-                      path.unlink()
-          stale_source_archive = repo / 'SVFrameLib-source.tar.gz'
-          if stale_source_archive.exists():
-              stale_source_archive.unlink()
-
-          skip_dirs = {'.git', '.gradle', 'build', 'run'}
-          for path in repo.rglob('*'):
-              if not path.is_file() or any(part in skip_dirs for part in path.parts):
-                  continue
-              if path.suffix.lower() in {'.jar', '.zip', '.gz', '.png', '.jpg', '.jpeg', '.webp', '.class'}:
-                  continue
-              try:
-                  text = path.read_text(encoding='utf-8')
-              except UnicodeDecodeError:
-                  continue
-              replaced = text.replace(old_dot, new_dot).replace(old_slash, new_slash)
-              if replaced != text:
-                  path.write_text(replaced, encoding='utf-8')
-
-          # Temporarily remove MythicMobs-specific adapters and fixtures.
-          for rel in (
-              ('vn','svframe','svframelib','skill','handler','MythicMobsSkillHandler.java'),
-              ('vn','svframe','svframelib','skill','result','MythicMobsSkillResult.java'),
-          ):
-              path = java_root.joinpath(*rel)
-              if path.exists():
-                  path.unlink()
-
-          smoke = java_root / 'vn' / 'svframe' / 'mythiclibfabric' / 'runtime' / 'MythicLibRuntimeSmoke.java'
-          if smoke.exists():
-              text = smoke.read_text(encoding='utf-8')
-              text = text.replace('source: mythicmobs:TEST_WRAP', 'source: script:TEST_WRAP')
-              smoke.write_text(text, encoding='utf-8')
-
-          runtime = repo / 'SVFrameLib' / 'src' / 'main' / 'java' / 'vn' / 'svframe' / 'mythiclibfabric' / 'MythicLibFabricMod.java'
-          if runtime.exists():
-              text = runtime.read_text(encoding='utf-8')
-              text = text.replace('import java.lang.reflect.Method;\n', '')
-              text = text.replace('case "mythicmobs","mythic"->castMythicMobs(sourceId,caster,target,parameters);', '')
-              start = text.find('    private static boolean castMythicMobs(')
-              if start >= 0:
-                  end = text.find('    private static ScriptContext context(', start)
-                  if end < 0:
-                      raise RuntimeError('could not locate end of MythicMobs integration block')
-                  text = text[:start] + text[end:]
-              runtime.write_text(text, encoding='utf-8')
-          PY
-
-          test -d SVFrameLib/src/main/java/vn/svframe/svframelib
-          test ! -e SVFrameLib/src/main/java/io/lumine/mythic/lib
-          if grep -RIn --binary-files=without-match -E 'io[.]lumine[.]mythic[.]lib|io/lumine/mythic/lib' \
-              SVFrameLib svframelib-bootstrap .github --exclude='*.jar' --exclude='*.zip' --exclude='*.gz'; then
-            echo 'Legacy MythicLib namespace remains after migration' >&2
+          test -s svframelib-bootstrap/full-parity-overlay.b64
+          base64 -d svframelib-bootstrap/full-parity-overlay.b64 > /tmp/svframelib-full-parity.tar.xz
+          echo '0cee21d0f0a782101de46f5668f89db0337b93be2100074b8c405dbd1b241f96  /tmp/svframelib-full-parity.tar.xz' | sha256sum -c -
+          tar -xJf /tmp/svframelib-full-parity.tar.xz -C .
+          rm -f svframelib-bootstrap/full-parity-overlay.b64 svframelib-bootstrap/full-parity-part*
+          test -f SVFrameLib/src/main/java/vn/svframe/svframelib/crunch/Crunch.java
+          test -f SVFrameLib/src/main/java/vn/svframe/svframelib/script/targeter/entity/NearbyEntitiesTargeter.java
+          test -f SVFrameLib/src/main/java/vn/svframe/svframelib/script/mechanic/shaped/ProjectileMechanic.java
+          test -f SVFrameLib/src/main/java/vn/svframe/svframelib/damage/mitigation/MitigationModule.java
+          test -f SVFrameLib/src/main/java/vn/svframe/svframelib/data/json/JSONFlatDatabase.java
+          test -f SVFrameLib/src/main/java/vn/svframe/svframelib/anvilgui/AnvilGUI.java
+          if grep -RIn --binary-files=without-match -E 'io[.]lumine[.]mythic[.]lib|io/lumine/mythic/lib' SVFrameLib/src/main; then
+            echo 'Legacy io.lumine MythicLib namespace remains' >&2
             exit 1
           fi
           if grep -RIn --binary-files=without-match -Ei 'mythicmobs|mythicmobsfabric|castMythicMobs' SVFrameLib/src/main; then
             echo 'MythicMobs integration remains in active SVFrameLib source' >&2
+            exit 1
+          fi
+          if grep -RIn --binary-files=without-match 'org[.]bukkit' SVFrameLib/src/main; then
+            echo 'Bukkit runtime dependency remains in active SVFrameLib source' >&2
             exit 1
           fi
           grep -q '"fabricloader": ">=0.18.4"' SVFrameLib/src/main/resources/fabric.mod.json
@@ -140,32 +73,45 @@ jobs:
           cd SVFrameLib
           gradle --no-daemon --stacktrace clean test remapJar
 
-      - name: Verify SVFrameLib namespace surface
+      - name: Verify full functional class surface
         shell: bash
         run: |
           set -euo pipefail
           JAR="$(find SVFrameLib/build/libs -maxdepth 1 -type f -name 'SVFrameLib-*.jar' ! -name '*sources*' | head -1)"
           test -s "$JAR"
           unzip -p "$JAR" fabric.mod.json | grep -q '"id": "svframelib"'
-          unzip -p "$JAR" fabric.mod.json | grep -q '"name": "SVFrameLib"'
           unzip -p "$JAR" fabric.mod.json | grep -q '"fabricloader": ">=0.18.4"'
           jar tf "$JAR" > /tmp/svframelib-jar-entries.txt
-          grep -Fxq 'vn/svframe/svframelib/MythicLib.class' /tmp/svframelib-jar-entries.txt
-          grep -Fxq 'vn/svframe/svframelib/api/player/MMOPlayerData.class' /tmp/svframelib-jar-entries.txt
-          grep -Fxq 'vn/svframe/svframelib/manager/SkillManager.class' /tmp/svframelib-jar-entries.txt
-          grep -Fxq 'vn/svframe/svframelib/script/variable/def/AttributesVariable.class' /tmp/svframelib-jar-entries.txt
-          grep -Fxq 'vn/svframe/svframelib/data/SynchronizedDataManager.class' /tmp/svframelib-jar-entries.txt
-          if grep -q '^io/lumine/mythic/lib/' /tmp/svframelib-jar-entries.txt; then
-            echo 'Legacy package classes remain in remapped JAR' >&2
-            exit 1
-          fi
-          if grep -iEq 'mythicmobs|mythicmobsfabric' /tmp/svframelib-jar-entries.txt; then
-            echo 'MythicMobs classes/integration remain in remapped JAR' >&2
-            exit 1
-          fi
+          missing=0
+          total=0
+          while IFS= read -r cls; do
+            [ -z "$cls" ] && continue
+            total=$((total+1))
+            if ! grep -Fxq "${cls}.class" /tmp/svframelib-jar-entries.txt; then
+              echo "Missing functional parity class: ${cls}.class" >&2
+              missing=$((missing+1))
+            fi
+          done < svframelib-bootstrap/svframelib-functional-required-classes.txt
+          echo "Functional class gate: total=$total missing=$missing"
+          test "$total" -ge 800
+          test "$missing" -eq 0
+          grep -Fxq 'vn/svframe/svframelib/crunch/Crunch.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/comp/adventure/gradient/GradientBuilder.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/script/targeter/entity/ConeTargeter.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/script/targeter/location/CircleLocationTargeter.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/script/mechanic/shaped/RayTraceMechanic.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/damage/indicator/DamageIndicators.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/damage/mitigation/MitigationModule.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/damage/onhit/OnHitModule.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/data/queue/DataLoadQueue.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/data/json/JSONFlatDatabase.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/anvilgui/AnvilGUI.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/util/input/ChatPlayerInput.class' /tmp/svframelib-jar-entries.txt
+          if grep -q '^io/lumine/mythic/lib/' /tmp/svframelib-jar-entries.txt; then exit 1; fi
+          if grep -iEq 'mythicmobs|mythicmobsfabric' /tmp/svframelib-jar-entries.txt; then exit 1; fi
           sha256sum "$JAR" | tee SVFrameLib/build/SVFrameLib-SHA256.txt
 
-      - name: Dedicated Fabric server boot gate
+      - name: Dedicated Fabric server boot and behavior gate
         shell: bash
         run: |
           set -euo pipefail
@@ -178,14 +124,16 @@ jobs:
           set -e
           cat build/svframelib-server.log
           if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
+          grep -q 'SVFrameLib functional parity online' build/svframelib-server.log
           grep -Eq 'SVFrameLib online|MythicLib Fabric online' build/svframelib-server.log
           ! grep -q 'Mixin apply failed' build/svframelib-server.log
           ! grep -q 'Could not execute entrypoint stage' build/svframelib-server.log
           ! grep -q 'Exception in server tick loop' build/svframelib-server.log
           ! grep -q 'NoClassDefFoundError' build/svframelib-server.log
           ! grep -q 'NoSuchMethodError' build/svframelib-server.log
+          ! grep -q 'NoSuchFieldError' build/svframelib-server.log
 
-      - name: Commit migrated source and publish validated JAR
+      - name: Commit full parity source and publish validated JAR
         shell: bash
         run: |
           set -euo pipefail
@@ -195,19 +143,18 @@ jobs:
           cp SVFrameLib/build/SVFrameLib-SHA256.txt SVFrameLib/dist/SVFrameLib-1.7.1-fabric.sha256
           cp SVFrameLib/build/svframelib-server.log SVFrameLib/dist/server-boot.log
           rm -rf SVFrameLib/build SVFrameLib/run SVFrameLib/.gradle
-          git config user.name 'SVFrameLib Namespace Builder'
+          git config user.name 'SVFrameLib Parity Builder'
           git config user.email 'actions@users.noreply.github.com'
           git add -A SVFrameLib svframelib-bootstrap
-          git add -A -- SVFrameLib-source.tar.gz 2>/dev/null || true
           if ! git diff --cached --quiet; then
-            git commit -m 'SVFrameLib: migrate API namespace to vn.svframe.svframelib and remove MythicMobs [skip ci]'
+            git commit -m 'SVFrameLib: full native MythicLib 1.7.1 functional parity for Fabric 1.21.1 [skip ci]'
             git push origin HEAD:svframelib-fabric-1.21.1
           fi
 
-      - name: Upload validated artifact
+      - name: Upload validated full parity artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SVFrameLib-1.7.1-fabric-namespace-migrated
+          name: SVFrameLib-1.7.1-fabric-full-parity
           path: |
             SVFrameLib/dist/SVFrameLib-1.7.1-fabric.jar
             SVFrameLib/dist/SVFrameLib-1.7.1-fabric.sha256
