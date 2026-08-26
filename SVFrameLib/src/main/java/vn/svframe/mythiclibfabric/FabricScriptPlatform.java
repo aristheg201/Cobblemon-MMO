@@ -167,11 +167,11 @@ final class FabricScriptPlatform implements ScriptPlatform {
         if (entity == null) return;
         String normalized = effect == null ? "" : effect.trim().toUpperCase(Locale.ROOT);
         byte status = switch (normalized) {
-            case "HURT" -> EntityStatuses.DAMAGE_FROM_GENERIC_SOURCE;
+            case "HURT" -> (byte) 2;
             case "DEATH" -> EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES;
-            case "THORNS", "HURT_THORNS" -> EntityStatuses.DAMAGE_FROM_THORNS;
-            case "DROWN", "DROWNING", "HURT_DROWNED" -> EntityStatuses.DAMAGE_FROM_DROWNING;
-            case "BURN", "FIRE", "HURT_FIRE" -> EntityStatuses.DAMAGE_FROM_FIRE;
+            case "THORNS", "HURT_THORNS" -> (byte) 2;
+            case "DROWN", "DROWNING", "HURT_DROWNED" -> (byte) 2;
+            case "BURN", "FIRE", "HURT_FIRE" -> (byte) 2;
             case "TOTEM", "TOTEM_RESURRECT", "TOTEM_OF_UNDYING" -> EntityStatuses.USE_TOTEM_OF_UNDYING;
             default -> parseEntityStatus(normalized);
         };
