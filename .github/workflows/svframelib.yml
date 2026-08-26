@@ -35,11 +35,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.8'
-      - name: Restore all canonical MythicLib source overlays
+      - name: Restore baseline native source
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf seed overlays && mkdir -p seed overlays
+          rm -rf seed && mkdir -p seed
           cat moddev/fabric-mmo-ports/bootstrap-m0.8/chunks/part* | base64 -d > seed.tar.gz
           echo '99f090bc86fe3e57215e009d55ff3eadf7582cf1418d98052a978922872fa75c  seed.tar.gz' | sha256sum -c -
           tar -xzf seed.tar.gz -C seed
@@ -48,43 +48,12 @@ jobs:
             [ ! -d "$src" ] || cp -an "$src"/. target/SVFrameLib/src/main/java/
           done
           [ ! -d seed/fabric-platform/mythiclib-fabric/src/main/resources ] || cp -an seed/fabric-platform/mythiclib-fabric/src/main/resources/. target/SVFrameLib/src/main/resources/
-
-          # M2.0-M2.4 are later real Java source overlays from Mod-dev. Reconstruct
-          # each checksum-verified archive and materialize missing MythicLib source
-          # into the canonical SVFrameLib tree; existing newer files always win.
-          for ver in m2.0 m2.1 m2.2 m2.3 m2.4; do
-            root="moddev/fabric-mmo-ports/overlay-$ver"
-            [ -d "$root" ] || continue
-            if [ -x "$root/reconstruct-source.sh" ]; then
-              "$root/reconstruct-source.sh"
-            else
-              bash "$root/reconstruct-source.sh"
-            fi
-            archive="$root/source.tar.gz"
-            out="overlays/$ver"
-            mkdir -p "$out"
-            tar -xzf "$archive" -C "$out"
-            while IFS= read -r src; do
-              if [ -d "$src/io/lumine/mythic/lib" ]; then
-                mkdir -p target/SVFrameLib/src/main/java/io/lumine/mythic/lib
-                cp -an "$src/io/lumine/mythic/lib"/. target/SVFrameLib/src/main/java/io/lumine/mythic/lib/
-              fi
-              if [ -d "$src/vn/svframe/mythiclibfabric" ]; then
-                mkdir -p target/SVFrameLib/src/main/java/vn/svframe/mythiclibfabric
-                cp -an "$src/vn/svframe/mythiclibfabric"/. target/SVFrameLib/src/main/java/vn/svframe/mythiclibfabric/
-              fi
-            done < <(find "$out" -type d -path '*/src/main/java' -print)
-            while IFS= read -r res; do
-              cp -an "$res"/. target/SVFrameLib/src/main/resources/
-            done < <(find "$out" -type d -path '*/src/main/resources' -print)
-          done
-
           cd target
           git config user.name 'SVFrameLib Builder'
           git config user.email 'actions@users.noreply.github.com'
           git add SVFrameLib
           if ! git diff --cached --quiet; then
-            git commit -m 'SVFrameLib: materialize complete Mod-dev source overlays'
+            git commit -m 'SVFrameLib: restore missing native runtime source'
             git push origin HEAD:svframelib-fabric-1.21.1
           fi
       - name: Full build and remap
