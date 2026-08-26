@@ -6,6 +6,7 @@ on:
       - svframelib-fabric-1.21.1
     paths:
       - '.github/workflows/svframelib.yml'
+      - 'SVFrameLib/**'
   workflow_dispatch:
 
 permissions:
@@ -51,7 +52,10 @@ jobs:
           git config user.name 'SVFrameLib Builder'
           git config user.email 'actions@users.noreply.github.com'
           git add SVFrameLib
-          if ! git diff --cached --quiet; then git commit -m 'SVFrameLib: restore missing native runtime source'; git push origin HEAD:svframelib-fabric-1.21.1; fi
+          if ! git diff --cached --quiet; then
+            git commit -m 'SVFrameLib: restore missing native runtime source'
+            git push origin HEAD:svframelib-fabric-1.21.1
+          fi
       - name: Full build and remap
         shell: bash
         run: |
@@ -107,5 +111,3 @@ jobs:
             target/SVFrameLib/dist/server-boot.log
           if-no-files-found: error
           retention-days: 14
-
-# build trigger: native API batch 1
