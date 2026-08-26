@@ -1,26 +1,298 @@
 package vn.svframe.compat;
-import java.io.*;import java.nio.file.*;import java.util.*;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/** Minimal YAML reader for MythicLib's bundled 1.7.1 configuration corpus. */
 public final class YamlLite {
- private record Line(int indent,String text){}
- private final List<Line> lines; private int index;
- private YamlLite(List<Line> lines){this.lines=lines;}
- public static Object parse(String text){text=text.replace("\uFEFF",""); String trimmed=text.trim(); if(trimmed.equals("{}")) return new LinkedHashMap<String,Object>(); if(trimmed.equals("[]")) return new ArrayList<Object>(); List<Line> ls=new ArrayList<>();for(String raw:text.replace("\r","").split("\n")){String clean=stripComment(raw);if(clean.isBlank())continue;int n=0;while(n<clean.length()&&clean.charAt(n)==' ')n++;if(n<clean.length()&&clean.charAt(n)=='\t')throw new IllegalArgumentException("tabs not supported");ls.add(new Line(n,clean.substring(n)));}return ls.isEmpty()?new LinkedHashMap<>():new YamlLite(ls).block(ls.get(0).indent());}
- public static Object parse(Path path)throws IOException{return parse(Files.readString(path));}
- @SuppressWarnings("unchecked") public static Map<String,Object> map(Object o){return (Map<String,Object>)o;} @SuppressWarnings("unchecked") public static List<Object> list(Object o){return (List<Object>)o;}
- private Object block(int indent){if(index>=lines.size())return new LinkedHashMap<>();return lines.get(index).text().startsWith("- ")||lines.get(index).text().equals("-")?listBlock(indent):mapBlock(indent);}
- private Map<String,Object> mapBlock(int indent){Map<String,Object> out=new LinkedHashMap<>();while(index<lines.size()){Line l=lines.get(index);if(l.indent()<indent)break;if(l.indent()!=indent||l.text().startsWith("- "))break;int colon=findColon(l.text());if(colon<0)throw new IllegalArgumentException("expected key: value at "+l.text());String key=unquote(l.text().substring(0,colon).trim());String rhs=l.text().substring(colon+1).trim();index++;Object value;if(!rhs.isEmpty()){String joined=rhs;if(index<lines.size()&&lines.get(index).indent()>indent&&isScalarContinuation(rhs)){StringBuilder b=new StringBuilder(rhs);while(index<lines.size()&&lines.get(index).indent()>indent){b.append(" ").append(lines.get(index).text().trim());index++;if(quoteClosed(b.toString()))break;}joined=b.toString();}value=scalar(joined);}else if(index<lines.size()&&lines.get(index).indent()>indent)value=block(lines.get(index).indent());else if(index<lines.size()&&lines.get(index).indent()==indent&&lines.get(index).text().startsWith("-"))value=listBlock(indent);else value=new LinkedHashMap<String,Object>();out.put(key,value);}return out;}
- private List<Object> listBlock(int indent){List<Object> out=new ArrayList<>();while(index<lines.size()){Line l=lines.get(index);if(l.indent()<indent)break;if(l.indent()!=indent||!l.text().startsWith("-"))break;String rest=l.text().length()==1?"":l.text().substring(1).trim();index++;if(rest.isEmpty()){out.add(index<lines.size()&&lines.get(index).indent()>indent?block(lines.get(index).indent()):null);continue;}int colon=findMappingColon(rest);if(colon>0&&!isQuoted(rest)){Map<String,Object> m=new LinkedHashMap<>();String key=unquote(rest.substring(0,colon).trim());String rhs=rest.substring(colon+1).trim();if(!rhs.isEmpty())m.put(key,scalar(rhs));else if(index<lines.size()&&lines.get(index).indent()>indent)m.put(key,block(lines.get(index).indent()));else m.put(key,new LinkedHashMap<>());if(index<lines.size()&&lines.get(index).indent()>indent){int child=lines.get(index).indent();if(!lines.get(index).text().startsWith("- "))m.putAll(mapBlock(child));}out.add(m);}else{if(index<lines.size()&&lines.get(index).indent()>indent){StringBuilder joined=new StringBuilder(rest);while(index<lines.size()&&lines.get(index).indent()>indent){joined.append(" ").append(lines.get(index).text().trim());index++;}out.add(scalar(joined.toString()));}else out.add(scalar(rest));}}return out;}
+    private record Line(int indent, String text) { }
 
- private static boolean isScalarContinuation(String s){s=s.trim();if(s.startsWith("'")&&!s.endsWith("'"))return true;if(s.startsWith("\"")&&!s.endsWith("\""))return true;return false;}
- private static boolean quoteClosed(String s){s=s.trim();if(s.startsWith("'"))return s.length()>1&&s.endsWith("'");if(s.startsWith("\""))return s.length()>1&&s.endsWith("\"");return true;}
- private static Object scalar(String s){s=s.trim();if(s.isEmpty())return "";if((s.startsWith("'")&&s.endsWith("'"))||(s.startsWith("\"")&&s.endsWith("\"")))return unquote(s);if(s.equalsIgnoreCase("true"))return true;if(s.equalsIgnoreCase("false"))return false;if(s.equalsIgnoreCase("null")||s.equals("~"))return null;if(s.startsWith("[")&&s.endsWith("]"))return inlineList(s.substring(1,s.length()-1));if(s.startsWith("{")&&s.endsWith("}"))return inlineMap(s.substring(1,s.length()-1));try{if(s.matches("[-+]?\\d+"))return Long.parseLong(s);if(s.matches("[-+]?(?:\\d+\\.\\d*|\\d*\\.\\d+)(?:[eE][-+]?\\d+)?"))return Double.parseDouble(s);}catch(NumberFormatException ignored){}return s;}
- private static List<Object> inlineList(String body){List<Object> out=new ArrayList<>();for(String p:splitTop(body,','))if(!p.isBlank())out.add(scalar(p));return out;}
- private static Map<String,Object> inlineMap(String body){Map<String,Object> out=new LinkedHashMap<>();for(String p:splitTop(body,',')){int c=findColon(p);if(c<0)continue;out.put(unquote(p.substring(0,c).trim()),scalar(p.substring(c+1)));}return out;}
- private static List<String> splitTop(String s,char sep){List<String> out=new ArrayList<>();int depth=0;char quote=0;int start=0;for(int i=0;i<s.length();i++){char c=s.charAt(i);if(quote!=0){if(c==quote&& (i==0||s.charAt(i-1)!='\\'))quote=0;continue;}if(c=='\''||c=='\"'){quote=c;continue;}if(c=='['||c=='{')depth++;else if(c==']'||c=='}')depth--;else if(c==sep&&depth==0){out.add(s.substring(start,i).trim());start=i+1;}}out.add(s.substring(start).trim());return out;}
+    private final List<Line> lines;
+    private int index;
 
- private static int findMappingColon(String s){char q=0;int depth=0;for(int i=0;i<s.length();i++){char c=s.charAt(i);if(q!=0){if(c==q&&(i==0||s.charAt(i-1)!='\\'))q=0;continue;}if(c=='\''||c=='\"')q=c;else if(c=='['||c=='{')depth++;else if(c==']'||c=='}')depth--;else if(c==':'&&depth==0&&(i+1==s.length()||Character.isWhitespace(s.charAt(i+1))))return i;}return -1;}
- private static int findColon(String s){char q=0;int depth=0;for(int i=0;i<s.length();i++){char c=s.charAt(i);if(q!=0){if(c==q&&(i==0||s.charAt(i-1)!='\\'))q=0;continue;}if(c=='\''||c=='\"')q=c;else if(c=='['||c=='{')depth++;else if(c==']'||c=='}')depth--;else if(c==':'&&depth==0)return i;}return -1;}
- private static boolean isQuoted(String s){return (s.startsWith("'")&&s.endsWith("'"))||(s.startsWith("\"")&&s.endsWith("\""));}
- private static String unquote(String s){if(isQuoted(s))s=s.substring(1,s.length()-1);return s.replace("\\\"","\"").replace("\\'","'");}
- private static String stripComment(String s){char q=0;for(int i=0;i<s.length();i++){char c=s.charAt(i);if(q!=0){if(c==q&&(i==0||s.charAt(i-1)!='\\'))q=0;}else if(c=='\''||c=='\"')q=c;else if(c=='#'&&(i==0||Character.isWhitespace(s.charAt(i-1))))return rtrim(s.substring(0,i));}return rtrim(s);}private static String rtrim(String s){int i=s.length();while(i>0&&Character.isWhitespace(s.charAt(i-1)))i--;return s.substring(0,i);}
+    private YamlLite(List<Line> lines) {
+        this.lines = lines;
+    }
+
+    public static Object parse(String text) {
+        text = text.replace("\uFEFF", "");
+        String trimmed = text.trim();
+        if (trimmed.equals("{}")) return new LinkedHashMap<String, Object>();
+        if (trimmed.equals("[]")) return new ArrayList<Object>();
+
+        List<Line> parsed = new ArrayList<>();
+        for (String raw : text.replace("\r", "").split("\n")) {
+            String clean = stripComment(raw);
+            if (clean.isBlank()) continue;
+            int indent = 0;
+            while (indent < clean.length() && clean.charAt(indent) == ' ') indent++;
+            if (indent < clean.length() && clean.charAt(indent) == '\t')
+                throw new IllegalArgumentException("tabs not supported");
+            parsed.add(new Line(indent, clean.substring(indent)));
+        }
+        return parsed.isEmpty() ? new LinkedHashMap<>() : new YamlLite(parsed).block(parsed.getFirst().indent());
+    }
+
+    public static Object parse(Path path) throws IOException {
+        return parse(Files.readString(path));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> map(Object object) {
+        return (Map<String, Object>) object;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static List<Object> list(Object object) {
+        return (List<Object>) object;
+    }
+
+    private Object block(int indent) {
+        if (index >= lines.size()) return new LinkedHashMap<>();
+        String text = lines.get(index).text();
+        return text.startsWith("- ") || text.equals("-") ? listBlock(indent) : mapBlock(indent);
+    }
+
+    private Map<String, Object> mapBlock(int indent) {
+        Map<String, Object> out = new LinkedHashMap<>();
+        while (index < lines.size()) {
+            Line line = lines.get(index);
+            if (line.indent() < indent) break;
+            if (line.indent() != indent || line.text().startsWith("- ")) break;
+
+            int colon = findColon(line.text());
+            if (colon < 0) throw new IllegalArgumentException("expected key: value at " + line.text());
+            String key = unquote(line.text().substring(0, colon).trim());
+            String rhs = line.text().substring(colon + 1).trim();
+            index++;
+
+            Object value;
+            if (!rhs.isEmpty()) {
+                String joined = rhs;
+                if (index < lines.size() && lines.get(index).indent() > indent
+                        && isScalarContinuationLine(rhs, lines.get(index).text())) {
+                    StringBuilder builder = new StringBuilder(rhs);
+                    while (index < lines.size() && lines.get(index).indent() > indent
+                            && isScalarContinuationLine(builder.toString(), lines.get(index).text())) {
+                        builder.append(' ').append(lines.get(index).text().trim());
+                        index++;
+                        if (isQuotedStart(builder.toString()) && quoteClosed(builder.toString())) break;
+                    }
+                    joined = builder.toString();
+                }
+                value = scalar(joined);
+            } else if (index < lines.size() && lines.get(index).indent() > indent) {
+                value = block(lines.get(index).indent());
+            } else if (index < lines.size() && lines.get(index).indent() == indent
+                    && lines.get(index).text().startsWith("-")) {
+                value = listBlock(indent);
+            } else {
+                value = new LinkedHashMap<String, Object>();
+            }
+            out.put(key, value);
+        }
+        return out;
+    }
+
+    private List<Object> listBlock(int indent) {
+        List<Object> out = new ArrayList<>();
+        while (index < lines.size()) {
+            Line line = lines.get(index);
+            if (line.indent() < indent) break;
+            if (line.indent() != indent || !line.text().startsWith("-")) break;
+
+            String rest = line.text().length() == 1 ? "" : line.text().substring(1).trim();
+            index++;
+            if (rest.isEmpty()) {
+                out.add(index < lines.size() && lines.get(index).indent() > indent
+                        ? block(lines.get(index).indent()) : null);
+                continue;
+            }
+
+            int colon = findMappingColon(rest);
+            if (colon > 0 && !isQuoted(rest)) {
+                Map<String, Object> map = new LinkedHashMap<>();
+                String key = unquote(rest.substring(0, colon).trim());
+                String rhs = rest.substring(colon + 1).trim();
+                if (!rhs.isEmpty()) map.put(key, scalar(rhs));
+                else if (index < lines.size() && lines.get(index).indent() > indent)
+                    map.put(key, block(lines.get(index).indent()));
+                else map.put(key, new LinkedHashMap<>());
+
+                if (index < lines.size() && lines.get(index).indent() > indent) {
+                    int child = lines.get(index).indent();
+                    if (!lines.get(index).text().startsWith("- ")) map.putAll(mapBlock(child));
+                }
+                out.add(map);
+            } else {
+                if (index < lines.size() && lines.get(index).indent() > indent
+                        && isScalarContinuationLine(rest, lines.get(index).text())) {
+                    StringBuilder joined = new StringBuilder(rest);
+                    while (index < lines.size() && lines.get(index).indent() > indent
+                            && isScalarContinuationLine(joined.toString(), lines.get(index).text())) {
+                        joined.append(' ').append(lines.get(index).text().trim());
+                        index++;
+                        if (isQuotedStart(joined.toString()) && quoteClosed(joined.toString())) break;
+                    }
+                    out.add(scalar(joined.toString()));
+                } else {
+                    out.add(scalar(rest));
+                }
+            }
+        }
+        return out;
+    }
+
+    private static boolean isQuotedStart(String value) {
+        value = value.trim();
+        return value.startsWith("'") || value.startsWith("\"");
+    }
+
+    private static boolean isScalarContinuationLine(String current, String next) {
+        current = current.trim();
+        next = next.trim();
+        if (isQuotedStart(current) && !quoteClosed(current)) return true;
+        if (next.isEmpty() || next.startsWith("-")) return false;
+        return findMappingColon(next) < 0;
+    }
+
+    private static boolean quoteClosed(String value) {
+        value = value.trim();
+        if (value.startsWith("'")) return value.length() > 1 && value.endsWith("'");
+        if (value.startsWith("\"")) return value.length() > 1 && value.endsWith("\"");
+        return true;
+    }
+
+    private static Object scalar(String value) {
+        value = value.trim();
+        if (value.isEmpty()) return "";
+        if ((value.startsWith("'") && value.endsWith("'"))
+                || (value.startsWith("\"") && value.endsWith("\""))) return unquote(value);
+        if (value.equalsIgnoreCase("true")) return true;
+        if (value.equalsIgnoreCase("false")) return false;
+        if (value.equalsIgnoreCase("null") || value.equals("~")) return null;
+        if (value.startsWith("[") && value.endsWith("]"))
+            return inlineList(value.substring(1, value.length() - 1));
+        if (value.startsWith("{") && value.endsWith("}"))
+            return inlineMap(value.substring(1, value.length() - 1));
+        try {
+            if (value.matches("[-+]?\\d+")) return Long.parseLong(value);
+            if (value.matches("[-+]?(?:\\d+\\.\\d*|\\d*\\.\\d+)(?:[eE][-+]?\\d+)?"))
+                return Double.parseDouble(value);
+        } catch (NumberFormatException ignored) { }
+        return value;
+    }
+
+    private static List<Object> inlineList(String body) {
+        List<Object> out = new ArrayList<>();
+        for (String part : splitTop(body, ',')) if (!part.isBlank()) out.add(scalar(part));
+        return out;
+    }
+
+    private static Map<String, Object> inlineMap(String body) {
+        Map<String, Object> out = new LinkedHashMap<>();
+        for (String part : splitTop(body, ',')) {
+            int colon = findColon(part);
+            if (colon < 0) continue;
+            out.put(unquote(part.substring(0, colon).trim()), scalar(part.substring(colon + 1)));
+        }
+        return out;
+    }
+
+    private static List<String> splitTop(String input, char separator) {
+        List<String> out = new ArrayList<>();
+        int depth = 0;
+        char quote = 0;
+        int start = 0;
+        for (int i = 0; i < input.length(); i++) {
+            char current = input.charAt(i);
+            if (quote != 0) {
+                if (current == quote && (i == 0 || input.charAt(i - 1) != '\\')) quote = 0;
+                continue;
+            }
+            if (current == '\'' || current == '\"') {
+                quote = current;
+                continue;
+            }
+            if (current == '[' || current == '{') depth++;
+            else if (current == ']' || current == '}') depth--;
+            else if (current == separator && depth == 0) {
+                out.add(input.substring(start, i).trim());
+                start = i + 1;
+            }
+        }
+        out.add(input.substring(start).trim());
+        return out;
+    }
+
+    private static int findMappingColon(String input) {
+        char quote = 0;
+        int depth = 0;
+        for (int i = 0; i < input.length(); i++) {
+            char current = input.charAt(i);
+            if (quote != 0) {
+                if (current == quote && (i == 0 || input.charAt(i - 1) != '\\')) quote = 0;
+                continue;
+            }
+            if (current == '\'' || current == '\"') quote = current;
+            else if (current == '[' || current == '{') depth++;
+            else if (current == ']' || current == '}') depth--;
+            else if (current == ':' && depth == 0
+                    && (i + 1 == input.length() || Character.isWhitespace(input.charAt(i + 1)))) return i;
+        }
+        return -1;
+    }
+
+    private static int findColon(String input) {
+        char quote = 0;
+        int depth = 0;
+        for (int i = 0; i < input.length(); i++) {
+            char current = input.charAt(i);
+            if (quote != 0) {
+                if (current == quote && (i == 0 || input.charAt(i - 1) != '\\')) quote = 0;
+                continue;
+            }
+            if (current == '\'' || current == '\"') quote = current;
+            else if (current == '[' || current == '{') depth++;
+            else if (current == ']' || current == '}') depth--;
+            else if (current == ':' && depth == 0) return i;
+        }
+        return -1;
+    }
+
+    private static boolean isQuoted(String value) {
+        return (value.startsWith("'") && value.endsWith("'"))
+                || (value.startsWith("\"") && value.endsWith("\""));
+    }
+
+    private static String unquote(String value) {
+        if (isQuoted(value)) value = value.substring(1, value.length() - 1);
+        return value.replace("\\\"", "\"").replace("\\'", "'");
+    }
+
+    private static String stripComment(String input) {
+        char quote = 0;
+        for (int i = 0; i < input.length(); i++) {
+            char current = input.charAt(i);
+            if (quote != 0) {
+                if (current == quote && (i == 0 || input.charAt(i - 1) != '\\')) quote = 0;
+            } else if (current == '\'' || current == '\"') {
+                quote = current;
+            } else if (current == '#' && (i == 0 || Character.isWhitespace(input.charAt(i - 1)))) {
+                return rtrim(input.substring(0, i));
+            }
+        }
+        return rtrim(input);
+    }
+
+    private static String rtrim(String value) {
+        int index = value.length();
+        while (index > 0 && Character.isWhitespace(value.charAt(index - 1))) index--;
+        return value.substring(0, index);
+    }
 }
