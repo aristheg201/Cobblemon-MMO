@@ -13,8 +13,8 @@ Fabric Loom: 1.7.4
 > Task :configureLaunch
 
 > Task :runServer
-[08:46:17] [main/INFO] (FabricLoader/GameProvider) Loading Minecraft 1.21.1 with Fabric Loader 0.18.4
-[08:46:17] [main/INFO] (FabricLoader) Loading 43 mods:
+[16:16:48] [main/INFO] (FabricLoader/GameProvider) Loading Minecraft 1.21.1 with Fabric Loader 0.18.4
+[16:16:48] [main/INFO] (FabricLoader) Loading 43 mods:
 	- fabric-api 0.116.9+1.21.1
 	- fabric-api-base 0.4.42+6573ed8c19
 	- fabric-api-lookup-api-v1 1.6.72+7b3d111d19
@@ -58,12 +58,12 @@ Fabric Loom: 1.7.4
 	- minecraft 1.21.1
 	- mixinextras 0.5.0
 	- svframelib 1.7.1-fabric
-[08:46:17] [main/INFO] (FabricLoader/Mixin) SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.17.0+mixin.0.8.7/cf31463202f72d03b0ef1e1e38e8ee71b7faaab6/sponge-mixin-0.17.0+mixin.0.8.7.jar Service=Knot/Fabric Env=SERVER
-[08:46:17] [main/INFO] (FabricLoader/Mixin) Loaded Fabric development mappings for mixin remapper!
-[08:46:17] [main/INFO] (FabricLoader/Mixin) Compatibility level set to JAVA_17
-[08:46:17] [main/INFO] (FabricLoader/Mixin) Compatibility level set to JAVA_21
-[08:46:18] [main/INFO] (FabricLoader/MixinExtras|Service) Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.0).
-[08:46:26] [main/ERROR] (Minecraft) Failed to load properties from file: server.properties
+[16:16:48] [main/INFO] (FabricLoader/Mixin) SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/home/runner/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.17.0+mixin.0.8.7/cf31463202f72d03b0ef1e1e38e8ee71b7faaab6/sponge-mixin-0.17.0+mixin.0.8.7.jar Service=Knot/Fabric Env=SERVER
+[16:16:48] [main/INFO] (FabricLoader/Mixin) Loaded Fabric development mappings for mixin remapper!
+[16:16:48] [main/INFO] (FabricLoader/Mixin) Compatibility level set to JAVA_17
+[16:16:48] [main/INFO] (FabricLoader/Mixin) Compatibility level set to JAVA_21
+[16:16:49] [main/INFO] (FabricLoader/MixinExtras|Service) Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.0).
+[16:16:55] [main/ERROR] (Minecraft) Failed to load properties from file: server.properties
 java.nio.file.NoSuchFileException: server.properties
 	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:92) ~[?:?]
 	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106) ~[?:?]
@@ -81,31 +81,33 @@ java.nio.file.NoSuchFileException: server.properties
 	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72) [fabric-loader-0.18.4.jar:?]
 	at net.fabricmc.loader.impl.launch.knot.KnotServer.main(KnotServer.java:23) [fabric-loader-0.18.4.jar:?]
 	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86) [dev-launch-injector-0.2.1+build.8.jar:?]
-[08:46:26] [main/INFO] (Minecraft) Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
-[08:46:27] [main/INFO] (Minecraft) No existing world data, creating new world
-[08:46:28] [main/INFO] (Minecraft) Loaded 1290 recipes
-[08:46:28] [main/INFO] (Minecraft) Loaded 1399 advancements
-[08:46:29] [main/INFO] (BiomeModificationImpl) Applied 0 biome modifications to 0 of 64 new biomes in 1.505 ms
-[08:46:29] [Server thread/INFO] (Minecraft) Starting minecraft server version 1.21.1
-[08:46:29] [Server thread/INFO] (Minecraft) Loading properties
-[08:46:29] [Server thread/INFO] (Minecraft) Default game type: SURVIVAL
-[08:46:29] [Server thread/INFO] (Minecraft) Generating keypair
-[08:46:29] [Server thread/INFO] (Minecraft) Starting Minecraft server on *:25565
-[08:46:29] [Server thread/INFO] (Minecraft) Using epoll channel type
-[08:46:29] [Server thread/INFO] (Minecraft) Preparing level "world"
-[08:46:34] [Server thread/INFO] (Minecraft) Preparing start region for dimension minecraft:overworld
-[08:46:34] [Worker-Main-3/INFO] (Minecraft) Preparing spawn area: 2%
-[08:46:35] [Worker-Main-3/INFO] (Minecraft) Preparing spawn area: 2%
-[08:46:35] [Worker-Main-1/INFO] (Minecraft) Preparing spawn area: 2%
-[08:46:36] [Worker-Main-1/INFO] (Minecraft) Preparing spawn area: 2%
-[08:46:36] [Worker-Main-3/INFO] (Minecraft) Preparing spawn area: 18%
-[08:46:37] [Worker-Main-2/INFO] (Minecraft) Preparing spawn area: 18%
-[08:46:37] [Worker-Main-3/INFO] (Minecraft) Preparing spawn area: 51%
-[08:46:38] [Worker-Main-2/INFO] (Minecraft) Preparing spawn area: 51%
-[08:46:38] [Worker-Main-1/INFO] (Minecraft) Preparing spawn area: 51%
-[08:46:38] [Server thread/INFO] (Minecraft) Time elapsed: 4354 ms
-[08:46:38] [Server thread/INFO] (Minecraft) Done (9.644s)! For help, type "help"
-Aug 27, 2026 8:46:38 AM vn.svframe.svframelib.fabric.SVFrameLibBootstrap lambda$onInitialize$0
+[16:16:55] [main/INFO] (Minecraft) Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[16:16:57] [main/INFO] (Minecraft) No existing world data, creating new world
+[16:16:57] [main/INFO] (Minecraft) Loaded 1290 recipes
+[16:16:58] [main/INFO] (Minecraft) Loaded 1399 advancements
+[16:16:58] [main/INFO] (BiomeModificationImpl) Applied 0 biome modifications to 0 of 64 new biomes in 1.384 ms
+[16:16:58] [Server thread/INFO] (Minecraft) Starting minecraft server version 1.21.1
+[16:16:58] [Server thread/INFO] (Minecraft) Loading properties
+[16:16:58] [Server thread/INFO] (Minecraft) Default game type: SURVIVAL
+[16:16:58] [Server thread/INFO] (Minecraft) Generating keypair
+[16:16:58] [Server thread/INFO] (Minecraft) Starting Minecraft server on *:25565
+[16:16:58] [Server thread/INFO] (Minecraft) Using epoll channel type
+[16:16:58] [Server thread/INFO] (Minecraft) Preparing level "world"
+[16:17:04] [Server thread/INFO] (Minecraft) Preparing start region for dimension minecraft:overworld
+[16:17:04] [Worker-Main-1/INFO] (Minecraft) Preparing spawn area: 2%
+[16:17:05] [Worker-Main-3/INFO] (Minecraft) Preparing spawn area: 2%
+[16:17:05] [Worker-Main-3/INFO] (Minecraft) Preparing spawn area: 2%
+[16:17:06] [Worker-Main-3/INFO] (Minecraft) Preparing spawn area: 2%
+[16:17:07] [Worker-Main-2/INFO] (Minecraft) Preparing spawn area: 18%
+[16:17:07] [Worker-Main-2/INFO] (Minecraft) Preparing spawn area: 18%
+[16:17:07] [Worker-Main-1/INFO] (Minecraft) Preparing spawn area: 18%
+[16:17:08] [Worker-Main-2/INFO] (Minecraft) Preparing spawn area: 18%
+[16:17:08] [Worker-Main-3/INFO] (Minecraft) Preparing spawn area: 51%
+[16:17:09] [Worker-Main-2/INFO] (Minecraft) Preparing spawn area: 51%
+[16:17:09] [Worker-Main-3/INFO] (Minecraft) Preparing spawn area: 51%
+[16:17:10] [Server thread/INFO] (Minecraft) Time elapsed: 5494 ms
+[16:17:10] [Server thread/INFO] (Minecraft) Done (11.177s)! For help, type "help"
+Aug 27, 2026 4:17:10 PM vn.svframe.svframelib.fabric.SVFrameLibBootstrap lambda$onInitialize$0
 INFO: SVFrameLib online
-Aug 27, 2026 8:46:38 AM vn.svframe.svframelib.fabric.SVFrameLibFabricMod lambda$onInitialize$0
+Aug 27, 2026 4:17:10 PM vn.svframe.svframelib.fabric.SVFrameLibFabricMod lambda$onInitialize$0
 INFO: SVFrameLib Fabric online; skills=94,scripts=100,customTriggers=1
