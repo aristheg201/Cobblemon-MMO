@@ -1,23 +1,60 @@
 package vn.svframe.svframeitems.item;
 
 import net.minecraft.item.ItemStack;
-import vn.svframe.svframeitems.model.LootTableDefinition;
+import vn.svframe.svframeitems.model.*;
 import vn.svframe.svframeitems.registry.SVFrameItemsRegistry;
+
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.random.RandomGenerator;
 
 public final class LootService {
+    public record Context(int level, RandomGenerator random, Map<String,Object> attributes) {
+        public Context {
+            if(level<1)throw new IllegalArgumentException("level must be >= 1");
+            random=Objects.requireNonNull(random,"random"); attributes=attributes==null?Map.of():Map.copyOf(attributes);
+        }
+        public static Context random(int level){return new Context(level,ThreadLocalRandom.current(),Map.of());}
+        public Context withLevel(int value){return new Context(value,random,attributes);}
+        public Optional<Object> attribute(String key){return Optional.ofNullable(attributes.get(key));}
+    }
+    @FunctionalInterface public interface Condition { boolean test(Context context, LootTableDefinition.Entry entry); }
+    @FunctionalInterface public interface Reward { Collection<ItemStack> generate(Context context, LootTableDefinition.Entry entry, ItemGenerator generator); }
+
     private final SVFrameItemsRegistry registry; private final ItemGenerator generator;
-    public LootService(SVFrameItemsRegistry registry, ItemGenerator generator){this.registry=Objects.requireNonNull(registry);this.generator=Objects.requireNonNull(generator);}
-    public List<ItemStack> roll(String tableId, int level){return roll(tableId,level,ThreadLocalRandom.current());}
-    public List<ItemStack> roll(String tableId,int level,RandomGenerator random){
+    private final Map<String,Condition> conditions=new ConcurrentHashMap<>(); private final Map<String,Reward> rewards=new ConcurrentHashMap<>();
+    public LootService(SVFrameItemsRegistry registry, ItemGenerator generator){
+        this.registry=Objects.requireNonNull(registry);this.generator=Objects.requireNonNull(generator);
+        conditions.put("always",(context,entry)->true);
+        rewards.put("item",(context,entry,itemGenerator)->{
+            int remaining=entry.rollAmount(context.random()); List<ItemStack> stacks=new ArrayList<>();
+            while(remaining>0){ItemStack stack=itemGenerator.generate(entry.itemId(),new ItemGenerator.GenerationContext(context.level(),context.random().nextLong()));int count=Math.min(remaining,stack.getMaxCount());stack.setCount(count);remaining-=count;stacks.add(stack);}
+            return List.copyOf(stacks);
+        });
+    }
+    public List<ItemStack> roll(String tableId, int level){return roll(tableId,Context.random(level));}
+    public List<ItemStack> roll(String tableId,int level,RandomGenerator random){return roll(tableId,new Context(level,random,Map.of()));}
+    public List<ItemStack> roll(String tableId,Context context){
         LootTableDefinition table=registry.lootTable(tableId); if(table==null)throw new IllegalArgumentException("Unknown loot table "+tableId);
-        List<ItemStack> out=new ArrayList<>(); for(int i=0;i<table.rolls();i++){LootTableDefinition.Entry entry=choose(table.entries(),random); if(random.nextDouble()>entry.chance())continue;
-            int itemLevel=Math.max(entry.minLevel(),Math.min(entry.maxLevel(),level)); if(entry.maxLevel()>entry.minLevel()) itemLevel=entry.minLevel()+random.nextInt(entry.maxLevel()-entry.minLevel()+1);
-            int amount=entry.minAmount()==entry.maxAmount()?entry.minAmount():entry.minAmount()+random.nextInt(entry.maxAmount()-entry.minAmount()+1);
-            ItemStack stack=generator.generate(entry.itemId(),new ItemGenerator.GenerationContext(itemLevel,random.nextLong())); stack.setCount(amount); out.add(stack);}
+        List<ItemStack> out=new ArrayList<>();
+        for(int i=0;i<table.rolls();i++){
+            List<LootTableDefinition.Entry> eligible=new ArrayList<>();
+            for(LootTableDefinition.Entry entry:table.entries()){
+                Condition condition=conditions.get(entry.conditionId());
+                if(condition==null)throw new IllegalStateException("Unknown loot condition "+entry.conditionId()+" in "+table.id());
+                if(condition.test(context,entry))eligible.add(entry);
+            }
+            if(eligible.isEmpty())continue;
+            LootTableDefinition.Entry entry=choose(eligible,context.random()); if(context.random().nextDouble()>entry.chance())continue;
+            Reward reward=rewards.get(entry.rewardId()); if(reward==null)throw new IllegalStateException("Unknown loot reward "+entry.rewardId()+" in "+table.id());
+            Context entryContext=context.withLevel(entry.clampLevel(context.level()));
+            Collection<ItemStack> generated=reward.generate(entryContext,entry,generator); if(generated==null)throw new IllegalStateException("Loot reward "+entry.rewardId()+" returned null");
+            for(ItemStack stack:generated)if(stack!=null&&!stack.isEmpty())out.add(stack);
+        }
         return List.copyOf(out);
     }
-    private static LootTableDefinition.Entry choose(List<LootTableDefinition.Entry> entries,RandomGenerator random){int total=entries.stream().mapToInt(LootTableDefinition.Entry::weight).sum();int roll=random.nextInt(total);for(var entry:entries)if((roll-=entry.weight())<0)return entry;throw new IllegalStateException();}
+    public AutoCloseable registerCondition(String id,Condition condition){String key=ItemType.normalize(id);Objects.requireNonNull(condition);if(key.equals("always"))throw new IllegalArgumentException("always is built in");if(conditions.putIfAbsent(key,condition)!=null)throw new IllegalStateException("Loot condition already registered: "+key);return ()->conditions.remove(key,condition);}
+    public AutoCloseable registerReward(String id,Reward reward){String key=ItemType.normalize(id);Objects.requireNonNull(reward);if(key.equals("item"))throw new IllegalArgumentException("item is built in");if(rewards.putIfAbsent(key,reward)!=null)throw new IllegalStateException("Loot reward already registered: "+key);return ()->rewards.remove(key,reward);}
+    private static LootTableDefinition.Entry choose(List<LootTableDefinition.Entry> entries,RandomGenerator random){long total=0;for(var entry:entries)total+=entry.weight();if(total<=0||total>Integer.MAX_VALUE)throw new IllegalStateException("Invalid total loot weight "+total);int roll=random.nextInt((int)total);for(var entry:entries)if((roll-=entry.weight())<0)return entry;throw new IllegalStateException("Weighted loot selection failed");}
 }
