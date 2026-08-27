@@ -2,6 +2,7 @@ package vn.svframe.svframeitems;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -35,11 +36,23 @@ public final class SVFrameItems implements ModInitializer {
         ABILITIES.initialize();
         ServerTickEvents.END_SERVER_TICK.register(value->EQUIPMENT.tick(value));
         ServerPlayConnectionEvents.DISCONNECT.register((handler,value)->EQUIPMENT.clear(handler.player));
-        ServerLifecycleEvents.SERVER_STARTED.register(value->{server=value;NativeRuntimeSmoke.runIfRequested();LOG.info("SVFrameItems Fabric online; "+REGISTRY.summary());});
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer,newPlayer,alive)->EQUIPMENT.refresh(newPlayer,true));
+        ServerLifecycleEvents.SERVER_STARTED.register(value->{RuntimeDefinitionValidator.validate(REGISTRY,UPGRADES,LOOT);server=value;NativeRuntimeSmoke.runIfRequested();LOG.info("SVFrameItems Fabric online; "+REGISTRY.summary());});
         ServerLifecycleEvents.SERVER_STOPPING.register(value->{EQUIPMENT.clear();server=null;});
         CommandRegistrationCallback.EVENT.register((dispatcher,registryAccess,environment)->SVFrameItemsCommands.register(dispatcher));
     }
 
-    public static synchronized boolean reload(){try{REGISTRY.reload(DefaultFiles.root());MinecraftServer current=server;if(current!=null)for(var player:current.getPlayerManager().getPlayerList())EQUIPMENT.refresh(player);return true;}catch(Exception exception){LOG.log(Level.SEVERE,"SVFrameItems reload failed; keeping previous registry snapshot",exception);return false;}}
+    public static synchronized boolean reload(){
+        SVFrameItemsRegistry.Snapshot before=REGISTRY.snapshot(); MinecraftServer current=server;
+        try{
+            REGISTRY.reload(DefaultFiles.root()); RuntimeDefinitionValidator.validate(REGISTRY,UPGRADES,LOOT);
+            if(current!=null)for(var player:current.getPlayerManager().getPlayerList())EQUIPMENT.refresh(player,true);
+            return true;
+        }catch(Exception exception){
+            REGISTRY.restore(before);
+            if(current!=null)for(var player:current.getPlayerManager().getPlayerList())try{EQUIPMENT.refresh(player,true);}catch(RuntimeException rollback){exception.addSuppressed(rollback);}
+            LOG.log(Level.SEVERE,"SVFrameItems reload failed; restored previous registry snapshot",exception);return false;
+        }
+    }
     public static SVFrameItemsRegistry registry(){return REGISTRY;} public static ItemGenerator generator(){return GENERATOR;} public static UpgradeService upgrades(){return UPGRADES;} public static SocketService sockets(){return SOCKETS;} public static LootService loot(){return LOOT;} public static RecipeService recipes(){return RECIPES;} public static EquipmentRuntime equipment(){return EQUIPMENT;} public static MinecraftServer server(){return server;}
 }
