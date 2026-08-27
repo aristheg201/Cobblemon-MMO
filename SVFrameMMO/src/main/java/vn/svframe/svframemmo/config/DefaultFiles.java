@@ -1,10 +1,43 @@
 package vn.svframe.svframemmo.config;
 
 import net.fabricmc.loader.api.FabricLoader;
-import java.io.*;import java.nio.file.*;import java.util.List;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
+
 public final class DefaultFiles {
- public static final Path ROOT=FabricLoader.getInstance().getConfigDir().resolve("SVFrameMMO").toAbsolutePath().normalize();
- private static final List<String> FILES=List.of("config.yml","classes/human.yml","classes/marksman.yml","classes/paladin.yml","classes/rogue.yml","classes/warrior.yml","classes/mage/mage.yml","classes/mage/arcane-mage.yml","attributes/default_attributes.yml","skills/ambers.yml","skills/neptune-gift.yml","skills/sneaky-picky.yml");
- private DefaultFiles(){}
- public static void ensure() throws IOException {Files.createDirectories(ROOT);ClassLoader l=DefaultFiles.class.getClassLoader();for(String rel:FILES){Path out=ROOT.resolve(rel).normalize();if(!out.startsWith(ROOT))throw new IOException("Unsafe default path: "+rel);if(Files.exists(out))continue;try(InputStream in=l.getResourceAsStream("defaults/"+rel)){if(in==null)throw new IOException("Missing bundled SVFrameMMO default: "+rel);Files.createDirectories(out.getParent());Path tmp=Files.createTempFile(out.getParent(),out.getFileName().toString(),".tmp");try{Files.copy(in,tmp,StandardCopyOption.REPLACE_EXISTING);try{Files.move(tmp,out,StandardCopyOption.ATOMIC_MOVE);}catch(AtomicMoveNotSupportedException e){Files.move(tmp,out,StandardCopyOption.REPLACE_EXISTING);}}finally{Files.deleteIfExists(tmp);}}}}
+    public static final Path ROOT = FabricLoader.getInstance().getConfigDir().resolve("SVFrameMMO").toAbsolutePath().normalize();
+    private static final List<String> FILES = List.of(
+            "config.yml", "stats.yml",
+            "classes/human.yml", "classes/marksman.yml", "classes/paladin.yml", "classes/rogue.yml", "classes/warrior.yml",
+            "classes/mage/mage.yml", "classes/mage/arcane-mage.yml",
+            "attributes/default_attributes.yml",
+            "skills/ambers.yml", "skills/neptune-gift.yml", "skills/sneaky-picky.yml");
+
+    private DefaultFiles() { }
+
+    public static void ensure() throws IOException {
+        Files.createDirectories(ROOT);
+        ClassLoader loader = DefaultFiles.class.getClassLoader();
+        for (String relative : FILES) {
+            Path output = ROOT.resolve(relative).normalize();
+            if (!output.startsWith(ROOT)) throw new IOException("Unsafe default path: " + relative);
+            if (Files.exists(output)) continue;
+            try (InputStream input = loader.getResourceAsStream("defaults/" + relative)) {
+                if (input == null) throw new IOException("Missing bundled SVFrameMMO default: " + relative);
+                Files.createDirectories(output.getParent());
+                Path temporary = Files.createTempFile(output.getParent(), output.getFileName().toString(), ".tmp");
+                try {
+                    Files.copy(input, temporary, StandardCopyOption.REPLACE_EXISTING);
+                    try { Files.move(temporary, output, StandardCopyOption.ATOMIC_MOVE); }
+                    catch (AtomicMoveNotSupportedException exception) { Files.move(temporary, output, StandardCopyOption.REPLACE_EXISTING); }
+                } finally { Files.deleteIfExists(temporary); }
+            }
+        }
+    }
 }

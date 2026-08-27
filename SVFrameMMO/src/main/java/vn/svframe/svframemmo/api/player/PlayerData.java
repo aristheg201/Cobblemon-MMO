@@ -1,15 +1,21 @@
 package vn.svframe.svframemmo.api.player;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import vn.svframe.svframelib.api.player.EquipmentSlot;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
+import vn.svframe.svframelib.api.stat.modifier.StatModifier;
 import vn.svframe.svframelib.fabric.runtime.RpgProfileRegistry;
+import vn.svframe.svframelib.player.modifier.ModifierSource;
+import vn.svframe.svframelib.player.modifier.ModifierType;
 import vn.svframe.svframelib.player.resource.ResourceUpdateReason;
 import vn.svframe.svframelib.skill.handler.SkillHandler;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.event.PlayerResourceUpdateEvent;
 import vn.svframe.svframemmo.api.player.attribute.PlayerAttributes;
+import vn.svframe.svframemmo.api.player.profess.PlayerClass;
 import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -18,6 +24,8 @@ import java.util.UUID;
 
 /** Native persistent player state for SVFrameMMO. */
 public final class PlayerData {
+    private static final String CLASS_STAT_KEY = "svframemmo_class";
+
     private final UUID id;
     private transient ServerPlayerEntity player;
     private String playerClass = "HUMAN";
@@ -46,6 +54,7 @@ public final class PlayerData {
     public void attach(ServerPlayerEntity player) {
         this.player = player;
         MMOPlayerData.setup(player);
+        refreshClassStats();
         attributes.reload();
         clampAll();
     }
@@ -53,10 +62,27 @@ public final class PlayerData {
     public void detach() { player = null; }
 
     public String getClassId() { return playerClass; }
-    public void setClassId(String value) { playerClass = normalizeEnum(value == null ? "HUMAN" : value); }
+    public PlayerClass getProfess() {
+        PlayerClass found = SVFrameMMO.classes().get(playerClass);
+        return found == null ? SVFrameMMO.classes().getDefaultClass() : found;
+    }
+
+    public void setClassId(String value) {
+        String next = normalizeEnum(value == null ? SVFrameMMO.classes().getDefaultClass().getId() : value);
+        if (next.equals(playerClass)) return;
+        playerClass = next;
+        refreshClassStats();
+        clampAll();
+    }
 
     public int getLevel() { return level; }
-    public void setLevel(int value) { level = Math.max(1, value); }
+    public void setLevel(int value) {
+        int next = Math.max(1, value);
+        if (next == level) return;
+        level = next;
+        refreshClassStats();
+        clampAll();
+    }
     public double getExperience() { return experience; }
     public void setExperience(double value) { experience = Math.max(0, value); }
 
@@ -133,6 +159,24 @@ public final class PlayerData {
         return true;
     }
 
+    public void refreshClassStats() {
+        if (player == null) return;
+        MMOPlayerData mmo = getMMOPlayerData();
+        var statMap = mmo.getStatMap();
+        PlayerClass profess = getProfess();
+        statMap.bufferUpdates(() -> {
+            for (var instance : statMap.getInstances()) instance.remove(CLASS_STAT_KEY);
+            for (String stat : profess.getEffectiveStats()) {
+                var instance = statMap.getInstance(stat);
+                double value = profess.calculateBaseStat(stat, level, this) - instance.getDefaultBase();
+                if (value == 0d) continue;
+                UUID modifierId = UUID.nameUUIDFromBytes((id + ":class:" + stat).getBytes(StandardCharsets.UTF_8));
+                instance.registerModifier(new StatModifier(modifierId, CLASS_STAT_KEY, stat, value,
+                        ModifierType.FLAT, EquipmentSlot.OTHER, ModifierSource.OTHER));
+            }
+        });
+    }
+
     public void clampAll() {
         for (PlayerResource resource : PlayerResource.values()) {
             if (resource != PlayerResource.HEALTH) setResource(resource, getResource(resource), ResourceUpdateReason.CLAMPING);
@@ -162,11 +206,9 @@ public final class PlayerData {
         this.stellium = stellium;
         attributes.load(attrs);
         skillLevels.clear();
-        if (skills != null) {
-            skills.forEach((key, value) -> {
-                if (key != null && value != null) setSkillLevel(key, value.intValue());
-            });
-        }
+        if (skills != null) skills.forEach((key, value) -> {
+            if (key != null && value != null) setSkillLevel(key, value.intValue());
+        });
     }
 
     private static String normalizeEnum(String value) {

@@ -1,0 +1,142 @@
+default:
+    ATTACK_DAMAGE:
+        base: 1
+        per-level: 0
+    ATTACK_SPEED:
+        base: 4
+        per-level: 0
+    MAX_HEALTH:
+        base: 20
+        per-level: 0
+    MAX_ABSORPTION:
+        base: 0.0
+        per-level: 0
+    MOVEMENT_SPEED:
+        base: .1
+        per-level: 0
+    ARMOR:
+        base: 0
+        per-level: 0
+    ARMOR_TOUGHNESS:
+        base: 0
+        per-level: 0
+    KNOCKBACK_RESISTANCE:
+        base: 0
+        per-level: 0
+    SPEED_MALUS_REDUCTION:
+        base: 0
+        per-level: 0
+    HEALTH_REGENERATION:
+        base: .1
+        per-level: 0
+    MAX_MANA:
+        base: 20
+        per-level: 0
+    MAX_STAMINA:
+        base: 20
+        per-level: 0
+    MAX_STELLIUM:
+        base: 20
+        per-level: 0
+    MANA_REGENERATION:
+        base: .166
+        per-level: .03
+    STAMINA_REGENERATION:
+        base: .166
+        per-level: .03
+    STELLIUM_REGENERATION:
+        base: .01
+        per-level: 0
+    ADDITIONAL_EXPERIENCE:
+        base: 0
+        per-level: 0
+    COOLDOWN_REDUCTION:
+        base: 0
+        per-level: 0
+    CHANCE:
+        base: 0
+        per-level: 0
+    SKILL_DAMAGE:
+        base: 0
+        per-level: 0
+    PHYSICAL_DAMAGE:
+        base: 0
+        per-level: 0
+    MAGIC_DAMAGE:
+        base: 0
+        per-level: 0
+    WEAPON_DAMAGE:
+        base: 0
+        per-level: 0
+    PROJECTILE_DAMAGE:
+        base: 0
+        per-level: 0
+    FISHING_STRENGTH:
+        base: 0
+        per-level: 0.3
+        min: 0
+        max: 40
+    CRITICAL_FISHING_CHANCE:
+        base: 5
+        per-level: 0
+        min: 0
+        max: 70
+    CRITICAL_FISHING_FAILURE_CHANCE:
+        base: 3
+        per-level: -.01
+        min: 1
+        max: 100
+    SUBMERGED_MINING_SPEED:
+        base: 0.2
+        per-level: 0
+    FALL_DAMAGE_MULTIPLIER:
+        base: 1.0
+        per-level: 0
+    MOVEMENT_EFFICIENCY:
+        base: 0.0
+        per-level: 0
+    OXYGEN_BONUS:
+        base: 0.0
+        per-level: 0
+    LUCK:
+        base: 0.0
+        per-level: 0
+    WATER_MOVEMENT_EFFICIENCY:
+        base: 0.0
+        per-level: 0
+    BLOCK_INTERACTION_RANGE:
+        base: 4.5
+        per-level: 0
+    SAFE_FALL_DISTANCE:
+        base: 3.0
+        per-level: 0
+    JUMP_STRENGTH:
+        base: 0.42
+        per-level: 0
+    ENTITY_INTERACTION_RANGE:
+        base: 3.0
+        per-level: 0
+    EXPLOSION_KNOCKBACK_RESISTANCE:
+        base: 0.0
+        per-level: 0
+    GRAVITY:
+        base: 0.08
+        per-level: 0
+    SNEAKING_SPEED:
+        base: 0.3
+        per-level: 0
+    STEP_HEIGHT:
+        base: 0.6
+        per-level: 0
+    MINING_EFFICIENCY:
+        base: 0.0
+        per-level: 0
+    BURNING_TIME:
+        base: 1.0
+        per-level: 0
+    SWEEPING_DAMAGE_RATIO:
+        base: 0.0
+        per-level: 0
+    BLOCK_BREAK_SPEED:
+        base: 1.0
+        per-level: 0

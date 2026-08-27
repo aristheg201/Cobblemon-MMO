@@ -11,6 +11,7 @@ default-playerdata:
   mana: 1000
   stellium: 1000
   stamina: 1000
+passive-skill-need-bound: true
 player_resource_tick_period: 20
 combat-log:
   timer: 10
