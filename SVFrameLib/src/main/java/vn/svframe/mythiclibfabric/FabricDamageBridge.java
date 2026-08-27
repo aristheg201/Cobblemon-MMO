@@ -8,7 +8,6 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import vn.svframe.mythiclibfabric.runtime.DamageType;
-import vn.svframe.mythiclibfabric.runtime.DefenseFormula;
 import vn.svframe.mythiclibfabric.runtime.StatProviderRegistry;
 
 import java.nio.file.Path;
@@ -21,48 +20,37 @@ public final class FabricDamageBridge {
     private static final Path CONFIG = FabricLoader.getInstance().getConfigDir().resolve("MythicLib").resolve("config.yml");
     private static volatile MythicLibDamageSettings settings = MythicLibDamageSettings.defaults();
 
-    private FabricDamageBridge() {}
+    private FabricDamageBridge() { }
 
     public static boolean reload() {
+        boolean settingsLoaded = true;
         try {
             settings = MythicLibDamageSettings.load(CONFIG);
-            return true;
         } catch (Exception e) {
+            settingsLoaded = false;
             LOG.log(Level.SEVERE, "Failed to load MythicLib damage settings", e);
-            return false;
         }
+        return MythicLibCombatRuntime.reload() & settingsLoaded;
     }
 
     public static String summary() {
         MythicLibDamageSettings value = settings;
-        return "providers=" + StatProviderRegistry.providerCount() + ",natural=" + value.naturalFormula() + ",elemental=" + value.elementalFormula();
+        return "providers=" + StatProviderRegistry.providerCount()
+                + ",natural=" + value.naturalFormula()
+                + ",elemental=" + value.elementalFormula()
+                + "," + MythicLibCombatRuntime.summary();
     }
 
+    /**
+     * Single native combat modification entrypoint used by the LivingEntity damage mixin.
+     * All attack-side elemental effects, mitigation, on-hit effects and final damage
+     * reduction are deliberately executed by MythicLibCombatRuntime in the same
+     * observable order as the original 1.7.1 listeners.
+     */
     public static float modifyAppliedDamage(LivingEntity target, DamageSource source, float vanillaModifiedDamage) {
         if (target == null || source == null || vanillaModifiedDamage <= 0.0f || target.getWorld().isClient()) return vanillaModifiedDamage;
         MythicLibDamageSettings value = settings;
-        List<DamageType> types = classify(source, value);
-        double damage = vanillaModifiedDamage;
-
-        Entity attacker = source.getAttacker();
-        if (attacker != null) {
-            for (DamageType type : types) {
-                double offense = StatProviderRegistry.stat(attacker.getUuid(), type.getOffenseStat());
-                damage *= Math.max(0.0d, 1.0d + offense / 100.0d);
-            }
-        }
-
-        for (DamageType type : types) {
-            double reduction = StatProviderRegistry.stat(target.getUuid(), type.name() + "_DAMAGE_REDUCTION");
-            damage *= Math.max(0.0d, 1.0d - reduction / 100.0d);
-        }
-
-        double defense = StatProviderRegistry.stat(target.getUuid(), "DEFENSE");
-        if (defense != 0.0d && damage > 0.0d) {
-            damage = DefenseFormula.calculateDamage(false, defense, damage, value.naturalFormula(), value.elementalFormula());
-        }
-        if (!Double.isFinite(damage)) return vanillaModifiedDamage;
-        return (float) Math.max(0.0d, Math.min(Float.MAX_VALUE, damage));
+        return MythicLibCombatRuntime.process(target, source, vanillaModifiedDamage, classify(source, value), value);
     }
 
     public static List<DamageType> classify(DamageSource source) {
