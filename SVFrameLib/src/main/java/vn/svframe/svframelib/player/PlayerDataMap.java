@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.player;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 
 import java.util.logging.Level;
 
@@ -16,7 +16,7 @@ public abstract class PlayerDataMap {
         try {
             onSessionOpen();
         } catch (Exception exception) {
-            MythicLib.plugin.getLogger().log(Level.WARNING,
+            SVFrameLib.plugin.getLogger().log(Level.WARNING,
                     "Exception while opening data session of " + getClass().getSimpleName(), exception);
         }
     }
@@ -30,7 +30,7 @@ public abstract class PlayerDataMap {
         try {
             onSessionClose();
         } catch (Exception exception) {
-            MythicLib.plugin.getLogger().log(Level.WARNING,
+            SVFrameLib.plugin.getLogger().log(Level.WARNING,
                     "Exception while closing data session of " + getClass().getSimpleName(), exception);
         }
     }

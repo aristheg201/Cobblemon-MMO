@@ -1,11 +1,11 @@
 package vn.svframe.svframelib.api.stat;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.player.EquipmentSlot;
 import vn.svframe.svframelib.api.stat.api.ModifiedInstance;
 import vn.svframe.svframelib.api.stat.modifier.StatModifier;
-import vn.svframe.mythiclibfabric.MythicLibStatMod;
-import vn.svframe.mythiclibfabric.runtime.NativeStatEngine;
+import vn.svframe.svframelib.fabric.SVFrameLibStatMod;
+import vn.svframe.svframelib.fabric.runtime.NativeStatEngine;
 
 import java.util.*;
 import java.util.function.Function;
@@ -17,7 +17,7 @@ public final class StatInstance extends ModifiedInstance<StatModifier> {
     private final String stat;
     private final NativeStatEngine.StatInstance nativeInstance;
 
-    StatInstance(StatMap map,String stat){this(map,stat,MythicLibStatMod.engine().instance(map.getData().getUniqueId(),stat));}
+    StatInstance(StatMap map,String stat){this(map,stat,SVFrameLibStatMod.engine().instance(map.getData().getUniqueId(),stat));}
     StatInstance(StatMap map,String stat,NativeStatEngine.StatInstance nativeInstance){this.map=Objects.requireNonNull(map);this.stat=Objects.requireNonNull(stat);this.nativeInstance=Objects.requireNonNull(nativeInstance);}
     public StatMap getMap(){return map;}public String getStat(){return stat;}
     public double getBase(){return nativeInstance.base();}public double getDefaultBase(){return nativeInstance.defaultBase();}
@@ -37,7 +37,7 @@ public final class StatInstance extends ModifiedInstance<StatModifier> {
     @Override public void removeIf(Predicate<String> predicate){nativeInstance.removeIf(m->predicate.test(m.key()));}
     @Override public boolean isEmpty(){return nativeInstance.isEmpty();}@Override public boolean contains(String key){return getModifier(key)!=null;}
     public void invalidateReferences(){}
-    public void update(){if(!map.isBufferingUpdates()&&MythicLib.plugin!=null)MythicLib.plugin.getStats().runUpdate(this);}
-    public void releaseUpdates(){if(MythicLib.plugin!=null)MythicLib.plugin.getStats().runUpdate(this);}
+    public void update(){if(!map.isBufferingUpdates()&&SVFrameLib.plugin!=null)SVFrameLib.plugin.getStats().runUpdate(this);}
+    public void releaseUpdates(){if(SVFrameLib.plugin!=null)SVFrameLib.plugin.getStats().runUpdate(this);}
     public double getFilteredTotal(double base,Predicate<StatModifier> filter,Function<StatModifier,StatModifier> editor){double flat=base,add=1d,rel=1d;for(StatModifier original:getModifiers()){if(!filter.test(original))continue;StatModifier m=editor.apply(original);if(m==null)continue;switch(m.getType()){case FLAT->flat+=m.getValue();case ADDITIVE_MULTIPLIER->add+=m.getValue()/100d;case RELATIVE->rel*=1d+m.getValue()/100d;}}return flat*add*rel;}
 }

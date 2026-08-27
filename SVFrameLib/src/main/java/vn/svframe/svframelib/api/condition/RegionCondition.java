@@ -4,7 +4,7 @@ import vn.svframe.svframelib.api.condition.type.MMOCondition;
 import vn.svframe.svframelib.api.condition.type.LocationCondition;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import vn.svframe.mythiclibfabric.runtime.NativeRegionRegistry;
+import vn.svframe.svframelib.fabric.runtime.NativeRegionRegistry;
 import java.util.*;
 public class RegionCondition extends MMOCondition implements LocationCondition {
     private final Set<String> applicables;

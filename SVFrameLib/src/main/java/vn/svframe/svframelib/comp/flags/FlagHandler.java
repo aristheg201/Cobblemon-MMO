@@ -9,7 +9,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Native Fabric flag dispatcher. Region/claim integrations register a FlagPlugin
- * and are combined with deny-wins semantics. MythicLib defaults are used only
+ * and are combined with deny-wins semantics. SVFrameLib defaults are used only
  * when no provider exists for the queried flag.
  */
 public class FlagHandler {

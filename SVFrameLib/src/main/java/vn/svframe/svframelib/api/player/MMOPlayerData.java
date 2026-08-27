@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.api.player;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.stat.StatInstance;
 import vn.svframe.svframelib.api.stat.StatMap;
 import vn.svframe.svframelib.damage.AttackMetadata;
@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
- * Native Fabric player-data implementation preserving MythicLib 1.7.1 session,
+ * Native Fabric player-data implementation preserving SVFrameLib 1.7.1 session,
  * profile, modifier, passive-skill and cooldown semantics.
  */
 public class MMOPlayerData {
@@ -60,7 +60,7 @@ public class MMOPlayerData {
     private UUID nextSessionProfileBuffer;
     private final Object sessionLock = new Object();
     private final Map<UUID, ProfileSession> savedProfileSessions = new HashMap<>();
-    /** External plugin data cache used by MMOCore/MMOItems and other MMO modules. */
+    /** External plugin data cache used by SVFrameMMO/SVFrameItems and other MMO modules. */
     private final Map<String, Object> externalData = new HashMap<>();
     private long nextLeftClick;
     private final ProfileSession fallbackProfileSession = new ProfileSession(this, UUID.randomUUID());
@@ -111,7 +111,7 @@ public class MMOPlayerData {
     public UUID getOfficialId() { return officialId; }
 
     public void setOfficialId(UUID officialId) {
-        if (MythicLib.plugin.getProfileMode() != vn.svframe.svframelib.comp.profile.ProfileMode.PROXY) {
+        if (SVFrameLib.plugin.getProfileMode() != vn.svframe.svframelib.comp.profile.ProfileMode.PROXY) {
             throw new IllegalArgumentException("Player official IDs can only change in proxy profile mode");
         }
         this.officialId = Objects.requireNonNull(officialId, "Official ID cannot be null");
@@ -289,7 +289,7 @@ public class MMOPlayerData {
 
     public void tickOnline() {
         if (hasProfileSession() && getProfileSession().isGhost()) {
-            MythicLib.plugin.getLogger().severe("Ghost profile session for " + getPlayerName() + " (" +
+            SVFrameLib.plugin.getLogger().severe("Ghost profile session for " + getPlayerName() + " (" +
                     getUniqueId() + "): " + getProfileSession());
         }
     }

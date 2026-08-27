@@ -11,7 +11,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.player.EquipmentSlot;
 import vn.svframe.svframelib.api.stat.provider.StatProvider;
 import vn.svframe.svframelib.damage.*;
@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-/** Native Fabric implementation of the MythicLib 1.7.1 damage registry and attack reconstruction. */
+/** Native Fabric implementation of the SVFrameLib 1.7.1 damage registry and attack reconstruction. */
 public class DamageManager extends Module {
     private static final Identifier NO_KNOCKBACK_ID = Identifier.of("svframelib", "no_knockback");
     private static final EntityAttributeModifier NO_KNOCKBACK = new EntityAttributeModifier(
@@ -45,7 +45,7 @@ public class DamageManager extends Module {
 
     public boolean registerAttack(AttackMetadata attack) { return registerAttack(attack, true, false); }
 
-    /** The boolean is knockback, exactly as in MythicLib 1.7.1. */
+    /** The boolean is knockback, exactly as in SVFrameLib 1.7.1. */
     public boolean registerAttack(AttackMetadata attack, boolean knockback) {
         return registerAttack(attack, knockback, false);
     }
@@ -104,7 +104,7 @@ public class DamageManager extends Module {
         return target.damage(source, (float) Math.min(Float.MAX_VALUE, amount));
     }
 
-    /** Native equivalent of MythicLib's EntityDamageEvent attack reconstruction. */
+    /** Native equivalent of SVFrameLib's EntityDamageEvent attack reconstruction. */
     public AttackMetadata findAttack(LivingEntity target, DamageSource source, double damage) {
         Objects.requireNonNull(target, "Target entity is not living");
         Objects.requireNonNull(source, "Damage source cannot be null");
@@ -135,7 +135,7 @@ public class DamageManager extends Module {
             if (attackerEntity instanceof LivingEntity attacker && attacker != target) {
                 StatProvider provider = StatProvider.get(attacker, EquipmentSlot.MAIN_HAND, true);
                 found = new ProjectileAttackMetadata(
-                        new DamageMetadata(damage, MythicLib.inst().getMMOConfig().bowAttackTypes),
+                        new DamageMetadata(damage, SVFrameLib.inst().getMMOConfig().bowAttackTypes),
                         target, provider, projectile);
                 markAsMetadata(found);
                 return found;
@@ -174,7 +174,7 @@ public class DamageManager extends Module {
         if (source.getSource() instanceof ProjectileEntity || source.isOf(DamageTypes.ARROW) || source.isOf(DamageTypes.TRIDENT)
                 || source.isOf(DamageTypes.MOB_PROJECTILE) || source.isOf(DamageTypes.FIREWORKS) || source.isOf(DamageTypes.THROWN)
                 || source.isOf(DamageTypes.FIREBALL) || source.isOf(DamageTypes.UNATTRIBUTED_FIREBALL))
-            return MythicLib.inst().getMMOConfig().bowAttackTypes;
+            return SVFrameLib.inst().getMMOConfig().bowAttackTypes;
         if (source.isOf(DamageTypes.IN_FIRE) || source.isOf(DamageTypes.CAMPFIRE) || source.isOf(DamageTypes.LAVA)
                 || source.isOf(DamageTypes.HOT_FLOOR) || source.isOf(DamageTypes.SONIC_BOOM) || source.isOf(DamageTypes.LIGHTNING_BOLT)
                 || source.isOf(DamageTypes.FALL) || source.isOf(DamageTypes.THORNS) || source.isOf(DamageTypes.CACTUS)
@@ -183,12 +183,12 @@ public class DamageManager extends Module {
                 || source.isOf(DamageTypes.FALLING_STALACTITE) || source.isOf(DamageTypes.FLY_INTO_WALL) || source.isOf(DamageTypes.IN_WALL)
                 || source.isOf(DamageTypes.CRAMMING) || source.isOf(DamageTypes.DROWN))
             return List.of(DamageType.PHYSICAL);
-        return MythicLib.inst().getMMOConfig().meleeRandomAttackTypes;
+        return SVFrameLib.inst().getMMOConfig().meleeRandomAttackTypes;
     }
 
     public List<DamageType> getVanillaDamageTypes(LivingEntity damager, DamageSource source, EquipmentSlot hand) {
         Objects.requireNonNull(damager, "Damager cannot be null");
-        ConfigManager config = MythicLib.inst().getMMOConfig();
+        ConfigManager config = SVFrameLib.inst().getMMOConfig();
         if (!(source.isOf(DamageTypes.PLAYER_ATTACK) || source.isOf(DamageTypes.MOB_ATTACK) || source.isOf(DamageTypes.MOB_ATTACK_NO_AGGRO)))
             return config.meleeRandomAttackTypes;
         ItemStack weapon = source.getWeaponStack();

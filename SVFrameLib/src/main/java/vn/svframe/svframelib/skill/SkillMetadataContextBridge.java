@@ -2,8 +2,8 @@ package vn.svframe.svframelib.skill;
 
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
-import vn.svframe.mythiclibfabric.runtime.script.ScriptContext;
-import vn.svframe.mythiclibfabric.runtime.script.Vector3;
+import vn.svframe.svframelib.fabric.runtime.script.ScriptContext;
+import vn.svframe.svframelib.fabric.runtime.script.Vector3;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframelib.script.variable.Variable;
 import vn.svframe.svframelib.script.variable.VariableList;

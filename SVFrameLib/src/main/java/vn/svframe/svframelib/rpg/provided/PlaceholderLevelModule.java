@@ -1,3 +1,3 @@
 package vn.svframe.svframelib.rpg.provided;
-import vn.svframe.svframelib.api.player.MMOPlayerData;import vn.svframe.svframelib.rpg.LevelModule;import vn.svframe.mythiclibfabric.runtime.NativePlaceholderRegistry;
+import vn.svframe.svframelib.api.player.MMOPlayerData;import vn.svframe.svframelib.rpg.LevelModule;import vn.svframe.svframelib.fabric.runtime.NativePlaceholderRegistry;
 public class PlaceholderLevelModule implements LevelModule {private final String placeholder;public PlaceholderLevelModule(String placeholder){this.placeholder=placeholder;}public int getLevel(MMOPlayerData data){String v=resolve(data);try{return Integer.parseInt(v.trim());}catch(Exception e){return 1;}}private String resolve(MMOPlayerData d){String p=placeholder; if(p.startsWith("%")&&p.endsWith("%")&&p.length()>2)p=p.substring(1,p.length()-1);return NativePlaceholderRegistry.resolve(d.getUniqueId(),p);}}

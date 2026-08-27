@@ -5,7 +5,7 @@ import vn.svframe.svframelib.util.configobject.ConfigObject;
 
 import java.util.Map;
 
-/** MythicLib 1.7.1 scaling formula contract, adapted to Fabric player types. */
+/** SVFrameLib 1.7.1 scaling formula contract, adapted to Fabric player types. */
 public interface ScalingFormula {
     ScalingFormula ZERO = new NonScalingFormula(0d);
 

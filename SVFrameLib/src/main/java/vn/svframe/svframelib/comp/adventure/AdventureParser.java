@@ -12,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** Fabric-native port of MythicLib 1.7.1 legacy Adventure tag parser. */
+/** Fabric-native port of SVFrameLib 1.7.1 legacy Adventure tag parser. */
 public class AdventureParser {
     private static final Pattern TOKEN = Pattern.compile("<([^<>]+)>");
     private static final Pattern LEGACY = Pattern.compile("(?i)[§&][0-9A-FK-OR]");

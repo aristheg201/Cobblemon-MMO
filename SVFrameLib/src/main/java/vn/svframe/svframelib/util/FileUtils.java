@@ -1,8 +1,8 @@
 package vn.svframe.svframelib.util;
 import vn.svframe.svframelib.module.MMOPlugin;
 import vn.svframe.svframelib.util.config.YamlFile;
-import vn.svframe.compat.YamlLite;
-import vn.svframe.mythiclibfabric.MythicLibFabricMod;
+import vn.svframe.svframelib.config.YamlLite;
+import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -31,7 +31,7 @@ public final class FileUtils {
     private static void loadFiles(MMOPlugin p,String folder,String ext,Consumer<Path> consumer,boolean recursive){
         Path dir=root(p).resolve(folder);if(!Files.isDirectory(dir))return;try(var s=recursive?Files.walk(dir):Files.list(dir)){s.filter(Files::isRegularFile).filter(x->ext==null||ext.isBlank()||x.getFileName().toString().endsWith(ext)).sorted().forEach(consumer);}catch(IOException e){throw new UncheckedIOException(e);}
     }
-    private static Path root(MMOPlugin plugin){Path r=MythicLibFabricMod.configRoot();return plugin==null||"svframelib".equals(plugin.getNamespacedKey())?r:r.getParent().resolve(plugin.getNamespacedKey());}
+    private static Path root(MMOPlugin plugin){Path r=SVFrameLibFabricMod.configRoot();return plugin==null||"svframelib".equals(plugin.getNamespacedKey())?r:r.getParent().resolve(plugin.getNamespacedKey());}
     private static String strip(String n){int i=n.lastIndexOf('.');return i<0?n:n.substring(0,i);}
     private static Map<String,Object> copy(Map<?,?> m){Map<String,Object> r=new LinkedHashMap<>();m.forEach((k,v)->r.put(String.valueOf(k),v));return r;}
 }

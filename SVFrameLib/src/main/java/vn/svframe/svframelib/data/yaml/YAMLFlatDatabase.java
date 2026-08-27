@@ -3,7 +3,7 @@ import vn.svframe.svframelib.data.*; import vn.svframe.svframelib.data.queue.Dat
 import java.nio.file.*; import java.util.*;
 public abstract class YAMLFlatDatabase<H extends SynchronizedDataHolder,O extends OfflineDataHolder> implements Database<H,O> {
     private final MMOPlugin owning; private final Path folder;
-    public YAMLFlatDatabase(MMOPlugin owning){this.owning=Objects.requireNonNull(owning);this.folder=vn.svframe.mythiclibfabric.MythicLibFabricMod.configRoot().resolve("userdata").resolve(owning.getNamespacedKey());}
+    public YAMLFlatDatabase(MMOPlugin owning){this.owning=Objects.requireNonNull(owning);this.folder=vn.svframe.svframelib.fabric.SVFrameLibFabricMod.configRoot().resolve("userdata").resolve(owning.getNamespacedKey());}
     @Override public MMOPlugin getPlugin(){return owning;} @Override public void setup(){try{Files.createDirectories(folder);}catch(Exception e){throw new RuntimeException(e);}} @Override public void close(){}
     @Override public void saveData(H data,SessionUpdateReason reason){Map<String,Object> section=new LinkedHashMap<>();section.put("uuid",data.getEffectiveId().toString());section.put("is_saved",reason==SessionUpdateReason.AUTOSAVE?0:1);saveInSection(data,section);YamlFile f=new YamlFile(owning,"userdata/"+owning.getNamespacedKey(),data.getEffectiveId()+".yml",section);f.save();}
     public abstract void saveInSection(H data,Map<String,Object> section);

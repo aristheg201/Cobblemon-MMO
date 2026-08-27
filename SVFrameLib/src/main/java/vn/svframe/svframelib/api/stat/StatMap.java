@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.api.stat;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.player.EquipmentSlot;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframelib.api.stat.handler.StatHandler;
@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/** Player stat container with the exact session/buffer lifecycle used by MythicLib 1.7.1. */
+/** Player stat container with the exact session/buffer lifecycle used by SVFrameLib 1.7.1. */
 public class StatMap extends PlayerDataMap implements PlayerStatProvider {
     private final MMOPlayerData data;
     private final Map<String, StatInstance> stats = new ConcurrentHashMap<>();
@@ -48,7 +48,7 @@ public class StatMap extends PlayerDataMap implements PlayerStatProvider {
 
     @Override
     public void onSessionOpen() {
-        for (StatHandler handler : MythicLib.plugin.getStats().getHandlers()) {
+        for (StatHandler handler : SVFrameLib.plugin.getStats().getHandlers()) {
             StatInstance instance = handler.updateOnLogin()
                     ? getInstance(handler.getStat())
                     : stats.get(handler.getStat());

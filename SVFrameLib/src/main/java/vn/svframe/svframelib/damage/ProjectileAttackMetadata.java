@@ -6,7 +6,7 @@ import vn.svframe.svframelib.player.PlayerMetadata;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 
-/** Native Fabric form of MythicLib 1.7.1 projectile attack metadata. */
+/** Native Fabric form of SVFrameLib 1.7.1 projectile attack metadata. */
 public class ProjectileAttackMetadata extends AttackMetadata {
     private final ProjectileEntity projectile;
     private final ProjectileMetadata projectileMetadata;

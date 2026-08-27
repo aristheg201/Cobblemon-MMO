@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 
 /**
  * Player-bound modifier container with the same replacement/removal ownership
- * semantics as MythicLib 1.7.1. Modifier maps are session-aware data maps;
+ * semantics as SVFrameLib 1.7.1. Modifier maps are session-aware data maps;
  * subclasses can therefore activate/deactivate their runtime state from the
  * PlayerDataMap lifecycle.
  */

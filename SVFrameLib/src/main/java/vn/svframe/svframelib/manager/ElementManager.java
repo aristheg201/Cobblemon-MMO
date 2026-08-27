@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-/** Native element registry with the same public lookup surface as MythicLib 1.7.1. */
+/** Native element registry with the same public lookup surface as SVFrameLib 1.7.1. */
 public class ElementManager extends Module {
     private final Map<String, Element> mapped = new LinkedHashMap<>();
 

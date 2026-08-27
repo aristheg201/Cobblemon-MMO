@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.skill.parameter.value;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import java.util.logging.Level;
 
 public class FormulaFailsafeException extends RuntimeException {
@@ -16,6 +16,6 @@ public class FormulaFailsafeException extends RuntimeException {
     public void log(String format, Object... args) {
         String prefix = args == null || args.length == 0 ? format : String.format(format, args);
         Throwable cause = getCause();
-        MythicLib.inst().getLogger().log(Level.WARNING, prefix + (cause == null || cause.getMessage() == null ? "" : ": " + cause.getMessage()));
+        SVFrameLib.inst().getLogger().log(Level.WARNING, prefix + (cause == null || cause.getMessage() == null ? "" : ": " + cause.getMessage()));
     }
 }

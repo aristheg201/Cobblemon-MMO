@@ -3,12 +3,12 @@ package vn.svframe.svframelib.util;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
-import vn.svframe.mythiclibfabric.MythicLibFabricMod;
+import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
 
 import java.util.Objects;
 import java.util.function.Consumer;
 
-/** Fabric-native port of MythicLib 1.7.1 ParabolicProjectile. */
+/** Fabric-native port of SVFrameLib 1.7.1 ParabolicProjectile. */
 public class ParabolicProjectile implements Runnable {
     private final ServerWorld world;
     private final Vec3d target;
@@ -47,7 +47,7 @@ public class ParabolicProjectile implements Runnable {
         this.end = end == null ? () -> { } : end;
         this.speed = Math.max(1, speed);
         this.display = Objects.requireNonNull(display, "Display cannot be null");
-        MythicLibFabricMod.schedule(0, this);
+        SVFrameLibFabricMod.schedule(0, this);
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ParabolicProjectile implements Runnable {
             display.accept(location);
         }
 
-        MythicLibFabricMod.schedule(1, this);
+        SVFrameLibFabricMod.schedule(1, this);
     }
 
     public boolean isActive() {

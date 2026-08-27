@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.command.argument;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.UtilityMethods;
 import vn.svframe.svframelib.command.CommandTreeExplorer;
 import vn.svframe.svframelib.skill.handler.SkillHandler;
@@ -23,7 +23,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/** Native argument definition retaining MythicLib 1.7.1 immutable argument semantics. */
+/** Native argument definition retaining SVFrameLib 1.7.1 immutable argument semantics. */
 public class Argument<T> {
     private final String key;
     private final int indexInNode;
@@ -48,8 +48,8 @@ public class Argument<T> {
         throw new ArgumentParseException("Please provide a player");
     });
     public static final Argument<Integer> AMOUNT_INT = new Argument<>("amount", Argument::amounts, (explorer, input) -> parseInt(input));
-    public static final Argument<SkillHandler<?>> SKILL_HANDLER = new Argument<>("skill_id", (explorer, out) -> MythicLib.plugin.getSkills().getHandlers().forEach(handler -> out.add(handler.getId())), (explorer, input) -> {
-        SkillHandler<?> handler = MythicLib.plugin.getSkills().getHandler(UtilityMethods.enumName(input));
+    public static final Argument<SkillHandler<?>> SKILL_HANDLER = new Argument<>("skill_id", (explorer, out) -> SVFrameLib.plugin.getSkills().getHandlers().forEach(handler -> out.add(handler.getId())), (explorer, input) -> {
+        SkillHandler<?> handler = SVFrameLib.plugin.getSkills().getHandler(UtilityMethods.enumName(input));
         if (handler == null) throw new ArgumentParseException("Could not find skill handler '" + input + "'");
         return handler;
     });
@@ -61,7 +61,7 @@ public class Argument<T> {
         if (id == null || !Registries.ITEM.containsId(id)) throw new ArgumentParseException("Could not find material '" + input + "'");
         return Registries.ITEM.get(id);
     });
-    public static final Argument<String> STAT = new Argument<>("stat", (explorer, out) -> out.addAll(MythicLib.plugin.getStats().getRegisteredStats()), (explorer, input) -> UtilityMethods.enumName(input));
+    public static final Argument<String> STAT = new Argument<>("stat", (explorer, out) -> out.addAll(SVFrameLib.plugin.getStats().getRegisteredStats()), (explorer, input) -> UtilityMethods.enumName(input));
     public static final Argument<Boolean> BOOLEAN = new Argument<>("boolean",
             (explorer, out) -> { out.add("true"); out.add("false"); },
             (explorer, input) -> {

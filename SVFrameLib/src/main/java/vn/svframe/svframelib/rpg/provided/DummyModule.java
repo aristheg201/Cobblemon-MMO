@@ -7,7 +7,7 @@ import vn.svframe.svframelib.rpg.LevelModule;
 import vn.svframe.svframelib.rpg.ManaModule;
 
 /**
- * MythicLib's fallback RPG provider, mapped to native player fields.
+ * SVFrameLib's fallback RPG provider, mapped to native player fields.
  * Level is vanilla experience level and mana is vanilla food level.
  */
 public class DummyModule implements ClassModule, LevelModule, ManaModule {

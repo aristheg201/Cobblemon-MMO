@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.profile.handler;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.module.MMOPlugin;
 import net.minecraft.util.Identifier;
 
@@ -14,7 +14,7 @@ public final class ProxyProfileHandler implements ProfileHandler {
     @Override
     public List<Identifier> collectModules() {
         List<Identifier> modules = new ArrayList<>();
-        for (MMOPlugin plugin : MythicLib.inst().getMMOPlugins())
+        for (MMOPlugin plugin : SVFrameLib.inst().getMMOPlugins())
             if (plugin.hasData()) modules.add(Identifier.of(plugin.getNamespacedKey(), "plugin"));
         return modules;
     }

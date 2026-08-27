@@ -3,7 +3,7 @@ package vn.svframe.svframelib.util;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-/** Lazy value semantics matching MythicLib 1.7.1. */
+/** Lazy value semantics matching SVFrameLib 1.7.1. */
 public class Lazy<T> implements Supplier<T> {
     private final boolean persistent;
     private Supplier<T> expression;

@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.damage.mitigation;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.player.cooldown.CooldownObject;
 import vn.svframe.svframelib.script.util.expression.numeric.NumericExpression;
 import vn.svframe.svframelib.skill.SimpleSkill;
@@ -29,8 +29,8 @@ public final class MitigationType implements CooldownObject {
         this.cooldownFormula = config.contains("cooldown") ? NumericExpression.compile(config.getString("cooldown")) : null;
         this.rollFormula = config.contains("roll") ? NumericExpression.compile(config.getString("roll")) : null;
         if (!config.contains("on_damage")) throw new IllegalArgumentException("Missing on_damage for mitigation type '" + id + "'");
-        this.onDamage = new SimpleSkill(MythicLib.plugin.getSkills().loadSkillHandler(config.get("on_damage")));
-        this.preDamage = config.contains("pre_damage") ? new SimpleSkill(MythicLib.plugin.getSkills().loadSkillHandler(config.get("pre_damage"))) : null;
+        this.onDamage = new SimpleSkill(SVFrameLib.plugin.getSkills().loadSkillHandler(config.get("on_damage")));
+        this.preDamage = config.contains("pre_damage") ? new SimpleSkill(SVFrameLib.plugin.getSkills().loadSkillHandler(config.get("pre_damage"))) : null;
     }
 
     public NumericExpression getCooldown() { return cooldownFormula; }

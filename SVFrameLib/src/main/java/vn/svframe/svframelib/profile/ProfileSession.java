@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.profile;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.event.session.SessionUpdateEvent;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframelib.api.stat.StatMap;
@@ -21,13 +21,13 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Native Fabric profile session state machine matching MythicLib 1.7.1 semantics.
+ * Native Fabric profile session state machine matching SVFrameLib 1.7.1 semantics.
  */
 public class ProfileSession {
     private static final long GHOST_THRESHOLD_MILLIS = 10_000L;
     private static final long TIME_OUT_MILLIS = 86_400_000L;
     private static final List<Identifier> GHOST_CHECK_BLACKLIST =
-            List.of(Identifier.of("mmocore", "force_class_select"));
+            List.of(Identifier.of("svframemmo", "force_class_select"));
 
     private final MMOPlayerData playerData;
     private final UUID profileId;
@@ -138,7 +138,7 @@ public class ProfileSession {
             }
             lastUpdateReason = reason;
             oldState = getAndSetState(ProfileSessionState.OPENING);
-            waiting = MythicLib.plugin.getProfileHandler().collectModules();
+            waiting = SVFrameLib.plugin.getProfileHandler().collectModules();
             loaded = new ArrayList<>();
         }
         callSessionUpdateEvent(oldState, reason);

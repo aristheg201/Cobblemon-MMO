@@ -33,7 +33,7 @@ public final class AdventureUtils {
     public static CompletableFuture<Void> runAsync(Runnable runnable) { return CompletableFuture.runAsync(runnable); }
     public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier) { return CompletableFuture.supplyAsync(supplier); }
 
-    /** Equivalent to Bungee ChatColor.of(raw).getColor() for MythicLib's accepted named/hex colors. */
+    /** Equivalent to Bungee ChatColor.of(raw).getColor() for SVFrameLib's accepted named/hex colors. */
     public static Color color(String raw) {
         if (raw == null) return Color.WHITE;
         String s = raw.trim();

@@ -5,7 +5,7 @@ import vn.svframe.svframelib.skill.Skill;
 import vn.svframe.svframelib.skill.SkillMetadata;
 import vn.svframe.svframelib.skill.result.SkillResult;
 
-/** Common Fabric-native base for MythicLib player skill events. */
+/** Common Fabric-native base for SVFrameLib player skill events. */
 public abstract class PlayerSkillEvent extends MMOPlayerDataEvent {
     private final SkillMetadata skillMeta;
     private final SkillResult result;

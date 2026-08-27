@@ -1,7 +1,7 @@
 package vn.svframe.svframelib.util.config;
 
 import vn.svframe.svframelib.module.MMOPlugin;
-import vn.svframe.mythiclibfabric.MythicLibFabricMod;
+import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
 import java.nio.file.*;
 
 public abstract class ConfigFile<T> {
@@ -10,7 +10,7 @@ public abstract class ConfigFile<T> {
     private T content;
     protected ConfigFile(MMOPlugin plugin, String path, String name) {
         this.plugin = plugin;
-        Path base = MythicLibFabricMod.configRoot();
+        Path base = SVFrameLibFabricMod.configRoot();
         if (plugin != null && !"svframelib".equals(plugin.getNamespacedKey()))
             base = base.getParent().resolve(plugin.getNamespacedKey());
         this.file = base.resolve(path == null ? "" : path).resolve(name == null ? "" : name).normalize();

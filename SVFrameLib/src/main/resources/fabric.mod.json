@@ -3,21 +3,21 @@
   "id": "svframelib",
   "version": "${version}",
   "name": "SVFrameLib",
-  "description": "Native Fabric 1.21.1 port of MythicLib 1.7.1.",
+  "description": "Native Fabric 1.21.1 port of SVFrameLib 1.7.1.",
   "environment": "server",
   "entrypoints": {
     "main": [
-      "vn.svframe.mythiclibfabric.SVFrameLibBootstrap",
-      "vn.svframe.mythiclibfabric.MythicLibFabricMod",
-      "vn.svframe.mythiclibfabric.MythicLibStatMod",
-      "vn.svframe.mythiclibfabric.MythicLibCombatMod",
-      "vn.svframe.mythiclibfabric.MythicLibPassiveMod",
-      "vn.svframe.mythiclibfabric.MythicLibArmorPassiveMod",
-      "vn.svframe.mythiclibfabric.MythicLibPlayerDataMod",
-      "vn.svframe.mythiclibfabric.MythicLibCraftingBootstrap"
+      "vn.svframe.svframelib.fabric.SVFrameLibBootstrap",
+      "vn.svframe.svframelib.fabric.SVFrameLibFabricMod",
+      "vn.svframe.svframelib.fabric.SVFrameLibStatMod",
+      "vn.svframe.svframelib.fabric.SVFrameLibCombatMod",
+      "vn.svframe.svframelib.fabric.SVFrameLibPassiveMod",
+      "vn.svframe.svframelib.fabric.SVFrameLibArmorPassiveMod",
+      "vn.svframe.svframelib.fabric.SVFrameLibPlayerDataMod",
+      "vn.svframe.svframelib.fabric.SVFrameLibCraftingBootstrap"
     ]
   },
-  "mixins": ["mythiclibfabric.mixins.json"],
+  "mixins": ["svframelibfabric.mixins.json"],
   "depends": {
     "fabricloader": ">=0.18.4",
     "minecraft": "~1.21.1",

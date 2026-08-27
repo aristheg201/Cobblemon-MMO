@@ -3,7 +3,7 @@ package vn.svframe.svframelib.script.targeter;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
-/** Geometry helpers copied from the semantics used by MythicLib targeters. */
+/** Geometry helpers copied from the semantics used by SVFrameLib targeters. */
 public final class TargeterMath {
     private TargeterMath() {}
 

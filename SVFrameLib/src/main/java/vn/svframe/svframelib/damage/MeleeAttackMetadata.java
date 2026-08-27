@@ -6,9 +6,9 @@ import vn.svframe.svframelib.player.PlayerMetadata;
 import net.minecraft.entity.LivingEntity;
 
 /**
- * Native Fabric form of MythicLib 1.7.1 melee attack metadata.
+ * Native Fabric form of SVFrameLib 1.7.1 melee attack metadata.
  *
- * <p>The original Bukkit implementation only adds the action-hand lookup on
+ * <p>The original server-plugin platform implementation only adds the action-hand lookup on
  * top of {@link AttackMetadata}. The same contract is retained here with
  * Fabric entity types.</p>
  */

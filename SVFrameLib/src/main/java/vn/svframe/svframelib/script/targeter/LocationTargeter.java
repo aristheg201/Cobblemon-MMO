@@ -7,7 +7,7 @@ import vn.svframe.svframelib.util.configobject.ConfigObject;
 
 import java.util.List;
 
-/** MythicLib 1.7.1 location targeter base with orientation contract. */
+/** SVFrameLib 1.7.1 location targeter base with orientation contract. */
 public abstract class LocationTargeter {
     private final boolean oriented;
 

@@ -2,7 +2,7 @@ package vn.svframe.svframelib.damage;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframelib.api.stat.provider.StatProvider;
 import vn.svframe.svframelib.player.PlayerMetadata;
@@ -10,7 +10,7 @@ import vn.svframe.svframelib.player.PlayerMetadata;
 import java.util.Arrays;
 import java.util.Objects;
 
-/** Native Fabric form of MythicLib 1.7.1 AttackMetadata. */
+/** Native Fabric form of SVFrameLib 1.7.1 AttackMetadata. */
 public class AttackMetadata {
     private final DamageMetadata damage;
     private final LivingEntity target;
@@ -37,9 +37,9 @@ public class AttackMetadata {
 
     @Deprecated public void damage(LivingEntity entity) { damage(entity, true); }
 
-    /** @deprecated The boolean is knockback, matching MythicLib 1.7.1. */
+    /** @deprecated The boolean is knockback, matching SVFrameLib 1.7.1. */
     @Deprecated public void damage(LivingEntity entity, boolean knockback) {
-        MythicLib.plugin.getDamage().damage(this, entity, knockback);
+        SVFrameLib.plugin.getDamage().damage(this, entity, knockback);
     }
 
     @Deprecated public ServerPlayerEntity getPlayer() { return playerMetadata().getPlayer(); }
@@ -48,7 +48,7 @@ public class AttackMetadata {
     @Deprecated public void setStat(String id, double value) { playerMetadata().setStat(id, value); }
     @Deprecated public AttackMetadata attack(LivingEntity target, double damage, DamageType... damageTypes) { return playerMetadata().attack(target, damage, Arrays.asList(damageTypes)); }
 
-    /** @deprecated The boolean is knockback, matching MythicLib 1.7.1. */
+    /** @deprecated The boolean is knockback, matching SVFrameLib 1.7.1. */
     @Deprecated public AttackMetadata attack(LivingEntity target, double damage, boolean knockback, DamageType... damageTypes) {
         return playerMetadata().attack(target, damage, knockback, Arrays.asList(damageTypes));
     }

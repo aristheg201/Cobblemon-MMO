@@ -5,7 +5,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.List;
 
-/** Public compatibility facade retaining the MythicLib 1.7.1 API package. */
+/** Public compatibility facade retaining the SVFrameLib 1.7.1 API package. */
 public class SmartGive {
     private final vn.svframe.svframelib.util.SmartGive delegate;
 

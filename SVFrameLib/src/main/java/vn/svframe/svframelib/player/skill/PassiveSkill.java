@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.player.skill;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.player.EquipmentSlot;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframelib.player.modifier.ModifierMap;
@@ -30,7 +30,7 @@ public class PassiveSkill extends PlayerModifier {
 
     public PassiveSkill(ConfigObject config) {
         super(config.getString("key"), EquipmentSlot.OTHER, ModifierSource.OTHER);
-        this.triggered = new SimpleSkill(MythicLib.plugin.getSkills().getHandlerOrThrow(config.getString("skill")));
+        this.triggered = new SimpleSkill(SVFrameLib.plugin.getSkills().getHandlerOrThrow(config.getString("skill")));
         this.trigger = TriggerType.valueOf(config.getString("trigger"));
         Objects.requireNonNull(triggered.getHandler(), "Null skill handler");
     }

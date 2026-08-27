@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.util.lang3;
 
-/** Runtime exception retained for MythicLib API compatibility. */
+/** Runtime exception retained for SVFrameLib API compatibility. */
 public class NotImplementedException extends RuntimeException {
     public NotImplementedException() { super(); }
     public NotImplementedException(String message) { super(message); }

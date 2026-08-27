@@ -3,7 +3,7 @@ package vn.svframe.svframelib.util.configobject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Fabric-side line-config wrapper. Accepts MythicLib's {key=value,...} and JSON-ish forms. */
+/** Fabric-side line-config wrapper. Accepts SVFrameLib's {key=value,...} and JSON-ish forms. */
 public class JsonWrapper extends MapConfigObject {
     public JsonWrapper(String key,Map<String,?> object){super(key,object);}
     protected JsonWrapper(String line){this(parseKey(line),parseBody(line));}

@@ -3,9 +3,9 @@ package vn.svframe.svframelib.script;
 import vn.svframe.svframelib.script.mechanic.Mechanic;
 import vn.svframe.svframelib.script.mechanic.RawMechanic;
 import vn.svframe.svframelib.skill.SkillMetadata;
-import vn.svframe.mythiclibfabric.MythicLibFabricMod;
-import vn.svframe.mythiclibfabric.runtime.script.ExpressionRuntime;
-import vn.svframe.mythiclibfabric.runtime.script.ScriptLineParser;
+import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
+import vn.svframe.svframelib.fabric.runtime.script.ExpressionRuntime;
+import vn.svframe.svframelib.fabric.runtime.script.ScriptLineParser;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MechanicQueue {
-    private static final Logger LOG = Logger.getLogger("MythicLib");
+    private static final Logger LOG = Logger.getLogger("SVFrameLib");
     private final Iterator<Mechanic> queue;
     private final SkillMetadata metadata;
     private final Script script;
@@ -33,7 +33,7 @@ public class MechanicQueue {
                 ScriptLineParser.Call call = ScriptLineParser.parse(raw.raw());
                 if (call.name().equals("delay")) {
                     long ticks = delayTicks(call);
-                    MythicLibFabricMod.schedule((int) Math.min(Integer.MAX_VALUE, Math.max(1L, ticks)), this::next);
+                    SVFrameLibFabricMod.schedule((int) Math.min(Integer.MAX_VALUE, Math.max(1L, ticks)), this::next);
                     return false;
                 }
             }

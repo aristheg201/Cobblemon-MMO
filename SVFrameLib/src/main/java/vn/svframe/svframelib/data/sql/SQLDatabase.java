@@ -3,7 +3,7 @@ import vn.svframe.svframelib.data.*; import vn.svframe.svframelib.data.queue.Dat
 import java.sql.*; import java.util.*; import java.util.concurrent.*; import java.util.function.*;
 public abstract class SQLDatabase<H extends SynchronizedDataHolder,O extends OfflineDataHolder> implements Database<H,O> {
     private final MMOPlugin plugin; protected final String userdataTableName; protected final String uuidFieldName="uuid"; protected final String databaseName; private volatile String jdbcUrl;
-    public SQLDatabase(MMOPlugin plugin,String databaseName){this.plugin=Objects.requireNonNull(plugin);this.databaseName=Objects.requireNonNullElse(databaseName,plugin.getNamespacedKey());this.userdataTableName=plugin.getNamespacedKey().replace('-','_')+"_userdata";this.jdbcUrl=System.getProperty("svframelib.jdbc."+plugin.getNamespacedKey(),"jdbc:sqlite:"+vn.svframe.mythiclibfabric.MythicLibFabricMod.configRoot().resolve(this.databaseName+".db"));}
+    public SQLDatabase(MMOPlugin plugin,String databaseName){this.plugin=Objects.requireNonNull(plugin);this.databaseName=Objects.requireNonNullElse(databaseName,plugin.getNamespacedKey());this.userdataTableName=plugin.getNamespacedKey().replace('-','_')+"_userdata";this.jdbcUrl=System.getProperty("svframelib.jdbc."+plugin.getNamespacedKey(),"jdbc:sqlite:"+vn.svframe.svframelib.fabric.SVFrameLibFabricMod.configRoot().resolve(this.databaseName+".db"));}
     public void setJdbcUrl(String url){this.jdbcUrl=Objects.requireNonNull(url);}
     public Connection getConnection() throws SQLException{return DriverManager.getConnection(jdbcUrl);}
     @Override public void setup(){try{setupSQL();}catch(SQLException e){throw new RuntimeException("Could not setup SQL database "+databaseName,e);}}

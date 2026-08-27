@@ -15,12 +15,12 @@ public class ServerVersion {
     private ServerVersion(boolean ignored) { }
 
     public void validateMappings() { }
-    public boolean isPaper() { return false; }
+    public boolean isFabric() { return false; }
     public boolean isAbove(int... version) { return isStrictlyHigher(version); }
     public boolean isUnder(int... version) { return compare(VERSION, version) < 0; }
-    public String getCraftBukkitVersion() { return "fabric-1.21.1"; }
+    public String getLoaderPlatform() { return "fabric-1.21.1"; }
     public int getRevisionNumber() { return 1; }
-    public int[] getBukkitVersion() { return VERSION.clone(); }
+    public int[] getGameVersion() { return VERSION.clone(); }
     public VersionWrapper getWrapper() { return wrapper; }
     @Override public String toString() { return "1.21.1-fabric"; }
     public static ServerVersion get() { return INSTANCE; }

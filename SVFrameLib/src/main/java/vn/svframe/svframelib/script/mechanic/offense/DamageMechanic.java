@@ -2,7 +2,7 @@ package vn.svframe.svframelib.script.mechanic.offense;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.damage.AttackMetadata;
 import vn.svframe.svframelib.damage.DamageMetadata;
 import vn.svframe.svframelib.damage.DamageType;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/** Native Fabric implementation of MythicLib 1.7.1 DamageMechanic. */
+/** Native Fabric implementation of SVFrameLib 1.7.1 DamageMechanic. */
 public class DamageMechanic extends TargetMechanic {
     private final NumericExpression amount;
     private final boolean knockback;
@@ -47,9 +47,9 @@ public class DamageMechanic extends TargetMechanic {
     public void cast(SkillMetadata meta, Entity target) {
         if (!(target instanceof LivingEntity living)) throw new IllegalArgumentException("Cannot damage a non living entity");
         double evaluated = amount.evaluate(meta);
-        Element element = elementName == null ? null : MythicLib.plugin.getElements().get(elementName);
+        Element element = elementName == null ? null : SVFrameLib.plugin.getElements().get(elementName);
 
-        AttackMetadata registered = MythicLib.plugin.getDamage().getRegisteredAttackMetadata(living);
+        AttackMetadata registered = SVFrameLib.plugin.getDamage().getRegisteredAttackMetadata(living);
         if (registered != null) {
             registered.getDamage().add(evaluated, element, types);
             return;
@@ -59,6 +59,6 @@ public class DamageMechanic extends TargetMechanic {
                 ? new DamageMetadata(evaluated, types)
                 : new DamageMetadata(evaluated, element, types);
         AttackMetadata attack = new AttackMetadata(damage, living, meta.getCaster());
-        MythicLib.plugin.getDamage().registerAttack(attack, knockback, ignoreImmunity);
+        SVFrameLib.plugin.getDamage().registerAttack(attack, knockback, ignoreImmunity);
     }
 }

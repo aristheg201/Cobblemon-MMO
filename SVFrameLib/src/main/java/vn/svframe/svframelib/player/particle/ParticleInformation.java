@@ -16,7 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-/** Native particle descriptor preserving the display API used by MythicLib particle effects. */
+/** Native particle descriptor preserving the display API used by SVFrameLib particle effects. */
 public class ParticleInformation {
     private static final Map<String,String> LEGACY = Map.ofEntries(
             Map.entry("REDSTONE", "dust"), Map.entry("DUST", "dust"), Map.entry("FLAME", "flame"),

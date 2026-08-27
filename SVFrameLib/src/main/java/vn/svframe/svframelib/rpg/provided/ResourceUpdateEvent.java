@@ -6,7 +6,7 @@ import vn.svframe.svframelib.player.resource.ResourceUpdateReason;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
-/** Fabric-native cancellable resource update event replacing Bukkit's event bus. */
+/** Fabric-native cancellable resource update event replacing server-plugin platform's event bus. */
 public class ResourceUpdateEvent extends MMOPlayerDataEvent {
     @FunctionalInterface
     public interface Listener {

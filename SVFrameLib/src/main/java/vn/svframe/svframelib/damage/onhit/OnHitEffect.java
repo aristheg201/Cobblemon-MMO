@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.damage.onhit;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.player.cooldown.CooldownObject;
 import vn.svframe.svframelib.script.util.expression.numeric.NumericExpression;
 import vn.svframe.svframelib.skill.SimpleSkill;
@@ -28,8 +28,8 @@ public final class OnHitEffect implements CooldownObject {
         this.cooldownFormula = config.contains("cooldown") ? NumericExpression.compile(config.getString("cooldown")) : null;
         this.rollFormula = config.contains("roll") ? NumericExpression.compile(config.getString("roll")) : null;
         if (!config.contains("on_attack")) throw new IllegalArgumentException("Missing on_attack for on-hit effect '" + id + "'");
-        this.onAttack = new SimpleSkill(MythicLib.plugin.getSkills().loadSkillHandler(config.get("on_attack")));
-        this.preAttack = config.contains("pre_attack") ? new SimpleSkill(MythicLib.plugin.getSkills().loadSkillHandler(config.get("pre_attack"))) : null;
+        this.onAttack = new SimpleSkill(SVFrameLib.plugin.getSkills().loadSkillHandler(config.get("on_attack")));
+        this.preAttack = config.contains("pre_attack") ? new SimpleSkill(SVFrameLib.plugin.getSkills().loadSkillHandler(config.get("pre_attack"))) : null;
     }
 
     public PostLoadAction getPostLoadAction() { return postLoadAction; }

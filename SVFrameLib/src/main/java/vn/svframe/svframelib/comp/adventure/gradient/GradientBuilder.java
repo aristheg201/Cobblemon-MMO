@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** Native equivalent of MythicLib 1.7.1 GradientBuilder. */
+/** Native equivalent of SVFrameLib 1.7.1 GradientBuilder. */
 public class GradientBuilder {
     public static String rgbGradient(String str, Color from, Color to, double phase, Interpolator interpolator) {
         return rgbGradient(str, from, to, phase, interpolator, new ArrayList<>());

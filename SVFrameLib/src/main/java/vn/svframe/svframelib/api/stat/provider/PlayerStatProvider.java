@@ -6,7 +6,7 @@ import vn.svframe.svframelib.player.PlayerMetadata;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-/** Fabric-native player stat provider API matching MythicLib 1.7.1 semantics. */
+/** Fabric-native player stat provider API matching SVFrameLib 1.7.1 semantics. */
 public interface PlayerStatProvider extends StatProvider {
     default ServerPlayerEntity getPlayer() {
         return getData().getPlayer();

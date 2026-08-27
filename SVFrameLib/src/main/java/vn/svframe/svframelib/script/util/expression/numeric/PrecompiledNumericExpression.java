@@ -2,8 +2,8 @@ package vn.svframe.svframelib.script.util.expression.numeric;
 
 import vn.svframe.svframelib.script.util.expression.EvaluationException;
 import vn.svframe.svframelib.script.util.expression.placeholder.ExpressionPlaceholder;
-import vn.svframe.svframelib.script.util.expression.placeholder.MythicLibVariablePlaceholder;
-import vn.svframe.svframelib.script.util.expression.placeholder.PAPIPlaceholder;
+import vn.svframe.svframelib.script.util.expression.placeholder.SVFrameLibVariablePlaceholder;
+import vn.svframe.svframelib.script.util.expression.placeholder.RegisteredPlaceholder;
 import vn.svframe.svframelib.skill.SkillMetadata;
 import vn.svframe.svframelib.util.Lazy;
 
@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 /** Native precompiled numeric expression retaining the 1.7.1 placeholder phases. */
 public class PrecompiledNumericExpression extends NumericExpression {
-    private static final Pattern PAPI_PLACEHOLDER_PATTERN = Pattern.compile("%([^!&|<>=%]+)%");
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("%([^!&|<>=%]+)%");
     private static final Pattern CUSTOM_PLACEHOLDER_PATTERN = Pattern.compile("\\{([^{}]*)}");
 
     private final String originalExpression;
@@ -30,8 +30,8 @@ public class PrecompiledNumericExpression extends NumericExpression {
         this.originalExpression = expression;
 
         String compiled = resolvePlaceholders(expression, SkillMetadata.INTERNAL_PLACEHOLDER_PATTERN,
-                MythicLibVariablePlaceholder::new);
-        compiled = resolvePlaceholders(compiled, PAPI_PLACEHOLDER_PATTERN, PAPIPlaceholder::new);
+                SVFrameLibVariablePlaceholder::new);
+        compiled = resolvePlaceholders(compiled, PLACEHOLDER_PATTERN, RegisteredPlaceholder::new);
         if (customPlaceholderResolver != null) {
             compiled = resolvePlaceholders(compiled, CUSTOM_PLACEHOLDER_PATTERN, customPlaceholderResolver);
         }

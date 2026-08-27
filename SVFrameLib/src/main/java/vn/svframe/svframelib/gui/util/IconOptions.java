@@ -17,7 +17,7 @@ import vn.svframe.svframelib.version.VersionUtils;
 
 import java.util.*;
 
-/** Native 1.21.1 equivalent of MythicLib 1.7.1 IconOptions. */
+/** Native 1.21.1 equivalent of SVFrameLib 1.7.1 IconOptions. */
 public class IconOptions {
     public static final IconOptions EMPTY = new IconOptions();
 

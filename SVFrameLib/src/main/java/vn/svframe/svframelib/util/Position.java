@@ -6,7 +6,7 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.Objects;
 
-/** World-aware mutable 3D position used by the MythicLib variable runtime. */
+/** World-aware mutable 3D position used by the SVFrameLib variable runtime. */
 public class Position implements Cloneable {
     private final ServerWorld world;
     private double x, y, z;

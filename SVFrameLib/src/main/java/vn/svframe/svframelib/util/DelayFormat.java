@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/** Pure-Java/Fabric port of MythicLib 1.7.1 DelayFormat. */
+/** Pure-Java/Fabric port of SVFrameLib 1.7.1 DelayFormat. */
 public class DelayFormat {
     private static final char[] DELAY_CHARACTERS = {'s', 'm', 'h', 'd', 'M', 'y'};
     private static final long[] DELAY_AMOUNTS = {1000L, 60000L, 3600000L, 86400000L, 2629746000L, 31557522240L};

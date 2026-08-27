@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-/** Native implementation of MythicLib 1.7.1 nested variable registries. */
+/** Native implementation of SVFrameLib 1.7.1 nested variable registries. */
 public class SimpleVariableRegistry<D> implements VariableRegistry<Variable<D>> {
     private final Map<String, Function<D, Variable<?>>> registered = new HashMap<>();
     private final SimpleVariableRegistry<?> parent;

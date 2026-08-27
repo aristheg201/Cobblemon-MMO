@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.rpg.provided;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframelib.player.PlayerDataMap;
 import vn.svframe.svframelib.player.resource.ResourceUpdateReason;
@@ -20,8 +20,8 @@ public class PlayerResourceData extends PlayerDataMap {
     protected void onSessionOpen() {
         if (!initialized) {
             initialized = true;
-            mana = MythicLib.plugin.getMMOConfig().manaLoginRatio * parent.getStatMap().getStat("MAX_MANA");
-            stamina = MythicLib.plugin.getMMOConfig().staminaLoginRatio * parent.getStatMap().getStat("MAX_STAMINA");
+            mana = SVFrameLib.plugin.getMMOConfig().manaLoginRatio * parent.getStatMap().getStat("MAX_MANA");
+            stamina = SVFrameLib.plugin.getMMOConfig().staminaLoginRatio * parent.getStatMap().getStat("MAX_STAMINA");
         }
     }
 

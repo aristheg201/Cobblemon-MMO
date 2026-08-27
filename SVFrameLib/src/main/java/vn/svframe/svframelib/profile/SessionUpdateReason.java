@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.profile;
 
-/** Profile lifecycle reasons exposed by MythicLib 1.7.1. */
+/** Profile lifecycle reasons exposed by SVFrameLib 1.7.1. */
 public enum SessionUpdateReason {
     AUTOSAVE,
     LOG_OUT,

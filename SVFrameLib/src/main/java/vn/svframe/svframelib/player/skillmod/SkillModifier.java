@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-/** Skill parameter modifier preserving MythicLib 1.7.1 semantics. */
+/** Skill parameter modifier preserving SVFrameLib 1.7.1 semantics. */
 public class SkillModifier extends InstanceModifier {
     private final List<SkillHandler<?>> skills;
     private final String parameter;

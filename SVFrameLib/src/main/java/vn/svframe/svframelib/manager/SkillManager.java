@@ -28,7 +28,7 @@ import vn.svframe.svframelib.script.targeter.location.SourceLocationTargeter;
 import vn.svframe.svframelib.script.targeter.location.TargetEntityLocationTargeter;
 import vn.svframe.svframelib.script.targeter.location.TargetLocationTargeter;
 import vn.svframe.svframelib.script.targeter.location.VariableLocationTargeter;
-import vn.svframe.svframelib.skill.handler.MythicLibSkillHandler;
+import vn.svframe.svframelib.skill.handler.SVFrameLibSkillHandler;
 import vn.svframe.svframelib.skill.handler.BuiltinSkillHandler;
 import vn.svframe.svframelib.skill.handler.SkillHandler;
 import vn.svframe.svframelib.skill.handler.SkillHandlerSource;
@@ -38,7 +38,7 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-/** Native Fabric implementation of the MythicLib 1.7.1 skill/script registry. */
+/** Native Fabric implementation of the SVFrameLib 1.7.1 skill/script registry. */
 public class SkillManager extends Module implements MMOManager {
 private static final String UNIDENTIFIED_SCRIPT_ID = "UnidentifiedScript";
 private final Map<String, Function<ConfigObject, Mechanic>> mechanics = new ConcurrentHashMap<>();
@@ -85,7 +85,7 @@ throw new IllegalArgumentException("Could not find skill source");
 return sourceHandler(config, sourceText);
 }
 if (input instanceof Map<?, ?> raw) return loadSkillHandler(fallbackSkillHandlerId, mapObject(fallbackSkillHandlerId, raw));
-if (input instanceof List<?> list) return new MythicLibSkillHandler(loadScript(fallbackSkillHandlerId, list));
+if (input instanceof List<?> list) return new SVFrameLibSkillHandler(loadScript(fallbackSkillHandlerId, list));
 throw new IllegalArgumentException("Provide either a string or configuration section instead of " + input.getClass().getSimpleName());
 }
 private SkillHandler<?> findLegacySkillSource(ConfigObject config) {

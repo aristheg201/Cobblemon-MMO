@@ -1,1 +1,1 @@
-package vn.svframe.svframelib.script.variable;import java.lang.annotation.*;@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface VariableMetadata{String name();String source() default "mythiclib";}
+package vn.svframe.svframelib.script.variable;import java.lang.annotation.*;@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface VariableMetadata{String name();String source() default "svframelib";}

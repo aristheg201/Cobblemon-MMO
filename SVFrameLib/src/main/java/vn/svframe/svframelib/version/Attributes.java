@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-/** Native 1.21.1 attribute registry retaining MythicLib's name/adapt surface. */
+/** Native 1.21.1 attribute registry retaining SVFrameLib's name/adapt surface. */
 public class Attributes {
     private static final Map<String, RegistryEntry<EntityAttribute>> BY_ID = new LinkedHashMap<>();
     private static final Map<RegistryEntry<EntityAttribute>, String> NAMES = new LinkedHashMap<>();

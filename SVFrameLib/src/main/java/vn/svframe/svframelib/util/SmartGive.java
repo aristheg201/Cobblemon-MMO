@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-/** Native Fabric implementation of MythicLib 1.7.1 SmartGive. */
+/** Native Fabric implementation of SVFrameLib 1.7.1 SmartGive. */
 public class SmartGive {
     private final ServerPlayerEntity player;
     private final ServerWorld world;

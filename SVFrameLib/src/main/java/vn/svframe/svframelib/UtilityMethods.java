@@ -94,7 +94,7 @@ public final class UtilityMethods {
         return canTarget(player, target, InteractionType.OFFENSE_ACTION);
     }
     public static boolean canTarget(ServerPlayerEntity player, Entity target, InteractionType type) {
-        return MythicLib.inst().getEntities().canTarget(player, target, type);
+        return SVFrameLib.inst().getEntities().canTarget(player, target, type);
     }
 
     public static <T> T resolveField(Function<String, T> evaluator, String... fields) {
@@ -175,7 +175,7 @@ public final class UtilityMethods {
     public static String format(String format, Object... args) { return args == null || args.length == 0 ? format : String.format(format, args); }
 
     /** Native replacement retaining the historical method name for source ports. */
-    public static Object bukkitBootstrap(MMOPlugin plugin, String modId) {
+    public static Object fabricBootstrap(MMOPlugin plugin, String modId) {
         if (modId == null || modId.isBlank()) return null;
         return FabricLoader.getInstance().getModContainer(modId).orElse(null);
     }

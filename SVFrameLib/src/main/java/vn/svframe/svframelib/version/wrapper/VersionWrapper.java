@@ -12,7 +12,7 @@ import net.minecraft.text.Text;
 
 import java.util.UUID;
 
-/** Native Fabric compatibility wrapper replacing the Bukkit version bridge. */
+/** Native Fabric compatibility wrapper replacing the server-plugin platform version bridge. */
 public interface VersionWrapper {
     String PLAYER_PROFILE_NAME = "SVFrameLibProfile";
 

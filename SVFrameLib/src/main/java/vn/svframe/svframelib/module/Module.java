@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Native Fabric equivalent of MythicLib 1.7.1 module lifecycle semantics. */
+/** Native Fabric equivalent of SVFrameLib 1.7.1 module lifecycle semantics. */
 public abstract class Module {
     private final MMOPlugin plugin;
     private final String key;

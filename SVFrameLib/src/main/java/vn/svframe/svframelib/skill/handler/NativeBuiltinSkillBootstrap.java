@@ -30,7 +30,7 @@ public final class NativeBuiltinSkillBootstrap {
         manager.registerSkillHandlerSource(new SkillHandlerSource("default", (config, internal) -> construct(types, config, internal), List.of()));
         manager.registerSkillHandlerSource(new SkillHandlerSource("svframelib", (config, internal) -> {
             Script script = manager.getScriptOrThrow(internal);
-            return new MythicLibSkillHandler(script);
+            return new SVFrameLibSkillHandler(script);
         }, List.of("svframelib-skill-id")));
     }
 

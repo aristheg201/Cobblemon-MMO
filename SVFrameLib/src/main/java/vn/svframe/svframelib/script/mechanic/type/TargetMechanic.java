@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.script.mechanic.type;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.script.mechanic.Mechanic;
 import vn.svframe.svframelib.script.targeter.EntityTargeter;
 import vn.svframe.svframelib.skill.SkillMetadata;
@@ -13,7 +13,7 @@ public abstract class TargetMechanic extends Mechanic {
 
     public TargetMechanic(ConfigObject config) {
         this.targeter = config != null && config.contains("target")
-                ? MythicLib.plugin.getSkills().loadEntityTargeter(config.adaptObject("target"))
+                ? SVFrameLib.plugin.getSkills().loadEntityTargeter(config.adaptObject("target"))
                 : null; // null is the native equivalent of DefaultEntityTargeter: metadata target.
     }
 
@@ -26,7 +26,7 @@ public abstract class TargetMechanic extends Mechanic {
             if (target != null) cast(metadata, target);
             return;
         }
-        var server = vn.svframe.mythiclibfabric.MythicLibFabricMod.server();
+        var server = vn.svframe.svframelib.fabric.SVFrameLibFabricMod.server();
         if (server == null) return;
         for (java.util.UUID id : targeter.findTargets(metadata)) {
             for (var world : server.getWorlds()) {

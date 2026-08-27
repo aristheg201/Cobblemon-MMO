@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.LivingEntity;
 
-/** Fabric-native player kill event preserving MythicLib 1.7.1 payload semantics. */
+/** Fabric-native player kill event preserving SVFrameLib 1.7.1 payload semantics. */
 public class PlayerKillEntityEvent extends MMOPlayerDataEvent {
     @FunctionalInterface
     public interface Listener {

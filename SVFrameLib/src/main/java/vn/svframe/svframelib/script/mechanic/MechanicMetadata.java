@@ -1,1 +1,1 @@
-package vn.svframe.svframelib.script.mechanic;import java.lang.annotation.*;@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface MechanicMetadata{String source() default "mythiclib";}
+package vn.svframe.svframelib.script.mechanic;import java.lang.annotation.*;@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface MechanicMetadata{String source() default "svframelib";}

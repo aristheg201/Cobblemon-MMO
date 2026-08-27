@@ -7,7 +7,7 @@ import vn.svframe.svframelib.profile.SessionUpdateReason;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
-/** Native Fabric replacement for MythicLib's Bukkit SessionUpdateEvent. */
+/** Native Fabric replacement for SVFrameLib's server-plugin platform SessionUpdateEvent. */
 public final class SessionUpdateEvent {
     @FunctionalInterface
     public interface Listener {

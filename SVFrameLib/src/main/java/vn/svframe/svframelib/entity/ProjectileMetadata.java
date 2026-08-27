@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.entity;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.event.PlayerAttackEvent;
 import vn.svframe.svframelib.api.item.NBTItem;
 import vn.svframe.svframelib.api.player.EquipmentSlot;
@@ -22,17 +22,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * Fabric-native projectile metadata retaining MythicLib 1.7.1 projectile
+ * Fabric-native projectile metadata retaining SVFrameLib 1.7.1 projectile
  * snapshot, damage and passive-trigger semantics.
  *
- * <p>Bukkit attached metadata is replaced by a UUID registry because Fabric
- * entities do not expose Bukkit's metadata container. The lifecycle remains
+ * <p>server-plugin platform attached metadata is replaced by a UUID registry because Fabric
+ * entities do not expose server-plugin platform's metadata container. The lifecycle remains
  * owned by the shooter MMOPlayerData through {@link TemporaryHandler}, so
  * disconnect/session cleanup closes the metadata exactly like the original
  * listener-backed handler.</p>
  */
 public class ProjectileMetadata extends TemporaryHandler {
-    public static final String METADATA_KEY = "MythicLibProjectileMetadata";
+    public static final String METADATA_KEY = "SVFrameLibProjectileMetadata";
 
     private static final ConcurrentMap<UUID, ProjectileMetadata> ACTIVE = new ConcurrentHashMap<>();
 
@@ -134,7 +134,7 @@ public class ProjectileMetadata extends TemporaryHandler {
         shooter.getData().triggerSkills(metadata, cachedSkills);
     }
 
-    /** Schedule closure after a projectile hit, matching Bukkit's next-tick unregister. */
+    /** Schedule closure after a projectile hit, matching server-plugin platform's next-tick unregister. */
     public void unregisterOnHit(Entity projectile) {
         if (matches(projectile)) closeAfter(1L);
     }
@@ -172,7 +172,7 @@ public class ProjectileMetadata extends TemporaryHandler {
                                             Entity projectile) {
         ProjectileMetadata existing = get(projectile);
         if (existing != null) return existing;
-        return new ProjectileMetadata(shooter, MythicLib.plugin.getMMOConfig().bowAttackTypes, projectileType, projectile);
+        return new ProjectileMetadata(shooter, SVFrameLib.plugin.getMMOConfig().bowAttackTypes, projectileType, projectile);
     }
 
     public static ProjectileMetadata create(MMOPlayerData data,
@@ -182,7 +182,7 @@ public class ProjectileMetadata extends TemporaryHandler {
         ProjectileMetadata existing = get(projectile);
         if (existing != null) return existing;
         PlayerMetadata shooter = data.getStatMap().cache(actionHand);
-        return create(shooter, MythicLib.plugin.getMMOConfig().bowAttackTypes, projectileType, projectile);
+        return create(shooter, SVFrameLib.plugin.getMMOConfig().bowAttackTypes, projectileType, projectile);
     }
 
     public static ProjectileMetadata create(PlayerMetadata shooter,

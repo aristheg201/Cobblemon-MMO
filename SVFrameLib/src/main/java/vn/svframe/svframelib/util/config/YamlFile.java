@@ -1,15 +1,15 @@
 package vn.svframe.svframelib.util.config;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.module.MMOPlugin;
-import vn.svframe.compat.YamlLite;
+import vn.svframe.svframelib.config.YamlLite;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 
 public class YamlFile extends ConfigFile<Map<String,Object>> {
-    public YamlFile(String name){ this(MythicLib.plugin, "", name, true); }
-    public YamlFile(String path, String name){ this(MythicLib.plugin, path, name, true); }
+    public YamlFile(String name){ this(SVFrameLib.plugin, "", name, true); }
+    public YamlFile(String path, String name){ this(SVFrameLib.plugin, path, name, true); }
     public YamlFile(MMOPlugin plugin, String name){ this(plugin, "", name, true); }
     public YamlFile(MMOPlugin plugin, String path, String name){ this(plugin, path, name, true); }
     public YamlFile(MMOPlugin plugin, String path, String name, boolean load){ super(plugin,path,name); if(load) reload(); }

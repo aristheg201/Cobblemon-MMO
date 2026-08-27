@@ -12,7 +12,7 @@ import net.minecraft.registry.entry.RegistryEntryList;
 
 import java.util.*;
 
-/** Native 1.21.1 data-component implementation of MythicLib's item NBT facade. */
+/** Native 1.21.1 data-component implementation of SVFrameLib's item NBT facade. */
 public class NBTItem {
     protected final ItemStack item;
     public NBTItem(ItemStack item){this.item=Objects.requireNonNull(item,"item");}
@@ -22,7 +22,7 @@ public class NBTItem {
     public NBTItem setInteger(String path,int value){mutate(path,(p,k)->p.putInt(k,value));return this;}public NBTItem setDouble(String path,double value){mutate(path,(p,k)->p.putDouble(k,value));return this;}public NBTItem setString(String path,String value){mutate(path,(p,k)->p.putString(k,Objects.requireNonNull(value)));return this;}public NBTItem setBoolean(String path,boolean value){mutate(path,(p,k)->p.putBoolean(k,value));return this;}
     public NBTCompound getNBTCompound(String path){PathRef ref=read(path);NbtCompound compound=ref==null?new NbtCompound():ref.parent.getCompound(ref.key).copy();return new FabricCompound(compound);}
     public NBTItem addTag(List<ItemTag> tags){if(tags==null)return this;NbtComponent.set(DataComponentTypes.CUSTOM_DATA,item,root->{for(ItemTag tag:tags)putPath(root,tag.getPath(),tag.getValue());});return this;}public NBTItem addTag(ItemTag...tags){return addTag(tags==null?List.of():Arrays.asList(tags));}
-    public NBTItem removeTag(String...paths){if(paths==null)return this;NbtComponent.set(DataComponentTypes.CUSTOM_DATA,item,root->{for(String path:paths)removePath(root,path);});return this;}public Set<String> getTags(){return Set.copyOf(data().getKeys());}public ItemStack toItem(){return item;}public int getTypeId(String path){PathRef ref=read(path);return ref==null?NbtElement.END_TYPE:ref.parent.getType(ref.key);}public double getStat(String stat){return getDouble("MMOITEMS_"+stat);}public boolean hasType(){return hasTag("MMOITEMS_ITEM_TYPE");}public String getType(){String type=getString("MMOITEMS_ITEM_TYPE");return type.isEmpty()?null:type;}
+    public NBTItem removeTag(String...paths){if(paths==null)return this;NbtComponent.set(DataComponentTypes.CUSTOM_DATA,item,root->{for(String path:paths)removePath(root,path);});return this;}public Set<String> getTags(){return Set.copyOf(data().getKeys());}public ItemStack toItem(){return item;}public int getTypeId(String path){PathRef ref=read(path);return ref==null?NbtElement.END_TYPE:ref.parent.getType(ref.key);}public double getStat(String stat){return getDouble("SVFRAMEITEMS_"+stat);}public boolean hasType(){return hasTag("SVFRAMEITEMS_ITEM_TYPE");}public String getType(){String type=getString("SVFRAMEITEMS_ITEM_TYPE");return type.isEmpty()?null:type;}
     public void setCanMine(Collection<Block> blocks){if(blocks==null||blocks.isEmpty()){item.remove(DataComponentTypes.CAN_BREAK);return;}List<RegistryEntry<Block>> entries=new ArrayList<>();for(Block block:blocks)entries.add(block.getRegistryEntry());BlockPredicate predicate=new BlockPredicate(Optional.of(RegistryEntryList.of(entries)),Optional.empty(),Optional.empty());item.set(DataComponentTypes.CAN_BREAK,new BlockPredicatesChecker(List.of(predicate),true));}
     public static NBTItem get(ItemStack item){return new NBTItem(item);}
     private NbtCompound data(){NbtComponent component=item.get(DataComponentTypes.CUSTOM_DATA);return component==null?new NbtCompound():component.copyNbt();}

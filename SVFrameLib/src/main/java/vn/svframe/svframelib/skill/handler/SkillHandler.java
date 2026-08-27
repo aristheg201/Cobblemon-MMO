@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-/** Native skill handler base retaining the public MythicLib 1.7.1 metadata/UI contract. */
+/** Native skill handler base retaining the public SVFrameLib 1.7.1 metadata/UI contract. */
 public abstract class SkillHandler<T extends SkillResult> {
     private static final List<String> BASE_MODIFIERS = List.of("cooldown", "mana", "stamina", "timer", "delay");
 

@@ -19,9 +19,9 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * Native Fabric implementation of MythicLib 1.7.1 RayTrace.
+ * Native Fabric implementation of SVFrameLib 1.7.1 RayTrace.
  *
- * <p>Semantics retained from the original Bukkit implementation: fluids are
+ * <p>Semantics retained from the original server-plugin platform implementation: fluids are
  * ignored, collision shapes stop the ray, entities use a 0.2 block ray size,
  * and distanceTraveled is the distance to the first block even when no living
  * entity is hit.</p>

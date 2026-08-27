@@ -1,7 +1,7 @@
 package vn.svframe.svframelib.util;
 
 import vn.svframe.svframelib.api.player.MMOPlayerData;
-import vn.svframe.mythiclibfabric.MythicLibFabricMod;
+import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
@@ -44,7 +44,7 @@ public abstract class TemporaryHandler {
 
     public void closeAfter(long ticks) {
         long token = generation.get();
-        MythicLibFabricMod.schedule((int) Math.min(Integer.MAX_VALUE, Math.max(0L, ticks)), () -> {
+        SVFrameLibFabricMod.schedule((int) Math.min(Integer.MAX_VALUE, Math.max(0L, ticks)), () -> {
             if (open && generation.get() == token) close();
         });
     }

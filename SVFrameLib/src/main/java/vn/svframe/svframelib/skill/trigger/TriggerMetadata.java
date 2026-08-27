@@ -15,7 +15,7 @@ import java.util.Objects;
 
 /**
  * Immutable trigger context used to lazily create a fresh SkillMetadata for every
- * triggered passive. Bukkit Entity/Location values from MythicLib 1.7.1 are
+ * triggered passive. server-plugin platform Entity/Location values from SVFrameLib 1.7.1 are
  * represented directly by Fabric Entity and Vec3d values.
  */
 public class TriggerMetadata {

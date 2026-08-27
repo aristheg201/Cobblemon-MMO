@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
-/** Fabric-native click event used by MythicLib trigger dispatch. */
+/** Fabric-native click event used by SVFrameLib trigger dispatch. */
 public class PlayerClickEvent {
     @FunctionalInterface
     public interface Listener {

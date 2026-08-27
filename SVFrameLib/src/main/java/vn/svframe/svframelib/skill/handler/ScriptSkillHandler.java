@@ -3,7 +3,7 @@ package vn.svframe.svframelib.skill.handler;
 import vn.svframe.svframelib.skill.SkillMetadata;
 import vn.svframe.svframelib.skill.result.def.SimpleSkillResult;
 import vn.svframe.svframelib.util.configobject.ConfigObject;
-import vn.svframe.mythiclibfabric.MythicLibFabricMod;
+import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,6 +34,6 @@ public class ScriptSkillHandler extends SkillHandler<SimpleSkillResult> {
         for (String key : getParameters()) params.put(key, metadata.getParameter(key));
         var entity = metadata.getTargetEntityOrNull();
         UUID target = entity == null ? null : entity.getUuid();
-        MythicLibFabricMod.castSkill(getId(), metadata.getCaster().getData().getUniqueId(), target, params);
+        SVFrameLibFabricMod.castSkill(getId(), metadata.getCaster().getData().getUniqueId(), target, params);
     }
 }

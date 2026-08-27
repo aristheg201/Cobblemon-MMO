@@ -4,9 +4,9 @@ import vn.svframe.svframelib.api.player.MMOPlayerData;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
- * Fabric-native equivalent of MythicLib 1.7.1's Bukkit MMOPlayerDataEvent.
+ * Fabric-native equivalent of SVFrameLib 1.7.1's server-plugin platform MMOPlayerDataEvent.
  * The player reference is captured when the event is constructed, matching
- * Bukkit PlayerEvent semantics instead of resolving MMOPlayerData lazily.
+ * server-plugin platform PlayerEvent semantics instead of resolving MMOPlayerData lazily.
  */
 public abstract class MMOPlayerDataEvent {
     private final MMOPlayerData playerData;
@@ -21,7 +21,7 @@ public abstract class MMOPlayerDataEvent {
         return playerData;
     }
 
-    /** Native Fabric equivalent of Bukkit PlayerEvent#getPlayer(). */
+    /** Native Fabric equivalent of server-plugin platform PlayerEvent#getPlayer(). */
     public ServerPlayerEntity getPlayer() {
         return player;
     }

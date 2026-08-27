@@ -3,7 +3,7 @@ package vn.svframe.svframelib.script.util.expression.numeric;
 import vn.svframe.svframelib.script.util.expression.placeholder.ExpressionPlaceholder;
 import vn.svframe.svframelib.skill.SkillMetadata;
 import vn.svframe.svframelib.util.Lazy;
-import vn.svframe.mythiclibfabric.runtime.script.ExpressionRuntime;
+import vn.svframe.svframelib.fabric.runtime.script.ExpressionRuntime;
 
 import java.util.Map;
 import java.util.function.Function;

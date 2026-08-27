@@ -4,9 +4,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 
-/** Native attack-source adapter contract mirroring MythicLib 1.7.1 fail-fast semantics. */
+/** Native attack-source adapter contract mirroring SVFrameLib 1.7.1 fail-fast semantics. */
 public interface AttackHandler {
-    /** Native equivalent of the Bukkit damage-event entry point. */
+    /** Native equivalent of the server-plugin platform damage-event entry point. */
     default AttackMetadata getAttack(LivingEntity target, DamageSource source, double damage) {
         return getAttack(target);
     }

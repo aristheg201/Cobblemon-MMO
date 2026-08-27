@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.script;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.MMOLineConfig;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframelib.script.condition.Condition;
@@ -20,7 +20,7 @@ import java.util.logging.Level;
 
 /**
  * Native Fabric port of the SVFrameLib script object, preserving the 1.7.1
- * post-load lifecycle while replacing Bukkit ConfigurationSection with ConfigObject.
+ * post-load lifecycle while replacing server-plugin platform ConfigurationSection with ConfigObject.
  */
 public class Script {
     private final String id;
@@ -105,18 +105,18 @@ public class Script {
 
     private void registerCondition(String key, Supplier<ConfigObject> config) {
         try {
-            conditions.add(MythicLib.plugin.getSkills().loadCondition(config.get()));
+            conditions.add(SVFrameLib.plugin.getSkills().loadCondition(config.get()));
         } catch (RuntimeException exception) {
-            MythicLib.plugin.getLogger().log(Level.WARNING,
+            SVFrameLib.plugin.getLogger().log(Level.WARNING,
                     "Could not load condition '" + key + "' from script '" + id + "': " + exception.getMessage());
         }
     }
 
     private void registerMechanic(String key, Supplier<ConfigObject> config) {
         try {
-            mechanics.add(MythicLib.plugin.getSkills().loadMechanic(config.get()));
+            mechanics.add(SVFrameLib.plugin.getSkills().loadMechanic(config.get()));
         } catch (RuntimeException exception) {
-            MythicLib.plugin.getLogger().log(Level.WARNING,
+            SVFrameLib.plugin.getLogger().log(Level.WARNING,
                     "Could not load mechanic '" + key + "' from script '" + id + "': " + exception.getMessage());
         }
     }
@@ -134,7 +134,7 @@ public class Script {
                 conditionCounter++;
                 if (!condition.checkIfMet(meta)) return false;
             } catch (RuntimeException exception) {
-                MythicLib.plugin.getLogger().log(Level.WARNING,
+                SVFrameLib.plugin.getLogger().log(Level.WARNING,
                         "Could not check condition n" + conditionCounter + " from script '" + id + "': " + exception.getMessage());
                 return false;
             }

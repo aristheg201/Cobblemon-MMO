@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 
-/** Brigadier-backed native replacement for the Bukkit CommandTreeRoot. */
+/** Brigadier-backed native replacement for the server-plugin platform CommandTreeRoot. */
 public abstract class CommandTreeRoot extends CommandTreeNode {
     private final String name;
     private final String description;

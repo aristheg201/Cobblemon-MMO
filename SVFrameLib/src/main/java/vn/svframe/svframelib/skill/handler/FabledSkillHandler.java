@@ -1,1 +1,0 @@
-package vn.svframe.svframelib.skill.handler;import vn.svframe.svframelib.util.configobject.ConfigObject;public class FabledSkillHandler extends ScriptSkillHandler{public FabledSkillHandler(String id){super(id);}public FabledSkillHandler(ConfigObject cfg){super("FabledSkillHandler",cfg);}}

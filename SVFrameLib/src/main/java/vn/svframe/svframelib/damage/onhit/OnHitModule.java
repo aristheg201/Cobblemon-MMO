@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.damage.onhit;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.event.OnHitEffectEvent;
 import vn.svframe.svframelib.api.event.PlayerAttackEvent;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
@@ -22,7 +22,7 @@ public final class OnHitModule extends Module {
     private final Map<String, OnHitEffect> registry = new LinkedHashMap<>();
     private boolean listenerRegistered;
 
-    public OnHitModule(MythicLib plugin) { super(plugin, "on_hit_effects"); }
+    public OnHitModule(SVFrameLib plugin) { super(plugin, "on_hit_effects"); }
 
     @Override protected void onStartup() {
         if (listenerRegistered) return;
@@ -41,7 +41,7 @@ public final class OnHitModule extends Module {
                 OnHitEffect effect = new OnHitEffect(new ConfigSectionObject(entry.getKey(), stringMap(raw)));
                 registry.put(effect.getId(), effect);
             } catch (RuntimeException exception) {
-                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load on-hit effect '" + entry.getKey() + "': " + exception.getMessage());
+                SVFrameLib.plugin.getLogger().log(Level.WARNING, "Could not load on-hit effect '" + entry.getKey() + "': " + exception.getMessage());
             }
         }
     }

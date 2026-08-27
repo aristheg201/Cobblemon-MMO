@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.script.variable.def;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.script.variable.SimpleVariableRegistry;
 import vn.svframe.svframelib.script.variable.Variable;
 import vn.svframe.svframelib.script.variable.VariableRegistry;
@@ -37,7 +37,7 @@ public class DoubleVariable extends Variable<Double> {
                 int decimalPlaces = Integer.parseInt(path);
                 if (decimalPlaces == 0) return new IntegerVariable("temp", (int) value);
                 Validate.isTrue(decimalPlaces > 0, "Decimal places must be non-negative");
-                DecimalFormat format = MythicLib.plugin.getMMOConfig().newDecimalFormat("0." + "0".repeat(decimalPlaces));
+                DecimalFormat format = SVFrameLib.plugin.getMMOConfig().newDecimalFormat("0." + "0".repeat(decimalPlaces));
                 return new StringVariable("temp", format.format(value));
             }
         };

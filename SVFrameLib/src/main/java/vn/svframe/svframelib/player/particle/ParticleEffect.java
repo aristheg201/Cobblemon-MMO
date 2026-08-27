@@ -8,7 +8,7 @@ import vn.svframe.svframelib.player.modifier.ModifierSource;
 import vn.svframe.svframelib.player.modifier.PlayerModifier;
 import vn.svframe.svframelib.util.Closeable;
 import vn.svframe.svframelib.util.configobject.ConfigObject;
-import vn.svframe.mythiclibfabric.MythicLibFabricMod;
+import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
 
 import java.util.Map;
 import java.util.Objects;
@@ -50,7 +50,7 @@ public abstract class ParticleEffect extends PlayerModifier implements Closeable
     }
 
     private void scheduleNext(long token, int delay) {
-        MythicLibFabricMod.schedule(delay, () -> {
+        SVFrameLibFabricMod.schedule(delay, () -> {
             if (!started || generation.get() != token || playerData == null || !playerData.isOnline()) return;
             tick();
             scheduleNext(token, Math.max(1, getType().getPeriod()));

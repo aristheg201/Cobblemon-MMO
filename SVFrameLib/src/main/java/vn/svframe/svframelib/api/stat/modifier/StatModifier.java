@@ -6,8 +6,8 @@ import vn.svframe.svframelib.api.stat.api.InstanceModifier;
 import vn.svframe.svframelib.player.modifier.ModifierSource;
 import vn.svframe.svframelib.player.modifier.ModifierType;
 import vn.svframe.svframelib.util.configobject.ConfigObject;
-import vn.svframe.mythiclibfabric.MythicLibStatMod;
-import vn.svframe.mythiclibfabric.runtime.NativeStatEngine;
+import vn.svframe.svframelib.fabric.SVFrameLibStatMod;
+import vn.svframe.svframelib.fabric.runtime.NativeStatEngine;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -22,8 +22,8 @@ public class StatModifier extends InstanceModifier {
     public String getStat(){return stat;}
     public StatModifier add(double amount){return new StatModifier(getUniqueId(),getKey(),stat,value+amount,type,getSlot(),getSource());}
     public StatModifier multiply(double scalar){return new StatModifier(getUniqueId(),getKey(),stat,value*scalar,type,getSlot(),getSource());}
-    @Override public void register(MMOPlayerData data){MythicLibStatMod.engine().register(data.getUniqueId(),stat,toNative());}
-    @Override public void unregister(MMOPlayerData data){MythicLibStatMod.engine().remove(data.getUniqueId(),stat,getUniqueId());}
+    @Override public void register(MMOPlayerData data){SVFrameLibStatMod.engine().register(data.getUniqueId(),stat,toNative());}
+    @Override public void unregister(MMOPlayerData data){SVFrameLibStatMod.engine().remove(data.getUniqueId(),stat,getUniqueId());}
     public NativeStatEngine.Modifier toNative(){return new NativeStatEngine.Modifier(getUniqueId(),getKey(),value,toNative(type),toNative(getSlot()),toNative(getSource()));}
     public static NativeStatEngine.ModifierType toNative(ModifierType type){return NativeStatEngine.ModifierType.valueOf(type.name());}
     public static NativeStatEngine.EquipmentSlot toNative(EquipmentSlot slot){return NativeStatEngine.EquipmentSlot.valueOf(slot.name());}

@@ -1,19 +1,19 @@
 package vn.svframe.svframelib.util.configobject;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.script.Script;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Map/YAML backed native replacement for Bukkit ConfigurationSection. */
+/** Map/YAML backed native replacement for server-plugin platform ConfigurationSection. */
 public class ConfigSectionObject extends MapConfigObject {
     public ConfigSectionObject(Map<String, ?> section) { this(null, section); }
     public ConfigSectionObject(String key, Map<String, ?> section) { super(key, section); }
 
     public Script getScriptOrNull(String key) {
         if (!contains(key)) return null;
-        return MythicLib.plugin.getSkills().loadScript(key, value(key));
+        return SVFrameLib.plugin.getSkills().loadScript(key, value(key));
     }
     public Script getScript(String key) {
         Script script = getScriptOrNull(key);

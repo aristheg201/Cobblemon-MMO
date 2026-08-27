@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.script.mechanic;
 
-import vn.svframe.mythiclibfabric.MythicLibFabricMod;
+import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
 import vn.svframe.svframelib.api.MMOLineConfig;
 import vn.svframe.svframelib.script.mechanic.offense.DamageMechanic;
 import vn.svframe.svframelib.skill.SkillMetadata;
@@ -23,7 +23,7 @@ public class RawMechanic extends Mechanic {
             new DamageMechanic(config).cast(metadata);
             return;
         }
-        MythicLibFabricMod.castInline(List.of(raw), SkillMetadataContextBridge.context(metadata));
+        SVFrameLibFabricMod.castInline(List.of(raw), SkillMetadataContextBridge.context(metadata));
     }
 
     public String raw() { return raw; }

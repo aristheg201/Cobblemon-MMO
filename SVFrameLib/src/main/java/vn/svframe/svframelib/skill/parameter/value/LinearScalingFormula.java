@@ -5,7 +5,7 @@ import vn.svframe.svframelib.util.configobject.ConfigObject;
 
 import java.util.Map;
 
-/** MythicLib 1.7.1 linear formula: base + per-level * (level - 1), optional clamp. */
+/** SVFrameLib 1.7.1 linear formula: base + per-level * (level - 1), optional clamp. */
 public class LinearScalingFormula implements ScalingFormula {
     private final double base;
     private final double perLevel;

@@ -6,7 +6,7 @@ import net.minecraft.text.Text;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-/** Native Fabric action-bar arbitration with MythicLib 1.7.1 priority/timeout semantics. */
+/** Native Fabric action-bar arbitration with SVFrameLib 1.7.1 priority/timeout semantics. */
 public class ActionBarHandler {
     public static final long DEFAULT_TIME_OUT = 30L;
 

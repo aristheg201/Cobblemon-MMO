@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.script.variable;
 
-/** Registry used to resolve nested MythicLib script variables. */
+/** Registry used to resolve nested SVFrameLib script variables. */
 public interface VariableRegistry<T> {
     Variable<?> accessVariable(T variable, String path);
 

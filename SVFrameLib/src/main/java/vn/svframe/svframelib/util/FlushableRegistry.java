@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.util;
 
-import vn.svframe.mythiclibfabric.MythicLibFabricMod;
+import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class FlushableRegistry<K, V> implements Closeable {
     }
 
     private void scheduleNext() {
-        MythicLibFabricMod.schedule((int) Math.min(Integer.MAX_VALUE, period), () -> {
+        SVFrameLibFabricMod.schedule((int) Math.min(Integer.MAX_VALUE, period), () -> {
             if (!open) return;
             registry.entrySet().removeIf(entry -> condition.test(entry.getKey(), entry.getValue()));
             scheduleNext();

@@ -19,9 +19,9 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
- * Fabric-native port of MythicLib 1.7.1 SilentNumbers. Pure parsing/formatting
+ * Fabric-native port of SVFrameLib 1.7.1 SilentNumbers. Pure parsing/formatting
  * methods retain the original behavior; item helpers use native ItemStack and
- * registry types instead of Bukkit Material/ItemMeta.
+ * registry types instead of server-plugin platform Material/ItemMeta.
  */
 public class SilentNumbers {
     private static final TreeMap<Integer, String> romanNumeralValues = new TreeMap<>();
@@ -254,7 +254,7 @@ public class SilentNumbers {
         return end == -1 ? tail : tail.substring(0, end);
     }
 
-    /** Native item-registry equivalent of Bukkit Material parsing. */
+    /** Native item-registry equivalent of server-plugin platform Material parsing. */
     public static Item getMaterial(String input) {
         if (input == null) return null;
         String normalized = input.trim().toLowerCase(Locale.ROOT).replace(' ', '_').replace('-', '_');

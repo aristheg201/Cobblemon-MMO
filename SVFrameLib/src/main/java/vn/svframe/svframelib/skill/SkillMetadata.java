@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/** Native Fabric cast context with MythicLib 1.7.1 variable-resolution semantics. */
+/** Native Fabric cast context with SVFrameLib 1.7.1 variable-resolution semantics. */
 public class SkillMetadata {
     public final SkillOrientation orientation;
     public static final List<String> RESERVED_VARIABLE_NAMES = List.of(

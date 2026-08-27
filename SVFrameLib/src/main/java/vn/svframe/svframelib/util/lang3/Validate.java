@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
- * Pure-Java validation utility preserving the public MythicLib 1.7.1 contract.
+ * Pure-Java validation utility preserving the public SVFrameLib 1.7.1 contract.
  * The API mirrors the shaded Apache-style helper used by the original plugin,
  * while remaining dependency-free on Fabric.
  */

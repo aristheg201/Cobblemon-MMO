@@ -82,9 +82,9 @@ public class PermanentPotionEffect extends PlayerModifier {
         String input = raw.trim();
         if (input.isEmpty()) return null;
 
-        // MythicLib 1.7.1 delegates this to Bukkit PotionEffectType#getByName.
-        // That API accepts the historical Bukkit names used by existing MMOItems/
-        // MMOCore configs, many of which do not match Minecraft registry paths.
+        // SVFrameLib 1.7.1 delegates this to server-plugin platform PotionEffectType#getByName.
+        // That API accepts the historical server-plugin platform names used by existing SVFrameItems/
+        // SVFrameMMO configs, many of which do not match Minecraft registry paths.
         String path = switch (input.toUpperCase(Locale.ROOT)) {
             case "SPEED" -> "speed";
             case "SLOW", "SLOWNESS" -> "slowness";

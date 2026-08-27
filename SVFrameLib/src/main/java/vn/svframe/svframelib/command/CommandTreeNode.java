@@ -12,7 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
-/** Native command-tree node retaining MythicLib 1.7.1 traversal/usage semantics. */
+/** Native command-tree node retaining SVFrameLib 1.7.1 traversal/usage semantics. */
 public abstract class CommandTreeNode {
     private final String id;
     private final CommandTreeNode parent;

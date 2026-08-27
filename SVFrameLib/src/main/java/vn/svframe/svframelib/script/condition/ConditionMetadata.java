@@ -1,1 +1,1 @@
-package vn.svframe.svframelib.script.condition;import java.lang.annotation.*;@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface ConditionMetadata{String source() default "mythiclib";}
+package vn.svframe.svframelib.script.condition;import java.lang.annotation.*;@Retention(RetentionPolicy.RUNTIME)@Target(ElementType.TYPE)public @interface ConditionMetadata{String source() default "svframelib";}

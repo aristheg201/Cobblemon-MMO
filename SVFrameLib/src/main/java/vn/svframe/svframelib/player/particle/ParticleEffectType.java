@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
-/** Registry of the seven MythicLib 1.7.1 player particle effects. */
+/** Registry of the seven SVFrameLib 1.7.1 player particle effects. */
 public class ParticleEffectType {
     private static final Map<String,ParticleEffectType> BY_NAME = new LinkedHashMap<>();
     private final Function<ConfigObject,ParticleEffect> parser;

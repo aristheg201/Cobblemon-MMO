@@ -3,7 +3,7 @@ package vn.svframe.svframelib.api.event.armorequip;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 
-/** Fabric-native armor classifier preserving MythicLib 1.7.1 matching rules and slot ids. */
+/** Fabric-native armor classifier preserving SVFrameLib 1.7.1 matching rules and slot ids. */
 public enum ArmorType {
     HELMET(5),
     CHESTPLATE(6),

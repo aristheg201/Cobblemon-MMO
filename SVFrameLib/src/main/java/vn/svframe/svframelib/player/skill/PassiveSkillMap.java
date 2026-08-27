@@ -10,7 +10,7 @@ import net.minecraft.world.GameMode;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Fabric-native passive skill map with MythicLib 1.7.1 timer/login semantics. */
+/** Fabric-native passive skill map with SVFrameLib 1.7.1 timer/login semantics. */
 public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
     private final Map<String, Long> lastCast = new HashMap<>();
 

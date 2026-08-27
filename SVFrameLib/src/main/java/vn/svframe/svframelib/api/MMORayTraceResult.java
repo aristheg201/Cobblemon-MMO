@@ -8,7 +8,7 @@ import net.minecraft.util.math.Vec3d;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-/** Native Fabric equivalent of MythicLib 1.7.1 MMORayTraceResult. */
+/** Native Fabric equivalent of SVFrameLib 1.7.1 MMORayTraceResult. */
 public class MMORayTraceResult {
     private final LivingEntity entity;
     private final double range;

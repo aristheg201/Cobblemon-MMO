@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.script.util;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.comp.interaction.InteractionType;
 import vn.svframe.svframelib.damage.DamageType;
 import vn.svframe.svframelib.player.resource.ResourceUpdateReason;
@@ -30,7 +30,7 @@ public class Parsers {
     public static final Function<String, Item> MATERIAL = input -> { Item value = Registries.ITEM.get(id(input)); if (value == null) throw new IllegalArgumentException("No material with ID '" + input + "'"); return value; };
     public static final Function<String, ParticleType<?>> PARTICLE = input -> { ParticleType<?> value = Registries.PARTICLE_TYPE.get(id(input)); if (value == null) throw new IllegalArgumentException("No particle with ID '" + input + "'"); return value; };
     public static final Function<String, VariableScope> VARIABLE_SCOPE = ofEnum(VariableScope.class, value -> VariableScope.valueOf(enumName(value)));
-    public static final Function<String, SkillHandler<?>> SKILL_HANDLER = input -> MythicLib.plugin.getSkills().getHandlerOrThrow(enumName(input));
+    public static final Function<String, SkillHandler<?>> SKILL_HANDLER = input -> SVFrameLib.plugin.getSkills().getHandlerOrThrow(enumName(input));
     public static final Function<String, InteractionType> INTERACTION_TYPE = ofEnum(InteractionType.class, value -> InteractionType.valueOf(enumName(value)));
     public static final Function<String, EntityLocationType> ENTITY_LOCATION_TYPE = ofEnum(EntityLocationType.class, value -> EntityLocationType.valueOf(enumName(value)));
     public static final Function<String, ResourceUpdateReason> RESOURCE_UPDATE_REASON = ofEnum(ResourceUpdateReason.class, value -> ResourceUpdateReason.valueOf(enumName(value)));

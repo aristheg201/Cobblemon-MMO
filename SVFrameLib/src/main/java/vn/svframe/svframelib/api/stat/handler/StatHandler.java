@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.api.stat.handler;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.player.EquipmentSlot;
 import vn.svframe.svframelib.api.stat.StatInstance;
 import vn.svframe.svframelib.api.stat.modifier.StatModifier;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/** Native Fabric implementation of MythicLib 1.7.1 stat-handler semantics. */
+/** Native Fabric implementation of SVFrameLib 1.7.1 stat-handler semantics. */
 public class StatHandler {
     protected final boolean hasMinValue;
     protected final boolean hasMaxValue;
@@ -25,7 +25,7 @@ public class StatHandler {
 
     public StatHandler(String stat) {
         this(stat, 0d, null, null,
-                MythicLib.plugin == null ? new DecimalFormat("0.#") : MythicLib.plugin.getMMOConfig().newDecimalFormat("0.#"));
+                SVFrameLib.plugin == null ? new DecimalFormat("0.#") : SVFrameLib.plugin.getMMOConfig().newDecimalFormat("0.#"));
     }
 
     public StatHandler(String stat, double baseValue, Double minValue, Double maxValue, DecimalFormat format) {
@@ -47,7 +47,7 @@ public class StatHandler {
 
     public void delegateTo(String targetStat) {
         addUpdateListener(instance -> {
-            if (MythicLib.plugin != null) MythicLib.plugin.getStats().runUpdate(instance.getMap(), targetStat);
+            if (SVFrameLib.plugin != null) SVFrameLib.plugin.getStats().runUpdate(instance.getMap(), targetStat);
         });
     }
 

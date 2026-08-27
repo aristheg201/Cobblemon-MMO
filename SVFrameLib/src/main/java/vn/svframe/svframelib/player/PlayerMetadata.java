@@ -2,7 +2,7 @@ package vn.svframe.svframelib.player;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.player.EquipmentSlot;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframelib.api.stat.StatInstance;
@@ -62,15 +62,15 @@ public class PlayerMetadata implements PlayerStatProvider {
         return attack(target, damage, true, damageTypes);
     }
 
-    /** The boolean is knockback, exactly as MythicLib 1.7.1. */
+    /** The boolean is knockback, exactly as SVFrameLib 1.7.1. */
     public AttackMetadata attack(LivingEntity target, double damage, boolean knockback, List<DamageType> damageTypes) {
-        AttackMetadata registered = MythicLib.plugin.getDamage().getRegisteredAttackMetadata(target);
+        AttackMetadata registered = SVFrameLib.plugin.getDamage().getRegisteredAttackMetadata(target);
         if (registered != null) {
             registered.getDamage().add(damage, damageTypes);
             return registered;
         }
         AttackMetadata attack = new AttackMetadata(new DamageMetadata(damage, damageTypes), target, this);
-        MythicLib.plugin.getDamage().registerAttack(attack, knockback, false);
+        SVFrameLib.plugin.getDamage().registerAttack(attack, knockback, false);
         return attack;
     }
 
@@ -78,7 +78,7 @@ public class PlayerMetadata implements PlayerStatProvider {
         return attack(target, damage, Arrays.asList(damageTypes));
     }
 
-    /** The boolean is knockback, exactly as MythicLib 1.7.1. */
+    /** The boolean is knockback, exactly as SVFrameLib 1.7.1. */
     public AttackMetadata attack(LivingEntity target, double damage, boolean knockback, DamageType... damageTypes) {
         return attack(target, damage, knockback, Arrays.asList(damageTypes));
     }

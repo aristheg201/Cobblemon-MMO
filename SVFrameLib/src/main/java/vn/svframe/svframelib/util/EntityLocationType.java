@@ -3,7 +3,7 @@ package vn.svframe.svframelib.util;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 
-/** Native Fabric equivalent of MythicLib 1.7.1 entity anchor locations. */
+/** Native Fabric equivalent of SVFrameLib 1.7.1 entity anchor locations. */
 public enum EntityLocationType {
     FEET(0d),
     BODY(0.5d),

@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.data;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.event.session.SessionUpdateEvent;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframelib.data.queue.DataLoadResult;
@@ -10,7 +10,7 @@ import vn.svframe.svframelib.profile.SessionUpdateReason;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import vn.svframe.mythiclibfabric.MythicLibFabricMod;
+import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 /**
  * Fabric-native synchronized player data manager. Lifecycle behavior mirrors
- * MythicLib 1.7.1: join/setup, profile-session load/save, logout save and a
+ * SVFrameLib 1.7.1: join/setup, profile-session load/save, logout save and a
  * repeating autosave (30 minutes by default, with the original one-minute
  * minimum represented by {@link #setAutoSaveIntervalSeconds(long)}).
  */
@@ -93,7 +93,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
             SessionUpdateEvent.EVENT.register(this::onSessionUpdate);
         }
 
-        MinecraftServer server = MythicLibFabricMod.server();
+        MinecraftServer server = SVFrameLibFabricMod.server();
         if (server != null) for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) onEnable(player);
 
         scheduleNextAutosave();
@@ -103,7 +103,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         if (closed.get() || !autoSaveEnabled) return;
         long ticksLong = Math.max(MIN_AUTOSAVE_SECONDS, autoSaveIntervalSeconds) * 20L;
         int ticks = (int) Math.min(Integer.MAX_VALUE, ticksLong);
-        MythicLibFabricMod.schedule(ticks, () -> {
+        SVFrameLibFabricMod.schedule(ticks, () -> {
             if (closed.get()) return;
             try { autosave(); }
             catch (RuntimeException exception) { owning.logger().warning("Could not autosave synchronized data: " + exception.getMessage()); }
@@ -114,7 +114,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     protected void onEnable(ServerPlayerEntity player) {
         H data = setup(player);
         if (owning.isProfilePlugin() && !data.isSessionReady()
-                && MythicLib.plugin.getProfileMode() != vn.svframe.svframelib.comp.profile.ProfileMode.PROXY) {
+                && SVFrameLib.plugin.getProfileMode() != vn.svframe.svframelib.comp.profile.ProfileMode.PROXY) {
             loadData(data);
         }
     }

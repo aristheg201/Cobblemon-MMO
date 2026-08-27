@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/** Native equivalent of Bukkit PermissionAttachment using LuckPerms transient session nodes. */
+/** Native equivalent of server-plugin platform PermissionAttachment using LuckPerms transient session nodes. */
 public class PermissionMap extends ModifierMap<PermissionModifier> {
     private final Map<String, Node> grantedNodes = new HashMap<>();
 

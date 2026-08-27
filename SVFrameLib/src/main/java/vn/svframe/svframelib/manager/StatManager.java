@@ -7,8 +7,8 @@ import vn.svframe.svframelib.api.stat.StatMap;
 import vn.svframe.svframelib.api.stat.handler.StatHandler;
 import vn.svframe.svframelib.module.MMOPlugin;
 import vn.svframe.svframelib.module.Module;
-import vn.svframe.mythiclibfabric.MythicLibStatMod;
-import vn.svframe.mythiclibfabric.runtime.NativeStatHandler;
+import vn.svframe.svframelib.fabric.SVFrameLibStatMod;
+import vn.svframe.svframelib.fabric.runtime.NativeStatHandler;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -24,12 +24,12 @@ public class StatManager extends Module implements MMOManager {
     private final Map<String,StatHandler> handlers=new LinkedHashMap<>();
     public StatManager(MMOPlugin plugin){super(plugin,"stat");}
     public static String format(String stat,MMOPlayerData data){return format(stat,data.getStatMap().getStat(stat));}
-    public static String format(String stat,double value){NativeStatHandler h=MythicLibStatMod.engine().handler(stat);return h==null?new java.text.DecimalFormat("0.#").format(value):h.format(value);}
+    public static String format(String stat,double value){NativeStatHandler h=SVFrameLibStatMod.engine().handler(stat);return h==null?new java.text.DecimalFormat("0.#").format(value):h.format(value);}
     public synchronized void registerStat(StatHandler handler,String...aliases){String key=UtilityMethods.enumName(handler.getStat());handlers.put(key,handler);for(String alias:aliases)handlers.put(UtilityMethods.enumName(alias),handler);}
-    public synchronized StatHandler computeStat(String stat){String key=UtilityMethods.enumName(stat);StatHandler existing=handlers.get(key);if(existing!=null)return existing;NativeStatHandler n=MythicLibStatMod.engine().handler(key);StatHandler created=n==null?new StatHandler(key):new StatHandler(key,n.configuredBaseValue(),n.hasMinValue()?n.minValue():null,n.hasMaxValue()?n.maxValue():null,n.decimalFormat());handlers.put(key,created);return created;}
-    public Optional<StatHandler> getHandler(String stat){String key=UtilityMethods.enumName(stat);StatHandler h=handlers.get(key);if(h==null&&MythicLibStatMod.engine().handler(key)!=null)h=computeStat(key);return Optional.ofNullable(h);}
+    public synchronized StatHandler computeStat(String stat){String key=UtilityMethods.enumName(stat);StatHandler existing=handlers.get(key);if(existing!=null)return existing;NativeStatHandler n=SVFrameLibStatMod.engine().handler(key);StatHandler created=n==null?new StatHandler(key):new StatHandler(key,n.configuredBaseValue(),n.hasMinValue()?n.minValue():null,n.hasMaxValue()?n.maxValue():null,n.decimalFormat());handlers.put(key,created);return created;}
+    public Optional<StatHandler> getHandler(String stat){String key=UtilityMethods.enumName(stat);StatHandler h=handlers.get(key);if(h==null&&SVFrameLibStatMod.engine().handler(key)!=null)h=computeStat(key);return Optional.ofNullable(h);}
     public boolean isRegistered(String stat){return getHandler(stat).isPresent();}
-    public Set<String> getRegisteredStats(){for(NativeStatHandler h:MythicLibStatMod.engine().handlers())computeStat(h.stat());return Set.copyOf(handlers.keySet());}
+    public Set<String> getRegisteredStats(){for(NativeStatHandler h:SVFrameLibStatMod.engine().handlers())computeStat(h.stat());return Set.copyOf(handlers.keySet());}
     public Collection<StatHandler> getHandlers(){getRegisteredStats();return List.copyOf(new LinkedHashSet<>(handlers.values()));}
     @Override public void initialize(boolean clear){if(clear)handlers.clear();getRegisteredStats();}
     public void clearRegisteredStats(Predicate<StatHandler> predicate){handlers.entrySet().removeIf(e->predicate.test(e.getValue()));}

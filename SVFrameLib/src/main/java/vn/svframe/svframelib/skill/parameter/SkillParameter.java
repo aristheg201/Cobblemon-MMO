@@ -11,7 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-/** MythicLib 1.7.1 skill-parameter descriptor adapted to native config objects. */
+/** SVFrameLib 1.7.1 skill-parameter descriptor adapted to native config objects. */
 public class SkillParameter {
     public static final DecimalFormat DEFAULT_DECIMAL_FORMAT = new DecimalFormat("0.####");
 

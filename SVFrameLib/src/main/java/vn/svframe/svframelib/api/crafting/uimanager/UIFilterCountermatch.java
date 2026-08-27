@@ -4,7 +4,7 @@ import vn.svframe.svframelib.api.util.ui.FriendlyFeedbackProvider;
 import net.minecraft.item.ItemStack;
 
 /**
- * Native Fabric counterpart of MythicLib's crafting UI countermatch hook.
+ * Native Fabric counterpart of SVFrameLib's crafting UI countermatch hook.
  * Implementations may veto an item/filter match and optionally report why.
  */
 @FunctionalInterface

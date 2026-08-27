@@ -1,6 +1,6 @@
 package vn.svframe.svframelib.util.configobject;
 
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.script.Script;
 import vn.svframe.svframelib.script.targeter.EntityTargeter;
 import vn.svframe.svframelib.script.targeter.LocationTargeter;
@@ -9,7 +9,7 @@ import vn.svframe.svframelib.script.util.expression.numeric.NumericExpression;
 import java.util.Set;
 import java.util.function.Function;
 
-/** Platform-neutral configuration contract retaining the MythicLib 1.7.1 helpers. */
+/** Platform-neutral configuration contract retaining the SVFrameLib 1.7.1 helpers. */
 public interface ConfigObject {
     Object get(String key);
     String getString(String key);
@@ -34,12 +34,12 @@ public interface ConfigObject {
     boolean bool(boolean fallback, String... keys);
 
     default Script script(String... keys) {
-        for (String key : keys) if (contains(key)) return MythicLib.inst().getSkills().loadScript(getString(key));
+        for (String key : keys) if (contains(key)) return SVFrameLib.inst().getSkills().loadScript(getString(key));
         throw new MissingArgumentException(keys);
     }
 
     default Script script(Script fallback, String... keys) {
-        for (String key : keys) if (contains(key)) return MythicLib.inst().getSkills().loadScript(getString(key));
+        for (String key : keys) if (contains(key)) return SVFrameLib.inst().getSkills().loadScript(getString(key));
         return fallback;
     }
 
@@ -64,20 +64,20 @@ public interface ConfigObject {
     }
 
     default Script getScriptOrNull(String key) {
-        return contains(key) ? MythicLib.inst().getSkills().getScriptOrThrow(getString(key)) : null;
+        return contains(key) ? SVFrameLib.inst().getSkills().getScriptOrThrow(getString(key)) : null;
     }
 
     default Script getScript(String... keys) {
-        for (String key : keys) if (contains(key)) return MythicLib.inst().getSkills().getScriptOrThrow(getString(key));
+        for (String key : keys) if (contains(key)) return SVFrameLib.inst().getSkills().getScriptOrThrow(getString(key));
         throw new MissingArgumentException(keys);
     }
 
     default EntityTargeter getEntityTargeter(String key) {
-        return MythicLib.inst().getSkills().loadEntityTargeter(adaptObject(key));
+        return SVFrameLib.inst().getSkills().loadEntityTargeter(adaptObject(key));
     }
 
     default LocationTargeter getLocationTargeter(String key) {
-        return MythicLib.inst().getSkills().loadLocationTargeter(adaptObject(key));
+        return SVFrameLib.inst().getSkills().loadLocationTargeter(adaptObject(key));
     }
 
     ConfigObject getObject(String key);

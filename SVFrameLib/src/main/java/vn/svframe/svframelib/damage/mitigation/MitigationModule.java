@@ -1,7 +1,7 @@
 package vn.svframe.svframelib.damage.mitigation;
 
 import net.minecraft.entity.Entity;
-import vn.svframe.svframelib.MythicLib;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.event.AttackEvent;
 import vn.svframe.svframelib.api.event.DamageMitigationEvent;
 import vn.svframe.svframelib.api.player.EquipmentSlot;
@@ -24,7 +24,7 @@ public final class MitigationModule extends Module {
     private final Map<String, MitigationType> registry = new LinkedHashMap<>();
     private boolean listenerRegistered;
 
-    public MitigationModule(MythicLib plugin) { super(plugin, "damage_mitigation"); }
+    public MitigationModule(SVFrameLib plugin) { super(plugin, "damage_mitigation"); }
 
     @Override protected void onStartup() {
         if (listenerRegistered) return;
@@ -43,7 +43,7 @@ public final class MitigationModule extends Module {
                 MitigationType type = new MitigationType(new ConfigSectionObject(entry.getKey(), stringMap(raw)));
                 registry.put(type.getId(), type);
             } catch (RuntimeException exception) {
-                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load mitigation type '" + entry.getKey() + "': " + exception.getMessage());
+                SVFrameLib.plugin.getLogger().log(Level.WARNING, "Could not load mitigation type '" + entry.getKey() + "': " + exception.getMessage());
             }
         }
     }
