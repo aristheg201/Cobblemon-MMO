@@ -1,18 +1,23 @@
 package vn.svframe.svframelib.skill.handler;
 
+import vn.svframe.svframelib.config.YamlLite;
 import vn.svframe.svframelib.manager.SkillManager;
 import vn.svframe.svframelib.script.Script;
 import vn.svframe.svframelib.util.configobject.ConfigObject;
+import vn.svframe.svframelib.util.configobject.MapConfigObject;
 
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/** Registers the native SVFrameLib built-in and script skill sources. */
+/** Registers and materializes the native built-in and script skill sources. */
 public final class NativeBuiltinSkillBootstrap {
     private static final String ROOT = "vn.svframe.svframelib.skill.handler.def.";
+    private static final String DEFAULT_SKILLS = "/default/skill/default_skills.yml";
     private static final String[] TYPES = {
             "item.Item_Bomb","item.Item_Throw",
             "location.Arcane_Hail","location.Black_Hole","location.Contamination","location.Corrosion","location.Corrupt","location.Freeze","location.Freezing_Curse","location.Ice_Spikes","location.Ignite","location.Life_Ender","location.Lightning_Beam","location.Minor_Explosion","location.Power_Mark","location.Snowman_Turret",
@@ -32,6 +37,38 @@ public final class NativeBuiltinSkillBootstrap {
             Script script = manager.getScriptOrThrow(internal);
             return new SVFrameLibSkillHandler(script);
         }, List.of("svframelib-skill-id")));
+        materializeDefaultHandlers(manager, types);
+    }
+
+    /** Recreates the 90 built-in handler instances after a skill registry reload. */
+    public static void materializeDefaultHandlers(SkillManager manager) {
+        materializeDefaultHandlers(manager, loadTypes(manager));
+    }
+
+    private static void materializeDefaultHandlers(SkillManager manager, Map<String, Class<? extends SkillHandler<?>>> types) {
+        try (InputStream input = NativeBuiltinSkillBootstrap.class.getResourceAsStream(DEFAULT_SKILLS)) {
+            if (input == null) throw new IllegalStateException("Missing bundled built-in skill definitions: " + DEFAULT_SKILLS);
+            Map<String, Object> root = YamlLite.map(YamlLite.parse(new String(input.readAllBytes(), StandardCharsets.UTF_8)));
+            int loaded = 0;
+            for (Map.Entry<String, Class<? extends SkillHandler<?>>> entry : types.entrySet()) {
+                String id = entry.getKey();
+                Object raw = root.get(id);
+                if (!(raw instanceof Map<?, ?> rawMap))
+                    throw new IllegalStateException("Missing bundled definition for built-in skill '" + id + "'");
+                Map<String, Object> config = new LinkedHashMap<>();
+                rawMap.forEach((key, value) -> config.put(String.valueOf(key), value));
+                if (manager.getHandler(id) == null)
+                    manager.registerSkillHandler(construct(types, new MapConfigObject(id, config), id));
+                loaded++;
+            }
+            long materialized = manager.getHandlers().stream().filter(handler -> types.containsKey(norm(handler.getId()))).count();
+            if (loaded != 90 || materialized != 90)
+                throw new IllegalStateException("Expected 90 native built-in skill handlers, got " + materialized);
+        } catch (RuntimeException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            throw new IllegalStateException("Could not materialize bundled built-in skills", exception);
+        }
     }
 
     private static Map<String, Class<? extends SkillHandler<?>>> loadTypes(SkillManager manager) {
@@ -49,19 +86,19 @@ public final class NativeBuiltinSkillBootstrap {
                 throw new IllegalStateException("Missing native built-in skill handler " + ROOT + path, exception);
             }
         }
-        if (result.size() != 90) throw new IllegalStateException("Expected 90 SVFrameLib built-ins, got " + result.size());
+        if (result.size() != 90) throw new IllegalStateException("Expected 90 native built-ins, got " + result.size());
         return Map.copyOf(result);
     }
 
     private static SkillHandler<?> construct(Map<String, Class<? extends SkillHandler<?>>> types, ConfigObject config, String internal) {
         Class<? extends SkillHandler<?>> type = types.get(norm(internal));
-        if (type == null) throw new IllegalArgumentException("Could not find builtin skill with ID '" + internal + "'");
+        if (type == null) throw new IllegalArgumentException("Could not find built-in skill with ID '" + internal + "'");
         try {
             Constructor<? extends SkillHandler<?>> constructor = type.getDeclaredConstructor(ConfigObject.class);
             constructor.setAccessible(true);
             return constructor.newInstance(config);
         } catch (ReflectiveOperationException exception) {
-            throw new RuntimeException("Could not instantiate builtin skill handler '" + internal + "': " + exception.getMessage(), exception);
+            throw new RuntimeException("Could not instantiate built-in skill handler '" + internal + "': " + exception.getMessage(), exception);
         }
     }
 

@@ -23,6 +23,7 @@ import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
 import vn.svframe.svframelib.fabric.runtime.NativePlaceholderRegistry;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SVFrameLib extends MMOPlugin {
@@ -54,8 +55,8 @@ public class SVFrameLib extends MMOPlugin {
     public static synchronized SVFrameLib bootstrap() { return plugin == null ? new SVFrameLib() : plugin; }
     public static SVFrameLib inst() { return bootstrap(); }
     public void onLoad() { plugin = this; }
-    public void onEnable() { initializeProfiles(); glowModule.enable(); mitigationModule.reload(); onHitModule.reload(); }
-    public void reload() { skillManager.reload(); elementManager.reset(); mitigationModule.reload(); onHitModule.reload(); }
+    public void onEnable() { version.validateMappings(); initializeProfiles(); glowModule.enable(); mitigationModule.reload(); onHitModule.reload(); }
+    public void reload() { skillManager.reload(); NativeBuiltinSkillBootstrap.materializeDefaultHandlers(skillManager); elementManager.reset(); mitigationModule.reload(); onHitModule.reload(); }
     public void onDisable() { glowModule.disable(); }
     public Logger getLogger() { return logger; }
     public DamageManager getDamage() { return damageManager; }
@@ -79,7 +80,17 @@ public class SVFrameLib extends MMOPlugin {
     public synchronized void useLegacyProfiles() { profileMode = ProfileMode.LEGACY; initializeProfiles(); }
     public synchronized void useNoProfiles() { profileMode = ProfileMode.NONE; initializeProfiles(); }
     public synchronized void useProxyProfiles() { profileMode = ProfileMode.PROXY; initializeProfiles(); }
-    private void initializeProfiles() { try { profileHandler = profileMode.newProfileHandler(); } catch (Throwable ignored) { profileHandler = emptyProfileHandler(); } profileHandler.onStartup(); }
+    private void initializeProfiles() {
+        try {
+            profileHandler = profileMode.newProfileHandler();
+            profileHandler.onStartup();
+        } catch (RuntimeException exception) {
+            logger.log(Level.SEVERE, "Failed to initialize profile mode " + profileMode, exception);
+            profileHandler = emptyProfileHandler();
+            profileHandler.onStartup();
+            if (profileMode != ProfileMode.NONE) throw exception;
+        }
+    }
     public boolean hasProfiles() { return profileMode != ProfileMode.NONE; }
     public ProfileMode getProfileMode() { return profileMode; }
     public ProfileHandler getProfileHandler() { return profileHandler; }

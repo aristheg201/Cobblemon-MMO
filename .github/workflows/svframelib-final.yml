@@ -55,15 +55,27 @@ jobs:
           test -f "$SRC/java/vn/svframe/svframelib/damage/onhit/OnHitModule.java"
           test -f "$SRC/java/vn/svframe/svframelib/fabric/SVFrameLibBootstrap.java"
           test "$(grep -RIl '@BuiltinSkillHandler' "$SRC/java/vn/svframe/svframelib/skill/handler/def" --include='*.java' | wc -l)" -eq 90
+          grep -q 'public boolean isFabric() { return true; }' "$SRC/java/vn/svframe/svframelib/version/ServerVersion.java"
           if find "$SRC/java" -type f -name '*.java' ! -path '*/vn/svframe/svframelib/*' | grep -q .; then exit 1; fi
           if grep -RIn --binary-files=without-match -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' "$SRC" --include='*.java' --include='*.json' --include='*.yml' --include='*.properties'; then exit 1; fi
 
-      - name: Build and remap JAR
+      - name: Build, test and remap JAR
         shell: bash
         run: |
           set -euo pipefail
           cd SVFrameLib
           gradle --no-daemon --stacktrace clean test remapJar 2>&1 | tee build-parity.log
+
+      - name: Verify regression tests executed
+        shell: bash
+        run: |
+          set -euo pipefail
+          RESULTS=SVFrameLib/build/test-results/test
+          test -f "$RESULTS/TEST-vn.svframe.svframelib.util.configobject.JsonWrapperTest.xml"
+          test -f "$RESULTS/TEST-vn.svframe.svframelib.fabric.runtime.NativeStatEngineTest.xml"
+          test -f "$RESULTS/TEST-vn.svframe.svframelib.version.ServerVersionTest.xml"
+          test -f "$RESULTS/TEST-vn.svframe.svframelib.fabric.BuiltinSkillOwnershipTest.xml"
+          ! grep -R -E 'failures="[1-9]|errors="[1-9]' "$RESULTS" --include='TEST-*.xml'
 
       - name: Verify bundled defaults
         shell: bash
@@ -124,25 +136,28 @@ jobs:
           ! grep -q 'NoSuchMethodError' build/svframelib-server.log
           ! grep -q 'NoSuchFieldError' build/svframelib-server.log
 
-      - name: Stage JAR
+      - name: Stage validated JAR
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p SVFrameLib/validated
+          mkdir -p SVFrameLib/validated SVFrameLib/dist
           JAR="$(find SVFrameLib/build/libs -maxdepth 1 -type f -name 'SVFrameLib-*.jar' ! -name '*sources*' | head -1)"
           cp "$JAR" SVFrameLib/validated/SVFrameLib-1.7.1-fabric.jar
+          cp "$JAR" SVFrameLib/dist/SVFrameLib-1.7.1-fabric.jar
           cp SVFrameLib/build/SVFrameLib-SHA256.txt SVFrameLib/validated/SVFrameLib-1.7.1-fabric.sha256
+          cp SVFrameLib/build/SVFrameLib-SHA256.txt SVFrameLib/dist/SVFrameLib-1.7.1-fabric.sha256
           cp SVFrameLib/build/svframelib-server.log SVFrameLib/validated/server-boot.log
+          cp SVFrameLib/build/svframelib-server.log SVFrameLib/dist/server-boot.log
 
-      - name: Commit validated source migration
+      - name: Commit validated source and distribution
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'SVFrame Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add -A SVFrameLib/src SVFrameLib/build.gradle SVFrameLib/gradle.properties SVFrameLib/settings.gradle SVFrameLib/README.md SVFrameLib/SOURCE-LIST.txt
+          git add -A SVFrameLib/src SVFrameLib/build.gradle SVFrameLib/gradle.properties SVFrameLib/settings.gradle SVFrameLib/README.md SVFrameLib/SOURCE-LIST.txt SVFrameLib/dist
           if ! git diff --cached --quiet; then
-            git commit -m 'SVFrameLib: complete SVFrame-only source namespace migration [skip ci]'
+            git commit -m 'SVFrameLib: validate native foundation and distribution [skip ci]'
             git push origin HEAD:svframelib-fabric-1.21.1
           fi
 
@@ -156,5 +171,6 @@ jobs:
             SVFrameLib/build/libs/*.jar
             SVFrameLib/build-parity.log
             SVFrameLib/build/svframelib-server.log
+            SVFrameLib/build/test-results/test
           if-no-files-found: warn
           retention-days: 14
