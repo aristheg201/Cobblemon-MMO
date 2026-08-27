@@ -29,7 +29,7 @@ public class DamagePacket implements Cloneable {
     public void setTypes(List<DamageType> types) { this.types = Objects.requireNonNullElse(types, List.of()); }
 
     public void setValue(double value) {
-        if (value < 0d) throw new IllegalArgumentException("Value cannot be negative");
+        if (!(value >= 0d)) throw new IllegalArgumentException("Value cannot be negative");
         this.value = value;
     }
 
