@@ -4,7 +4,6 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import vn.svframe.svframelib.fabric.runtime.NativeStatEngine;
@@ -68,9 +67,7 @@ public class FabricAttributeStatHandler extends NativeStatHandler {
     }
 
     protected ServerPlayerEntity requirePlayer(NativeStatEngine.StatInstance instance) {
-        MinecraftServer server = SVFrameLibFabricMod.server();
-        if (server == null) throw new IllegalStateException("Minecraft server is not available for stat " + stat());
-        ServerPlayerEntity player = server.getPlayerManager().getPlayer(instance.entityId());
+        ServerPlayerEntity player = SVFrameLibStatMod.onlinePlayer(instance.entityId());
         if (player == null) throw new IllegalStateException("Player " + instance.entityId() + " is not online for stat " + stat());
         return player;
     }

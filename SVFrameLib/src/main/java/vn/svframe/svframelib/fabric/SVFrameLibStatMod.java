@@ -17,7 +17,10 @@ import vn.svframe.svframelib.fabric.runtime.StatProviderRegistry;
 
 import java.nio.file.Path;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +30,7 @@ public final class SVFrameLibStatMod implements ModInitializer {
     private static final Path STATS_FILE = FabricLoader.getInstance().getConfigDir().resolve("SVFrameLib").resolve("stats.yml");
     private static final NativeStatEngine ENGINE = new NativeStatEngine();
     private static final Set<String> OWNED_HANDLERS = new LinkedHashSet<>();
+    private static final Map<UUID, ServerPlayerEntity> ONLINE_PLAYERS = new ConcurrentHashMap<>();
     private static volatile AutoCloseable providerRegistration;
     private static volatile SVFrameLibStatSettings settings = SVFrameLibStatSettings.empty();
 
@@ -39,14 +43,35 @@ public final class SVFrameLibStatMod implements ModInitializer {
             NativeTemporaryStatModifier.tick(tick);
             ENGINE.tick(tick);
         });
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ENGINE.onSessionOpen(handler.player.getUuid()));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            ServerPlayerEntity player = handler.player;
+            UUID playerId = player.getUuid();
+            ONLINE_PLAYERS.put(playerId, player);
+            boolean opened = false;
+            try {
+                ENGINE.onSessionOpen(playerId);
+                opened = true;
+            } finally {
+                if (!opened) ONLINE_PLAYERS.remove(playerId, player);
+            }
+        });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            ENGINE.onSessionClose(handler.player.getUuid());
-            ENGINE.clear(handler.player.getUuid());
+            ServerPlayerEntity player = handler.player;
+            UUID playerId = player.getUuid();
+            try {
+                ENGINE.onSessionClose(playerId);
+                ENGINE.clear(playerId);
+            } finally {
+                ONLINE_PLAYERS.remove(playerId, player);
+            }
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             NativeTemporaryStatModifier.cancelAll();
-            ENGINE.clear();
+            try {
+                ENGINE.clear();
+            } finally {
+                ONLINE_PLAYERS.clear();
+            }
         });
     }
 
@@ -56,6 +81,17 @@ public final class SVFrameLibStatMod implements ModInitializer {
 
     public static SVFrameLibStatSettings settings() {
         return settings;
+    }
+
+    /**
+     * Resolves the live player object even during Fabric's JOIN callback, before PlayerManager has necessarily
+     * published the player. Attribute stat updates must use the exact connection player during that window.
+     */
+    static ServerPlayerEntity onlinePlayer(UUID playerId) {
+        ServerPlayerEntity sessionPlayer = ONLINE_PLAYERS.get(playerId);
+        if (sessionPlayer != null) return sessionPlayer;
+        MinecraftServer server = SVFrameLibFabricMod.server();
+        return server == null ? null : server.getPlayerManager().getPlayer(playerId);
     }
 
     public static synchronized boolean reload() {
@@ -80,6 +116,7 @@ public final class SVFrameLibStatMod implements ModInitializer {
             MinecraftServer server = SVFrameLibFabricMod.server();
             if (server != null) {
                 for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                    ONLINE_PLAYERS.put(player.getUuid(), player);
                     ENGINE.onSessionOpen(player.getUuid());
                 }
             }
