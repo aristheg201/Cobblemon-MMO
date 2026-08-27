@@ -11,6 +11,7 @@ import vn.svframe.svframeitems.config.DefaultFiles;
 import vn.svframe.svframeitems.item.*;
 import vn.svframe.svframeitems.registry.SVFrameItemsRegistry;
 import vn.svframe.svframeitems.runtime.*;
+import vn.svframe.svframeitems.validation.NativeRuntimeSmoke;
 
 import java.io.IOException;
 import java.util.logging.*;
@@ -34,7 +35,7 @@ public final class SVFrameItems implements ModInitializer {
         ABILITIES.initialize();
         ServerTickEvents.END_SERVER_TICK.register(value->EQUIPMENT.tick(value));
         ServerPlayConnectionEvents.DISCONNECT.register((handler,value)->EQUIPMENT.clear(handler.player));
-        ServerLifecycleEvents.SERVER_STARTED.register(value->{server=value;LOG.info("SVFrameItems Fabric online; "+REGISTRY.summary());});
+        ServerLifecycleEvents.SERVER_STARTED.register(value->{server=value;NativeRuntimeSmoke.runIfRequested();LOG.info("SVFrameItems Fabric online; "+REGISTRY.summary());});
         ServerLifecycleEvents.SERVER_STOPPING.register(value->{EQUIPMENT.clear();server=null;});
         CommandRegistrationCallback.EVENT.register((dispatcher,registryAccess,environment)->SVFrameItemsCommands.register(dispatcher));
     }

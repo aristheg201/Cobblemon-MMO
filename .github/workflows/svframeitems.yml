@@ -128,7 +128,7 @@ jobs:
           mkdir -p run
           printf 'eula=true\n' > run/eula.txt
           set +e
-          timeout 90s gradle --no-daemon runServer > build/combined-server.log 2>&1
+          SVFRAMEITEMS_CI_RUNTIME_SMOKE=1 timeout 90s gradle --no-daemon runServer > build/combined-server.log 2>&1
           status=$?
           set -e
           cat build/combined-server.log
@@ -136,6 +136,7 @@ jobs:
           grep -q 'Loading Minecraft 1.21.1 with Fabric Loader 0.18.4' build/combined-server.log
           grep -q 'SVFrameLib Fabric online' build/combined-server.log
           grep -q 'SVFrameItems Fabric online' build/combined-server.log
+          grep -q 'SVFRAMEITEMS_RUNTIME_SMOKE=PASS' build/combined-server.log
           grep -q 'Done (' build/combined-server.log
           ! grep -q 'Mixin apply failed' build/combined-server.log
           ! grep -q 'Could not execute entrypoint stage' build/combined-server.log
