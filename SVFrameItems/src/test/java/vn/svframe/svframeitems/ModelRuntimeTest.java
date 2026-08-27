@@ -30,4 +30,15 @@ class ModelRuntimeTest {
         double value=item.effectiveStats(.10,ignored->.05).getFirst().value();
         assertEquals(10*1.3+4*1.1,value,1e-9);
     }
+    @Test void metadataSurvivesAllStateTransitions(){
+        ItemInstance item=new ItemInstance(UUID.randomUUID(),"blade","sword","rare",10,0,1,9,0,List.of(),List.of(),Map.of("integration:owner","alpha"));
+        ItemInstance upgraded=item.withUpgradeLevel(1).withSockets(List.of(new SocketState("red",null))).withDefinitionRevision(2);
+        assertEquals("alpha",upgraded.metadata().get("integration:owner"));assertTrue(upgraded.stateRevision()>item.stateRevision());
+        assertEquals("beta",upgraded.withMetadata("integration:owner","beta").metadata().get("integration:owner"));
+        assertFalse(upgraded.withMetadata("integration:owner",null).metadata().containsKey("integration:owner"));
+    }
+    @Test void lootLevelContextClampsRatherThanRandomizes(){
+        LootTableDefinition.Entry entry=new LootTableDefinition.Entry("blade",1,1,1,1,5,20);
+        assertEquals(5,entry.clampLevel(1));assertEquals(12,entry.clampLevel(12));assertEquals(20,entry.clampLevel(99));
+    }
 }
