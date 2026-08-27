@@ -9,8 +9,23 @@ public record UpgradeTemplate(
         double successDecay,
         boolean destroyOnFail,
         double statMultiplierPerLevel,
-        Map<Integer,Double> explicitChances
+        Map<Integer,Double> explicitChances,
+        List<Cost> costs
 ) {
+    public record Cost(String provider, String id, int amount, int perLevel) {
+        public Cost {
+            provider = ItemType.normalize(provider);
+            id = Objects.requireNonNull(id, "cost id").trim().toLowerCase(Locale.ROOT);
+            if (id.isEmpty()) throw new IllegalArgumentException("cost id cannot be empty");
+            if (amount < 0 || perLevel < 0) throw new IllegalArgumentException("cost amounts must be >= 0");
+            if (amount == 0 && perLevel == 0) throw new IllegalArgumentException("cost must have a positive amount");
+        }
+        public int amountForNextLevel(int currentLevel) {
+            long value = (long) amount + (long) Math.max(0, currentLevel) * perLevel;
+            if (value > Integer.MAX_VALUE) throw new IllegalStateException("Upgrade cost overflow for " + provider + ':' + id);
+            return (int) value;
+        }
+    }
     public UpgradeTemplate {
         id = ItemType.normalize(id);
         if (maxLevel < 1) throw new IllegalArgumentException("maxLevel must be >= 1");
@@ -24,6 +39,11 @@ public record UpgradeTemplate(
             normalized.put(level, chance);
         });
         explicitChances = Map.copyOf(normalized);
+        costs = costs == null ? List.of() : List.copyOf(costs);
+    }
+    public UpgradeTemplate(String id, int maxLevel, double baseSuccessChance, double successDecay, boolean destroyOnFail,
+                           double statMultiplierPerLevel, Map<Integer,Double> explicitChances) {
+        this(id, maxLevel, baseSuccessChance, successDecay, destroyOnFail, statMultiplierPerLevel, explicitChances, List.of());
     }
     public double chanceForNextLevel(int currentLevel) {
         int next = currentLevel + 1;
