@@ -1,9 +1,8 @@
 package vn.svframe.compat;
 
 import vn.svframe.mythiclibfabric.BuiltinSkillOwnership;
-import vn.svframe.mythiclibfabric.NativeDefaultSkillRuntime;
 
-/** Regression gate: SVFrameLib owns exactly 90 built-ins and must not execute SVFrameMMO-owned IDs. */
+/** Regression gate: SVFrameLib owns exactly 90 built-ins and SVFrameMMO owns exactly three external IDs. */
 public final class BuiltinOwnershipRuntimeSmoke {
     private BuiltinOwnershipRuntimeSmoke() { }
 
