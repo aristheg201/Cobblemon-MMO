@@ -18,7 +18,7 @@ public final class DefinitionParser {
     }
 
     public static ItemRarity rarity(String id, Map<String,Object> section) {
-        return new ItemRarity(id, string(section, "name", id), integer(section, "weight", 1), integer(section, "priority", 0));
+        return new ItemRarity(id, string(section, "name", id), integer(section, "weight", 1), integer(section, "priority", 0), decimal(section, "stat-multiplier", 1d));
     }
 
     public static ItemDefinition item(String id, Map<String,Object> section) {
@@ -60,6 +60,15 @@ public final class DefinitionParser {
         for (Map.Entry<String,Object> entry : map(section.get("chances")).entrySet()) {
             chances.put(Integer.parseInt(entry.getKey()), probability(entry.getValue()));
         }
+        List<UpgradeTemplate.Cost> costs = new ArrayList<>();
+        for (Object value : list(section.get("costs"))) {
+            Map<String,Object> cost = map(value);
+            costs.add(new UpgradeTemplate.Cost(
+                    string(cost, "provider", "minecraft_item"),
+                    string(cost, "id", ""),
+                    integer(cost, "amount", 0),
+                    integer(cost, "per-level", 0)));
+        }
         return new UpgradeTemplate(
                 id,
                 integer(section, "max-level", 10),
@@ -67,7 +76,8 @@ public final class DefinitionParser {
                 decimal(section, "success-decay", 1d),
                 bool(section, "destroy-on-fail", false),
                 decimal(section, "stat-multiplier-per-level", .05d),
-                chances);
+                chances,
+                costs);
     }
 
     public static ItemSetDefinition set(String id, Map<String,Object> section) {
@@ -106,7 +116,8 @@ public final class DefinitionParser {
             entries.add(new LootTableDefinition.Entry(
                     string(entry, "item", ""), integer(entry, "weight", 1), probability(entry.getOrDefault("chance", 1d)),
                     integer(entry, "min-amount", 1), integer(entry, "max-amount", integer(entry, "min-amount", 1)),
-                    integer(entry, "min-level", 1), integer(entry, "max-level", integer(entry, "min-level", 1))));
+                    integer(entry, "min-level", 1), integer(entry, "max-level", integer(entry, "min-level", 1)),
+                    string(entry, "condition", "always"), string(entry, "reward", "item")));
         }
         return new LootTableDefinition(id, integer(section, "rolls", 1), entries);
     }
