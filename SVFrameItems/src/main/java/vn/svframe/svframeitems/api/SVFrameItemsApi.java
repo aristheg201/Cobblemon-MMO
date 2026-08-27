@@ -29,6 +29,7 @@ public final class SVFrameItemsApi {
     public static boolean canEquip(ItemStack stack,NativeStatEngine.EquipmentSlot slot){Optional<ItemInstance> item=identify(stack);if(item.isEmpty())return false;ItemDefinition definition=registry().item(item.get().definitionId());if(definition==null)return false;ItemType type=registry().type(definition.typeId());return type!=null&&type.canEquip(slot);}
     public static List<ItemStat> effectiveStats(ItemStack stack){return identify(stack).map(item->item.effectiveStats(SVFrameItems.upgrades().statMultiplier(item),SVFrameItems.upgrades()::statMultiplier)).orElse(List.of());}
     public static void refreshEquipment(ServerPlayerEntity player){SVFrameItems.equipment().refresh(player);}
+    public static void rebindEquipment(ServerPlayerEntity player){SVFrameItems.equipment().refresh(player,true);}
     public static AutoCloseable registerEquipmentProvider(EquipmentProvider provider){return EquipmentProviderRegistry.register(provider);}
     public static AutoCloseable registerItemMechanic(ItemGenerator.Mechanic mechanic){return SVFrameItems.generator().registerMechanic(mechanic);}
     public static AutoCloseable registerUpgradeCostProvider(UpgradeService.CostProvider provider){return SVFrameItems.upgrades().registerCostProvider(provider);}
@@ -36,5 +37,6 @@ public final class SVFrameItemsApi {
     public static AutoCloseable registerLootReward(String id,LootService.Reward reward){return SVFrameItems.loot().registerReward(id,reward);}
     public static void register(ItemType value){registry().registerExternal(value);} public static void register(ItemRarity value){registry().registerExternal(value);} public static void register(ItemDefinition value){registry().registerExternal(value);} public static void register(ItemSetDefinition value){registry().registerExternal(value);} public static void register(UpgradeTemplate value){registry().registerExternal(value);} public static void register(RecipeDefinition value){registry().registerExternal(value);} public static void register(LootTableDefinition value){registry().registerExternal(value);}
     public static void validateRegistry(){registry().validateSnapshot();}
+    public static void validateRuntimeRegistry(){RuntimeDefinitionValidator.validate(registry(),SVFrameItems.upgrades(),SVFrameItems.loot());}
     public static boolean reload(){return SVFrameItems.reload();}
 }
