@@ -5,9 +5,8 @@ on:
     branches: [svframemmo-fabric-1.21.1]
     paths:
       - '.github/workflows/svframemmo.yml'
-      - 'svframemmo-payload.part*'
       - 'SVFrameMMO/**'
-      - 'SVFrameLib/**'
+      - 'SVFrameLib/dist/**'
   workflow_dispatch:
 
 permissions:
@@ -29,53 +28,32 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.8'
-      - name: Materialize native SVFrameMMO source
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ ! -d SVFrameMMO ]; then
-            cat svframemmo-payload.part* | tr -d '\n' | base64 -d > /tmp/svframemmo-native.tar.gz
-            tar -xzf /tmp/svframemmo-native.tar.gz
-          fi
-          python3 - <<'PY'
-          from pathlib import Path
-          path = Path('SVFrameMMO/src/main/java/vn/svframe/svframemmo/skill/list/Ambers.java')
-          text = path.read_text(encoding='utf-8')
-          if text.endswith('}}}\n}\n'):
-              text = text[:-2]
-          if 'import org.joml.Vector3f;' not in text:
-              text = text.replace('package vn.svframe.svframemmo.skill.list;\n', 'package vn.svframe.svframemmo.skill.list;\nimport org.joml.Vector3f;')
-          text = text.replace('new DustParticleEffect(0xFFA500,1.3f)', 'new DustParticleEffect(new Vector3f(1f,165f/255f,0f),1.3f)')
-          path.write_text(text, encoding='utf-8')
-          PY
-          test -d SVFrameMMO
-          echo "SVFrameMMO_NATIVE_FILES=$(find SVFrameMMO -type f | wc -l)"
       - name: Native source gate
         shell: bash
         run: |
           set -euo pipefail
           SRC=SVFrameMMO/src/main
+          test -d SVFrameMMO
+          test -s SVFrameLib/dist/SVFrameLib-1.7.1-fabric.jar
           grep -q '"id": "svframemmo"' "$SRC/resources/fabric.mod.json"
           grep -q '"svframelib": ">=1.7.1-fabric"' "$SRC/resources/fabric.mod.json"
-          test "$(find "$SRC/java/vn/svframe/svframemmo" -type f -name '*.java' | wc -l)" -ge 19
+          test "$(find "$SRC/java/vn/svframe/svframemmo" -type f -name '*.java' | wc -l)" -ge 23
           if grep -RIn --binary-files=without-match -Ei 'net[.]Indyuce|io[.]lumine|org[.]bukkit|io[.]papermc|mythicmobs|mmocore|mythiclib|mmoitems|spigot|placeholderapi|worldguard|citizens|vault' "$SRC" --include='*.java' --include='*.json' --include='*.yml'; then exit 1; fi
           grep -q 'AMBERS' "$SRC/java/vn/svframe/svframemmo/skill/SVFrameMMOSkillBootstrap.java"
           grep -q 'NEPTUNE_GIFT' "$SRC/java/vn/svframe/svframemmo/skill/SVFrameMMOSkillBootstrap.java"
           grep -q 'SNEAKY_PICKY' "$SRC/java/vn/svframe/svframemmo/skill/SVFrameMMOSkillBootstrap.java"
-      - name: Build SVFrameLib dependency
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd SVFrameLib
-          gradle --no-daemon clean remapJar
+          grep -q 'class PlayerAttributes' "$SRC/java/vn/svframe/svframemmo/api/player/attribute/PlayerAttributes.java"
+          grep -q 'class AttributeInstance' "$SRC/java/vn/svframe/svframemmo/api/player/attribute/AttributeInstance.java"
       - name: Build SVFrameMMO
         shell: bash
         run: |
           set -euo pipefail
           cd SVFrameMMO
           gradle --no-daemon --stacktrace clean test remapJar 2>&1 | tee build-native.log
-      - name: Pure native smoke
-        run: java -cp SVFrameMMO/build/classes/java/main vn.svframe.svframemmo.validation.NativeCoreSmoke
+      - name: Native core smoke
+        shell: bash
+        run: |
+          java -cp "SVFrameMMO/build/classes/java/main:SVFrameLib/dist/SVFrameLib-1.7.1-fabric.jar" vn.svframe.svframemmo.validation.NativeCoreSmoke
       - name: Dedicated Fabric server boot
         shell: bash
         run: |
@@ -95,7 +73,7 @@ jobs:
           ! grep -q 'NoClassDefFoundError' build/svframemmo-server.log
           ! grep -q 'NoSuchMethodError' build/svframemmo-server.log
           ! grep -q 'NoSuchFieldError' build/svframemmo-server.log
-      - name: Stage and commit validated source
+      - name: Stage validated artifact
         shell: bash
         run: |
           set -euo pipefail
@@ -106,10 +84,9 @@ jobs:
           cp SVFrameMMO/build/svframemmo-server.log SVFrameMMO/validated/server-boot.log
           git config user.name 'SVFrame Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add -A SVFrameMMO
-          git rm -f svframemmo-payload.part* 2>/dev/null || true
+          git add -A SVFrameMMO/validated
           if ! git diff --cached --quiet; then
-            git commit -m 'SVFrameMMO: materialize native Fabric core [skip ci]'
+            git commit -m 'SVFrameMMO: refresh validated native artifact [skip ci]'
             git push origin HEAD:svframemmo-fabric-1.21.1
           fi
       - name: Upload artifact

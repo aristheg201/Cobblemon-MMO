@@ -8,7 +8,7 @@ dependencies {
  mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
  modImplementation "net.fabricmc:fabric-loader:${loader_version}"
  modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
- modImplementation files('../SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar')
+ modImplementation files('../SVFrameLib/dist/SVFrameLib-1.7.1-fabric.jar')
 }
 tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8' }
 java { sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21; withSourcesJar() }
