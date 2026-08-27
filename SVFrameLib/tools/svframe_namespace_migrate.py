@@ -124,6 +124,8 @@ if parts:
             text = text.replace('  server_plugin_platform:\n', '  sources:\n')
             text = re.sub(r'^.*external skill provider.*\n?', '', text, flags=re.M|re.I)
             text = re.sub(r'^.*external region provider.*\n?', '', text, flags=re.M|re.I)
+            text = re.sub(r'^.*FABLED.*\n?', '', text, flags=re.M)
+            text = re.sub(r'^.*mythic[.]html.*\n?', '', text, flags=re.M|re.I)
             out = res / rel
             out.parent.mkdir(parents=True, exist_ok=True)
             out.write_text(text, encoding='utf-8')
