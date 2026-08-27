@@ -44,6 +44,8 @@ public final class LootService {
         }
         return List.copyOf(out);
     }
+    public boolean hasCondition(String id){return id!=null&&conditions.containsKey(ItemType.normalize(id));}
+    public boolean hasReward(String id){return id!=null&&rewards.containsKey(ItemType.normalize(id));}
     public AutoCloseable registerCondition(String id,Condition condition){String key=ItemType.normalize(id);Objects.requireNonNull(condition);if(key.equals("always"))throw new IllegalArgumentException("always is built in");if(conditions.putIfAbsent(key,condition)!=null)throw new IllegalStateException("Loot condition already registered: "+key);return ()->conditions.remove(key,condition);}
     public AutoCloseable registerReward(String id,Reward reward){String key=ItemType.normalize(id);Objects.requireNonNull(reward);if(key.equals("item"))throw new IllegalArgumentException("item is built in");if(rewards.putIfAbsent(key,reward)!=null)throw new IllegalStateException("Loot reward already registered: "+key);return ()->rewards.remove(key,reward);}
 }
