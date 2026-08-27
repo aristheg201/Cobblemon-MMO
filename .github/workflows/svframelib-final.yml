@@ -85,13 +85,21 @@ jobs:
           set -euo pipefail
           JAR="$(find SVFrameLib/build/libs -maxdepth 1 -type f -name 'SVFrameLib-*.jar' ! -name '*sources*' | head -1)"
           test -s "$JAR"
+          echo "JAR=$JAR"
           jar tf "$JAR" > /tmp/svframelib-jar-entries.txt
-          grep -Fxq 'vn/svframe/svframelib/SVFrameLib.class' /tmp/svframelib-jar-entries.txt
-          grep -Fxq 'vn/svframe/svframelib/manager/SkillManager.class' /tmp/svframelib-jar-entries.txt
-          grep -Fxq 'vn/svframe/svframelib/damage/DamageMetadata.class' /tmp/svframelib-jar-entries.txt
-          grep -Fxq 'vn/svframe/svframelib/fabric/SVFrameLibBootstrap.class' /tmp/svframelib-jar-entries.txt
-          if grep '^vn/svframe/' /tmp/svframelib-jar-entries.txt | grep -v '^vn/svframe/svframelib/' | grep -q .; then exit 1; fi
-          if grep -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' /tmp/svframelib-jar-entries.txt; then exit 1; fi
+          failed=0
+          for cls in \
+            vn/svframe/svframelib/SVFrameLib.class \
+            vn/svframe/svframelib/manager/SkillManager.class \
+            vn/svframe/svframelib/damage/DamageMetadata.class \
+            vn/svframe/svframelib/fabric/SVFrameLibBootstrap.class; do
+            if grep -Fxq "$cls" /tmp/svframelib-jar-entries.txt; then echo "FOUND $cls"; else echo "MISSING $cls"; failed=1; fi
+          done
+          foreign="$(grep '^vn/svframe/' /tmp/svframelib-jar-entries.txt | grep -v '^vn/svframe/svframelib/' || true)"
+          if [ -n "$foreign" ]; then echo 'FOREIGN_NAMESPACE:'; echo "$foreign"; failed=1; fi
+          legacy="$(grep -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' /tmp/svframelib-jar-entries.txt || true)"
+          if [ -n "$legacy" ]; then echo 'LEGACY_ENTRIES:'; echo "$legacy"; failed=1; fi
+          test "$failed" -eq 0
           sha256sum "$JAR" | tee SVFrameLib/build/SVFrameLib-SHA256.txt
 
       - name: Dedicated Fabric server boot
@@ -145,6 +153,7 @@ jobs:
           name: SVFrameLib-source-native-fabric
           path: |
             SVFrameLib/validated
+            SVFrameLib/build/libs/*.jar
             SVFrameLib/build-parity.log
             SVFrameLib/build/svframelib-server.log
           if-no-files-found: warn
