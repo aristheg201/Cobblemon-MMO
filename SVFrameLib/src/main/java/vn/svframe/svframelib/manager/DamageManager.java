@@ -11,8 +11,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import vn.svframe.svframelib.api.event.AttackEvent;
-import vn.svframe.svframelib.api.event.PlayerAttackEvent;
+import vn.svframe.svframelib.MythicLib;
 import vn.svframe.svframelib.api.player.EquipmentSlot;
 import vn.svframe.svframelib.api.stat.provider.StatProvider;
 import vn.svframe.svframelib.damage.*;
@@ -52,17 +51,15 @@ public class DamageManager extends Module {
     }
 
     /**
-     * Registers and applies custom damage. The booleans are knockback and
-     * ignoreImmunity, not an apply-damage flag.
+     * Registers and applies custom damage. AttackEvent/PlayerAttackEvent are not
+     * dispatched here: like 1.7.1, they are emitted by the global damage pipeline
+     * for every attack after attack reconstruction and combat modifiers.
      */
     public boolean registerAttack(AttackMetadata attack, boolean knockback, boolean ignoreImmunity) {
         Objects.requireNonNull(attack, "Attack cannot be null");
         if (attack.getTarget() == null) throw new IllegalArgumentException("Target cannot be null");
         markAsMetadata(attack);
         try {
-            AttackEvent event = attack.isPlayer() ? new PlayerAttackEvent(attack) : new AttackEvent(attack);
-            event.call();
-            if (event.isCancelled()) return false;
             LivingEntity attacker = attack.hasAttacker() ? attack.getAttacker().getEntity() : null;
             return applyDamage(attack.getDamage().getDamage(), attack.getTarget(), attacker, knockback, ignoreImmunity);
         } finally {
@@ -128,7 +125,7 @@ public class DamageManager extends Module {
             ProjectileMetadata projectileData = ProjectileMetadata.get(projectile);
             if (projectileData != null) {
                 found = new ProjectileAttackMetadata(
-                        new DamageMetadata(damage, DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
+                        new DamageMetadata(damage, projectileData.getDamageTypes()),
                         target, projectileData.getShooter(), projectile, projectileData);
                 markAsMetadata(found);
                 return found;
@@ -138,7 +135,7 @@ public class DamageManager extends Module {
             if (attackerEntity instanceof LivingEntity attacker && attacker != target) {
                 StatProvider provider = StatProvider.get(attacker, EquipmentSlot.MAIN_HAND, true);
                 found = new ProjectileAttackMetadata(
-                        new DamageMetadata(damage, DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
+                        new DamageMetadata(damage, MythicLib.inst().getMMOConfig().bowAttackTypes),
                         target, provider, projectile);
                 markAsMetadata(found);
                 return found;
@@ -177,27 +174,27 @@ public class DamageManager extends Module {
         if (source.getSource() instanceof ProjectileEntity || source.isOf(DamageTypes.ARROW) || source.isOf(DamageTypes.TRIDENT)
                 || source.isOf(DamageTypes.MOB_PROJECTILE) || source.isOf(DamageTypes.FIREWORKS) || source.isOf(DamageTypes.THROWN)
                 || source.isOf(DamageTypes.FIREBALL) || source.isOf(DamageTypes.UNATTRIBUTED_FIREBALL))
-            return List.of(DamageType.PHYSICAL, DamageType.PROJECTILE);
+            return MythicLib.inst().getMMOConfig().bowAttackTypes;
         if (source.isOf(DamageTypes.IN_FIRE) || source.isOf(DamageTypes.CAMPFIRE) || source.isOf(DamageTypes.LAVA)
                 || source.isOf(DamageTypes.HOT_FLOOR) || source.isOf(DamageTypes.SONIC_BOOM) || source.isOf(DamageTypes.LIGHTNING_BOLT)
                 || source.isOf(DamageTypes.FALL) || source.isOf(DamageTypes.THORNS) || source.isOf(DamageTypes.CACTUS)
                 || source.isOf(DamageTypes.SWEET_BERRY_BUSH) || source.isOf(DamageTypes.EXPLOSION) || source.isOf(DamageTypes.PLAYER_EXPLOSION)
                 || source.isOf(DamageTypes.BAD_RESPAWN_POINT) || source.isOf(DamageTypes.FALLING_ANVIL) || source.isOf(DamageTypes.FALLING_BLOCK)
                 || source.isOf(DamageTypes.FALLING_STALACTITE) || source.isOf(DamageTypes.FLY_INTO_WALL) || source.isOf(DamageTypes.IN_WALL)
-                || source.isOf(DamageTypes.CRAMMING) || source.isOf(DamageTypes.DROWN) || source.isOf(DamageTypes.PLAYER_ATTACK)
-                || source.isOf(DamageTypes.MOB_ATTACK) || source.isOf(DamageTypes.MOB_ATTACK_NO_AGGRO))
+                || source.isOf(DamageTypes.CRAMMING) || source.isOf(DamageTypes.DROWN))
             return List.of(DamageType.PHYSICAL);
-        return List.of();
+        return MythicLib.inst().getMMOConfig().meleeRandomAttackTypes;
     }
 
     public List<DamageType> getVanillaDamageTypes(LivingEntity damager, DamageSource source, EquipmentSlot hand) {
         Objects.requireNonNull(damager, "Damager cannot be null");
+        ConfigManager config = MythicLib.inst().getMMOConfig();
         if (!(source.isOf(DamageTypes.PLAYER_ATTACK) || source.isOf(DamageTypes.MOB_ATTACK) || source.isOf(DamageTypes.MOB_ATTACK_NO_AGGRO)))
-            return List.of(DamageType.PHYSICAL);
+            return config.meleeRandomAttackTypes;
         ItemStack weapon = source.getWeaponStack();
-        if (weapon == null || weapon.isEmpty()) return List.of(DamageType.UNARMED, DamageType.PHYSICAL);
-        if (weapon.isDamageable()) return List.of(DamageType.WEAPON, DamageType.PHYSICAL);
-        return List.of(DamageType.PHYSICAL);
+        if (weapon == null || weapon.isEmpty()) return config.meleeUnarmedAttackTypes;
+        if (weapon.isDamageable()) return config.meleeWeaponAttackTypes;
+        return config.meleeRandomAttackTypes;
     }
 
     public synchronized AttackMetadata markAsMetadata(AttackMetadata attack) {
