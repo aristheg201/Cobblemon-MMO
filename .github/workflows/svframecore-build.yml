@@ -9,6 +9,10 @@ on:
       - '.github/workflows/svframecore-build.yml'
   workflow_dispatch:
 
+concurrency:
+  group: svframecore-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -86,7 +90,7 @@ jobs:
           printf 'eula=true\n' > SVFrameCore/run/eula.txt
           cd SVFrameCore
           set +e
-          timeout 90s gradle --no-daemon --stacktrace runServer > build/svframecore-server.log 2>&1
+          timeout 45s gradle --no-daemon --stacktrace runServer > build/svframecore-server.log 2>&1
           status=$?
           set -e
           cat build/svframecore-server.log
