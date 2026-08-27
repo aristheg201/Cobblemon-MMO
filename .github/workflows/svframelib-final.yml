@@ -38,13 +38,13 @@ jobs:
         run: |
           set -euo pipefail
           python3 SVFrameLib/tools/svframe_namespace_migrate.py SVFrameLib
+          python3 SVFrameLib/tools/svframe_namespace_postfix.py SVFrameLib
 
       - name: SVFrame-only source gate
         shell: bash
         run: |
           set -euo pipefail
           SRC=SVFrameLib/src/main
-          test -f "$SRC/resources/fabric.mod.json"
           grep -q '"id": "svframelib"' "$SRC/resources/fabric.mod.json"
           grep -q '"fabricloader": ">=0.18.4"' "$SRC/resources/fabric.mod.json"
           grep -q '"minecraft": "~1.21.1"' "$SRC/resources/fabric.mod.json"
@@ -55,14 +55,8 @@ jobs:
           test -f "$SRC/java/vn/svframe/svframelib/damage/onhit/OnHitModule.java"
           test -f "$SRC/java/vn/svframe/svframelib/fabric/SVFrameLibBootstrap.java"
           test "$(grep -RIl '@BuiltinSkillHandler' "$SRC/java/vn/svframe/svframelib/skill/handler/def" --include='*.java' | wc -l)" -eq 90
-          if find "$SRC/java" -type f -name '*.java' ! -path '*/vn/svframe/svframelib/*' | grep -q .; then
-            echo 'Java source exists outside vn.svframe.svframelib' >&2
-            exit 1
-          fi
-          if grep -RIn --binary-files=without-match -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' "$SRC" --include='*.java' --include='*.json' --include='*.yml' --include='*.properties'; then
-            echo 'Legacy server-plugin/provider naming remains in active source' >&2
-            exit 1
-          fi
+          if find "$SRC/java" -type f -name '*.java' ! -path '*/vn/svframe/svframelib/*' | grep -q .; then exit 1; fi
+          if grep -RIn --binary-files=without-match -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' "$SRC" --include='*.java' --include='*.json' --include='*.yml' --include='*.properties'; then exit 1; fi
 
       - name: Build and remap JAR
         shell: bash
@@ -77,10 +71,7 @@ jobs:
           set -euo pipefail
           RES=SVFrameLib/src/main/resources
           test "$(find "$RES" -type f -name '*.yml' | wc -l)" -eq 15
-          if grep -RIn -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' "$RES" --include='*.yml'; then
-            echo 'Legacy naming remains in bundled defaults' >&2
-            exit 1
-          fi
+          if grep -RIn -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' "$RES" --include='*.yml'; then exit 1; fi
           java -cp SVFrameLib/build/classes/java/main vn.svframe.svframelib.audit.YamlCorpusSmoke "$RES"
           java -cp SVFrameLib/build/classes/java/main vn.svframe.svframelib.audit.YamlSkillCountSmoke "$RES/default/skill/default_skills.yml" 93
           java -cp SVFrameLib/build/classes/java/main vn.svframe.svframelib.audit.YamlSkillCountSmoke "$RES/default/skill/example_skills.yml" 1
@@ -99,14 +90,8 @@ jobs:
           grep -Fxq 'vn/svframe/svframelib/manager/SkillManager.class' /tmp/svframelib-jar-entries.txt
           grep -Fxq 'vn/svframe/svframelib/damage/DamageMetadata.class' /tmp/svframelib-jar-entries.txt
           grep -Fxq 'vn/svframe/svframelib/fabric/SVFrameLibBootstrap.class' /tmp/svframelib-jar-entries.txt
-          if grep '^vn/svframe/' /tmp/svframelib-jar-entries.txt | grep -v '^vn/svframe/svframelib/' | grep -q .; then
-            echo 'Non-SVFrameLib Java namespace remains in JAR' >&2
-            exit 1
-          fi
-          if grep -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' /tmp/svframelib-jar-entries.txt; then
-            echo 'Legacy class/resource naming remains in JAR entries' >&2
-            exit 1
-          fi
+          if grep '^vn/svframe/' /tmp/svframelib-jar-entries.txt | grep -v '^vn/svframe/svframelib/' | grep -q .; then exit 1; fi
+          if grep -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' /tmp/svframelib-jar-entries.txt; then exit 1; fi
           sha256sum "$JAR" | tee SVFrameLib/build/SVFrameLib-SHA256.txt
 
       - name: Dedicated Fabric server boot
