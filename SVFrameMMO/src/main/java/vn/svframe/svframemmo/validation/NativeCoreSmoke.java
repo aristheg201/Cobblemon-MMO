@@ -40,7 +40,7 @@ public final class NativeCoreSmoke {
         if (table.getExperience(null, 3) != 500L) throw new AssertionError("list curve level 3");
         if (table.getExperience(null, 99) != 500L) throw new AssertionError("list curve max clamp");
 
-        FormulaExperienceCurve formula = new FormulaExperienceCurve("100 * level");
+        FormulaExperienceCurve formula = new FormulaExperienceCurve("{level} * 100");
         if (formula.getExperience(null, 4) != 400L) throw new AssertionError("formula curve");
 
         System.out.println("SVFRAMEMMO_NATIVE_CORE=PASS");
