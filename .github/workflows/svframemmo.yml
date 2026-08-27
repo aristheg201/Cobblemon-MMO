@@ -42,7 +42,11 @@ jobs:
           path = Path('SVFrameMMO/src/main/java/vn/svframe/svframemmo/skill/list/Ambers.java')
           text = path.read_text(encoding='utf-8')
           if text.endswith('}}}\n}\n'):
-              path.write_text(text[:-2], encoding='utf-8')
+              text = text[:-2]
+          if 'import org.joml.Vector3f;' not in text:
+              text = text.replace('package vn.svframe.svframemmo.skill.list;\n', 'package vn.svframe.svframemmo.skill.list;\nimport org.joml.Vector3f;')
+          text = text.replace('new DustParticleEffect(0xFFA500,1.3f)', 'new DustParticleEffect(new Vector3f(1f,165f/255f,0f),1.3f)')
+          path.write_text(text, encoding='utf-8')
           PY
           test -d SVFrameMMO
           echo "SVFrameMMO_NATIVE_FILES=$(find SVFrameMMO -type f | wc -l)"
