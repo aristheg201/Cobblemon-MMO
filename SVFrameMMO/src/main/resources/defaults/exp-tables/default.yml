@@ -1,0 +1,26 @@
+example_exp_table:
+  first_table_item:
+    period: 3
+    chance: 80
+    fail-reduction: 80
+    triggers:
+      - 'exp{amount=20}'
+  second_table_item:
+    period: 2
+    triggers:
+      - 'exp{amount=80}'
+      - 'message{format="You reached another experience-table milestone."}'
+class_exp_table:
+  skill_point:
+    period: 1
+    triggers:
+      - 'skill-points{amount=1}'
+second_exp_table:
+  some_item:
+    period: 1
+    triggers:
+      - 'exp{amount=100}'
+  some_other_item:
+    period: 3
+    triggers:
+      - 'exp{amount=100}'

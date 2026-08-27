@@ -1,0 +1,24 @@
+name: Mining
+experience:
+  base: 20
+  per-level: 3
+exp-curve: '{level} * 150'
+exp-sources:
+  - 'mineblock{type=COAL_ORE;amount=2-4;silk-touch=false}'
+  - 'mineblock{type=DEEPSLATE_COAL_ORE;amount=2-4;silk-touch=false}'
+  - 'mineblock{type=COPPER_ORE;amount=3-5;silk-touch=false}'
+  - 'mineblock{type=DEEPSLATE_COPPER_ORE;amount=3-5;silk-touch=false}'
+  - 'mineblock{type=IRON_ORE;amount=5;silk-touch=false}'
+  - 'mineblock{type=DEEPSLATE_IRON_ORE;amount=5;silk-touch=false}'
+  - 'mineblock{type=GOLD_ORE;amount=5;silk-touch=false}'
+  - 'mineblock{type=DEEPSLATE_GOLD_ORE;amount=5;silk-touch=false}'
+  - 'mineblock{type=LAPIS_ORE;amount=13;silk-touch=false}'
+  - 'mineblock{type=DEEPSLATE_LAPIS_ORE;amount=13;silk-touch=false}'
+  - 'mineblock{type=REDSTONE_ORE;amount=10;silk-touch=false}'
+  - 'mineblock{type=DEEPSLATE_REDSTONE_ORE;amount=10;silk-touch=false}'
+  - 'mineblock{type=EMERALD_ORE;amount=32;silk-touch=false}'
+  - 'mineblock{type=DEEPSLATE_EMERALD_ORE;amount=32;silk-touch=false}'
+  - 'mineblock{type=DIAMOND_ORE;amount=20;silk-touch=false}'
+  - 'mineblock{type=DEEPSLATE_DIAMOND_ORE;amount=20;silk-touch=false}'
+  - 'mineblock{type=NETHER_GOLD_ORE;amount=8;silk-touch=false}'
+  - 'mineblock{type=ANCIENT_DEBRIS;amount=40;silk-touch=false}'

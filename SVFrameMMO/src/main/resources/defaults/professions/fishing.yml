@@ -1,0 +1,11 @@
+name: Fishing
+experience:
+  base: 20
+  per-level: 3
+exp-curve: '{level} * 150'
+exp-sources:
+  - 'fishitem{amount=1-6}'
+on-fish:
+  default:
+    items:
+      - 'vanilla{type=SALMON;tugs=4-5;experience=1-6} 1 2-5 1'

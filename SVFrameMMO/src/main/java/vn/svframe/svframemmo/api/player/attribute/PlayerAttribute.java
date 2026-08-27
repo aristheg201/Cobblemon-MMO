@@ -22,6 +22,7 @@ public final class PlayerAttribute {
     private final String name;
     private final int max;
     private final boolean save;
+    private final String experienceTableId;
     private final List<Buff> buffs;
 
     public PlayerAttribute(String id, Map<String, Object> config) {
@@ -30,6 +31,7 @@ public final class PlayerAttribute {
         this.name = String.valueOf(config.getOrDefault("name", "MyAttribute"));
         this.max = config.containsKey("max-points") ? Math.max(1, integer(config.get("max-points"), 1)) : 0;
         this.save = bool(config.get("save-to-player-data"), true);
+        this.experienceTableId = config.get("exp-table") == null ? null : String.valueOf(config.get("exp-table")).trim();
 
         ArrayList<Buff> parsed = new ArrayList<>();
         Object rawBuffs = config.get("buff");
@@ -48,6 +50,8 @@ public final class PlayerAttribute {
     public boolean hasMax() { return max > 0; }
     public int getMax() { return max; }
     public boolean isSaved() { return save; }
+    public boolean hasExperienceTable() { return experienceTableId != null && !experienceTableId.isBlank(); }
+    public String getExperienceTableId() { return experienceTableId; }
     public List<Buff> getBuffs() { return buffs; }
     public String getKey() { return "attribute:" + id.replace('-', '_'); }
 

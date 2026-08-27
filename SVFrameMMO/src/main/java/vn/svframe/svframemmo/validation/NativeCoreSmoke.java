@@ -3,6 +3,7 @@ package vn.svframe.svframemmo.validation;
 import vn.svframe.svframelib.player.modifier.ModifierType;
 import vn.svframe.svframemmo.api.player.attribute.PlayerAttribute;
 import vn.svframe.svframemmo.api.player.profess.ClassOption;
+import vn.svframe.svframemmo.api.player.profess.SavedClassState;
 import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
 import vn.svframe.svframemmo.experience.curve.FormulaExperienceCurve;
 import vn.svframe.svframemmo.experience.curve.ListExperienceCurve;
@@ -42,6 +43,14 @@ public final class NativeCoreSmoke {
 
         FormulaExperienceCurve formula = new FormulaExperienceCurve("{level} * 100");
         if (formula.getExperience(null, 4) != 400L) throw new AssertionError("formula curve");
+
+        SavedClassState state = new SavedClassState(7, 42d, 3, 2, 1, 1, 1, 20d, 80d, 70d, 60d,
+                Map.of("strength", 4, "dexterity", 2), Map.of("dash", 3, "guard", 1), Map.of(),
+                java.util.Set.of("starter"), Map.of("combat", 2), Map.of("combat:root", 1), Map.of("class_level", 7));
+        if (state.spentSkillPoints() != 2) throw new AssertionError("saved class spent skill points");
+        if (state.spentAttributePoints() != 6) throw new AssertionError("saved class spent attribute points");
+        try { state.attributes().put("illegal", 1); throw new AssertionError("saved class maps must be immutable"); }
+        catch (UnsupportedOperationException expected) { }
 
         System.out.println("SVFRAMEMMO_NATIVE_CORE=PASS");
     }
