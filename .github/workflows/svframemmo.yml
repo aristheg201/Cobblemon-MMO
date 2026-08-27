@@ -28,6 +28,14 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.8'
+      - name: Expand pending native source batch
+        if: ${{ hashFiles('SVFrameMMO/.port-batch.zip') != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode SVFrameMMO/.port-batch.zip > /tmp/svframemmo-port-batch.zip
+          unzip -tq /tmp/svframemmo-port-batch.zip
+          unzip -qo /tmp/svframemmo-port-batch.zip -d .
       - name: Native source gate
         shell: bash
         run: |
@@ -36,13 +44,16 @@ jobs:
           test -d SVFrameMMO
           grep -q '"id": "svframemmo"' "$SRC/resources/fabric.mod.json"
           grep -q '"svframelib": ">=1.7.1-fabric"' "$SRC/resources/fabric.mod.json"
-          test "$(find "$SRC/java/vn/svframe/svframemmo" -type f -name '*.java' | wc -l)" -ge 23
+          test "$(find "$SRC/java/vn/svframe/svframemmo" -type f -name '*.java' | wc -l)" -ge 60
           if grep -RIn --binary-files=without-match -Ei 'net[.]Indyuce|io[.]lumine|org[.]bukkit|io[.]papermc|mythicmobs|mmocore|mythiclib|mmoitems|spigot|placeholderapi|worldguard|citizens|vault' "$SRC" --include='*.java' --include='*.json' --include='*.yml'; then exit 1; fi
           grep -q 'AMBERS' "$SRC/java/vn/svframe/svframemmo/skill/SVFrameMMOSkillBootstrap.java"
           grep -q 'NEPTUNE_GIFT' "$SRC/java/vn/svframe/svframemmo/skill/SVFrameMMOSkillBootstrap.java"
           grep -q 'SNEAKY_PICKY' "$SRC/java/vn/svframe/svframemmo/skill/SVFrameMMOSkillBootstrap.java"
           grep -q 'class PlayerAttributes' "$SRC/java/vn/svframe/svframemmo/api/player/attribute/PlayerAttributes.java"
           grep -q 'class AttributeInstance' "$SRC/java/vn/svframe/svframemmo/api/player/attribute/AttributeInstance.java"
+          grep -q 'class ProfessionManager' "$SRC/java/vn/svframe/svframemmo/manager/ProfessionManager.java"
+          grep -q 'class SkillTreeManager' "$SRC/java/vn/svframe/svframemmo/manager/SkillTreeManager.java"
+          grep -q 'class GuildManager' "$SRC/java/vn/svframe/svframemmo/manager/GuildManager.java"
       - name: Build SVFrameLib dependency
         shell: bash
         run: |
@@ -80,7 +91,7 @@ jobs:
           ! grep -q 'NoClassDefFoundError' build/svframemmo-server.log
           ! grep -q 'NoSuchMethodError' build/svframemmo-server.log
           ! grep -q 'NoSuchFieldError' build/svframemmo-server.log
-      - name: Stage validated artifact
+      - name: Stage validated source and artifact
         shell: bash
         run: |
           set -euo pipefail
@@ -91,9 +102,11 @@ jobs:
           cp SVFrameMMO/build/svframemmo-server.log SVFrameMMO/validated/server-boot.log
           git config user.name 'SVFrame Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add -A SVFrameMMO/validated
+          git add -A SVFrameMMO/src SVFrameMMO/validated
+          if [ -f SVFrameMMO/.port-batch.zip ]; then git rm -f SVFrameMMO/.port-batch.zip; fi
+          if [ -e noop ]; then git rm -f noop; fi
           if ! git diff --cached --quiet; then
-            git commit -m 'SVFrameMMO: refresh validated native artifact [skip ci]'
+            git commit -m 'SVFrameMMO: validate native progression systems [skip ci]'
             git push origin HEAD:svframemmo-fabric-1.21.1
           fi
       - name: Upload artifact
