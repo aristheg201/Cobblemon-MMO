@@ -107,50 +107,45 @@ attributes:
         per-level: 0
 
 skills:
-    FIRE_STORM:
-        level: 1
-        max-level: 30
-        damage:
-            base: 8.0
-            per-level: 4.0
-        ignite:
-            base: 2.0
-            per-level: 0.1
-        mana:
-            base: 15.0
-            per-level: 2.0
-        cooldown:
-            base: 5.0
-            per-level: -0.1
-            max: 5.0
-            min: 1.0
-
-    POWER_MARK:
-        level: 3
-        max-level: 30
-    FIREBALL:
-        level: 5
-        max-level: 30
-    MINOR_HEALINGS:
-        level: 6
-        max-level: 30
-    ICE_SPIKES:
-        level: 8
-        max-level: 30
-    AMBERS:
-        level: 9
-        max-level: 30
-    WEAKEN:
-        level: 10
-        max-level: 30
-    WARP:
-        level: 13
-        max-level: 30
-        upgradable: false # Player cannot upgrade this skill via the skill UI
-    GREATER_HEALINGS:
-        level: 15
-        max-level: 30
-
+  CLS_ARCANE_MAGE_FIRE_STORM:
+    level: 1
+    max-level: 30
+    damage:
+      base: 8.0
+      per-level: 4.0
+    ignite:
+      base: 2.0
+      per-level: 0.1
+    mana:
+      base: 15.0
+      per-level: 2.0
+    cooldown:
+      base: 5.0
+      per-level: -0.1
+      max: 5.0
+      min: 1.0
+  CLS_ARCANE_MAGE_POWER_MARK:
+    level: 3
+    max-level: 30
+  CLS_ARCANE_MAGE_MINOR_HEALINGS:
+    level: 6
+    max-level: 30
+  CLS_ARCANE_MAGE_ICE_SPIKES:
+    level: 8
+    max-level: 30
+  CLS_ARCANE_MAGE_AMBERS:
+    level: 9
+    max-level: 30
+  CLS_ARCANE_MAGE_WEAKEN:
+    level: 10
+    max-level: 30
+  CLS_ARCANE_MAGE_WARP:
+    level: 13
+    max-level: 30
+    upgradable: false
+  CLS_ARCANE_MAGE_GREATER_HEALINGS:
+    level: 15
+    max-level: 30
 # Experience sources for main class experience.
 main-exp-sources:
 - 'killmob{type=ZOMBIE;amount=1-3}'

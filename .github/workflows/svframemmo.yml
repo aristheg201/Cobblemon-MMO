@@ -48,6 +48,9 @@ jobs:
           grep -q '"id": "svframemmo"' "$SRC/resources/fabric.mod.json"
           grep -q '"svframelib": ">=1.7.1-fabric"' "$SRC/resources/fabric.mod.json"
           if grep -RIn --binary-files=without-match -Ei 'net[.]Indyuce|io[.]lumine|org[.]bukkit|io[.]papermc|mythicmobs|mmocore|mythiclib|mmoitems|spigot|placeholderapi|worldguard|citizens|vault' "$SRC" --include='*.java' --include='*.json' --include='*.yml'; then exit 1; fi
+          grep -q '^CLS_WARRIOR_DEEP_WOUND:' "$SRC/resources/defaults/skills/legacy-class-aliases.yml"
+          test "$(grep -Ec '^CLS_[A-Z0-9_]+:$' "$SRC/resources/defaults/skills/legacy-class-aliases.yml")" -eq 34
+          test "$(grep -REc '^  source: default:' "$SRC/resources/defaults/skills/legacy-class-aliases.yml")" -eq 34
           grep -q 'public boolean isFabric() { return true; }' SVFrameLib/src/main/java/vn/svframe/svframelib/version/ServerVersion.java
       - name: Build dedicated SVFrameLib
         shell: bash
@@ -79,8 +82,10 @@ jobs:
           grep -q 'Loading Minecraft 1.21.1 with Fabric Loader 0.18.4' build/combined-server.log
           grep -q 'SVFrameLib online' build/combined-server.log
           grep -q 'SVFrameLib Fabric online; skills=94,scripts=100,customTriggers=1' build/combined-server.log
-          grep -q 'SVFrameMMO Fabric online' build/combined-server.log
+          grep -q 'SVFrameMMO Fabric online; classes=7,attributes=3,professions=8,expTables=3,skillTrees=6,skills=127' build/combined-server.log
           grep -q 'Done (' build/combined-server.log
+          test -f run/config/SVFrameMMO/skills/legacy-class-aliases.yml
+          grep -q '^CLS_WARRIOR_DEEP_WOUND:' run/config/SVFrameMMO/skills/legacy-class-aliases.yml
           ! grep -q 'Mixin apply failed' build/combined-server.log
           ! grep -q 'Could not execute entrypoint stage' build/combined-server.log
           ! grep -Eq 'NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Exception in server tick loop' build/combined-server.log

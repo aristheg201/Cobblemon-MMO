@@ -17,7 +17,7 @@ public final class DefaultFiles {
             "classes/human.yml", "classes/marksman.yml", "classes/paladin.yml", "classes/rogue.yml", "classes/warrior.yml",
             "classes/mage/mage.yml", "classes/mage/arcane-mage.yml",
             "attributes/default_attributes.yml",
-            "skills/ambers.yml", "skills/neptune-gift.yml", "skills/sneaky-picky.yml",
+            "skills/ambers.yml", "skills/neptune-gift.yml", "skills/sneaky-picky.yml", "skills/legacy-class-aliases.yml",
             "professions/alchemy.yml", "professions/enchanting.yml", "professions/farming.yml", "professions/fishing.yml",
             "professions/mining.yml", "professions/smelting.yml", "professions/smithing.yml", "professions/woodcutting.yml",
             "exp-tables/default.yml", "exp-curves/levels.txt",

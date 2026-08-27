@@ -118,25 +118,24 @@ options:
     needs-permission: false
 
 skills:
-    DEEP_WOUND:
-        level: 1
-        max-level: 30
-    WEAKEN:
-        level: 3
-        max-level: 30
-    EMPOWERED_ATTACK:
-        level: 5
-        max-level: 30
-    COMBO_ATTACK:
-        level: 7
-        max-level: 30
-    MINOR_HEALINGS:
-        level: 10
-        max-level: 30
-        upgradable: false # Player cannot upgrade this skill via the skill UI
-    FIRE_BERSERKER:
-        level: 15
-    
+  CLS_WARRIOR_DEEP_WOUND:
+    level: 1
+    max-level: 30
+  CLS_WARRIOR_WEAKEN:
+    level: 1
+    max-level: 30
+  CLS_WARRIOR_EMPOWERED_ATTACK:
+    level: 5
+    max-level: 30
+  CLS_WARRIOR_COMBO_ATTACK:
+    level: 10
+    max-level: 30
+  CLS_WARRIOR_MINOR_HEALINGS:
+    level: 15
+    max-level: 30
+    upgradable: false
+  CLS_WARRIOR_FIRE_BERSERKER:
+    level: 20
 attributes:
     mana-regeneration:
         base: -0.5
@@ -164,4 +163,3 @@ attributes:
 main-exp-sources:
 - 'killmob{type=ZOMBIE;amount=1-3}'
 - 'killmob{type=ENDERMAN;amount=6-9}'
-

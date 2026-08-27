@@ -89,32 +89,31 @@ cast-particle:
     particle: SPELL_WITCH
 
 skills:
-    DEEP_WOUND:
-        level: 1
-        max-level: 30
-    WEAKEN:
-        level: 3
-        max-level: 30
-    EMPOWERED_ATTACK:
-        level: 5
-        max-level: 30
-    COMBO_ATTACK:
-        level: 7
-        max-level: 30
-    EVADE:
-        level: 9
-        max-level: 30
-    FURTIVE_STRIKE:
-        level: 4
-        max-level: 30
-    MINOR_HEALINGS:
-        level: 10
-        max-level: 30
-        upgradable: false # Player cannot upgrade this skill via the skill UI
-    SNEAKY_PICKY:
-        level: 2
-        max-level: 20
-
+  CLS_ROGUE_DEEP_WOUND:
+    level: 1
+    max-level: 30
+  CLS_ROGUE_WEAKEN:
+    level: 1
+    max-level: 30
+  CLS_ROGUE_EMPOWERED_ATTACK:
+    level: 5
+    max-level: 30
+  CLS_ROGUE_COMBO_ATTACK:
+    level: 10
+    max-level: 30
+  CLS_ROGUE_EVADE:
+    level: 15
+    max-level: 30
+  CLS_ROGUE_FURTIVE_STRIKE:
+    level: 20
+    max-level: 30
+  CLS_ROGUE_MINOR_HEALINGS:
+    level: 25
+    max-level: 30
+    upgradable: false
+  CLS_ROGUE_SNEAKY_PICKY:
+    level: 30
+    max-level: 20
 attributes:
     attack-speed:
         base: 4.2
