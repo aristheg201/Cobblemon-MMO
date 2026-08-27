@@ -6,7 +6,7 @@ on:
     paths:
       - '.github/workflows/svframemmo.yml'
       - 'SVFrameMMO/**'
-      - 'SVFrameLib/dist/**'
+      - 'SVFrameLib/**'
   workflow_dispatch:
 
 permissions:
@@ -34,7 +34,6 @@ jobs:
           set -euo pipefail
           SRC=SVFrameMMO/src/main
           test -d SVFrameMMO
-          test -s SVFrameLib/dist/SVFrameLib-1.7.1-fabric.jar
           grep -q '"id": "svframemmo"' "$SRC/resources/fabric.mod.json"
           grep -q '"svframelib": ">=1.7.1-fabric"' "$SRC/resources/fabric.mod.json"
           test "$(find "$SRC/java/vn/svframe/svframemmo" -type f -name '*.java' | wc -l)" -ge 23
@@ -44,6 +43,12 @@ jobs:
           grep -q 'SNEAKY_PICKY' "$SRC/java/vn/svframe/svframemmo/skill/SVFrameMMOSkillBootstrap.java"
           grep -q 'class PlayerAttributes' "$SRC/java/vn/svframe/svframemmo/api/player/attribute/PlayerAttributes.java"
           grep -q 'class AttributeInstance' "$SRC/java/vn/svframe/svframemmo/api/player/attribute/AttributeInstance.java"
+      - name: Build SVFrameLib dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameLib
+          gradle --no-daemon clean remapJar
       - name: Build SVFrameMMO
         shell: bash
         run: |
@@ -53,7 +58,7 @@ jobs:
       - name: Native core smoke
         shell: bash
         run: |
-          java -cp "SVFrameMMO/build/classes/java/main:SVFrameLib/dist/SVFrameLib-1.7.1-fabric.jar" vn.svframe.svframemmo.validation.NativeCoreSmoke
+          java -cp "SVFrameMMO/build/classes/java/main:SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar" vn.svframe.svframemmo.validation.NativeCoreSmoke
       - name: Dedicated Fabric server boot
         shell: bash
         run: |
