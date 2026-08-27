@@ -1,0 +1,5 @@
+.gradle/
+**/.gradle/
+**/build/
+SVFrameItems/run/
+SVFrameItems/build-native.log
