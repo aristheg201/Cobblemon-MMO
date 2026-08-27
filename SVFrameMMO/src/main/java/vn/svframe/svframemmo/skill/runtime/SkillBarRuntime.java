@@ -35,7 +35,6 @@ public final class SkillBarRuntime {
             close(data, config.quitMessage());
             return true;
         }
-        // MMOCore parity: matching a cancellable keybind consumes the swap even when casting cannot start.
         if (!player.isSpectator() && !activeSkills(data, config).isEmpty()) {
             sessions.put(player.getUuid(), new Session(SVFrameMMO.currentTick()));
             data.getMMOPlayerData().getActionBar().show(CAST_MESSAGE_PRIORITY, 20L, SVFrameLib.inst().parseColors(config.enterMessage()));
@@ -58,7 +57,6 @@ public final class SkillBarRuntime {
             if (skill != null) SVFrameMMO.skillRuntime().cast(data, skill);
             showSkillBar(data, config);
         }
-        // Client changed selection optimistically. Push the authoritative held slot back immediately.
         player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(currentSlot));
         return true;
     }
@@ -146,7 +144,7 @@ public final class SkillBarRuntime {
         return format
                 .replace("{health}", trim(data.getHealth()))
                 .replace("{max_health}", trim(data.getMaxResource(PlayerResource.HEALTH)))
-                .replace("{mana_icon}", data.getProfess().getManaIcon())
+                .replace("{mana_icon}", manaIcon(data))
                 .replace("{mana}", trim(data.getMana()))
                 .replace("{max_mana}", trim(data.getMaxResource(PlayerResource.MANA)))
                 .replace("{stamina}", trim(data.getStamina()))
@@ -158,6 +156,15 @@ public final class SkillBarRuntime {
                 .replace("{armor}", trim(data.getMMOPlayerData().getStatMap().getStat("ARMOR")))
                 .replace("{level}", Integer.toString(data.getLevel()))
                 .replace("{name}", data.getPlayer().getGameProfile().getName());
+    }
+
+    private static String manaIcon(PlayerData data) {
+        Object rawMana = data.getProfess().getRawConfig().get("mana");
+        if (rawMana instanceof Map<?, ?> mana) {
+            Object icon = mana.get("icon");
+            if (icon != null) return SVFrameLib.inst().parseColors(String.valueOf(icon));
+        }
+        return "♦";
     }
 
     private static String trim(double value) {
