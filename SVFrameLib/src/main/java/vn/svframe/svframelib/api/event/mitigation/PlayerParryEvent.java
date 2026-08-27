@@ -1,1 +1,11 @@
-package vn.svframe.svframelib.api.event.mitigation;import vn.svframe.svframelib.api.player.MMOPlayerData;import vn.svframe.svframelib.damage.AttackMetadata;public class PlayerParryEvent{private final MMOPlayerData player;private final AttackMetadata attack;private boolean cancelled;public PlayerParryEvent(MMOPlayerData player,AttackMetadata attack){this.player=player;this.attack=attack;}public MMOPlayerData getPlayerData(){return player;}public AttackMetadata getAttack(){return attack;}public boolean isCancelled(){return cancelled;}public void setCancelled(boolean c){cancelled=c;}}
+package vn.svframe.svframelib.api.event.mitigation;
+
+import vn.svframe.svframelib.api.event.DamageMitigationEvent;
+import vn.svframe.svframelib.api.player.MMOPlayerData;
+import vn.svframe.svframelib.damage.AttackMetadata;
+import vn.svframe.svframelib.damage.mitigation.MitigationType;
+
+@Deprecated
+public class PlayerParryEvent extends DamageMitigationEvent {
+    public PlayerParryEvent(MMOPlayerData player, AttackMetadata attack, MitigationType type) { super(player, type, attack); }
+}

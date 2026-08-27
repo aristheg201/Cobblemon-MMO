@@ -11,6 +11,7 @@ import java.util.function.Function;
 
 /** Platform-neutral configuration contract retaining the MythicLib 1.7.1 helpers. */
 public interface ConfigObject {
+    Object get(String key);
     String getString(String key);
     String getString(String key, String fallback);
     double getDouble(String key);

@@ -12,6 +12,7 @@ public class MapConfigObject implements ConfigObject {
     public MapConfigObject(Map<String,?> values){this(null,values);}
     public MapConfigObject(String key,Map<String,?> values){this.key=key;this.values=new LinkedHashMap<>();if(values!=null)values.forEach((k,v)->this.values.put(k,v));}
     protected Object value(String key){return values.get(key);}
+    @Override public Object get(String key){return value(key);}
     @Override public String getString(String key){Object v=value(key);if(v==null)throw new MissingArgumentException(key);return String.valueOf(v);}
     @Override public String getString(String key,String fallback){Object v=value(key);return v==null?fallback:String.valueOf(v);}
     @Override public double getDouble(String key){Object v=value(key);if(v==null)throw new MissingArgumentException(key);return asDouble(v);}
