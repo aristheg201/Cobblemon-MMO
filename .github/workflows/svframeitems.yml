@@ -5,7 +5,6 @@ on:
     branches: [svframeitems-fabric-1.21.1]
     paths:
       - '.github/workflows/svframeitems.yml'
-      - '.svframeitems-bootstrap/**'
       - 'SVFrameItems/**'
   workflow_dispatch:
 
@@ -30,19 +29,9 @@ jobs:
           LIB_SHA="$(git rev-parse FETCH_HEAD)"
           rm -rf SVFrameLib
           git checkout FETCH_HEAD -- SVFrameLib
+          git reset -- SVFrameLib
           echo "SVFRAMELIB_SHA=$LIB_SHA" >> "$GITHUB_ENV"
           echo "Using SVFrameLib $LIB_SHA"
-
-      - name: Expand native SVFrameItems source
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -d .svframeitems-bootstrap
-          cat .svframeitems-bootstrap/part-* | base64 --decode > /tmp/svframeitems.tar.gz
-          echo '3cf63685770edbad1ce09d840c1c2131a7b5ff311b35c8af8a8ff74ee54e89c2  /tmp/svframeitems.tar.gz' | sha256sum -c -
-          tar -tzf /tmp/svframeitems.tar.gz >/dev/null
-          tar -xzf /tmp/svframeitems.tar.gz -C .
-          test -f SVFrameItems/src/main/java/vn/svframe/svframeitems/SVFrameItems.java
 
       - uses: actions/setup-java@v5
         with:
@@ -58,16 +47,18 @@ jobs:
         run: |
           set -euo pipefail
           SRC=SVFrameItems/src/main
+          test ! -d .svframeitems-bootstrap
           grep -q '"id": "svframeitems"' "$SRC/resources/fabric.mod.json"
           grep -q '"fabricloader": ">=0.18.4"' "$SRC/resources/fabric.mod.json"
           grep -q '"minecraft": "~1.21.1"' "$SRC/resources/fabric.mod.json"
           grep -q '"svframelib": ">=1.7.1-fabric"' "$SRC/resources/fabric.mod.json"
           if find "$SRC/java" -type f -name '*.java' ! -path '*/vn/svframe/svframeitems/*' | grep -q .; then exit 1; fi
-          if grep -RIn --binary-files=without-match -Ei 'net[.]Indyuce|io[.]lumine|org[.]bukkit|io[.]papermc|mythicmobs|mmoitems|mmocore|mythiclib|spigot|placeholderapi|worldguard|citizens|vault' "$SRC" --include='*.java' --include='*.json' --include='*.yml'; then exit 1; fi
+          if grep -RIn --binary-files=without-match -Ei 'net[.]Indyuce|io[.]lumine|org[.]bukkit|io[.]papermc|mythicmobs|mmoitems|mmocore|mythiclib|spigot|placeholderapi|worldguard|citizens|vault|cobblemon' "$SRC" --include='*.java' --include='*.json' --include='*.yml'; then exit 1; fi
           for file in \
             item/ItemCodec.java \
             item/ItemGenerator.java \
             runtime/EquipmentRuntime.java \
+            runtime/EquipmentModifierService.java \
             api/SVFrameItemsApi.java \
             item/UpgradeService.java \
             item/SocketService.java \
@@ -75,6 +66,8 @@ jobs:
             item/RecipeService.java; do
             test -f "$SRC/java/vn/svframe/svframeitems/$file"
           done
+          tracked="$(git ls-files SVFrameItems/.gradle SVFrameItems/build SVFrameItems/run SVFrameItems/build-native.log || true)"
+          test -z "$tracked"
 
       - name: Build dedicated SVFrameLib
         shell: bash
@@ -95,8 +88,16 @@ jobs:
         run: |
           set -euo pipefail
           RESULTS=SVFrameItems/build/test-results/test
-          test -f "$RESULTS/TEST-vn.svframe.svframeitems.ModelRuntimeTest.xml"
-          test -f "$RESULTS/TEST-vn.svframe.svframeitems.DefinitionParserTest.xml"
+          for suite in \
+            DefinitionParserTest \
+            ModelRuntimeTest \
+            RegistryReloadTest \
+            GenerationPersistenceTest \
+            RecipeRuntimeTest \
+            EquipmentModifierLifecycleTest \
+            AbilityRuntimeTest; do
+            test -f "$RESULTS/TEST-vn.svframe.svframeitems.${suite}.xml"
+          done
           ! grep -R -E 'failures="[1-9]|errors="[1-9]' "$RESULTS" --include='TEST-*.xml'
 
       - name: Native core smoke
@@ -116,7 +117,7 @@ jobs:
           jar tf "$JAR" > /tmp/svframeitems-entries.txt
           foreign="$(grep -E '^vn/svframe/.+[.]class$' /tmp/svframeitems-entries.txt | grep -v '^vn/svframe/svframeitems/' || true)"
           test -z "$foreign"
-          legacy="$(grep -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' /tmp/svframeitems-entries.txt || true)"
+          legacy="$(grep -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard|cobblemon' /tmp/svframeitems-entries.txt || true)"
           test -z "$legacy"
 
       - name: Dedicated Fabric combined boot
@@ -144,6 +145,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          rm -rf SVFrameItems/validated SVFrameItems/dist
           mkdir -p SVFrameItems/validated SVFrameItems/dist
           JAR="$(find SVFrameItems/build/libs -maxdepth 1 -type f -name 'SVFrameItems-*.jar' ! -name '*sources*' | head -1)"
           cp "$JAR" SVFrameItems/validated/SVFrameItems-0.1.0-fabric.jar
@@ -157,10 +159,16 @@ jobs:
 
           git config user.name 'SVFrame Build'
           git config user.email 'actions@users.noreply.github.com'
-          git add -A SVFrameItems
-          git rm -rf .svframeitems-bootstrap
+          git add -f SVFrameItems/validated SVFrameItems/dist
           if ! git diff --cached --quiet; then
-            git commit -m 'SVFrameItems: bootstrap native item engine [skip ci]'
+            git fetch --no-tags --depth=1 origin svframeitems-fabric-1.21.1
+            remote_sha="$(git rev-parse FETCH_HEAD)"
+            current_sha="$(git rev-parse HEAD)"
+            if [ "$remote_sha" != "$current_sha" ]; then
+              echo "SVFrameItems branch moved during validation: remote=$remote_sha current=$current_sha" >&2
+              exit 1
+            fi
+            git commit -m 'SVFrameItems: refresh validated native distribution [skip ci]'
             git push origin HEAD:svframeitems-fabric-1.21.1
           fi
 
