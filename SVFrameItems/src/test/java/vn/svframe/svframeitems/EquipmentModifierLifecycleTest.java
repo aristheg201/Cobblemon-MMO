@@ -6,6 +6,7 @@ import vn.svframe.svframeitems.item.*;
 import vn.svframe.svframeitems.model.*;
 import vn.svframe.svframeitems.registry.SVFrameItemsRegistry;
 import vn.svframe.svframeitems.runtime.EquipmentModifierService;
+import vn.svframe.svframeitems.runtime.EquipmentTransitionPlanner;
 
 import java.util.*;
 
@@ -29,6 +30,18 @@ class EquipmentModifierLifecycleTest {
         service.replace(player,List.of(new EquipmentModifierService.Equipped(blade,NativeStatEngine.EquipmentSlot.MAIN_HAND)));
         assertEquals(5d,engine.finalValue(player,"ATTACK_DAMAGE",NativeStatEngine.EquipmentSlot.MAIN_HAND),1e-9);assertEquals(0d,engine.finalValue(player,"MAX_HEALTH",NativeStatEngine.EquipmentSlot.MAIN_HAND),1e-9);assertEquals(1,service.activeModifierCount(player));
         service.clear(player);assertEquals(0d,engine.finalValue(player,"ATTACK_DAMAGE",NativeStatEngine.EquipmentSlot.MAIN_HAND),1e-9);
+    }
+
+    @Test void lifecyclePlannerTreatsSlotMovesAsUnequipThenEquipButStateRefreshAsStable(){
+        UUID id=UUID.randomUUID();
+        var main=new EquipmentTransitionPlanner.Location("vanilla:main_hand",NativeStatEngine.EquipmentSlot.MAIN_HAND);
+        var off=new EquipmentTransitionPlanner.Location("vanilla:off_hand",NativeStatEngine.EquipmentSlot.OFF_HAND);
+        var stable=EquipmentTransitionPlanner.plan(Map.of(id,main),Map.of(id,main));
+        assertTrue(stable.unequip().isEmpty());assertTrue(stable.equip().isEmpty());
+        var moved=EquipmentTransitionPlanner.plan(Map.of(id,main),Map.of(id,off));
+        assertEquals(Set.of(id),moved.unequip());assertEquals(Set.of(id),moved.equip());
+        var removed=EquipmentTransitionPlanner.plan(Map.of(id,main),Map.of());
+        assertEquals(Set.of(id),removed.unequip());assertTrue(removed.equip().isEmpty());
     }
     private static ItemStat stat(String id,double value){return new ItemStat(id,value,NativeStatEngine.ModifierType.FLAT);}
     private static ItemInstance item(String id,String type,ItemStat stat){return new ItemInstance(UUID.randomUUID(),id,type,"common",1,0,1,1,0,List.of(stat),List.of());}
