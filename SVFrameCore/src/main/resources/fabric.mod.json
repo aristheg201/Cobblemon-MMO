@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "svframecore",
+  "version": "${version}",
+  "name": "SVFrameCore",
+  "description": "Native Fabric RPG core for SVFrame on Minecraft 1.21.1.",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["vn.svframe.svframecore.fabric.SVFrameCoreFabricMod"]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "svframelib": ">=1.7.1-fabric"
+  }
+}
