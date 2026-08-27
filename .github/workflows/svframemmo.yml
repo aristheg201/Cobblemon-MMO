@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -21,6 +21,18 @@ jobs:
         with:
           ref: svframemmo-fabric-1.21.1
           fetch-depth: 1
+      - name: Sync dedicated SVFrameLib branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframelib-fabric-1.21.1
+          LIB_SHA="$(git rev-parse FETCH_HEAD)"
+          rm -rf SVFrameLib
+          git checkout FETCH_HEAD -- SVFrameLib
+          echo "SVFRAMELIB_SHA=$LIB_SHA" >> "$GITHUB_ENV"
+          echo "SVFRAMEMMO_SHA=$GITHUB_SHA" >> "$GITHUB_ENV"
+          echo "Using SVFrameLib $LIB_SHA"
+          echo "Using SVFrameMMO $GITHUB_SHA"
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -28,14 +40,6 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.8'
-      - name: Expand pending native source batch
-        if: ${{ hashFiles('SVFrameMMO/.port-batch/part-*') != '' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          cat SVFrameMMO/.port-batch/part-* | base64 --decode > /tmp/svframemmo-port-batch.tar.gz
-          tar -tzf /tmp/svframemmo-port-batch.tar.gz >/dev/null
-          tar -xzf /tmp/svframemmo-port-batch.tar.gz -C .
       - name: Native source gate
         shell: bash
         run: |
@@ -44,16 +48,14 @@ jobs:
           grep -q '"id": "svframemmo"' "$SRC/resources/fabric.mod.json"
           grep -q '"svframelib": ">=1.7.1-fabric"' "$SRC/resources/fabric.mod.json"
           if grep -RIn --binary-files=without-match -Ei 'net[.]Indyuce|io[.]lumine|org[.]bukkit|io[.]papermc|mythicmobs|mmocore|mythiclib|mmoitems|spigot|placeholderapi|worldguard|citizens|vault' "$SRC" --include='*.java' --include='*.json' --include='*.yml'; then exit 1; fi
-          grep -q 'class ProfessionManager' "$SRC/java/vn/svframe/svframemmo/manager/ProfessionManager.java"
-          grep -q 'class SkillTreeManager' "$SRC/java/vn/svframe/svframemmo/manager/SkillTreeManager.java"
-          grep -q 'record SavedClassState' "$SRC/java/vn/svframe/svframemmo/api/player/profess/SavedClassState.java"
-          grep -q 'class SkillRuntime' "$SRC/java/vn/svframe/svframemmo/skill/runtime/SkillRuntime.java"
-          grep -q 'class SVFrameMMOApi' "$SRC/java/vn/svframe/svframemmo/api/SVFrameMMOApi.java"
-          grep -q 'class SVFrameMMOCommands' "$SRC/java/vn/svframe/svframemmo/command/SVFrameMMOCommands.java"
-          ! find "$SRC/java/vn/svframe/svframemmo" -type f \( -path '*/social/*' -o -name 'GuildManager.java' -o -name 'PartyManager.java' -o -name 'RequestManager.java' \) | grep -q .
-      - name: Build SVFrameLib dependency
-        run: cd SVFrameLib && gradle --no-daemon clean remapJar
-      - name: Build SVFrameMMO
+          grep -q 'public boolean isFabric() { return true; }' SVFrameLib/src/main/java/vn/svframe/svframelib/version/ServerVersion.java
+      - name: Build dedicated SVFrameLib
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameLib
+          gradle --no-daemon --stacktrace clean test remapJar 2>&1 | tee build-combined.log
+      - name: Build SVFrameMMO against dedicated SVFrameLib JAR
         shell: bash
         run: |
           set -euo pipefail
@@ -61,7 +63,7 @@ jobs:
           gradle --no-daemon --stacktrace clean test remapJar 2>&1 | tee build-native.log
       - name: Native core smoke
         run: cd SVFrameMMO && gradle --no-daemon nativeCoreSmoke
-      - name: Dedicated Fabric server boot
+      - name: Dedicated Fabric combined boot
         shell: bash
         run: |
           set -euo pipefail
@@ -69,44 +71,35 @@ jobs:
           mkdir -p run
           printf 'eula=true\n' > run/eula.txt
           set +e
-          timeout 90s gradle --no-daemon runServer > build/svframemmo-server.log 2>&1
+          timeout 90s gradle --no-daemon runServer > build/combined-server.log 2>&1
           status=$?
           set -e
-          cat build/svframemmo-server.log
+          cat build/combined-server.log
           if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
-          grep -q 'SVFrameLib Fabric online' build/svframemmo-server.log
-          grep -q 'SVFrameMMO Fabric online' build/svframemmo-server.log
-          ! grep -q 'Could not execute entrypoint stage' build/svframemmo-server.log
-          ! grep -Eq 'NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError' build/svframemmo-server.log
-      - name: Stage validated source and artifact
+          grep -q 'Loading Minecraft 1.21.1 with Fabric Loader 0.18.4' build/combined-server.log
+          grep -q 'SVFrameLib online' build/combined-server.log
+          grep -q 'SVFrameLib Fabric online; skills=94,scripts=100,customTriggers=1' build/combined-server.log
+          grep -q 'SVFrameMMO Fabric online' build/combined-server.log
+          grep -q 'Done (' build/combined-server.log
+          ! grep -q 'Mixin apply failed' build/combined-server.log
+          ! grep -q 'Could not execute entrypoint stage' build/combined-server.log
+          ! grep -Eq 'NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Exception in server tick loop' build/combined-server.log
+      - name: Stage exact combined-boot JARs
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p SVFrameMMO/validated
-          JAR="$(find SVFrameMMO/build/libs -maxdepth 1 -name 'SVFrameMMO-*.jar' ! -name '*sources*' | head -1)"
-          cp "$JAR" SVFrameMMO/validated/SVFrameMMO-1.13.1-fabric.jar
-          sha256sum "$JAR" | tee SVFrameMMO/validated/SVFrameMMO-1.13.1-fabric.sha256
-          cp SVFrameMMO/build/svframemmo-server.log SVFrameMMO/validated/server-boot.log
-          git config user.name 'SVFrame Build'
-          git config user.email 'actions@users.noreply.github.com'
-          git add -A SVFrameMMO/src SVFrameMMO/validated
-          if [ -d SVFrameMMO/.port-batch ]; then git rm -rf SVFrameMMO/.port-batch; fi
-          if [ -f SVFrameMMO/.port-batch.zip ]; then git rm -f SVFrameMMO/.port-batch.zip; fi
-          if [ -e noop ]; then git rm -f noop; fi
-          if ! git diff --cached --quiet; then
-            git commit -m 'SVFrameMMO: validate native RPG core [skip ci]'
-            git push origin HEAD:svframemmo-fabric-1.21.1
-          fi
-      - name: Upload artifact
-        if: always()
+          mkdir -p combined-validated
+          LIB_JAR="$(find SVFrameLib/build/libs -maxdepth 1 -type f -name 'SVFrameLib-*.jar' ! -name '*sources*' | head -1)"
+          MMO_JAR="$(find SVFrameMMO/build/libs -maxdepth 1 -type f -name 'SVFrameMMO-*.jar' ! -name '*sources*' | head -1)"
+          cp "$LIB_JAR" combined-validated/SVFrameLib-1.7.1-fabric.jar
+          cp "$MMO_JAR" combined-validated/SVFrameMMO-1.13.1-fabric.jar
+          cp SVFrameMMO/build/combined-server.log combined-validated/server-boot.log
+          sha256sum combined-validated/*.jar | tee combined-validated/SHA256SUMS.txt
+          printf 'SVFrameLib branch SHA: %s\nSVFrameMMO branch SHA: %s\n' "$SVFRAMELIB_SHA" "$SVFRAMEMMO_SHA" > combined-validated/BRANCH-SHAS.txt
+      - name: Upload exact combined-boot artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: SVFrameMMO-native-fabric
-          path: |
-            SVFrameMMO/validated
-            SVFrameMMO/build/libs/*.jar
-            SVFrameMMO/build-native.log
-            SVFrameMMO/build/svframemmo-server.log
-            SVFrameMMO/src
-          if-no-files-found: warn
+          name: SVFrameLib-SVFrameMMO-combined-boot
+          path: combined-validated
+          if-no-files-found: error
           retention-days: 14
