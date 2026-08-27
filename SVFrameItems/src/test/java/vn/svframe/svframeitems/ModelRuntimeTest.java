@@ -3,6 +3,7 @@ package vn.svframe.svframeitems;
 import org.junit.jupiter.api.Test;
 import vn.svframe.svframelib.fabric.runtime.NativeStatEngine;
 import vn.svframe.svframeitems.model.*;
+import vn.svframe.svframeitems.item.MinecraftItemCostPlanner;
 
 import java.util.*;
 import java.util.SplittableRandom;
@@ -36,6 +37,19 @@ class ModelRuntimeTest {
         assertEquals("alpha",upgraded.metadata().get("integration:owner"));assertTrue(upgraded.stateRevision()>item.stateRevision());
         assertEquals("beta",upgraded.withMetadata("integration:owner","beta").metadata().get("integration:owner"));
         assertFalse(upgraded.withMetadata("integration:owner",null).metadata().containsKey("integration:owner"));
+    }
+
+    @Test void upgradeCostPlannerAggregatesSameProviderWithoutOverReservation(){
+        UpgradeTemplate.Cost first=new UpgradeTemplate.Cost("minecraft_item","minecraft:diamond",2,0);
+        UpgradeTemplate.Cost second=new UpgradeTemplate.Cost("minecraft_item","minecraft:diamond",2,0);
+        var costs=List.of(first,second);
+        assertTrue(MinecraftItemCostPlanner.plan(List.of(new MinecraftItemCostPlanner.StackView(0,"minecraft:diamond",3,false)),costs,1).isEmpty());
+        var plan=MinecraftItemCostPlanner.plan(List.of(
+                new MinecraftItemCostPlanner.StackView(0,"minecraft:diamond",3,false),
+                new MinecraftItemCostPlanner.StackView(1,"minecraft:diamond",2,false),
+                new MinecraftItemCostPlanner.StackView(2,"minecraft:diamond",64,true)),costs,1).orElseThrow();
+        assertEquals(4,plan.stream().mapToInt(MinecraftItemCostPlanner.Consumption::count).sum());
+        assertTrue(plan.stream().noneMatch(c->c.slot()==2));
     }
     @Test void lootLevelContextClampsRatherThanRandomizes(){
         LootTableDefinition.Entry entry=new LootTableDefinition.Entry("blade",1,1,1,1,5,20);
