@@ -10,8 +10,7 @@ update_checker = java / 'vn/svframe/svframelib/version/UpdateChecker.java'
 if update_checker.exists():
     update_checker.unlink()
 
-# These were legacy platform-named compatibility methods. Rename them to native SVFrame/Fabric API names
-# after the deterministic text migration, before Java compilation.
+# Normalize legacy platform-named public methods to native SVFrame/Fabric names.
 renames = {
     'isserver-plugin platform': 'isFabric',
     'getCraftserver-plugin platformVersion': 'getServerImplementationVersion',
@@ -25,3 +24,15 @@ for path in java.rglob('*.java'):
         changed = changed.replace(old, new)
     if changed != text:
         path.write_text(changed, encoding='utf-8')
+
+# YamlLite moved out of the old shared audit package into the native config package.
+for name in ('YamlCorpusSmoke.java', 'YamlSkillCountSmoke.java'):
+    path = java / 'vn/svframe/svframelib/audit' / name
+    if not path.exists():
+        continue
+    text = path.read_text(encoding='utf-8')
+    imp = 'import vn.svframe.svframelib.config.YamlLite;\n'
+    if imp not in text:
+        package_end = text.find('\n', text.find('package '))
+        text = text[:package_end + 1] + imp + text[package_end + 1:]
+        path.write_text(text, encoding='utf-8')
