@@ -1,0 +1,15 @@
+config-version: 10
+player_resource_tick_period: 20
+combat-log:
+  timer: 10
+default-playerdata:
+  level: 1
+  class-points: 0
+  skill-points: 0
+  skill-realloc-points: 0
+  attribute-points: 0
+  attribute-realloc-points: 0
+  health: 1000
+  mana: 1000
+  stellium: 1000
+  stamina: 1000
