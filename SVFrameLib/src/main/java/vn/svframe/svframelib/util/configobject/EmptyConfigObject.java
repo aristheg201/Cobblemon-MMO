@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public final class EmptyConfigObject implements ConfigObject {
+    @Override public Object get(String key){return null;}
     @Override public String getString(String key){throw new MissingArgumentException(key);} @Override public String getString(String key,String fallback){return fallback;}
     @Override public double getDouble(String key){throw new MissingArgumentException(key);} @Override public double getDouble(String key,double fallback){return fallback;}
     @Override public int getInt(String key){throw new MissingArgumentException(key);} @Override public int getInt(String key,int fallback){return fallback;}
