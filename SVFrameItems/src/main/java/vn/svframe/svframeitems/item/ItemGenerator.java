@@ -10,7 +10,6 @@ import vn.svframe.svframeitems.registry.SVFrameItemsRegistry;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.random.RandomGenerator;
 
 public final class ItemGenerator {
     public record GenerationContext(int level, long seed) {
@@ -60,9 +59,24 @@ public final class ItemGenerator {
         stack.set(DataComponentTypes.MAX_STACK_SIZE, type.maxStackSize());
         if (stack.getCount() > type.maxStackSize()) stack.setCount(type.maxStackSize());
         ItemCodec.write(stack, instance);
-        formatter.apply(stack, definition, instance, rarity);
+        formatter.apply(stack, definition, instance, rarity, effectiveStats(instance));
         for (Mechanic mechanic : mechanics) mechanic.apply(stack, definition, instance, phase);
         return stack;
+    }
+
+    private List<ItemStat> effectiveStats(ItemInstance instance) {
+        return instance.effectiveStats(upgradeMultiplier(instance), this::upgradeMultiplier);
+    }
+
+    private double upgradeMultiplier(ItemInstance instance) {
+        ItemDefinition definition = registry.item(instance.definitionId());
+        if (definition == null || definition.upgradeTemplateId() == null) return 0d;
+        UpgradeTemplate template = registry.upgrade(definition.upgradeTemplateId());
+        return template == null ? 0d : template.statMultiplierPerLevel();
+    }
+
+    private double upgradeMultiplier(EmbeddedGem gem) {
+        return upgradeMultiplier(gem.toItemInstance());
     }
 
     private ItemDefinition requireDefinition(String id) { ItemDefinition definition=registry.item(id); if(definition==null) throw new IllegalArgumentException("Unknown SVFrame item " + id); return definition; }
