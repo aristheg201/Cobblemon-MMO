@@ -1,5 +1,6 @@
 package vn.svframe.svframecore;
 
+import vn.svframe.svframecore.player.DefaultPlayerData;
 import vn.svframe.svframelib.config.YamlLite;
 
 import java.io.IOException;
@@ -8,14 +9,15 @@ import java.nio.file.Path;
 import java.util.Map;
 
 /** Native config slice for subsystems already ported. */
-public record SVFrameCoreConfig(long playerResourceTickPeriod, long combatLogTicks) {
+public record SVFrameCoreConfig(long playerResourceTickPeriod, long combatLogTicks, DefaultPlayerData defaultPlayerData) {
     public static SVFrameCoreConfig load(Path file) throws IOException {
-        if (!Files.exists(file)) return new SVFrameCoreConfig(20L, 200L);
+        if (!Files.exists(file)) return new SVFrameCoreConfig(20L, 200L, DefaultPlayerData.DEFAULT);
         Map<String, Object> root = YamlLite.map(YamlLite.parse(file));
         long resourcePeriod = Math.max(1L, number(root.get("player_resource_tick_period"), 20L));
         Map<String, Object> combat = map(root.get("combat-log"));
         long combatSeconds = Math.max(1L, number(combat.get("timer"), 10L));
-        return new SVFrameCoreConfig(resourcePeriod, combatSeconds * 20L);
+        DefaultPlayerData defaults = DefaultPlayerData.from(map(root.get("default-playerdata")));
+        return new SVFrameCoreConfig(resourcePeriod, combatSeconds * 20L, defaults);
     }
 
     private static long number(Object value, long fallback) {
