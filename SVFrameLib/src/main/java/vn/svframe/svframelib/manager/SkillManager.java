@@ -69,48 +69,54 @@ public class SkillManager extends Module implements MMOManager {
 
     public SkillHandler<?> loadSkillHandler(Object input) { return loadSkillHandler(UNIDENTIFIED_SCRIPT_ID, input); }
 
-    public SkillHandler<?> loadSkillHandler(String id, Object input) {
+    public SkillHandler<?> loadSkillHandler(String fallbackSkillHandlerId, Object input) {
         Objects.requireNonNull(input, "Input cannot be null");
-        if (input instanceof SkillHandler<?> handler) return handler;
-        if (input instanceof Script script) return new MythicLibSkillHandler(script);
-        if (input instanceof List<?> list) return new MythicLibSkillHandler(loadScript(id, list));
-        if (input instanceof ConfigObject config) {
-            String source = config.getString("source", "");
-            if (!source.isBlank()) return sourceHandler(config, source);
-            String type = config.getString("type", id);
-            Class<? extends SkillHandler<?>> builtin = builtInSkillHandlerTypes.get(enumName(type));
-            if (builtin != null) return instantiateBuiltin(builtin, config);
-            Script existingScript = scripts.get(norm(type));
-            if (existingScript != null) return new MythicLibSkillHandler(existingScript);
-            return new ScriptSkillHandler(type, config);
-        }
-        if (input instanceof Map<?, ?> raw) return loadSkillHandler(id, mapObject(id, raw));
+
         if (input instanceof String value) {
             String text = value.trim();
             int colon = text.indexOf(':');
-            if (colon > 0) {
-                SkillHandlerSource source = skillHandlerSources.get(norm(text.substring(0, colon)));
-                if (source != null)
-                    return source.getConstructor().apply(new MapConfigObject(id, Map.of("source", text)), text.substring(colon + 1));
+            if (colon >= 0) {
+                String sourceKey = text.substring(0, colon);
+                SkillHandlerSource source = skillHandlerSources.get(norm(sourceKey));
+                if (source == null) throw new IllegalArgumentException("Could not find skill source '" + sourceKey + "'");
+                String internal = text.substring(colon + 1);
+                return source.getConstructor().apply(new MapConfigObject(UNIDENTIFIED_SCRIPT_ID, Map.of("source", text)), internal);
             }
-            SkillHandler<?> registered = handlers.get(norm(text));
-            if (registered != null) return registered;
-            Script script = scripts.get(norm(text));
-            if (script != null) return new MythicLibSkillHandler(script);
-            Class<? extends SkillHandler<?>> builtin = builtInSkillHandlerTypes.get(enumName(text));
-            if (builtin != null) return instantiateBuiltin(builtin, new MapConfigObject(id, Map.of("type", text)));
-            return new ScriptSkillHandler(text);
+            return getHandlerOrThrow(enumName(text));
         }
-        throw new IllegalArgumentException("Unsupported skill handler input type " + input.getClass().getSimpleName());
+
+        if (input instanceof ConfigObject config) {
+            String sourceText = config.contains("source") ? config.getString("source") : null;
+            if (sourceText == null || sourceText.isBlank()) {
+                SkillHandler<?> legacy = findLegacySkillSource(config);
+                if (legacy != null) return legacy;
+                throw new IllegalArgumentException("Could not find skill source");
+            }
+            return sourceHandler(config, sourceText);
+        }
+
+        if (input instanceof Map<?, ?> raw) return loadSkillHandler(fallbackSkillHandlerId, mapObject(fallbackSkillHandlerId, raw));
+        if (input instanceof List<?> list) return new MythicLibSkillHandler(loadScript(fallbackSkillHandlerId, list));
+
+        throw new IllegalArgumentException("Provide either a string or configuration section instead of " + input.getClass().getSimpleName());
+    }
+
+    private SkillHandler<?> findLegacySkillSource(ConfigObject config) {
+        for (SkillHandlerSource source : skillHandlerSources.values())
+            for (String legacyPath : source.getLegacyInternalSkillPaths())
+                if (config.contains(legacyPath)) {
+                    String skillId = config.getString(legacyPath);
+                    if (skillId != null) return source.getConstructor().apply(config, skillId);
+                }
+        return null;
     }
 
     private SkillHandler<?> sourceHandler(ConfigObject config, String sourceText) {
         int colon = sourceText.indexOf(':');
-        if (colon <= 0 || colon == sourceText.length() - 1)
-            throw new IllegalArgumentException("Source must be in the format 'source:InternalSkillName'");
-        String key = norm(sourceText.substring(0, colon));
-        SkillHandlerSource source = skillHandlerSources.get(key);
-        if (source == null) throw new IllegalArgumentException("Could not find skill handler source '" + key + "'");
+        if (colon < 0) throw new IllegalArgumentException("Source must be in the format 'source:InternalSkillName'");
+        String sourceKey = sourceText.substring(0, colon);
+        SkillHandlerSource source = skillHandlerSources.get(norm(sourceKey));
+        if (source == null) throw new IllegalArgumentException("Could not find skill source '" + sourceKey + "'");
         return source.getConstructor().apply(config, sourceText.substring(colon + 1));
     }
 
