@@ -10,6 +10,20 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class SVFrameItemsRegistry {
+    public record Snapshot(
+            Map<String,ItemType> types, Map<String,ItemRarity> rarities, Map<String,ItemDefinition> items,
+            Map<String,ItemSetDefinition> sets, Map<String,UpgradeTemplate> upgrades,
+            Map<String,RecipeDefinition> recipes, Map<String,LootTableDefinition> lootTables,
+            Map<String,ItemType> externalTypes, Map<String,ItemRarity> externalRarities, Map<String,ItemDefinition> externalItems,
+            Map<String,ItemSetDefinition> externalSets, Map<String,UpgradeTemplate> externalUpgrades,
+            Map<String,RecipeDefinition> externalRecipes, Map<String,LootTableDefinition> externalLootTables, long revision) {
+        public Snapshot {
+            types=Map.copyOf(types); rarities=Map.copyOf(rarities); items=Map.copyOf(items); sets=Map.copyOf(sets);
+            upgrades=Map.copyOf(upgrades); recipes=Map.copyOf(recipes); lootTables=Map.copyOf(lootTables);
+            externalTypes=Map.copyOf(externalTypes);externalRarities=Map.copyOf(externalRarities);externalItems=Map.copyOf(externalItems);
+            externalSets=Map.copyOf(externalSets);externalUpgrades=Map.copyOf(externalUpgrades);externalRecipes=Map.copyOf(externalRecipes);externalLootTables=Map.copyOf(externalLootTables);
+        }
+    }
     private volatile Map<String,ItemType> types = Map.of();
     private volatile Map<String,ItemRarity> rarities = Map.of();
     private volatile Map<String,ItemDefinition> items = Map.of();
@@ -54,6 +68,14 @@ public final class SVFrameItemsRegistry {
     public Collection<RecipeDefinition> recipes() { return recipes.values(); }
     public Collection<LootTableDefinition> lootTables() { return lootTables.values(); }
     public long revision(){return revision;}
+    public synchronized Snapshot snapshot(){return new Snapshot(types,rarities,items,sets,upgrades,recipes,lootTables,externalTypes,externalRarities,externalItems,externalSets,externalUpgrades,externalRecipes,externalLootTables,revision);}
+    public synchronized void restore(Snapshot snapshot){
+        Objects.requireNonNull(snapshot,"snapshot");
+        types=snapshot.types();rarities=snapshot.rarities();items=snapshot.items();sets=snapshot.sets();upgrades=snapshot.upgrades();recipes=snapshot.recipes();lootTables=snapshot.lootTables();
+        externalTypes.clear();externalTypes.putAll(snapshot.externalTypes());externalRarities.clear();externalRarities.putAll(snapshot.externalRarities());externalItems.clear();externalItems.putAll(snapshot.externalItems());
+        externalSets.clear();externalSets.putAll(snapshot.externalSets());externalUpgrades.clear();externalUpgrades.putAll(snapshot.externalUpgrades());externalRecipes.clear();externalRecipes.putAll(snapshot.externalRecipes());externalLootTables.clear();externalLootTables.putAll(snapshot.externalLootTables());
+        revision=snapshot.revision();
+    }
     public String summary() { return "types="+types.size()+",rarities="+rarities.size()+",items="+items.size()+",sets="+sets.size()+",upgrades="+upgrades.size()+",recipes="+recipes.size()+",lootTables="+lootTables.size(); }
 
     public synchronized void registerExternal(ItemType value) { Objects.requireNonNull(value); externalTypes.put(value.id(), value); types=with(types,value.id(),value); revision++; }
