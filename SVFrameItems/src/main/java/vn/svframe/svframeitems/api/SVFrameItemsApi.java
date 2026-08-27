@@ -28,6 +28,7 @@ public final class SVFrameItemsApi {
     public static RecipeService.Result craft(ServerPlayerEntity player,String recipeId){return SVFrameItems.recipes().craft(player,recipeId);}
     public static boolean canEquip(ItemStack stack,NativeStatEngine.EquipmentSlot slot){Optional<ItemInstance> item=identify(stack);if(item.isEmpty())return false;ItemDefinition definition=registry().item(item.get().definitionId());if(definition==null)return false;ItemType type=registry().type(definition.typeId());return type!=null&&type.canEquip(slot);}
     public static List<ItemStat> effectiveStats(ItemStack stack){return identify(stack).map(item->item.effectiveStats(SVFrameItems.upgrades().statMultiplier(item),SVFrameItems.upgrades()::statMultiplier)).orElse(List.of());}
+    public static EquipmentRuntime.Evaluation evaluateEquipment(ServerPlayerEntity player){return SVFrameItems.equipment().evaluate(player);}
     public static void refreshEquipment(ServerPlayerEntity player){SVFrameItems.equipment().refresh(player);}
     public static void rebindEquipment(ServerPlayerEntity player){SVFrameItems.equipment().refresh(player,true);}
     public static AutoCloseable registerEquipmentProvider(EquipmentProvider provider){return EquipmentProviderRegistry.register(provider);}
