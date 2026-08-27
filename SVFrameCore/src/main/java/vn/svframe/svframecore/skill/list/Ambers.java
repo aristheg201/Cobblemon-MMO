@@ -50,8 +50,7 @@ public final class Ambers extends SkillHandler<SimpleSkillResult> {
 
         new ParabolicProjectile(world, source, amberLocation,
                 () -> SVFrameCoreFabricMod.schedule(0, new AmberPickup(data, world, amberLocation, percent)),
-                1,
-                point -> world.spawnParticles(ORANGE, point.x, point.y, point.z, 1, 0d, 0d, 0d, 0d));
+                1, ORANGE);
     }
 
     public void onPlayerAttack(PlayerAttackEvent event) {
