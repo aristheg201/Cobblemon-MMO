@@ -1,0 +1,26 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.8/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :
+Fabric Loom: 1.7.4
+:remapping 51 mods from modImplementation (java-api)
+
+> Task :clean
+
+> Task :compileJava
+Note: /home/runner/work/Cobblemon-MMO/Cobblemon-MMO/SVFrameMMO/src/main/java/vn/svframe/svframemmo/skill/SVFrameMMOSkillBootstrap.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :processResources
+> Task :classes
+> Task :jar
+> Task :compileTestJava NO-SOURCE
+> Task :processTestResources NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :test NO-SOURCE
+> Task :processIncludeJars
+> Task :remapJar
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_4-1787797446782.json
+
+BUILD SUCCESSFUL in 18s
+6 actionable tasks: 6 executed

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "svframemmo",
+  "version": "${version}",
+  "name": "SVFrameMMO",
+  "description": "Native Fabric RPG progression framework for SVFrame.",
+  "environment": "server",
+  "entrypoints": { "main": ["vn.svframe.svframemmo.SVFrameMMO"] },
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "svframelib": ">=1.7.1-fabric"
+  }
+}

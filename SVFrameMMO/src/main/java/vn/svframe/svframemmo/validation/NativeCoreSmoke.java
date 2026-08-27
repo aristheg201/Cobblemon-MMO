@@ -1,0 +1,1 @@
+package vn.svframe.svframemmo.validation;import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;public final class NativeCoreSmoke{public static void main(String[]a){if(PlayerResource.values().length!=4)throw new AssertionError();if(!PlayerResource.MANA.getMaxStat().equals("MAX_MANA"))throw new AssertionError();System.out.println("SVFRAMEMMO_NATIVE_CORE=PASS");}}

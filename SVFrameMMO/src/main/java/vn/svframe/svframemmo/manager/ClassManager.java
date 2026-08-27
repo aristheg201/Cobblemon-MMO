@@ -1,0 +1,7 @@
+package vn.svframe.svframemmo.manager;
+import vn.svframe.svframelib.config.YamlLite;import java.io.*;import java.nio.file.*;import java.util.*;
+public final class ClassManager { public record PlayerClass(String id,String name,int maxLevel,int order,Map<String,Object> raw){}
+ private final Map<String,PlayerClass> classes=new LinkedHashMap<>(); public void reload(Path dir)throws IOException{classes.clear();if(!Files.isDirectory(dir))return;try(var s=Files.walk(dir)){for(Path p:s.filter(Files::isRegularFile).filter(x->x.toString().endsWith(".yml")).sorted().toList()){Map<String,Object> raw=YamlLite.map(YamlLite.parse(p));String id=p.getFileName().toString().replaceFirst("[.]yml$","").toUpperCase(Locale.ROOT).replace('-','_');Map<String,Object> display=map(raw.get("display"));classes.put(id,new PlayerClass(id,String.valueOf(display.getOrDefault("name",id)),integer(raw.get("max-level"),100),integer(display.get("order"),0),Map.copyOf(raw)));}}}
+ public PlayerClass get(String id){return id==null?null:classes.get(id.toUpperCase(Locale.ROOT).replace('-','_'));} public Collection<PlayerClass> getAll(){return List.copyOf(classes.values());} public int size(){return classes.size();}
+ @SuppressWarnings("unchecked")private static Map<String,Object> map(Object v){return v instanceof Map<?,?> m?(Map<String,Object>)m:Map.of();} private static int integer(Object v,int f){try{return v instanceof Number n?n.intValue():v==null?f:Integer.parseInt(v.toString());}catch(Exception e){return f;}}
+}

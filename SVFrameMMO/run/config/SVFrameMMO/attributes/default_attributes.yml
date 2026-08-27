@@ -1,0 +1,47 @@
+#####################################
+# Default attributes
+#####################################
+
+# This defines the basic characteristics of attributes. You cannot edit the layout and visuals
+# of the attribute menu here! Please go to gui/attribute-view.yml to edit the GUI.
+#
+# When adding new attributes or new buffs to attributes, make sure to also
+# update the attribute menu in gui/attribute-view.yml otherwise they will not
+# be visible to players!
+#
+# Also note that you can add as many attributes as you want here. You can also
+# split use attributes into files and subfolders as long as they stay under the
+# SVFrameMMO/attributes folder.
+
+strength: # Attribute ID
+
+  # Attribute name
+  name: Strength
+
+  # Maximum amount of points players may spend in this attribute.
+  max-points: 40
+
+  # Buffs given every 1 attribute point spent
+  # in this specific attribute.
+  buff:
+    # +2% weapon damage every point spent.
+    # 'weapon_damage' is already a percent-based stat, so +2% will multiply your % buffs by 2, which is usually not what you want
+    weapon_damage: 2
+    # Max health is a flat stat, so using +2 will result in a flat +2 Max health increase.
+    # Using +2% will increase the player's max health by 2% of their base max health
+    max_health: 1%
+
+dexterity:
+  name: Dexterity
+  max-points: 40
+  buff:
+    physical_damage: 1.5 # Percent-based stat
+    projectile_damage: 1 # Percent-based stat
+    attack_speed: 0.5% # Flat stat
+
+intelligence:
+  name: Intelligence
+  max-points: 40
+  buff:
+    magic_damage: 2 # Percent-based stat
+    cooldown_reduction: 1 # Percent-based stat

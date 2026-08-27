@@ -1,0 +1,3 @@
+package vn.svframe.svframemmo.player;
+import vn.svframe.svframemmo.SVFrameMMO;import vn.svframe.svframemmo.api.player.PlayerData;import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
+public final class ResourceRegenRuntime {private long next; public void tick(long tick){int period=Math.max(1,SVFrameMMO.config().resourceTickPeriod());if(tick<next)return;next=tick+period;double mul=period/20d;for(PlayerData d:SVFrameMMO.playerData().all()){var p=d.getPlayer();if(p==null||p.isDead())continue;for(PlayerResource r:PlayerResource.values()){double max=r.getMax(d);double regen=d.getMMOPlayerData().getStatMap().getStat(r.getRegenStat())+d.getMMOPlayerData().getStatMap().getStat(r.getMaxRegenStat())/100d*max;if(regen!=0)r.regen(d,regen*mul);}}}}
