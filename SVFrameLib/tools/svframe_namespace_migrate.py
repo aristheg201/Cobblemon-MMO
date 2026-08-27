@@ -61,6 +61,12 @@ REPLACEMENTS += [
 ]
 
 def replace_text(text: str) -> str:
+    # Rename platform-specific API identifiers before generic brand scrubbing so
+    # Java identifiers stay syntactically valid and public names are Fabric-native.
+    text = text.replace('isPaper', 'isFabric')
+    text = text.replace('getCraftBukkitVersion', 'getLoaderPlatform')
+    text = text.replace('getBukkitVersion', 'getGameVersion')
+    text = text.replace('getLastBukkitOpened', 'getLastPlatformOpened')
     for old, new in REPLACEMENTS:
         text = text.replace(old, new)
     text = text.replace('PlaceholderAPI-backed', 'provider-registry-backed')
