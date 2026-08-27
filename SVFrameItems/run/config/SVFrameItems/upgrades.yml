@@ -1,0 +1,16 @@
+standard:
+  max-level: 10
+  base-success: 1.0
+  success-decay: 0.90
+  destroy-on-fail: false
+  stat-multiplier-per-level: 0.05
+  chances:
+    8: 0.60
+    9: 0.45
+    10: 0.30
+gem:
+  max-level: 5
+  base-success: 0.90
+  success-decay: 0.90
+  destroy-on-fail: false
+  stat-multiplier-per-level: 0.04

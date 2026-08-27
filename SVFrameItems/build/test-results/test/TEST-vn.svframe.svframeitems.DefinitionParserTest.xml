@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="vn.svframe.svframeitems.DefinitionParserTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-08-27T09:31:39" hostname="runnervm76f27" time="0.023">
+  <properties/>
+  <testcase name="parsesUsefulItemDefinitionWithoutLegacySchema()" classname="vn.svframe.svframeitems.DefinitionParserTest" time="0.023"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

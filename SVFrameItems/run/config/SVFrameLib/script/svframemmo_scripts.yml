@@ -1,0 +1,27 @@
+##############################################################################################################################
+#
+# Some scripts used in SVFrameMMO
+#
+##############################################################################################################################
+
+# Script ran when leveling up
+# Displays a helix of particles around the player
+# This is configured in SVFrameMMO/messages.yml > level-up.script
+svframemmo_level_up_effect:
+  mechanics:
+    - "helix{tick=svframemmo_level_up_effect_tick;radius=1;height=2}"
+
+svframemmo_level_up_effect_tick:
+  mechanics:
+    - "spawn_particle{particle=TOTEM}"
+
+
+# Script ran when unlocking a waypoint
+# This is configured in SVFrameMMO/messages.yml > waypoint.unlock.script
+svframemmo_waypoint_unlock_effect:
+  mechanics:
+    - "helix{tick=svframemmo_waypoint_unlock_effect_tick;radius=1;height=2}"
+
+svframemmo_waypoint_unlock_effect_tick:
+  mechanics:
+    - "spawn_particle{particle=PORTAL}"

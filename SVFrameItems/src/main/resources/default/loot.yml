@@ -1,0 +1,17 @@
+starter_drops:
+  rolls: 1
+  entries:
+    - item: trailblazer_blade
+      weight: 2
+      chance: 1.0
+      min-amount: 1
+      max-amount: 1
+      min-level: 1
+      max-level: 20
+    - item: ruby_gem
+      weight: 5
+      chance: 1.0
+      min-amount: 1
+      max-amount: 2
+      min-level: 1
+      max-level: 20

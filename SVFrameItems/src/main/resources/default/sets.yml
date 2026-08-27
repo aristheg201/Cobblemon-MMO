@@ -1,0 +1,7 @@
+trailblazer:
+  name: Trailblazer
+  pieces: [trailblazer_blade, trailblazer_helm]
+  bonuses:
+    2:
+      ATTACK_DAMAGE: 3
+      MAX_HEALTH: 10
