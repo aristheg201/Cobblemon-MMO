@@ -37,6 +37,13 @@ jobs:
             cat svframemmo-payload.part* | tr -d '\n' | base64 -d > /tmp/svframemmo-native.tar.gz
             tar -xzf /tmp/svframemmo-native.tar.gz
           fi
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('SVFrameMMO/src/main/java/vn/svframe/svframemmo/skill/list/Ambers.java')
+          text = path.read_text(encoding='utf-8')
+          if text.endswith('}}}\n}\n'):
+              path.write_text(text[:-2], encoding='utf-8')
+          PY
           test -d SVFrameMMO
           echo "SVFrameMMO_NATIVE_FILES=$(find SVFrameMMO -type f | wc -l)"
       - name: Native source gate
