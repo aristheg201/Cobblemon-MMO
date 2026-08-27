@@ -12,10 +12,36 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class EquipmentRuntime {
-    private final SVFrameItemsRegistry registry; private final AbilityRuntime abilities; private final EquipmentModifierService modifiers;
+    private final SVFrameItemsRegistry registry; private final UpgradeService upgrades; private final AbilityRuntime abilities; private final EquipmentModifierService modifiers;
     private final Map<UUID,PlayerState> states=new ConcurrentHashMap<>();
-    public EquipmentRuntime(SVFrameItemsRegistry registry,UpgradeService upgrades,AbilityRuntime abilities){this.registry=Objects.requireNonNull(registry);this.abilities=Objects.requireNonNull(abilities);this.modifiers=new EquipmentModifierService(registry,Objects.requireNonNull(upgrades),SVFrameLibStatMod.engine());}
+    public EquipmentRuntime(SVFrameItemsRegistry registry,UpgradeService upgrades,AbilityRuntime abilities){this.registry=Objects.requireNonNull(registry);this.upgrades=Objects.requireNonNull(upgrades);this.abilities=Objects.requireNonNull(abilities);this.modifiers=new EquipmentModifierService(registry,this.upgrades,SVFrameLibStatMod.engine());}
+    public record EquippedView(String locationKey, NativeStatEngine.EquipmentSlot slot, ItemInstance instance, ItemDefinition definition, ItemType type, List<ItemStat> effectiveStats) {
+        public EquippedView { locationKey=Objects.requireNonNull(locationKey);slot=Objects.requireNonNull(slot);instance=Objects.requireNonNull(instance);definition=Objects.requireNonNull(definition);type=Objects.requireNonNull(type);effectiveStats=List.copyOf(effectiveStats); }
+    }
+    public record Evaluation(List<EquippedView> items, Map<String,Integer> setPieceCounts, List<ItemStat> activeSetBonuses) {
+        public Evaluation { items=List.copyOf(items);setPieceCounts=Map.copyOf(setPieceCounts);activeSetBonuses=List.copyOf(activeSetBonuses); }
+    }
+
     public void tick(MinecraftServer server){for(ServerPlayerEntity player:server.getPlayerManager().getPlayerList())refresh(player);}
+
+    /** Side-effect free view for integrations that need the exact equipment state SVFrameItems would apply. */
+    public Evaluation evaluate(ServerPlayerEntity player){
+        Objects.requireNonNull(player,"player");
+        LinkedHashMap<UUID,EquippedView> unique=new LinkedHashMap<>();
+        Map<String,Set<String>> pieces=new LinkedHashMap<>();
+        for(EquipmentProvider.EquippedItem equippedItem:collect(player)){
+            Optional<ItemInstance> decoded=ItemCodec.read(equippedItem.stack());if(decoded.isEmpty())continue;
+            ItemInstance instance=decoded.get();ItemDefinition definition=registry.item(instance.definitionId());if(definition==null)continue;
+            ItemType type=registry.type(definition.typeId());if(type==null||!type.canEquip(equippedItem.slot()))continue;
+            List<ItemStat> effective=instance.effectiveStats(upgrades.statMultiplier(instance),upgrades::statMultiplier);
+            EquippedView view=new EquippedView(equippedItem.key(),equippedItem.slot(),instance,definition,type,effective);
+            if(unique.putIfAbsent(instance.instanceId(),view)!=null)continue;
+            if(definition.setId()!=null){ItemSetDefinition set=registry.set(definition.setId());if(set!=null&&set.pieces().contains(definition.id()))pieces.computeIfAbsent(set.id(),ignored->new LinkedHashSet<>()).add(definition.id());}
+        }
+        LinkedHashMap<String,Integer> counts=new LinkedHashMap<>();List<ItemStat> bonuses=new ArrayList<>();
+        for(Map.Entry<String,Set<String>> entry:pieces.entrySet()){counts.put(entry.getKey(),entry.getValue().size());ItemSetDefinition set=registry.set(entry.getKey());if(set!=null)bonuses.addAll(set.activeBonuses(entry.getValue().size()));}
+        return new Evaluation(List.copyOf(unique.values()),counts,bonuses);
+    }
     /** Disconnect/server-stop cleanup is not a gameplay unequip transition. */
     public void clear(ServerPlayerEntity player){Objects.requireNonNull(player);clear(player.getUuid());}
     public void clear(UUID player){states.remove(player);modifiers.clear(player);}
