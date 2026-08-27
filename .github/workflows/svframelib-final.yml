@@ -95,7 +95,7 @@ jobs:
             vn/svframe/svframelib/fabric/SVFrameLibBootstrap.class; do
             if grep -Fxq "$cls" /tmp/svframelib-jar-entries.txt; then echo "FOUND $cls"; else echo "MISSING $cls"; failed=1; fi
           done
-          foreign="$(grep '^vn/svframe/' /tmp/svframelib-jar-entries.txt | grep -v '^vn/svframe/svframelib/' || true)"
+          foreign="$(grep -E '^vn/svframe/.+[.]class$' /tmp/svframelib-jar-entries.txt | grep -v '^vn/svframe/svframelib/' || true)"
           if [ -n "$foreign" ]; then echo 'FOREIGN_NAMESPACE:'; echo "$foreign"; failed=1; fi
           legacy="$(grep -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' /tmp/svframelib-jar-entries.txt || true)"
           if [ -n "$legacy" ]; then echo 'LEGACY_ENTRIES:'; echo "$legacy"; failed=1; fi
