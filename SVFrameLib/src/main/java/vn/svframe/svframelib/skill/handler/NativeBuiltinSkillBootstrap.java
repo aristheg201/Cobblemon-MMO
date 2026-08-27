@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/** Restores MythicLib 1.7.1's default/mythiclib skill-handler sources on Fabric. */
+/** Registers the native SVFrameLib built-in and script skill sources. */
 public final class NativeBuiltinSkillBootstrap {
     private static final String ROOT = "vn.svframe.svframelib.skill.handler.def.";
     private static final String[] TYPES = {
@@ -23,15 +23,15 @@ public final class NativeBuiltinSkillBootstrap {
             "vector.Arcane_Rift","vector.Bouncy_Fireball","vector.Corrupted_Fangs","vector.Cursed_Beam","vector.Earthquake","vector.Explosive_Turkey","vector.Fire_Meteor","vector.Firebolt","vector.Heavy_Charge","vector.Holy_Missile","vector.Ice_Crystal","vector.Shulker_Missile","vector.TNT_Throw","vector.Thrust"
     };
 
-    private NativeBuiltinSkillBootstrap() {}
+    private NativeBuiltinSkillBootstrap() { }
 
     public static void register(SkillManager manager) {
         Map<String, Class<? extends SkillHandler<?>>> types = loadTypes(manager);
         manager.registerSkillHandlerSource(new SkillHandlerSource("default", (config, internal) -> construct(types, config, internal), List.of()));
-        manager.registerSkillHandlerSource(new SkillHandlerSource("mythiclib", (config, internal) -> {
+        manager.registerSkillHandlerSource(new SkillHandlerSource("svframelib", (config, internal) -> {
             Script script = manager.getScriptOrThrow(internal);
             return new MythicLibSkillHandler(script);
-        }, List.of()));
+        }, List.of("svframelib-skill-id")));
     }
 
     private static Map<String, Class<? extends SkillHandler<?>>> loadTypes(SkillManager manager) {
@@ -41,32 +41,27 @@ public final class NativeBuiltinSkillBootstrap {
                 Class<?> raw = Class.forName(ROOT + path);
                 if (!SkillHandler.class.isAssignableFrom(raw))
                     throw new IllegalStateException(raw.getName() + " is not a SkillHandler");
-                @SuppressWarnings("unchecked") Class<? extends SkillHandler<?>> type = (Class<? extends SkillHandler<?>>) raw;
+                @SuppressWarnings("unchecked")
+                Class<? extends SkillHandler<?>> type = (Class<? extends SkillHandler<?>>) raw;
                 manager.registerBuiltinSkillHandlerType(type);
                 result.put(norm(type.getSimpleName()), type);
             } catch (ReflectiveOperationException exception) {
                 throw new IllegalStateException("Missing native built-in skill handler " + ROOT + path, exception);
             }
         }
+        if (result.size() != 90) throw new IllegalStateException("Expected 90 SVFrameLib built-ins, got " + result.size());
         return Map.copyOf(result);
     }
 
     private static SkillHandler<?> construct(Map<String, Class<? extends SkillHandler<?>>> types, ConfigObject config, String internal) {
         Class<? extends SkillHandler<?>> type = types.get(norm(internal));
-        if (type == null)
-            return new ScriptSkillHandler(internal, config); // provider-owned legacy IDs without a MythicLib class
+        if (type == null) throw new IllegalArgumentException("Could not find builtin skill with ID '" + internal + "'");
         try {
             Constructor<? extends SkillHandler<?>> constructor = type.getDeclaredConstructor(ConfigObject.class);
             constructor.setAccessible(true);
             return constructor.newInstance(config);
-        } catch (ReflectiveOperationException ignored) {
-            try {
-                Constructor<? extends SkillHandler<?>> constructor = type.getDeclaredConstructor();
-                constructor.setAccessible(true);
-                return constructor.newInstance();
-            } catch (ReflectiveOperationException second) {
-                throw new IllegalArgumentException("Could not instantiate native built-in skill handler " + internal, second);
-            }
+        } catch (ReflectiveOperationException exception) {
+            throw new RuntimeException("Could not instantiate builtin skill handler '" + internal + "': " + exception.getMessage(), exception);
         }
     }
 
