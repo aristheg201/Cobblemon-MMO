@@ -42,6 +42,39 @@ for name in ('YamlCorpusSmoke.java', 'YamlSkillCountSmoke.java'):
         text = text[:package_end + 1] + imp + text[package_end + 1:]
         path.write_text(text, encoding='utf-8')
 
+# Runtime identity is the final Fabric mod id, not the historical bootstrap id.
+fabric_mod = java / 'vn/svframe/svframelib/fabric/SVFrameLibFabricMod.java'
+if fabric_mod.exists():
+    text = fabric_mod.read_text(encoding='utf-8')
+    text = text.replace('public static final String ID = "svframelibfabric";', 'public static final String ID = "svframelib";')
+    fabric_mod.write_text(text, encoding='utf-8')
+
+# SVFrameLib owns exactly the 90 built-ins from the library source. AMBERS,
+# NEPTUNE_GIFT and SNEAKY_PICKY are registered later by SVFrameMMO and must not
+# be executable through the library runtime. Also make the exact native status
+# implementation authoritative even for direct NativeDefaultSkillRuntime calls.
+default_runtime = java / 'vn/svframe/svframelib/fabric/NativeDefaultSkillRuntime.java'
+if default_runtime.exists():
+    text = default_runtime.read_text(encoding='utf-8')
+    text = text.replace('"AMBERS",', '')
+    text = text.replace(',"NEPTUNE_GIFT"', '')
+    text = text.replace(',"SNEAKY_PICKY"', '')
+    text = text.replace('            case "AMBERS" -> ambers(ctx);\n', '')
+    text = text.replace('            case "NEPTUNE_GIFT", "SNEAKY_PICKY" -> true;\n', '')
+    text = re.sub(r'^    private static boolean ambers\(ScriptContext c\) \{.*?\}\n', '', text, flags=re.M)
+    route = '        if (NativeTargetStatusSkillRuntime.supports(key)) return NativeTargetStatusSkillRuntime.cast(key, ctx);\n'
+    marker = '        String key = norm(id);\n'
+    if route not in text:
+        text = text.replace(marker, marker + route, 1)
+    for line in (
+        '            case "BLIND" -> status(ctx, "minecraft:blindness", sec(ctx,"duration",5), 0, "minecraft:entity.warden.heartbeat");\n',
+        '            case "BURN" -> burn(ctx);\n',
+        '            case "POISON" -> status(ctx,"minecraft:poison",sec(ctx,"duration",5),level(ctx,"amplifier",0),"minecraft:entity.spider.hurt");\n',
+        '            case "SLOW" -> status(ctx,"minecraft:slowness",sec(ctx,"duration",4),level(ctx,"amplifier",0),"minecraft:block.glass.break");\n',
+    ):
+        text = text.replace(line, '')
+    default_runtime.write_text(text, encoding='utf-8')
+
 # Repackage the migrated native defaults so the runtime installer can load the
 # exact same audited YAML corpus from the mod JAR. Keep the loose YAML files too
 # because CI validates them directly before boot.
