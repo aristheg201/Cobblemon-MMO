@@ -24,7 +24,7 @@ public final class SocketService {
         int index = -1; for (int i=0;i<sockets.size();i++) if (sockets.get(i).accepts(gemDefinition.gemColor())) { index=i; break; }
         if (index < 0) return new InsertResult(Status.NO_COMPATIBLE_SOCKET, target.copy(), gemStack.copy(), -1);
         sockets.set(index, sockets.get(index).insert(EmbeddedGem.from(gemInstance.get(), gemDefinition.gemColor())));
-        ItemStack rebuilt = generator.rebuild(targetInstance.get().withSockets(sockets));
+        ItemStack rebuilt = generator.rebuild(target, targetInstance.get().withSockets(sockets));
         ItemStack remainder = gemStack.copy(); remainder.decrement(1);
         return new InsertResult(Status.SUCCESS, rebuilt, remainder, index);
     }
@@ -36,6 +36,6 @@ public final class SocketService {
         List<SocketState> sockets = new ArrayList<>(instance.get().sockets()); SocketState socket = sockets.get(socketIndex);
         if (socket.gem() == null) return new UnsocketResult(Status.NO_COMPATIBLE_SOCKET, target.copy(), ItemStack.EMPTY, socketIndex);
         ItemStack gem = generator.rebuild(socket.gem().toItemInstance()); sockets.set(socketIndex, socket.clear());
-        return new UnsocketResult(Status.SUCCESS, generator.rebuild(instance.get().withSockets(sockets)), gem, socketIndex);
+        return new UnsocketResult(Status.SUCCESS, generator.rebuild(target, instance.get().withSockets(sockets)), gem, socketIndex);
     }
 }
