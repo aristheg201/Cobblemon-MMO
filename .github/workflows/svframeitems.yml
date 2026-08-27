@@ -1,0 +1,182 @@
+name: SVFrameItems Fabric 1.21.1 Native Build
+
+on:
+  push:
+    branches: [svframeitems-fabric-1.21.1]
+    paths:
+      - '.github/workflows/svframeitems.yml'
+      - '.svframeitems-bootstrap/**'
+      - 'SVFrameItems/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: svframeitems-fabric-1.21.1
+          fetch-depth: 1
+
+      - name: Sync dedicated SVFrameLib branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframelib-fabric-1.21.1
+          LIB_SHA="$(git rev-parse FETCH_HEAD)"
+          rm -rf SVFrameLib
+          git checkout FETCH_HEAD -- SVFrameLib
+          echo "SVFRAMELIB_SHA=$LIB_SHA" >> "$GITHUB_ENV"
+          echo "Using SVFrameLib $LIB_SHA"
+
+      - name: Expand native SVFrameItems source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d .svframeitems-bootstrap
+          cat .svframeitems-bootstrap/part-* | base64 --decode > /tmp/svframeitems.tar.gz
+          echo '3cf63685770edbad1ce09d840c1c2131a7b5ff311b35c8af8a8ff74ee54e89c2  /tmp/svframeitems.tar.gz' | sha256sum -c -
+          tar -tzf /tmp/svframeitems.tar.gz >/dev/null
+          tar -xzf /tmp/svframeitems.tar.gz -C .
+          test -f SVFrameItems/src/main/java/vn/svframe/svframeitems/SVFrameItems.java
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
+      - name: Native source gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC=SVFrameItems/src/main
+          grep -q '"id": "svframeitems"' "$SRC/resources/fabric.mod.json"
+          grep -q '"fabricloader": ">=0.18.4"' "$SRC/resources/fabric.mod.json"
+          grep -q '"minecraft": "~1.21.1"' "$SRC/resources/fabric.mod.json"
+          grep -q '"svframelib": ">=1.7.1-fabric"' "$SRC/resources/fabric.mod.json"
+          if find "$SRC/java" -type f -name '*.java' ! -path '*/vn/svframe/svframeitems/*' | grep -q .; then exit 1; fi
+          if grep -RIn --binary-files=without-match -Ei 'net[.]Indyuce|io[.]lumine|org[.]bukkit|io[.]papermc|mythicmobs|mmoitems|mmocore|mythiclib|spigot|placeholderapi|worldguard|citizens|vault' "$SRC" --include='*.java' --include='*.json' --include='*.yml'; then exit 1; fi
+          for file in \
+            item/ItemCodec.java \
+            item/ItemGenerator.java \
+            runtime/EquipmentRuntime.java \
+            api/SVFrameItemsApi.java \
+            item/UpgradeService.java \
+            item/SocketService.java \
+            item/LootService.java \
+            item/RecipeService.java; do
+            test -f "$SRC/java/vn/svframe/svframeitems/$file"
+          done
+
+      - name: Build dedicated SVFrameLib
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameLib
+          gradle --no-daemon --stacktrace clean test remapJar 2>&1 | tee build-items-dependency.log
+
+      - name: Build and test SVFrameItems
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameItems
+          gradle --no-daemon --stacktrace clean test remapJar 2>&1 | tee build-native.log
+
+      - name: Verify regression tests executed
+        shell: bash
+        run: |
+          set -euo pipefail
+          RESULTS=SVFrameItems/build/test-results/test
+          test -f "$RESULTS/TEST-vn.svframe.svframeitems.ModelRuntimeTest.xml"
+          test -f "$RESULTS/TEST-vn.svframe.svframeitems.DefinitionParserTest.xml"
+          ! grep -R -E 'failures="[1-9]|errors="[1-9]' "$RESULTS" --include='TEST-*.xml'
+
+      - name: Native core smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameItems
+          gradle --no-daemon nativeCoreSmoke 2>&1 | tee build/native-core-smoke.log
+          grep -q 'SVFRAMEITEMS_NATIVE_CORE=PASS' build/native-core-smoke.log
+
+      - name: Audit remapped JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          JAR="$(find SVFrameItems/build/libs -maxdepth 1 -type f -name 'SVFrameItems-*.jar' ! -name '*sources*' | head -1)"
+          test -s "$JAR"
+          jar tf "$JAR" > /tmp/svframeitems-entries.txt
+          foreign="$(grep -E '^vn/svframe/.+[.]class$' /tmp/svframeitems-entries.txt | grep -v '^vn/svframe/svframeitems/' || true)"
+          test -z "$foreign"
+          legacy="$(grep -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' /tmp/svframeitems-entries.txt || true)"
+          test -z "$legacy"
+
+      - name: Dedicated Fabric combined boot
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameItems
+          mkdir -p run
+          printf 'eula=true\n' > run/eula.txt
+          set +e
+          timeout 90s gradle --no-daemon runServer > build/combined-server.log 2>&1
+          status=$?
+          set -e
+          cat build/combined-server.log
+          if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
+          grep -q 'Loading Minecraft 1.21.1 with Fabric Loader 0.18.4' build/combined-server.log
+          grep -q 'SVFrameLib Fabric online' build/combined-server.log
+          grep -q 'SVFrameItems Fabric online' build/combined-server.log
+          grep -q 'Done (' build/combined-server.log
+          ! grep -q 'Mixin apply failed' build/combined-server.log
+          ! grep -q 'Could not execute entrypoint stage' build/combined-server.log
+          ! grep -Eq 'NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Exception in server tick loop' build/combined-server.log
+
+      - name: Stage validated source and distribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p SVFrameItems/validated SVFrameItems/dist
+          JAR="$(find SVFrameItems/build/libs -maxdepth 1 -type f -name 'SVFrameItems-*.jar' ! -name '*sources*' | head -1)"
+          cp "$JAR" SVFrameItems/validated/SVFrameItems-0.1.0-fabric.jar
+          cp "$JAR" SVFrameItems/dist/SVFrameItems-0.1.0-fabric.jar
+          sha256sum "$JAR" | tee SVFrameItems/validated/SVFrameItems-0.1.0-fabric.sha256
+          cp SVFrameItems/validated/SVFrameItems-0.1.0-fabric.sha256 SVFrameItems/dist/SVFrameItems-0.1.0-fabric.sha256
+          cp SVFrameItems/build/combined-server.log SVFrameItems/validated/server-boot.log
+          cp SVFrameItems/build/combined-server.log SVFrameItems/dist/server-boot.log
+          printf 'SVFrameLib branch SHA: %s\n' "$SVFRAMELIB_SHA" > SVFrameItems/validated/DEPENDENCY-SHA.txt
+          cp SVFrameItems/validated/DEPENDENCY-SHA.txt SVFrameItems/dist/DEPENDENCY-SHA.txt
+
+          git config user.name 'SVFrame Build'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A SVFrameItems
+          git rm -rf .svframeitems-bootstrap
+          if ! git diff --cached --quiet; then
+            git commit -m 'SVFrameItems: bootstrap native item engine [skip ci]'
+            git push origin HEAD:svframeitems-fabric-1.21.1
+          fi
+
+      - name: Upload validated artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SVFrameItems-native-fabric
+          path: |
+            SVFrameItems/validated
+            SVFrameItems/dist
+            SVFrameItems/build/libs/*.jar
+            SVFrameItems/build-native.log
+            SVFrameItems/build/combined-server.log
+            SVFrameItems/build/native-core-smoke.log
+            SVFrameItems/build/test-results/test
+            SVFrameItems/src
+          if-no-files-found: warn
+          retention-days: 14
