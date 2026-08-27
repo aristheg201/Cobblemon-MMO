@@ -1,0 +1,112 @@
+name: SVFrameCore Fabric 1.21.1 Native Build
+
+on:
+  push:
+    branches: [svframecore-fabric-1.21.1]
+    paths:
+      - 'SVFrameCore/**'
+      - 'SVFrameLib/**'
+      - '.github/workflows/svframecore-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: svframecore-fabric-1.21.1
+
+      - name: Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Gradle 8.8
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
+      - name: Native source gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC=SVFrameCore/src/main
+          grep -q '"id": "svframecore"' "$SRC/resources/fabric.mod.json"
+          grep -q '"svframelib": ">=1.7.1-fabric"' "$SRC/resources/fabric.mod.json"
+          test -f "$SRC/java/vn/svframe/svframecore/SVFrameCore.java"
+          test -f "$SRC/java/vn/svframe/svframecore/api/player/PlayerData.java"
+          test -f "$SRC/java/vn/svframe/svframecore/api/event/PlayerResourceUpdateEvent.java"
+          test -f "$SRC/java/vn/svframe/svframecore/skill/list/Ambers.java"
+          test -f "$SRC/java/vn/svframe/svframecore/skill/list/Neptune_Gift.java"
+          test -f "$SRC/java/vn/svframe/svframecore/skill/list/Sneaky_Picky.java"
+          test "$(grep -RIl '@BuiltinSkillHandler' "$SRC/java/vn/svframe/svframecore/skill/list" --include='*.java' | wc -l)" -eq 3
+          if find "$SRC/java" -type f -name '*.java' ! -path '*/vn/svframe/svframecore/*' | grep -q .; then exit 1; fi
+          if grep -RIn --binary-files=without-match -Ei 'mmocore|mythic|lumine|bukkit|spigot|paper|svframemmo' "$SRC" --include='*.java' --include='*.json' --include='*.yml'; then exit 1; fi
+
+      - name: Build SVFrameLib named classes and runtime JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameLib
+          gradle --no-daemon --stacktrace clean compileJava remapJar
+
+      - name: Build and remap SVFrameCore
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameCore
+          gradle --no-daemon --stacktrace clean test remapJar 2>&1 | tee build-core.log
+
+      - name: Verify Core JAR namespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          JAR="$(find SVFrameCore/build/libs -maxdepth 1 -type f -name 'SVFrameCore-*.jar' ! -name '*sources*' | head -1)"
+          test -s "$JAR"
+          jar tf "$JAR" > /tmp/svframecore-jar.txt
+          grep -Fxq 'vn/svframe/svframecore/SVFrameCore.class' /tmp/svframecore-jar.txt
+          grep -Fxq 'vn/svframe/svframecore/fabric/SVFrameCoreFabricMod.class' /tmp/svframecore-jar.txt
+          if grep -Ei 'mmocore|mythic|lumine|bukkit|spigot|paper|svframemmo' /tmp/svframecore-jar.txt; then exit 1; fi
+          sha256sum "$JAR" | tee SVFrameCore/build/SVFrameCore-SHA256.txt
+
+      - name: Dedicated Fabric server boot with SVFrameLib
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIB="$(find SVFrameLib/build/libs -maxdepth 1 -type f -name 'SVFrameLib-*.jar' ! -name '*sources*' | head -1)"
+          mkdir -p SVFrameCore/run/mods
+          cp "$LIB" SVFrameCore/run/mods/
+          printf 'eula=true\n' > SVFrameCore/run/eula.txt
+          cd SVFrameCore
+          set +e
+          timeout 90s gradle --no-daemon --stacktrace runServer > build/svframecore-server.log 2>&1
+          status=$?
+          set -e
+          cat build/svframecore-server.log
+          if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
+          grep -q 'SVFrameLib Fabric online' build/svframecore-server.log
+          grep -q 'SVFrameCore Fabric online; externalBuiltins=3,resources=4,rpgProviders=3' build/svframecore-server.log
+          ! grep -q 'Could not execute entrypoint stage' build/svframecore-server.log
+          ! grep -q 'NoClassDefFoundError' build/svframecore-server.log
+          ! grep -q 'NoSuchMethodError' build/svframecore-server.log
+          ! grep -q 'NoSuchFieldError' build/svframecore-server.log
+
+      - name: Upload Core JAR and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: SVFrameCore-native-fabric
+          path: |
+            SVFrameCore/build/libs/*.jar
+            SVFrameCore/build/SVFrameCore-SHA256.txt
+            SVFrameCore/build-core.log
+            SVFrameCore/build/svframecore-server.log
+          if-no-files-found: warn
+          retention-days: 14
