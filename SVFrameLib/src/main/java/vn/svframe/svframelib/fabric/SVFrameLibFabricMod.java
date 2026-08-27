@@ -26,7 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class SVFrameLibFabricMod implements ModInitializer {
-    public static final String ID = "svframelibfabric";
+    public static final String ID = "svframelib";
     private static final Logger LOG = Logger.getLogger("SVFrameLib-Fabric");
     private static final Path ROOT = FabricLoader.getInstance().getConfigDir().resolve("SVFrameLib");
     private static final Map<String, LegacySkillDefinition> SKILLS = new ConcurrentHashMap<>();

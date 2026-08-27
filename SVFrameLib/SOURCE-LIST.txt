@@ -669,7 +669,6 @@ vn/svframe/svframelib/version/Attributes
 vn/svframe/svframelib/version/OreDrops
 vn/svframe/svframelib/version/ServerVersion
 vn/svframe/svframelib/version/Sounds
-vn/svframe/svframelib/version/UpdateChecker
 vn/svframe/svframelib/version/VEnchantment
 vn/svframe/svframelib/version/VInventoryView
 vn/svframe/svframelib/version/VMaterial
