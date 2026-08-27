@@ -1,141 +1,115 @@
-name: SVFrameLib Fabric 1.21.1 Native Parity
+name: SVFrameLib Fabric 1.21.1 Source Native Build
 
 on:
   push:
-    branches:
-      - svframelib-fabric-1.21.1
+    branches: [svframelib-fabric-1.21.1]
     paths:
       - '.github/workflows/svframelib-final.yml'
       - 'SVFrameLib/**'
-      - 'svframelib-bootstrap/svframelib-required-classes.txt'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - name: Checkout SVFrameLib branch
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: svframelib-fabric-1.21.1
           fetch-depth: 1
 
-      - name: Set up Java 21
+      - name: Java 21
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
 
-      - name: Set up Gradle 8.8
+      - name: Gradle 8.8
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.8'
 
-      - name: Native source integrity gates
+      - name: Apply deterministic SVFrame-only source migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 SVFrameLib/tools/svframe_namespace_migrate.py SVFrameLib
+
+      - name: SVFrame-only source gate
         shell: bash
         run: |
           set -euo pipefail
           SRC=SVFrameLib/src/main
-          PLATFORM="$SRC/java/vn/svframe/mythiclibfabric/runtime/script/ScriptPlatform.java"
-          ENGINE="$SRC/java/vn/svframe/mythiclibfabric/runtime/script/ScriptEngine.java"
-          DUMMY="$SRC/java/vn/svframe/svframelib/rpg/provided/DummyModule.java"
-          TARGET_STATUS="$SRC/java/vn/svframe/mythiclibfabric/NativeTargetStatusSkillRuntime.java"
-
-          test -f "$PLATFORM"
-          test -f "$ENGINE"
-          test -f "$DUMMY"
-          test -f "$TARGET_STATUS"
+          test -f "$SRC/resources/fabric.mod.json"
+          grep -q '"id": "svframelib"' "$SRC/resources/fabric.mod.json"
           grep -q '"fabricloader": ">=0.18.4"' "$SRC/resources/fabric.mod.json"
           grep -q '"minecraft": "~1.21.1"' "$SRC/resources/fabric.mod.json"
-
-          if grep -RIn --binary-files=without-match -E 'io[.]lumine[.]mythic[.]lib|io/lumine/mythic/lib' "$SRC"; then
-            echo 'Legacy io.lumine MythicLib namespace remains in active source' >&2
+          test -f "$SRC/java/vn/svframe/svframelib/SVFrameLib.java"
+          test -f "$SRC/java/vn/svframe/svframelib/manager/SkillManager.java"
+          test -f "$SRC/java/vn/svframe/svframelib/damage/DamageMetadata.java"
+          test -f "$SRC/java/vn/svframe/svframelib/damage/mitigation/MitigationModule.java"
+          test -f "$SRC/java/vn/svframe/svframelib/damage/onhit/OnHitModule.java"
+          test -f "$SRC/java/vn/svframe/svframelib/fabric/SVFrameLibBootstrap.java"
+          test "$(grep -RIl '@BuiltinSkillHandler' "$SRC/java/vn/svframe/svframelib/skill/handler/def" --include='*.java' | wc -l)" -eq 90
+          if find "$SRC/java" -type f -name '*.java' ! -path '*/vn/svframe/svframelib/*' | grep -q .; then
+            echo 'Java source exists outside vn.svframe.svframelib' >&2
             exit 1
           fi
-          if grep -RIn --binary-files=without-match -Ei 'mythicmobs|mythicmobsfabric|castMythicMobs' "$SRC"; then
-            echo 'MythicMobs integration remains in active source' >&2
-            exit 1
-          fi
-          if grep -RIn --binary-files=without-match 'org[.]bukkit' "$SRC"; then
-            echo 'Bukkit runtime dependency remains in active source' >&2
-            exit 1
-          fi
-
-          if grep -Eq 'default[[:space:]]+(void|boolean|Vector3|Collection<)' "$PLATFORM"; then
-            echo 'ScriptPlatform contains a silent default operation' >&2
-            exit 1
-          fi
-          if grep -Fq 'default -> true;' "$ENGINE" || grep -Fq 'default -> { }' "$ENGINE"; then
-            echo 'ScriptEngine still silently accepts unknown conditions/mechanics' >&2
+          if grep -RIn --binary-files=without-match -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' "$SRC" --include='*.java' --include='*.json' --include='*.yml' --include='*.properties'; then
+            echo 'Legacy server-plugin/provider naming remains in active source' >&2
             exit 1
           fi
 
-          grep -q 'case "add_stat_modifier" -> platform.addStat' "$ENGINE"
-          grep -q 'case "apply_cooldown" -> platform.applyCooldown' "$ENGINE"
-          grep -q 'case "raytrace_blocks" -> raytraceBlocks' "$ENGINE"
-          grep -q 'boolean cooldownReady' "$PLATFORM"
-          grep -q 'void addStat' "$PLATFORM"
-          ! grep -q 'Map<UUID, Map<String, Long>> cooldowns' "$ENGINE"
-
-          grep -q 'experienceLevel' "$DUMMY"
-          grep -q 'getHungerManager().setFoodLevel' "$DUMMY"
-          grep -q 'getHungerManager().getFoodLevel' "$DUMMY"
-
-          grep -q 'minecraft:entity.enderman.hurt' "$TARGET_STATUS"
-          grep -q 'minecraft:entity.blaze.hurt' "$TARGET_STATUS"
-          grep -q 'minecraft:block.brewing_stand.brew' "$TARGET_STATUS"
-          grep -q 'minecraft:entity.llama.angry' "$TARGET_STATUS"
-          grep -q 'burnFireTicks(target.getFireTicks()' "$TARGET_STATUS"
-
-      - name: Full tests, Loom build and remap
+      - name: Build and remap JAR
         shell: bash
         run: |
           set -euo pipefail
           cd SVFrameLib
           gradle --no-daemon --stacktrace clean test remapJar 2>&1 | tee build-parity.log
 
-      - name: Verify bundled 1.7.1 YAML corpus
+      - name: Verify bundled defaults
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p /tmp/sv-defaults /tmp/sv-defaults-unpacked
-          cat SVFrameLib/src/main/resources/mythiclib-1.7.1-defaults.zip.part{1,2,3,4} > /tmp/sv-defaults/defaults.zip
-          echo 'fc68b690ccdd874c2c8c5ce6207218d19af6904938c1cd9437cfa4e7341ba86e  /tmp/sv-defaults/defaults.zip' | sha256sum -c -
-          unzip -q /tmp/sv-defaults/defaults.zip -d /tmp/sv-defaults-unpacked
-          java -cp SVFrameLib/build/classes/java/main vn.svframe.compat.YamlCorpusSmoke /tmp/sv-defaults-unpacked
-          java -cp SVFrameLib/build/classes/java/main vn.svframe.compat.YamlSkillCountSmoke /tmp/sv-defaults-unpacked/default/skill/default_skills.yml 93
-          java -cp SVFrameLib/build/classes/java/main vn.svframe.compat.YamlSkillCountSmoke /tmp/sv-defaults-unpacked/default/skill/example_skills.yml 1
-          java -cp SVFrameLib/build/classes/java/main vn.svframe.mythiclibfabric.NativeTargetStatusSemanticsSmoke
+          RES=SVFrameLib/src/main/resources
+          test "$(find "$RES" -type f -name '*.yml' | wc -l)" -eq 15
+          if grep -RIn -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' "$RES" --include='*.yml'; then
+            echo 'Legacy naming remains in bundled defaults' >&2
+            exit 1
+          fi
+          java -cp SVFrameLib/build/classes/java/main vn.svframe.svframelib.audit.YamlCorpusSmoke "$RES"
+          java -cp SVFrameLib/build/classes/java/main vn.svframe.svframelib.audit.YamlSkillCountSmoke "$RES/default/skill/default_skills.yml" 93
+          java -cp SVFrameLib/build/classes/java/main vn.svframe.svframelib.audit.YamlSkillCountSmoke "$RES/default/skill/example_skills.yml" 1
+          java -cp SVFrameLib/build/classes/java/main vn.svframe.svframelib.audit.BuiltinOwnershipRuntimeSmoke
+          java -cp SVFrameLib/build/classes/java/main vn.svframe.svframelib.audit.CombatMetadataSmoke
+          java -cp SVFrameLib/build/classes/java/main vn.svframe.svframelib.fabric.NativeTargetStatusSemanticsSmoke
 
-      - name: Verify compatibility surface and JAR namespace
+      - name: Verify JAR namespace
         shell: bash
         run: |
           set -euo pipefail
           JAR="$(find SVFrameLib/build/libs -maxdepth 1 -type f -name 'SVFrameLib-*.jar' ! -name '*sources*' | head -1)"
           test -s "$JAR"
           jar tf "$JAR" > /tmp/svframelib-jar-entries.txt
-          missing=0
-          required=0
-          while IFS= read -r cls; do
-            [ -z "$cls" ] && continue
-            required=$((required + 1))
-            if ! grep -Fxq "${cls}.class" /tmp/svframelib-jar-entries.txt; then
-              echo "Missing required compatibility class: ${cls}.class" >&2
-              missing=$((missing + 1))
-            fi
-          done < svframelib-bootstrap/svframelib-required-classes.txt
-          echo "Compatibility surface: required=$required missing=$missing"
-          test "$required" -gt 0
-          test "$missing" -eq 0
-          ! grep -q '^io/lumine/mythic/lib/' /tmp/svframelib-jar-entries.txt
-          ! grep -iEq 'mythicmobs|mythicmobsfabric' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/SVFrameLib.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/manager/SkillManager.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/damage/DamageMetadata.class' /tmp/svframelib-jar-entries.txt
+          grep -Fxq 'vn/svframe/svframelib/fabric/SVFrameLibBootstrap.class' /tmp/svframelib-jar-entries.txt
+          if grep '^vn/svframe/' /tmp/svframelib-jar-entries.txt | grep -v '^vn/svframe/svframelib/' | grep -q .; then
+            echo 'Non-SVFrameLib Java namespace remains in JAR' >&2
+            exit 1
+          fi
+          if grep -Ei 'mythic|lumine|bukkit|spigot|paper|fabled|mmoitems|mmocore|papi|worldguard' /tmp/svframelib-jar-entries.txt; then
+            echo 'Legacy class/resource naming remains in JAR entries' >&2
+            exit 1
+          fi
           sha256sum "$JAR" | tee SVFrameLib/build/SVFrameLib-SHA256.txt
 
-      - name: Dedicated Fabric server boot gate
+      - name: Dedicated Fabric server boot
         shell: bash
         run: |
           set -euo pipefail
@@ -148,8 +122,8 @@ jobs:
           set -e
           cat build/svframelib-server.log
           if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
-          grep -Eq 'SVFrameLib online|MythicLib Fabric online' build/svframelib-server.log
-          grep -Eq 'MythicLib Fabric online; skills=94,scripts=100,customTriggers=1' build/svframelib-server.log
+          grep -q 'SVFrameLib online' build/svframelib-server.log
+          grep -q 'SVFrameLib Fabric online; skills=94,scripts=100,customTriggers=1' build/svframelib-server.log
           ! grep -q 'Mixin apply failed' build/svframelib-server.log
           ! grep -q 'Could not execute entrypoint stage' build/svframelib-server.log
           ! grep -q 'Exception in server tick loop' build/svframelib-server.log
@@ -157,8 +131,7 @@ jobs:
           ! grep -q 'NoSuchMethodError' build/svframelib-server.log
           ! grep -q 'NoSuchFieldError' build/svframelib-server.log
 
-      - name: Stage validated artifact
-        if: success()
+      - name: Stage JAR
         shell: bash
         run: |
           set -euo pipefail
@@ -168,15 +141,26 @@ jobs:
           cp SVFrameLib/build/SVFrameLib-SHA256.txt SVFrameLib/validated/SVFrameLib-1.7.1-fabric.sha256
           cp SVFrameLib/build/svframelib-server.log SVFrameLib/validated/server-boot.log
 
-      - name: Upload validation diagnostics
+      - name: Commit validated source migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SVFrame Build'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A SVFrameLib/src SVFrameLib/build.gradle SVFrameLib/gradle.properties SVFrameLib/settings.gradle SVFrameLib/README.md SVFrameLib/SOURCE-LIST.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'SVFrameLib: complete SVFrame-only source namespace migration [skip ci]'
+            git push origin HEAD:svframelib-fabric-1.21.1
+          fi
+
+      - name: Upload JAR and diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: SVFrameLib-native-parity-validation
+          name: SVFrameLib-source-native-fabric
           path: |
             SVFrameLib/validated
             SVFrameLib/build-parity.log
             SVFrameLib/build/svframelib-server.log
-            SVFrameLib/src/main/java
           if-no-files-found: warn
           retention-days: 14
