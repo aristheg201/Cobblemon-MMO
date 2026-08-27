@@ -106,5 +106,13 @@ jobs:
             SVFrameMMO/build/libs/*.jar
             SVFrameMMO/build-native.log
             SVFrameMMO/build/svframemmo-server.log
+            SVFrameMMO/src
+            SVFrameMMO/build.gradle
+            SVFrameMMO/gradle.properties
+            SVFrameMMO/settings.gradle
+            SVFrameLib/src
+            SVFrameLib/build.gradle
+            SVFrameLib/gradle.properties
+            SVFrameLib/settings.gradle
           if-no-files-found: warn
           retention-days: 14
