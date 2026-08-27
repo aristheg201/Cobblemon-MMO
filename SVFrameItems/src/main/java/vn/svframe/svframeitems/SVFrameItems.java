@@ -33,7 +33,7 @@ public final class SVFrameItems implements ModInitializer {
         try{DefaultFiles.ensure();REGISTRY.reload(DefaultFiles.root());}catch(IOException|RuntimeException exception){throw new IllegalStateException("Could not initialize SVFrameItems definitions",exception);}
         ABILITIES.initialize();
         ServerTickEvents.END_SERVER_TICK.register(value->EQUIPMENT.tick(value));
-        ServerPlayConnectionEvents.DISCONNECT.register((handler,value)->EQUIPMENT.clear(handler.player.getUuid()));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler,value)->EQUIPMENT.clear(handler.player));
         ServerLifecycleEvents.SERVER_STARTED.register(value->{server=value;LOG.info("SVFrameItems Fabric online; "+REGISTRY.summary());});
         ServerLifecycleEvents.SERVER_STOPPING.register(value->{EQUIPMENT.clear();server=null;});
         CommandRegistrationCallback.EVENT.register((dispatcher,registryAccess,environment)->SVFrameItemsCommands.register(dispatcher));

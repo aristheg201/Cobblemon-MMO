@@ -2,19 +2,24 @@ common:
   name: Common
   weight: 100
   priority: 0
+  stat-multiplier: 1.00
 uncommon:
   name: Uncommon
   weight: 40
   priority: 10
+  stat-multiplier: 1.05
 rare:
   name: Rare
   weight: 15
   priority: 20
+  stat-multiplier: 1.10
 epic:
   name: Epic
   weight: 5
   priority: 30
+  stat-multiplier: 1.20
 legendary:
   name: Legendary
   weight: 1
   priority: 40
+  stat-multiplier: 1.35
