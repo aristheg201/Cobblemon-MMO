@@ -24,10 +24,13 @@ public final class NativeRuntimeSmoke {
         require(upgraded.success(),"upgrade success");
         require(Integer.valueOf(3).equals(upgraded.item().get(DataComponentTypes.DAMAGE)),"foreign data component preserved by upgrade");
         require("alpha".equals(ItemCodec.metadata(upgraded.item(),"integration:owner").orElse(null)),"metadata preserved by upgrade");
+        ItemStack stackedTarget=blade.copy();stackedTarget.setCount(2);
+        require(SVFrameItems.upgrades().attempt(stackedTarget,new SplittableRandom(1)).status()==UpgradeService.Status.TARGET_STACKED,"stacked upgrade target rejected");
 
         ItemStack gem=SVFrameItems.generator().generate("ruby_gem",new ItemGenerator.GenerationContext(10,11));
         require(gem.getMaxCount()==64,"gem max stack");
         require(ItemCodec.setMetadata(gem,"integration:origin","external"),"gem metadata write");
+        require(SVFrameItems.sockets().insert(stackedTarget,gem).status()==SocketService.Status.TARGET_STACKED,"stacked socket target rejected");
         SocketService.InsertResult inserted=SVFrameItems.sockets().insert(upgraded.item(),gem);
         require(inserted.success(),"socket insert");
         require(Integer.valueOf(3).equals(inserted.target().get(DataComponentTypes.DAMAGE)),"foreign data component preserved by socket");
