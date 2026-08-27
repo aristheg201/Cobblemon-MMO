@@ -73,6 +73,17 @@ if default_runtime.exists():
         '            case "SLOW" -> status(ctx,"minecraft:slowness",sec(ctx,"duration",4),level(ctx,"amplifier",0),"minecraft:block.glass.break");\n',
     ):
         text = text.replace(line, '')
+
+    # Static ownership inspection must not instantiate Minecraft/Fabric classes.
+    # The platform is created only when a skill actually executes on a running server.
+    eager = '    private static final ScriptPlatform PLATFORM = new FabricScriptPlatform();\n'
+    lazy = ('    private static final class PlatformHolder {\n'
+            '        private static final ScriptPlatform INSTANCE = new FabricScriptPlatform();\n'
+            '    }\n'
+            '    private static ScriptPlatform platform() { return PlatformHolder.INSTANCE; }\n')
+    if eager in text:
+        text = text.replace(eager, lazy, 1)
+    text = text.replace('PLATFORM.', 'platform().')
     default_runtime.write_text(text, encoding='utf-8')
 
 # Repackage the migrated native defaults so the runtime installer can load the
