@@ -46,7 +46,7 @@ public final class LootService {
                 if(condition.test(context,entry))eligible.add(entry);
             }
             if(eligible.isEmpty())continue;
-            LootTableDefinition.Entry entry=choose(eligible,context.random()); if(context.random().nextDouble()>entry.chance())continue;
+            LootTableDefinition.Entry entry=choose(eligible,context.random()); if(context.random().nextDouble()>=entry.chance())continue;
             Reward reward=rewards.get(entry.rewardId()); if(reward==null)throw new IllegalStateException("Unknown loot reward "+entry.rewardId()+" in "+table.id());
             Context entryContext=context.withLevel(entry.clampLevel(context.level()));
             Collection<ItemStack> generated=reward.generate(entryContext,entry,generator); if(generated==null)throw new IllegalStateException("Loot reward "+entry.rewardId()+" returned null");
