@@ -27,5 +27,14 @@ class RegistryReloadTest {
         registry.registerExternal(item);
         assertSame(item,registry.item("external_charm"));assertTrue(registry.revision()>=before+3);assertDoesNotThrow(registry::validateSnapshot);
     }
+
+    @Test void explicitSnapshotRestoreRollsBackPostReloadFailures() throws Exception{
+        Path root=defaults();SVFrameItemsRegistry registry=new SVFrameItemsRegistry();registry.reload(root);
+        var before=registry.snapshot();long revision=registry.revision();ItemDefinition original=registry.item("trailblazer_blade");
+        registry.registerExternal(new ItemRarity("temporary","Temporary",1,0));
+        assertNotNull(registry.rarity("temporary"));assertTrue(registry.revision()>revision);
+        registry.restore(before);
+        assertNull(registry.rarity("temporary"));assertSame(original,registry.item("trailblazer_blade"));assertEquals(revision,registry.revision());
+    }
     private static Path defaults() throws Exception{Path root=Files.createTempDirectory("svframeitems-registry-test");for(String relative:FILES){Path target=root.resolve(relative);Files.createDirectories(target.getParent());try(InputStream input=RegistryReloadTest.class.getResourceAsStream("/default/"+relative)){assertNotNull(input);Files.copy(input,target);}}return root;}
 }
