@@ -6,6 +6,7 @@
   "description": "Native Fabric RPG progression framework for SVFrame.",
   "environment": "server",
   "entrypoints": { "main": ["vn.svframe.svframemmo.SVFrameMMO"] },
+  "mixins": ["svframemmo.mixins.json"],
   "depends": {
     "fabricloader": ">=0.18.4",
     "minecraft": "~1.21.1",
