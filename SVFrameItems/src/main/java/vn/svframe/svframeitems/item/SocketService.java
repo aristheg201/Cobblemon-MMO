@@ -7,7 +7,7 @@ import vn.svframe.svframeitems.registry.SVFrameItemsRegistry;
 import java.util.*;
 
 public final class SocketService {
-    public enum Status { SUCCESS, NOT_AN_ITEM, NOT_A_GEM, NO_COMPATIBLE_SOCKET, INVALID_DEFINITION }
+    public enum Status { SUCCESS, NOT_AN_ITEM, TARGET_STACKED, NOT_A_GEM, NO_COMPATIBLE_SOCKET, INVALID_DEFINITION }
     public record InsertResult(Status status, ItemStack target, ItemStack gemRemainder, int socketIndex) { public boolean success(){return status==Status.SUCCESS;} }
     public record UnsocketResult(Status status, ItemStack target, ItemStack gem, int socketIndex) { public boolean success(){return status==Status.SUCCESS;} }
 
@@ -17,6 +17,7 @@ public final class SocketService {
     public InsertResult insert(ItemStack target, ItemStack gemStack) {
         Optional<ItemInstance> targetInstance = ItemCodec.read(target); Optional<ItemInstance> gemInstance = ItemCodec.read(gemStack);
         if (targetInstance.isEmpty() || gemInstance.isEmpty()) return new InsertResult(Status.NOT_AN_ITEM, target.copy(), gemStack.copy(), -1);
+        if(target.getCount()>1)return new InsertResult(Status.TARGET_STACKED,target.copy(),gemStack.copy(),-1);
         ItemDefinition gemDefinition = registry.item(gemInstance.get().definitionId());
         if (gemDefinition == null) return new InsertResult(Status.INVALID_DEFINITION, target.copy(), gemStack.copy(), -1);
         if (!gemDefinition.isGem()) return new InsertResult(Status.NOT_A_GEM, target.copy(), gemStack.copy(), -1);
@@ -32,6 +33,7 @@ public final class SocketService {
     public UnsocketResult unsocket(ItemStack target, int socketIndex) {
         Optional<ItemInstance> instance = ItemCodec.read(target);
         if (instance.isEmpty()) return new UnsocketResult(Status.NOT_AN_ITEM, target.copy(), ItemStack.EMPTY, -1);
+        if(target.getCount()>1)return new UnsocketResult(Status.TARGET_STACKED,target.copy(),ItemStack.EMPTY,-1);
         if (socketIndex < 0 || socketIndex >= instance.get().sockets().size()) return new UnsocketResult(Status.NO_COMPATIBLE_SOCKET, target.copy(), ItemStack.EMPTY, -1);
         List<SocketState> sockets = new ArrayList<>(instance.get().sockets()); SocketState socket = sockets.get(socketIndex);
         if (socket.gem() == null) return new UnsocketResult(Status.NO_COMPATIBLE_SOCKET, target.copy(), ItemStack.EMPTY, socketIndex);
