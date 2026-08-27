@@ -58,7 +58,9 @@ jobs:
       - name: Native core smoke
         shell: bash
         run: |
-          java -cp "SVFrameMMO/build/classes/java/main:SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar" vn.svframe.svframemmo.validation.NativeCoreSmoke
+          set -euo pipefail
+          cd SVFrameMMO
+          gradle --no-daemon nativeCoreSmoke
       - name: Dedicated Fabric server boot
         shell: bash
         run: |

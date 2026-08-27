@@ -13,3 +13,11 @@ dependencies {
 tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8' }
 java { sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21; withSourcesJar() }
 processResources { filesMatching('fabric.mod.json') { expand version: project.version } }
+
+tasks.register('nativeCoreSmoke', JavaExec) {
+    dependsOn classes
+    group = 'verification'
+    description = 'Runs SVFrameMMO native core smoke checks on the Loom runtime classpath.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'vn.svframe.svframemmo.validation.NativeCoreSmoke'
+}
