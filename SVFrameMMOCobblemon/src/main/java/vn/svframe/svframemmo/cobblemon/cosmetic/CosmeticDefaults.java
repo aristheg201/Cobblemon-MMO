@@ -34,11 +34,14 @@ public final class CosmeticDefaults {
 
     private static void copyMissingTree(Path source, Path target) throws java.io.IOException {
         if (!Files.isDirectory(source)) return;
+        Path normalizedTarget = target.toAbsolutePath().normalize();
         try (var stream = Files.walk(source)) {
             for (Path file : stream.filter(Files::isRegularFile).toList()) {
-                Path relative = source.relativize(file);
-                Path out = target.resolve(relative).normalize();
-                if (!out.startsWith(target.normalize())) throw new java.io.IOException("Unsafe cosmetic resource path " + relative);
+                String relative = source.relativize(file).toString().replace('\\', '/');
+                if (relative.isBlank() || relative.startsWith("/") || relative.contains("../") || relative.equals(".."))
+                    throw new java.io.IOException("Unsafe cosmetic resource path " + relative);
+                Path out = normalizedTarget.resolve(relative).normalize();
+                if (!out.startsWith(normalizedTarget)) throw new java.io.IOException("Unsafe cosmetic resource path " + relative);
                 if (Files.exists(out)) continue;
                 Files.createDirectories(out.getParent());
                 Files.copy(file, out);

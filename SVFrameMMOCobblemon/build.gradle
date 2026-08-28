@@ -50,11 +50,8 @@ dependencies {
     productionRuntimeDeps "eu.pb4:polymer-core:0.9.19+1.21.1"
     productionRuntimeDeps "eu.pb4:polymer-resource-pack:0.9.19+1.21.1"
     productionRuntimeDeps "dev.architectury:architectury-fabric:13.0.8"
-    productionRuntimeDeps "io.wispforest:accessories-fabric:1.1.0-beta.52+1.21.1"
-    productionRuntimeDeps "io.wispforest:owo-lib:0.12.15.4+1.21"
-    productionRuntimeDeps "io.wispforest:endec:0.1.8.1"
-    productionRuntimeDeps "io.wispforest.endec:netty:0.1.4"
-    productionRuntimeDeps "io.wispforest.endec:gson:0.1.5.1"
+    productionRuntimeDeps("io.wispforest:accessories-fabric:1.1.0-beta.52+1.21.1") { transitive = false }
+    productionRuntimeDeps("io.wispforest:owo-lib:0.12.15.4+1.21") { transitive = false }
     productionRuntimeDeps "maven.modrinth:SszvX85I:ch7DfnXP"
 }
 tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8' }

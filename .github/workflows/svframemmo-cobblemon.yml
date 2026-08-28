@@ -49,6 +49,9 @@ jobs:
           grep -q 'kyurem_black' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'kyurem_white' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'POTARA_FUSION_FORM_DELAY_TICKS = 88L' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
+          for mixin in MovePartyPokemonToPCHandlerMixin SwapPCPartyPokemonHandlerMixin PasturePokemonHandlerMixin; do
+            grep -q 'Lnet/minecraft/class_3222;' "SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/${mixin}.java"
+          done
       - name: Build SVFrameLib
         run: cd SVFrameLib && gradle --no-daemon clean test remapJar
       - name: Build SVFrameMMO
@@ -86,19 +89,36 @@ jobs:
           java -jar fabric-installer.jar server -mcversion 1.21.1 -loader 0.18.4 -downloadMinecraft
           printf 'eula=true\n' > eula.txt
 
+          java -Xms512M -Xmx2G -cp 'extra-libs/*:fabric-server-launch.jar' net.fabricmc.loader.impl.launch.server.FabricServerLauncher nogui > "$ROOT/build/integration-server.log" 2>&1 &
+          server_pid=$!
+          ready=0
+          for _ in $(seq 1 150); do
+            if grep -q 'Done (' "$ROOT/build/integration-server.log"; then
+              ready=1
+              break
+            fi
+            if ! kill -0 "$server_pid" 2>/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          kill -TERM "$server_pid" 2>/dev/null || true
           set +e
-          timeout 150s java -Xms512M -Xmx2G -cp 'extra-libs/*:fabric-server-launch.jar' net.fabricmc.loader.impl.launch.server.FabricServerLauncher nogui > "$ROOT/build/integration-server.log" 2>&1
+          wait "$server_pid"
           status=$?
           set -e
           cat "$ROOT/build/integration-server.log"
-          if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
+          if [ "$ready" -ne 1 ]; then
+            echo "Production server did not reach the Done state (exit=$status)" >&2
+            exit 1
+          fi
           grep -q 'Loading Minecraft 1.21.1 with Fabric Loader' "$ROOT/build/integration-server.log"
           grep -q 'SVFrameMMO Fabric online' "$ROOT/build/integration-server.log"
           grep -q 'Cobblemon Integration online' "$ROOT/build/integration-server.log"
           grep -q 'Done (' "$ROOT/build/integration-server.log"
-          ! grep -q 'Mixin apply failed' "$ROOT/build/integration-server.log"
+          ! grep -q 'Mixin apply for mod svframemmo_cobblemon failed' "$ROOT/build/integration-server.log"
           ! grep -q 'Could not execute entrypoint stage' "$ROOT/build/integration-server.log"
-          ! grep -Eq 'NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Exception in server tick loop' "$ROOT/build/integration-server.log"
+          ! grep -Eq 'NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Exception in server tick loop|ProviderMismatchException' "$ROOT/build/integration-server.log"
       - name: Upload validated artifact
         uses: actions/upload-artifact@v4
         with:

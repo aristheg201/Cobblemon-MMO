@@ -12,7 +12,7 @@ import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 
 @Mixin(value = MovePartyPokemonToPCHandler.class, remap = false)
 abstract class MovePartyPokemonToPCHandlerMixin {
-    @Inject(method = "handle(Lcom/cobblemon/mod/common/net/messages/server/storage/pc/MovePartyPokemonToPCPacket;Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/server/network/ServerPlayerEntity;)V", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "handle(Lcom/cobblemon/mod/common/net/messages/server/storage/pc/MovePartyPokemonToPCPacket;Lnet/minecraft/server/MinecraftServer;Lnet/minecraft/class_3222;)V", at = @At("HEAD"), cancellable = true, remap = false)
     private void svframe$lockFusionPokemon(MovePartyPokemonToPCPacket packet, MinecraftServer server, ServerPlayerEntity player, CallbackInfo ci) {
         if (SVFrameMMOCobblemon.fusions().isPokemonLocked(packet.getPokemonID())) ci.cancel();
     }
