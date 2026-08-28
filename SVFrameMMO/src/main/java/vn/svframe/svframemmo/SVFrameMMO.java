@@ -5,11 +5,13 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.event.PlayerAttackEvent;
 import vn.svframe.svframelib.fabric.runtime.RpgProfileRegistry;
 import vn.svframe.svframelib.player.resource.ResourceUpdateReason;
 import vn.svframe.svframelib.rpg.ManaModule;
+import vn.svframe.svframemmo.api.integration.SkillSourceBootstrap;
 import vn.svframe.svframemmo.command.SVFrameMMOCommands;
 import vn.svframe.svframemmo.config.DefaultFiles;
 import vn.svframe.svframemmo.config.SVFrameMMOConfig;
@@ -26,6 +28,7 @@ import vn.svframe.svframemmo.player.ResourceRegenRuntime;
 import vn.svframe.svframemmo.skill.SVFrameMMOSkillBootstrap;
 import vn.svframe.svframemmo.skill.runtime.SkillBarRuntime;
 import vn.svframe.svframemmo.skill.runtime.SkillRuntime;
+import vn.svframe.svframemmo.skill.runtime.TemporarySkillOverlayRuntime;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -42,6 +45,7 @@ public final class SVFrameMMO implements ModInitializer {
     private static final PermissionRegistry PERMISSIONS = new PermissionRegistry();
     private static final SkillRuntime SKILL_RUNTIME = new SkillRuntime();
     private static final SkillBarRuntime SKILL_BAR = new SkillBarRuntime();
+    private static final TemporarySkillOverlayRuntime TEMPORARY_SKILLS = new TemporarySkillOverlayRuntime();
 
     private static volatile ClassManager classes = new ClassManager();
     private static volatile AttributeManager attributes = new AttributeManager();
@@ -57,6 +61,9 @@ public final class SVFrameMMO implements ModInitializer {
         try {
             DefaultFiles.ensure();
             SVFrameLib.bootstrap();
+            for (SkillSourceBootstrap bootstrap : FabricLoader.getInstance().getEntrypoints("svframemmo-skill-source", SkillSourceBootstrap.class)) {
+                bootstrap.registerSkillSources();
+            }
             SVFrameMMOSkillBootstrap.register(DefaultFiles.ROOT.resolve("skills"));
             loadDefinitions();
         } catch (Exception exception) {
@@ -84,6 +91,7 @@ public final class SVFrameMMO implements ModInitializer {
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             SKILL_BAR.clear();
+            TEMPORARY_SKILLS.clear();
             PLAYER_DATA.save();
             for (var data : PLAYER_DATA.all()) SKILL_RUNTIME.detach(data);
             try { if (profileRegistration != null) profileRegistration.close(); }
@@ -92,6 +100,7 @@ public final class SVFrameMMO implements ModInitializer {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> PLAYER_DATA.join(handler.player));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             SKILL_BAR.detach(handler.player.getUuid());
+            TEMPORARY_SKILLS.clear(handler.player.getUuid());
             PLAYER_DATA.quit(handler.player);
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
@@ -182,5 +191,6 @@ public final class SVFrameMMO implements ModInitializer {
     public static SkillTreeManager skillTrees() { return skillTrees; }
     public static SkillRuntime skillRuntime() { return SKILL_RUNTIME; }
     public static SkillBarRuntime skillBar() { return SKILL_BAR; }
+    public static TemporarySkillOverlayRuntime temporarySkills() { return TEMPORARY_SKILLS; }
     public static DelayedActionRuntime delayedActions() { return DELAYED_ACTIONS; }
 }

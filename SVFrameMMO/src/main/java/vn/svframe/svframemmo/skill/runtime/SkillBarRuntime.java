@@ -65,8 +65,11 @@ public final class SkillBarRuntime {
 
         session.lastActivityTick = SVFrameMMO.currentTick();
         PlayerData data = SVFrameMMO.playerData().get(player);
-        ClassSkill skill = skillForClickedSlot(data, config, currentSlot, selectedSlot);
-        if (skill != null) SVFrameMMO.skillRuntime().cast(data, skill);
+        CastBinding binding = skillForClickedSlot(data, config, currentSlot, selectedSlot);
+        if (binding != null) {
+            if (binding.temporary()) SVFrameMMO.skillRuntime().castTemporary(data, binding.skill());
+            else SVFrameMMO.skillRuntime().cast(data, binding.skill());
+        }
         showSkillBar(data, config);
 
         // Casting consumes the held-slot change, so restore the same slot client-side.
@@ -149,16 +152,30 @@ public final class SkillBarRuntime {
         catch (RuntimeException ignored) { return fallback; }
     }
 
-    private static ClassSkill skillForClickedSlot(PlayerData data, SVFrameMMOConfig.SkillCasting config, int currentSlot, int clickedSlot) {
+    private static CastBinding skillForClickedSlot(PlayerData data, SVFrameMMOConfig.SkillCasting config, int currentSlot, int clickedSlot) {
         for (CastBinding binding : activeSkills(data, config)) {
             int castSlot = binding.castSlot();
             int displayedIndex = castSlot + (currentSlot < castSlot ? 1 : 0);
-            if (displayedIndex == clickedSlot + 1) return binding.skill();
+            if (displayedIndex == clickedSlot + 1) return binding;
         }
         return null;
     }
 
     private static List<CastBinding> activeSkills(PlayerData data, SVFrameMMOConfig.SkillCasting config) {
+        List<TemporarySkillOverlayRuntime.Slot> temporary = SVFrameMMO.temporarySkills().slots(data.getUniqueId());
+        if (!temporary.isEmpty()) {
+            ArrayList<CastBinding> result = new ArrayList<>(temporary.size());
+            int compact = 1;
+            for (TemporarySkillOverlayRuntime.Slot slot : temporary) {
+                ClassSkill skill = slot.skill();
+                if (skill == null || skill.getTrigger().isPassive()) continue;
+                int castSlot = config.useLowestKeybinds() ? compact++ : slot.slot();
+                result.add(new CastBinding(castSlot, skill, true));
+            }
+            result.sort(Comparator.comparingInt(CastBinding::castSlot));
+            return List.copyOf(result);
+        }
+
         ArrayList<Map.Entry<Integer, String>> bound = new ArrayList<>(data.getSkillBindings().entrySet());
         bound.sort(Map.Entry.comparingByKey());
         ArrayList<CastBinding> result = new ArrayList<>();
@@ -167,7 +184,7 @@ public final class SkillBarRuntime {
             ClassSkill skill = data.getProfess().getSkill(entry.getValue());
             if (skill == null || skill.getTrigger().isPassive() || !data.canUseSkill(skill)) continue;
             int castSlot = config.useLowestKeybinds() ? compact++ : entry.getKey();
-            result.add(new CastBinding(castSlot, skill));
+            result.add(new CastBinding(castSlot, skill, false));
         }
         result.sort(Comparator.comparingInt(CastBinding::castSlot));
         return List.copyOf(result);
@@ -234,6 +251,6 @@ public final class SkillBarRuntime {
         return String.format(Locale.ROOT, "%.1f", value);
     }
 
-    private record CastBinding(int castSlot, ClassSkill skill) { }
+    private record CastBinding(int castSlot, ClassSkill skill, boolean temporary) { }
     private static final class Session { private volatile long lastActivityTick; private Session(long tick) { this.lastActivityTick = tick; } }
 }

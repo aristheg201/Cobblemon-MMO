@@ -91,11 +91,20 @@ public final class SkillRuntime {
     }
 
     public SkillResult cast(PlayerData data, ClassSkill skill) {
+        return cast(data, skill, true);
+    }
+
+    /** Casts a runtime-owned temporary skill without requiring it to belong to the player's persistent class. */
+    public SkillResult castTemporary(PlayerData data, ClassSkill skill) {
+        return cast(data, skill, false);
+    }
+
+    private SkillResult cast(PlayerData data, ClassSkill skill, boolean requireClassProgression) {
         Objects.requireNonNull(data, "data");
         Objects.requireNonNull(skill, "skill");
         if (skill.getTrigger().isPassive()) throw new IllegalArgumentException("Passive skills cannot be manually cast: " + skill.getSkill().getId());
         if (!data.isOnline()) throw new IllegalStateException("Cannot cast a skill for an offline player");
-        ClassCastableSkill cast = new ClassCastableSkill(skill, data);
+        ClassCastableSkill cast = new ClassCastableSkill(skill, data, requireClassProgression);
         return cast.cast(new SkillMetadata(cast, data.getMMOPlayerData()));
     }
 
