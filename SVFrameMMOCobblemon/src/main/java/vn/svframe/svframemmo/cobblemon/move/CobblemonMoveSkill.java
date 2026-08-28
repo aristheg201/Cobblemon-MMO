@@ -104,7 +104,7 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
             case AOE -> executeAoe(player, move, profile, semantic, metadata);
             case SELF_BUFF -> applySelfSemantic(player, semantic, 0d);
             case TARGET_DEBUFF -> {
-                if (result.target != null) applyTargetSemanticOrFallback(result.target, semantic, profile);
+                if (result.target != null) applyTargetSemantic(result.target, semantic);
             }
             case TARGET, PROJECTILE -> executeDamage(player, result.target, move, profile, semantic, metadata);
         }
@@ -131,7 +131,7 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
             metadata.attack(target, perHit, DamageType.SKILL, category);
             dealt += perHit;
         }
-        applyTargetSemanticOrFallback(target, semantic, profile);
+        applyTargetSemantic(target, semantic);
         applySelfSemantic(player, semantic, dealt);
     }
 
@@ -146,16 +146,13 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
         if (semantic.protect()) fusions.grantProtection(player, 20L);
     }
 
-    private void applyTargetSemanticOrFallback(LivingEntity target, MoveSemantic semantic, CobblemonMoveProfile profile) {
-        boolean explicit = semantic.status() != MoveSemantic.Status.NONE || semantic.stages().stream()
-                .anyMatch(change -> change.target() == MoveSemantic.Target.TARGET);
+    /** Only apply explicitly known move semantics; never invent elemental/status side effects. */
+    private void applyTargetSemantic(LivingEntity target, MoveSemantic semantic) {
         for (MoveSemantic.StageChange change : semantic.stages()) {
             if (change.target() == MoveSemantic.Target.TARGET) applyStage(target, change.stat(), change.stages());
         }
         if (semantic.status() != MoveSemantic.Status.NONE && ThreadLocalRandom.current().nextDouble() < semantic.statusChance())
             applyStatus(target, semantic.status());
-        if (!explicit && profile.executor() == CobblemonMoveProfile.Executor.TARGET_DEBUFF) applyFallbackStatus(target, profile.fallbackStatus());
-        if (!explicit && profile.executor() != CobblemonMoveProfile.Executor.TARGET_DEBUFF) applyElementalFallback(target, profile.type());
     }
 
     private static void applyStage(LivingEntity entity, BattleStat stat, int stages) {
@@ -188,25 +185,6 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
             }
             case NONE -> { }
         }
-    }
-
-    private static void applyElementalFallback(LivingEntity target, String type) {
-        switch (type) {
-            case "fire" -> target.setOnFireFor(3f);
-            case "ice" -> target.setFrozenTicks(Math.max(target.getFrozenTicks(), 60));
-            case "electric" -> target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 40, 0));
-            case "poison" -> target.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 50, 0));
-            default -> { }
-        }
-    }
-
-    private static void applyFallbackStatus(LivingEntity target, String id) {
-        RegistryEntry<net.minecraft.entity.effect.StatusEffect> effect = switch (id) {
-            case "minecraft:poison" -> StatusEffects.POISON;
-            case "minecraft:slowness" -> StatusEffects.SLOWNESS;
-            default -> StatusEffects.WEAKNESS;
-        };
-        target.addStatusEffect(new StatusEffectInstance(effect, 80, 0));
     }
 
     private static void cleanse(ServerPlayerEntity player) {
