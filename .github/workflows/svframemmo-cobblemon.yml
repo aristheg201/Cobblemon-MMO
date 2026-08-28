@@ -1,0 +1,52 @@
+name: SVFrameMMO Cobblemon Integration Fabric 1.21.1
+on:
+  push:
+    branches: [svframemmo-cobblemon-integration-1.21.1]
+    paths: ['.github/workflows/svframemmo-cobblemon.yml', 'SVFrameMMOCobblemon/**', 'SVFrameMMO/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: svframemmo-cobblemon-integration-1.21.1
+          fetch-depth: 1
+      - name: Sync SVFrameLib
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframelib-fabric-1.21.1
+          rm -rf SVFrameLib
+          git checkout FETCH_HEAD -- SVFrameLib
+      - uses: actions/setup-java@v5
+        with: { distribution: temurin, java-version: '21' }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.8' }
+      - name: Ownership gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -RIn --binary-files=without-match -Ei 'svframeitems|fusion_tier' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
+          grep -q 'custom-model-data' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
+          grep -q 'DataComponentTypes.CUSTOM_MODEL_DATA' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/item/PotaraTierResolver.java
+      - name: Build SVFrameLib
+        run: cd SVFrameLib && gradle --no-daemon clean test remapJar
+      - name: Build SVFrameMMO
+        run: cd SVFrameMMO && gradle --no-daemon clean test remapJar
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.12.1' }
+      - name: Build integration
+        run: cd SVFrameMMOCobblemon && gradle --no-daemon --stacktrace clean test remapJar
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: SVFrameMMO-Cobblemon-Integration
+          path: |
+            SVFrameMMOCobblemon/build/libs/SVFrameMMO-Cobblemon-Integration-*.jar
+            !SVFrameMMOCobblemon/build/libs/*sources*.jar
+          if-no-files-found: error
+          retention-days: 14
