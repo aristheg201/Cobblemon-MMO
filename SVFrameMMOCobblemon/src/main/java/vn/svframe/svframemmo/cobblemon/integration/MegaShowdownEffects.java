@@ -2,29 +2,25 @@ package vn.svframe.svframemmo.cobblemon.integration;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
-import net.fabricmc.loader.api.FabricLoader;
 import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 
-/** Optional bridge to Mega Showdown's real Kyurem fusion effect definitions. */
+/** Bridge to Mega Showdown's real Kyurem fusion effect definitions used only by Potara. */
 public final class MegaShowdownEffects {
+    /** kyurem_black/white use apply_after=4.0s and cry apply_delay=4.4s; morph after the complete sequence. */
+    public static final long POTARA_FUSION_FORM_DELAY_TICKS = 88L;
+
     private MegaShowdownEffects() { }
 
     /**
      * Potara only. Fusion Dance intentionally has no fusion VFX.
-     * The default pool contains both Mega Showdown Kyurem + Zekrom (black) and Kyurem + Reshiram (white) sequences.
+     * The configured pool is validated to contain only Mega Showdown Kyurem + Zekrom/Reshiram fusion effects.
      */
-    public static void playPotaraFusionStart(Pokemon pokemon, PokemonEntity entity) {
-        if (pokemon == null || entity == null || !FabricLoader.getInstance().isModLoaded("mega_showdown")) return;
+    public static String playPotaraFusionStart(Pokemon pokemon, PokemonEntity entity) {
+        if (pokemon == null || entity == null) throw new IllegalArgumentException("Pokemon and entity are required for Potara fusion VFX");
         java.util.List<String> effects = SVFrameMMOCobblemon.config().vfx.potaraFusionEffects;
-        String effect = effects.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(effects.size()));
-        Loaded.play(pokemon, entity, effect);
-    }
-
-    /** Keeps Mega Showdown classes out of the outer class verifier when the optional mod is absent. */
-    private static final class Loaded {
-        private static void play(Pokemon pokemon, PokemonEntity entity, String effectId) {
-            com.github.yajatkaul.mega_showdown.api.codec.Effect.getEffect(effectId)
-                    .applyEffects(pokemon, java.util.List.of(), java.util.Optional.empty(), entity);
-        }
+        String effectId = effects.get(java.util.concurrent.ThreadLocalRandom.current().nextInt(effects.size()));
+        com.github.yajatkaul.mega_showdown.api.codec.Effect.getEffect(effectId)
+                .applyEffects(pokemon, java.util.List.of(), java.util.Optional.empty(), entity);
+        return effectId;
     }
 }
