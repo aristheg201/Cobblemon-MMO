@@ -15,7 +15,7 @@ import net.minecraft.text.Text;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.skill.ClassSkill;
-import vn.svframe.svframemmo.skill.gui.ExternalSkillGui;
+import vn.svframe.svframemmo.skill.gui.SkillListGui;
 
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-/** Admin skill grants plus the MMOCore-style learned external skill GUI entry point. */
+/** Admin skill grants plus the unified MMOCore-style RPG skill list entry point. */
 public final class SkillGrantCommands implements ModInitializer {
     @Override
     public void onInitialize() {
@@ -38,7 +38,7 @@ public final class SkillGrantCommands implements ModInitializer {
     }
 
     private static int openSkills(ServerCommandSource source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
-        ExternalSkillGui.open(source.getPlayerOrThrow());
+        SkillListGui.open(source.getPlayerOrThrow());
         return 1;
     }
 
@@ -82,7 +82,7 @@ public final class SkillGrantCommands implements ModInitializer {
 
         boolean external = externalSkill != null;
         source.sendFeedback(() -> Text.literal("Granted " + skill.getSkill().getName() + " Lv." + level
-                + " to " + player.getName().getString() + (external ? " [external learned skill]" : "") + "."), true);
+                + " to " + player.getName().getString() + (external ? " [integration skill]" : "") + "."), true);
         return 1;
     }
 
