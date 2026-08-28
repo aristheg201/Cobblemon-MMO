@@ -33,6 +33,8 @@ public final class UpgradeService {
     public UpgradeService(SVFrameItemsRegistry registry, ItemGenerator generator) {
         this.registry=Objects.requireNonNull(registry); this.generator=Objects.requireNonNull(generator);
         registerBuiltIn(new MinecraftItemCostProvider());
+        registerBuiltIn(new CurrencyUpgradeCostProvider("beconomy"));
+        registerBuiltIn(new CurrencyUpgradeCostProvider("cobbledollars"));
     }
     public Result attempt(ItemStack stack) { return attempt(stack, ThreadLocalRandom.current()); }
     public Result attempt(ItemStack stack, RandomGenerator random) { return attemptInternal(null, stack, random); }

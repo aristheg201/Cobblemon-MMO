@@ -2,12 +2,17 @@ package vn.svframe.svframeitems.api;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import vn.svframe.svframelib.SVFrameLib;
+import vn.svframe.svframelib.api.economy.CurrencyKey;
+import vn.svframe.svframelib.api.economy.CurrencyService;
 import vn.svframe.svframelib.fabric.runtime.NativeStatEngine;
 import vn.svframe.svframeitems.SVFrameItems;
 import vn.svframe.svframeitems.item.*;
 import vn.svframe.svframeitems.model.*;
 import vn.svframe.svframeitems.registry.SVFrameItemsRegistry;
 import vn.svframe.svframeitems.runtime.*;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 public final class SVFrameItemsApi {
@@ -36,6 +41,18 @@ public final class SVFrameItemsApi {
     public static AutoCloseable registerUpgradeCostProvider(UpgradeService.CostProvider provider){return SVFrameItems.upgrades().registerCostProvider(provider);}
     public static AutoCloseable registerLootCondition(String id,LootService.Condition condition){return SVFrameItems.loot().registerCondition(id,condition);}
     public static AutoCloseable registerLootReward(String id,LootService.Reward reward){return SVFrameItems.loot().registerReward(id,reward);}
+
+    /** Shared optional native economy bridge. Currency syntax: beconomy, beconomy:<currency-type>, or cobbledollars. */
+    public static CurrencyService economy(){return SVFrameLib.inst().getEconomy();}
+    public static boolean currencyAvailable(String currency){return economy().isAvailable(CurrencyKey.parse(currency));}
+    public static BigDecimal balance(ServerPlayerEntity player,String currency){return economy().balance(Objects.requireNonNull(player,"player"),CurrencyKey.parse(currency));}
+    public static boolean hasCurrency(ServerPlayerEntity player,String currency,BigDecimal amount){return economy().has(Objects.requireNonNull(player,"player"),CurrencyKey.parse(currency),amount);}
+    public static void setBalance(ServerPlayerEntity player,String currency,BigDecimal amount){economy().setBalance(Objects.requireNonNull(player,"player"),CurrencyKey.parse(currency),amount);}
+    public static void deposit(ServerPlayerEntity player,String currency,BigDecimal amount){economy().deposit(Objects.requireNonNull(player,"player"),CurrencyKey.parse(currency),amount);}
+    public static boolean withdraw(ServerPlayerEntity player,String currency,BigDecimal amount){return economy().withdraw(Objects.requireNonNull(player,"player"),CurrencyKey.parse(currency),amount);}
+    public static boolean transfer(ServerPlayerEntity from,ServerPlayerEntity to,String currency,BigDecimal amount){return economy().transfer(Objects.requireNonNull(from,"from"),Objects.requireNonNull(to,"to"),CurrencyKey.parse(currency),amount);}
+    public static String currencySymbol(String currency){return economy().symbol(CurrencyKey.parse(currency));}
+
     public static void register(ItemType value){registry().registerExternal(value);} public static void register(ItemRarity value){registry().registerExternal(value);} public static void register(ItemDefinition value){registry().registerExternal(value);} public static void register(ItemSetDefinition value){registry().registerExternal(value);} public static void register(UpgradeTemplate value){registry().registerExternal(value);} public static void register(RecipeDefinition value){registry().registerExternal(value);} public static void register(LootTableDefinition value){registry().registerExternal(value);}
     public static void validateRegistry(){registry().validateSnapshot();}
     public static void validateRuntimeRegistry(){RuntimeDefinitionValidator.validate(registry(),SVFrameItems.upgrades(),SVFrameItems.loot());}
