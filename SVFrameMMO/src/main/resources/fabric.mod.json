@@ -5,7 +5,12 @@
   "name": "SVFrameMMO",
   "description": "Native Fabric RPG progression framework for SVFrame.",
   "environment": "server",
-  "entrypoints": { "main": ["vn.svframe.svframemmo.SVFrameMMO"] },
+  "entrypoints": {
+    "main": [
+      "vn.svframe.svframemmo.SVFrameMMO",
+      "vn.svframe.svframemmo.command.SkillGrantCommands"
+    ]
+  },
   "mixins": ["svframemmo.mixins.json"],
   "depends": {
     "fabricloader": ">=0.18.4",
