@@ -7,6 +7,7 @@ repositories {
     maven { url = 'https://maven.fabricmc.net/' }
     maven { url = 'https://maven.nucleoid.xyz/' }
     maven { url = 'https://maven.architectury.dev/' }
+    maven { url = 'https://maven.wispforest.io/releases/' }
     exclusiveContent {
         forRepository {
             maven {
@@ -27,8 +28,11 @@ dependencies {
     modImplementation "eu.pb4:polymer-core:0.9.19+1.21.1"
     modImplementation "eu.pb4:polymer-resource-pack:0.9.19+1.21.1"
     modImplementation "dev.architectury:architectury-fabric:13.0.8"
-    modImplementation "maven.modrinth:jtmvUHXj:uPPIhLTH"
-    modImplementation "maven.modrinth:ccKDOlHs:vCCHsvEa"
+    modImplementation "io.wispforest:accessories-fabric:1.1.0-beta.52+1.21.1"
+    modImplementation "io.wispforest:owo-lib:0.12.15.4+1.21"
+    modImplementation "io.wispforest:endec:0.1.8.1"
+    modImplementation "io.wispforest.endec:netty:0.1.4"
+    modImplementation "io.wispforest.endec:gson:0.1.5.1"
     modImplementation "maven.modrinth:SszvX85I:ch7DfnXP"
     modCompileOnly "maven.modrinth:placeholder-api:2.4.2+1.21"
     compileOnly "net.luckperms:api:5.4"
