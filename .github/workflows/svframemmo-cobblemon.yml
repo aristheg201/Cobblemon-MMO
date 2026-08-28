@@ -58,9 +58,13 @@ jobs:
           grep -q 'DataComponentTypes.CUSTOM_MODEL_DATA' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/item/PotaraTierResolver.java
           grep -q 'slot > 4' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
           grep -q 'session == null || !session.activated()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionService.java
+          grep -q 'recallForFusionOrThrow' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionService.java
+          grep -q 'pokemon.recall()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionService.java
+          grep -q 'Fusion render requires the party Pokemon to be recalled' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
+          ! grep -q 'MegaShowdownEffects.playPotaraFusionStart' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionService.java
+          ! grep -q 'pendingPotaraSkills' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionService.java
           grep -q 'kyurem_black' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'kyurem_white' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
-          grep -q 'POTARA_FUSION_FORM_DELAY_TICKS = 88L' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
       - name: Build SVFrameLib
         run: cd SVFrameLib && gradle --no-daemon clean test remapJar
       - name: Build SVFrameMMO
