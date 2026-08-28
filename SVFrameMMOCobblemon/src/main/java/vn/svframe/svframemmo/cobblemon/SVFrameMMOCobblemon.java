@@ -31,7 +31,7 @@ import vn.svframe.svframemmo.cobblemon.item.PotaraTierResolver;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkill;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkillAdapter;
 
-/** Separate native server-side integration mod bridging Cobblemon/Mega Showdown to SVFrameMMO. */
+/** Separate native integration mod bridging Cobblemon/Mega Showdown/PocketMorph to SVFrameMMO. */
 public final class SVFrameMMOCobblemon implements ModInitializer {
     public static final String ID = "svframemmo_cobblemon";
     public static final Logger LOG = LoggerFactory.getLogger("SVFrameMMO: Cobblemon Integration");
@@ -105,8 +105,12 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         });
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> COSMETICS.onJoin(handler.player));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            FUSIONS.onDisconnect(handler.player);
-            COSMETICS.onDisconnect(handler.player);
+            // Fabric fires disconnect from the networking path. Cleanup can touch PocketMorph/Cobblemon entity state,
+            // so marshal it to the main server thread instead of unloading entities from Netty.
+            server.execute(() -> {
+                FUSIONS.onDisconnect(handler.player);
+                COSMETICS.onDisconnect(handler.player);
+            });
         });
         LOG.info("Cobblemon Integration online; generatedMoves={}, moveVfxPlans={}, cosmetics={}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
                 CobblemonMoveSkillAdapter.size(), MOVE_VFX.planCount(), COSMETICS.size(), config.fusion.potaraActionCooldownSeconds,
