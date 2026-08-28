@@ -22,6 +22,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     modImplementation "net.fabricmc:fabric-language-kotlin:${fabric_kotlin_version}"
     modImplementation "maven.modrinth:MdwFAVRL:kF7CvxTo"
+    modCompileOnly "maven.modrinth:SszvX85I:ch7DfnXP"
     modImplementation files('../SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar')
     modImplementation files('../SVFrameMMO/build/libs/SVFrameMMO-1.13.1-fabric.jar')
 }

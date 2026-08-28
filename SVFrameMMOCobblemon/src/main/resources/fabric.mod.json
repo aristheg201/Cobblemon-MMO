@@ -7,6 +7,7 @@
   "authors": ["SVFrame"],
   "environment": "*",
   "entrypoints": { "main": ["vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon"] },
+  "mixins": ["svframemmo_cobblemon.mixins.json"],
   "depends": {
     "fabricloader": ">=0.18.4",
     "minecraft": "1.21.1",
