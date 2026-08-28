@@ -25,6 +25,7 @@ import vn.svframe.svframemmo.manager.ProfessionManager;
 import vn.svframe.svframemmo.manager.SkillTreeManager;
 import vn.svframe.svframemmo.player.DelayedActionRuntime;
 import vn.svframe.svframemmo.player.ResourceRegenRuntime;
+import vn.svframe.svframemmo.skill.ExternalSkillRegistry;
 import vn.svframe.svframemmo.skill.SVFrameMMOSkillBootstrap;
 import vn.svframe.svframemmo.skill.runtime.SkillBarRuntime;
 import vn.svframe.svframemmo.skill.runtime.SkillRuntime;
@@ -46,6 +47,7 @@ public final class SVFrameMMO implements ModInitializer {
     private static final SkillRuntime SKILL_RUNTIME = new SkillRuntime();
     private static final SkillBarRuntime SKILL_BAR = new SkillBarRuntime();
     private static final TemporarySkillOverlayRuntime TEMPORARY_SKILLS = new TemporarySkillOverlayRuntime();
+    private static final ExternalSkillRegistry EXTERNAL_SKILLS = new ExternalSkillRegistry();
 
     private static volatile ClassManager classes = new ClassManager();
     private static volatile AttributeManager attributes = new AttributeManager();
@@ -130,7 +132,6 @@ public final class SVFrameMMO implements ModInitializer {
             return true;
         } catch (Exception exception) {
             LOG.log(Level.SEVERE, "SVFrameMMO reload failed", exception);
-            // Existing registry objects are preserved because loadDefinitions swaps only after all validation succeeds.
             for (var data : PLAYER_DATA.all()) {
                 try { data.reloadDefinitions(); } catch (RuntimeException recovery) { LOG.log(Level.SEVERE, "Could not recover player runtime after failed reload", recovery); }
             }
@@ -172,7 +173,7 @@ public final class SVFrameMMO implements ModInitializer {
     public static String definitionSummary() {
         return "classes=" + classes.size() + ",attributes=" + attributes.size() + ",professions=" + professions.size()
                 + ",expTables=" + experienceTables.size() + ",skillTrees=" + skillTrees.size()
-                + ",skills=" + SVFrameLib.inst().getSkills().getHandlers().size();
+                + ",skills=" + SVFrameLib.inst().getSkills().getHandlers().size() + ",externalSkills=" + EXTERNAL_SKILLS.size();
     }
 
     public static long currentTick() { return tick; }
@@ -192,5 +193,6 @@ public final class SVFrameMMO implements ModInitializer {
     public static SkillRuntime skillRuntime() { return SKILL_RUNTIME; }
     public static SkillBarRuntime skillBar() { return SKILL_BAR; }
     public static TemporarySkillOverlayRuntime temporarySkills() { return TEMPORARY_SKILLS; }
+    public static ExternalSkillRegistry externalSkills() { return EXTERNAL_SKILLS; }
     public static DelayedActionRuntime delayedActions() { return DELAYED_ACTIONS; }
 }
