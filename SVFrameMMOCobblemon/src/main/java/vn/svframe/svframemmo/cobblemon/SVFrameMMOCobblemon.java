@@ -57,14 +57,14 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         MOVE_VFX.reload();
         LuckPermsIntegration.initialize();
         PlaceholderIntegration.registerIfPresent();
-        if (Moves.count() > 0) CobblemonMoveSkillAdapter.reload();
+        if (Moves.count() > 0) reloadMoveSkillsOrThrow();
         CobblemonEvents.COBBLEMON_INITIALISED.subscribe(ignored -> {
-            CobblemonMoveSkillAdapter.reload();
+            reloadMoveSkillsOrThrow();
             MOVE_VFX.reload();
             // Reparse configured classes once live move metadata exists; SVFrameMMO itself remains Cobblemon-agnostic.
             if (!SVFrameMMO.reload()) LOG.warn("SVFrameMMO reload after Cobblemon move registry initialization failed");
         });
-        Moves.INSTANCE.getObservable().subscribe(ignored -> CobblemonMoveSkillAdapter.reload());
+        Moves.INSTANCE.getObservable().subscribe(ignored -> reloadMoveSkillsOrThrow());
 
         FusionLockHooks.register(FUSIONS);
         PotaraUseHandler.register(FUSIONS);
@@ -105,16 +105,26 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         });
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> COSMETICS.onJoin(handler.player));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            // Fabric fires disconnect from the networking path. Cleanup can touch PocketMorph/Cobblemon entity state,
-            // so marshal it to the main server thread instead of unloading entities from Netty.
             server.execute(() -> {
                 FUSIONS.onDisconnect(handler.player);
                 COSMETICS.onDisconnect(handler.player);
             });
         });
-        LOG.info("Cobblemon Integration online; generatedMoves={}, moveVfxPlans={}, cosmetics={}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
-                CobblemonMoveSkillAdapter.size(), MOVE_VFX.planCount(), COSMETICS.size(), config.fusion.potaraActionCooldownSeconds,
+        LOG.info("Cobblemon Integration online; generatedMoves={}, registeredSkills={}, moveVfxPlans={}, cosmetics={}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
+                CobblemonMoveSkillAdapter.size(),
+                SVFrameMMO.externalSkills().getByOwner(CobblemonMoveSkillAdapter.REGISTRY_OWNER).size(),
+                MOVE_VFX.planCount(), COSMETICS.size(), config.fusion.potaraActionCooldownSeconds,
                 config.fusion.danceDurationSeconds, config.fusion.danceCooldownSeconds);
+    }
+
+    private static void reloadMoveSkillsOrThrow() {
+        CobblemonMoveSkillAdapter.reload();
+        int generated = CobblemonMoveSkillAdapter.size();
+        int registered = SVFrameMMO.externalSkills().getByOwner(CobblemonMoveSkillAdapter.REGISTRY_OWNER).size();
+        if (generated <= 0)
+            throw new IllegalStateException("Cobblemon move catalog is loaded but zero SVFrameMMO Pokemon skills were generated");
+        if (registered != generated)
+            throw new IllegalStateException("Cobblemon move registration mismatch: generated=" + generated + ", registered=" + registered);
     }
 
     public static IntegrationConfig config() {
