@@ -17,8 +17,8 @@ import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.skill.ClassSkill;
 
 import java.util.Locale;
-import java.util.stream.Stream;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -54,12 +54,9 @@ public final class SkillGrantCommands implements ModInitializer {
 
     private static int grant(ServerCommandSource source, ServerPlayerEntity player, String skillId, int requestedLevel) {
         PlayerData data = SVFrameMMO.playerData().get(player);
-        ClassSkill skill = data.getProfess().getSkill(skillId);
-        boolean external = false;
-        if (skill == null) {
-            skill = SVFrameMMO.externalSkills().get(skillId);
-            external = skill != null;
-        }
+        ClassSkill classSkill = data.getProfess().getSkill(skillId);
+        ClassSkill skill = classSkill != null ? classSkill : SVFrameMMO.externalSkills().get(skillId);
+        boolean external = classSkill == null && skill != null;
         if (skill == null) {
             source.sendError(Text.literal("Unknown SVFrameMMO skill '" + skillId + "'."));
             return 0;
@@ -74,13 +71,12 @@ public final class SkillGrantCommands implements ModInitializer {
         if (!skill.isUnlockedByDefault() && !data.hasUnlocked(key)) data.unlock(key);
 
         int level = Math.min(Math.max(1, requestedLevel), Math.max(1, skill.getMaxLevel()));
-        // Current integration skills (including generated Cobblemon moves) are level-one definitions.
-        // PlayerData's class-level progression table remains class-owned; unlocking is sufficient for an external Lv.1 skill.
+        // Generated Cobblemon moves are external level-one definitions. Their persistent ownership is the unlock key;
+        // class-owned skill levels remain in PlayerData's class progression table.
         if (!external || level > 1) data.setSkillLevel(skill.getSkill(), level);
 
         ClassSkill granted = skill;
-        int grantedLevel = level;
-        source.sendFeedback(() -> Text.literal("Granted " + granted.getSkill().getName() + " Lv." + grantedLevel
+        source.sendFeedback(() -> Text.literal("Granted " + granted.getSkill().getName() + " Lv." + level
                 + " to " + player.getName().getString() + (external ? " [integration skill]" : "") + "."), true);
         return 1;
     }
