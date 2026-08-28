@@ -5,6 +5,7 @@ base { archivesName = 'SVFrameMMO-Cobblemon-Integration' }
 repositories {
     mavenCentral()
     maven { url = 'https://maven.fabricmc.net/' }
+    maven { url = 'https://maven.nucleoid.xyz/' }
     exclusiveContent {
         forRepository {
             maven {
@@ -22,7 +23,8 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     modImplementation "net.fabricmc:fabric-language-kotlin:${fabric_kotlin_version}"
     modImplementation "maven.modrinth:MdwFAVRL:kF7CvxTo"
-    modImplementation "maven.modrinth:xGdtZczs:xqZ9fctS"
+    modImplementation "eu.pb4:polymer-core:0.9.19+1.21.1"
+    modImplementation "eu.pb4:polymer-resource-pack:0.9.19+1.21.1"
     modImplementation "maven.modrinth:SszvX85I:ch7DfnXP"
     modCompileOnly "maven.modrinth:placeholder-api:2.4.2+1.21"
     compileOnly "net.luckperms:api:5.4"
