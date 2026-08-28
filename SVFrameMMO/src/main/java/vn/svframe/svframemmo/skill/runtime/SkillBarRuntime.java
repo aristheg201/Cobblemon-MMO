@@ -12,6 +12,7 @@ import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
 import vn.svframe.svframemmo.config.SVFrameMMOConfig;
 import vn.svframe.svframemmo.skill.ClassSkill;
+import vn.svframe.svframemmo.skill.PlayerSkillCatalog;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -155,31 +156,15 @@ public final class SkillBarRuntime {
             return List.copyOf(result);
         }
 
-        // A configured external loadout is a deliberate four-slot active build and is independent of the current class.
-        Map<Integer, String> externalBindings = SVFrameMMO.externalProgression().bindings(data.getUniqueId());
-        if (!externalBindings.isEmpty()) {
-            ArrayList<Map.Entry<Integer, String>> bound = new ArrayList<>(externalBindings.entrySet());
-            bound.sort(Map.Entry.comparingByKey());
-            ArrayList<CastBinding> result = new ArrayList<>(4);
-            int compact = 1;
-            for (Map.Entry<Integer, String> entry : bound) {
-                ClassSkill skill = SVFrameMMO.externalSkills().get(entry.getValue());
-                if (skill == null || skill.getTrigger().isPassive()
-                        || !SVFrameMMO.externalProgression().isLearned(data.getUniqueId(), entry.getValue())) continue;
-                int castSlot = config.useLowestKeybinds() ? compact++ : entry.getKey();
-                result.add(new CastBinding(castSlot, skill, false));
-            }
-            result.sort(Comparator.comparingInt(CastBinding::castSlot));
-            return List.copyOf(result);
-        }
-
-        ArrayList<Map.Entry<Integer, String>> bound = new ArrayList<>(data.getSkillBindings().entrySet());
+        // Persistent RPG skills share one effective loadout. Class and integration skills can coexist by slot.
+        ArrayList<Map.Entry<Integer, PlayerSkillCatalog.Entry>> bound = new ArrayList<>(PlayerSkillCatalog.bindings(data).entrySet());
         bound.sort(Map.Entry.comparingByKey());
         ArrayList<CastBinding> result = new ArrayList<>();
         int compact = 1;
-        for (Map.Entry<Integer, String> entry : bound) {
-            ClassSkill skill = data.getProfess().getSkill(entry.getValue());
-            if (skill == null || skill.getTrigger().isPassive() || !data.canUseSkill(skill)) continue;
+        for (Map.Entry<Integer, PlayerSkillCatalog.Entry> entry : bound) {
+            PlayerSkillCatalog.Entry owned = entry.getValue();
+            ClassSkill skill = owned == null ? null : owned.skill();
+            if (skill == null || skill.getTrigger().isPassive() || !owned.learned()) continue;
             int castSlot = config.useLowestKeybinds() ? compact++ : entry.getKey();
             result.add(new CastBinding(castSlot, skill, false));
         }
@@ -211,7 +196,9 @@ public final class SkillBarRuntime {
     }
 
     private static double parameter(ClassSkill skill, String id, PlayerData data) {
-        return skill.getParameters().containsKey(id) ? Math.max(0d, skill.getParameter(id, data)) : 0d;
+        if (!skill.getParameters().containsKey(id)) return 0d;
+        int level = PlayerSkillCatalog.level(data, skill);
+        return Math.max(0d, skill.getParameter(id, level, data));
     }
 
     private static String formatDefaultBar(PlayerData data, String raw) {
