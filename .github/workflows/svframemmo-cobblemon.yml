@@ -46,7 +46,7 @@ jobs:
           grep -q '"client"' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
           grep -q '"mixins"' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
           grep -q '@Mixin(PlayerEntityRenderer.class)' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/client/PlayerEntityRendererMixin.java
-          grep -q 'PokemonProperties' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/client/FusionRenderState.java
+          grep -q 'PokemonProperties' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/ClientFusionMorphState.java
           grep -q 'FusionNetworkGuards.register(FUSIONS)' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/SVFrameMMOCobblemon.java
           grep -q 'unregisterGlobalReceiver' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionNetworkGuards.java
           grep -q 'move_party_pokemon_to_pc' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionNetworkGuards.java
