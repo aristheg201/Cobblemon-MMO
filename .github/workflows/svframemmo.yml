@@ -47,6 +47,14 @@ jobs:
           SRC=SVFrameMMO/src/main
           grep -q '"id": "svframemmo"' "$SRC/resources/fabric.mod.json"
           grep -q '"svframelib": ">=1.7.1-fabric"' "$SRC/resources/fabric.mod.json"
+          grep -q '"svframemmo.mixins.json"' "$SRC/resources/fabric.mod.json"
+          grep -q 'SWAP_ITEM_WITH_OFFHAND' "$SRC/java/vn/svframe/svframemmo/mixin/ServerPlayNetworkHandlerMixin.java"
+          grep -q 'onUpdateSelectedSlot' "$SRC/java/vn/svframe/svframemmo/mixin/ServerPlayNetworkHandlerMixin.java"
+          grep -q 'SKILL_BAR.tick' "$SRC/java/vn/svframe/svframemmo/SVFrameMMO.java"
+          grep -q 'suggestSkills' "$SRC/java/vn/svframe/svframemmo/command/SVFrameMMOCommands.java"
+          grep -q 'getSkills().getHandlers()' "$SRC/java/vn/svframe/svframemmo/command/SVFrameMMOCommands.java"
+          grep -q 'Reload complete' "$SRC/java/vn/svframe/svframemmo/command/SVFrameMMOCommands.java"
+          grep -q 'legacyText(resolved)' SVFrameLib/src/main/java/vn/svframe/svframelib/message/actionbar/ActionBarHandler.java
           if grep -RIn --binary-files=without-match -Ei 'net[.]Indyuce|io[.]lumine|org[.]bukkit|io[.]papermc|mythicmobs|mmocore|mythiclib|mmoitems|spigot|placeholderapi|worldguard|citizens|vault' "$SRC" --include='*.java' --include='*.json' --include='*.yml'; then exit 1; fi
           grep -q '^CLS_WARRIOR_DEEP_WOUND:' "$SRC/resources/defaults/skills/legacy-class-aliases.yml"
           test "$(grep -Ec '^CLS_[A-Z0-9_]+:$' "$SRC/resources/defaults/skills/legacy-class-aliases.yml")" -eq 34
