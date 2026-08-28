@@ -20,15 +20,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Real fusion morph presentation backed by PocketMorph's authoritative disguise state.
- * The player remains the real entity; no invisible-player + following-Pokemon proxy is used.
+ * The player is the only visible fused entity; the party Pokemon must already be recalled.
  */
 public final class FusionVisualBridge {
     private static final String SOURCE = "SVFrameMMO Cobblemon fusion";
     private final Map<UUID, State> states = new ConcurrentHashMap<>();
 
-    public void start(ServerPlayerEntity player, Pokemon pokemon, PokemonEntity entity, boolean autoDeployed) {
+    public void start(ServerPlayerEntity player, Pokemon pokemon) {
         UUID playerId = player.getUuid();
         if (states.containsKey(playerId)) throw new IllegalStateException("Fusion visual already active for " + playerId);
+
+        PokemonEntity deployed = pokemon.getEntity();
+        if (deployed != null && !deployed.isRemoved())
+            throw new IllegalStateException("Fusion render requires the party Pokemon to be recalled; refusing duplicate Pokemon entity");
 
         SyncedDisguiseData previous = ServerDisguiseSyncManager.get(playerId);
         String species = CobblemonSpeciesResolver.normalizeSpeciesIdentifier(
@@ -67,11 +71,8 @@ public final class FusionVisualBridge {
                 throw new IllegalStateException("PocketMorph rejected the requested fusion disguise for " + species);
 
             states.put(playerId, new State(playerId, species, previous));
+            // Authoritative sync uses forceLocal for the owner, so PocketMorph replaces the local player's renderer too.
             ModPayloads.broadcastAuthoritativeSyncedState(player.getServerWorld().getServer(), applied, SOURCE);
-
-            // The fused player is the visible Pokemon now. The real party Pokemon must not remain as a duplicate entity.
-            PokemonEntity deployed = pokemon.getEntity();
-            if (deployed != null && !deployed.isRemoved() && !deployed.isBattling()) pokemon.recall();
         } catch (RuntimeException error) {
             restore(player, playerId, previous);
             throw error;
