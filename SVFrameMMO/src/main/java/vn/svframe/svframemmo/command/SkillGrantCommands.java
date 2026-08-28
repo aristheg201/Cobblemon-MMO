@@ -17,12 +17,13 @@ import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.skill.ClassSkill;
 
 import java.util.Locale;
+import java.util.stream.Stream;
 import java.util.concurrent.CompletableFuture;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-/** Explicit admin aliases for directly teaching/granting a configured class skill. */
+/** Admin aliases for teaching either class skills or integration-contributed SVFrameMMO skills. */
 public final class SkillGrantCommands implements ModInitializer {
     @Override
     public void onInitialize() {
@@ -54,23 +55,33 @@ public final class SkillGrantCommands implements ModInitializer {
     private static int grant(ServerCommandSource source, ServerPlayerEntity player, String skillId, int requestedLevel) {
         PlayerData data = SVFrameMMO.playerData().get(player);
         ClassSkill skill = data.getProfess().getSkill(skillId);
+        boolean external = false;
         if (skill == null) {
-            source.sendError(Text.literal("Class " + data.getProfess().getName() + " does not contain skill '" + skillId + "'."));
+            skill = SVFrameMMO.externalSkills().get(skillId);
+            external = skill != null;
+        }
+        if (skill == null) {
+            source.sendError(Text.literal("Unknown SVFrameMMO skill '" + skillId + "'."));
             return 0;
         }
         if (data.getLevel() < skill.getUnlockLevel()) {
-            source.sendError(Text.literal(skill.getSkill().getName() + " requires class level " + skill.getUnlockLevel()
+            source.sendError(Text.literal(skill.getSkill().getName() + " requires level " + skill.getUnlockLevel()
                     + "; " + player.getName().getString() + " is level " + data.getLevel() + "."));
             return 0;
         }
 
         String key = skill.getUnlockNamespacedKey();
         if (!skill.isUnlockedByDefault() && !data.hasUnlocked(key)) data.unlock(key);
-        int level = Math.min(Math.max(1, requestedLevel), Math.max(1, skill.getMaxLevel()));
-        data.setSkillLevel(skill.getSkill(), level);
 
-        source.sendFeedback(() -> Text.literal("Granted " + skill.getSkill().getName() + " Lv." + level
-                + " to " + player.getName().getString() + "."), true);
+        int level = Math.min(Math.max(1, requestedLevel), Math.max(1, skill.getMaxLevel()));
+        // Current integration skills (including generated Cobblemon moves) are level-one definitions.
+        // PlayerData's class-level progression table remains class-owned; unlocking is sufficient for an external Lv.1 skill.
+        if (!external || level > 1) data.setSkillLevel(skill.getSkill(), level);
+
+        ClassSkill granted = skill;
+        int grantedLevel = level;
+        source.sendFeedback(() -> Text.literal("Granted " + granted.getSkill().getName() + " Lv." + grantedLevel
+                + " to " + player.getName().getString() + (external ? " [integration skill]" : "") + "."), true);
         return 1;
     }
 
@@ -78,7 +89,9 @@ public final class SkillGrantCommands implements ModInitializer {
         try {
             PlayerData data = SVFrameMMO.playerData().get(EntityArgumentType.getPlayer(ctx, "player"));
             String remaining = builder.getRemainingLowerCase();
-            data.getProfess().getSkills().stream()
+            Stream.concat(
+                            data.getProfess().getSkills().stream(),
+                            SVFrameMMO.externalSkills().getAll().stream())
                     .map(skill -> skill.getSkill().getId())
                     .filter(id -> id != null && id.toLowerCase(Locale.ROOT).startsWith(remaining))
                     .distinct()
