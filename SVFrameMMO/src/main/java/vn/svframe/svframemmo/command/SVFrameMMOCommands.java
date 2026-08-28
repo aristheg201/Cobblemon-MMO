@@ -4,15 +4,21 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import net.minecraft.command.argument.EntityArgumentType;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.command.argument.EntityArgumentType;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.event.PlayerClassChangeEvent;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.experience.EXPSource;
 
+import java.util.Comparator;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -29,15 +35,19 @@ public final class SVFrameMMOCommands {
                 .then(literal("skills").executes(ctx -> skills(ctx.getSource(), ctx.getSource().getPlayerOrThrow())))
                 .then(literal("skill")
                         .then(literal("upgrade").then(argument("skill", StringArgumentType.word())
+                                .suggests((ctx, builder) -> suggestSkills(builder))
                                 .executes(ctx -> upgrade(ctx.getSource(), StringArgumentType.getString(ctx, "skill"), true))))
                         .then(literal("downgrade").then(argument("skill", StringArgumentType.word())
+                                .suggests((ctx, builder) -> suggestSkills(builder))
                                 .executes(ctx -> upgrade(ctx.getSource(), StringArgumentType.getString(ctx, "skill"), false))))
                         .then(literal("bind").then(argument("slot", IntegerArgumentType.integer(1))
                                 .then(argument("skill", StringArgumentType.word())
+                                        .suggests((ctx, builder) -> suggestSkills(builder))
                                         .executes(ctx -> bind(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "slot"), StringArgumentType.getString(ctx, "skill"))))))
                         .then(literal("unbind").then(argument("slot", IntegerArgumentType.integer(1))
                                 .executes(ctx -> unbind(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "slot")))))
                         .then(literal("cast").then(argument("skill", StringArgumentType.word())
+                                .suggests((ctx, builder) -> suggestSkills(builder))
                                 .executes(ctx -> cast(ctx.getSource(), StringArgumentType.getString(ctx, "skill")))))
                         .then(literal("castslot").then(argument("slot", IntegerArgumentType.integer(1))
                                 .executes(ctx -> castSlot(ctx.getSource(), IntegerArgumentType.getInteger(ctx, "slot"))))))
@@ -50,12 +60,7 @@ public final class SVFrameMMOCommands {
 
     private static com.mojang.brigadier.builder.LiteralArgumentBuilder<ServerCommandSource> adminTree() {
         return literal("admin").requires(source -> source.hasPermissionLevel(2))
-                .then(literal("reload").executes(ctx -> {
-                    boolean ok = SVFrameMMO.reload();
-                    if (!ok) { ctx.getSource().sendError(Text.literal("SVFrameMMO reload failed; check server log.")); return 0; }
-                    success(ctx.getSource(), "SVFrameMMO reloaded | " + SVFrameMMO.definitionSummary());
-                    return 1;
-                }))
+                .then(literal("reload").executes(ctx -> reload(ctx.getSource())))
                 .then(literal("class").then(argument("player", EntityArgumentType.player())
                         .then(argument("class", StringArgumentType.word())
                                 .executes(ctx -> setClass(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player"), StringArgumentType.getString(ctx, "class"))))))
@@ -78,6 +83,40 @@ public final class SVFrameMMOCommands {
                         .then(argument("tree", StringArgumentType.word())
                                 .then(argument("amount", IntegerArgumentType.integer())
                                         .executes(ctx -> treePoints(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player"), StringArgumentType.getString(ctx, "tree"), IntegerArgumentType.getInteger(ctx, "amount")))))));
+    }
+
+    private static CompletableFuture<com.mojang.brigadier.suggestion.Suggestions> suggestSkills(SuggestionsBuilder builder) {
+        String remaining = builder.getRemainingLowerCase();
+        SVFrameLib.inst().getSkills().getHandlers().stream()
+                .sorted(Comparator.comparing(handler -> handler.getId().toLowerCase(Locale.ROOT)))
+                .map(handler -> handler.getId())
+                .filter(id -> id.toLowerCase(Locale.ROOT).startsWith(remaining))
+                .forEach(builder::suggest);
+        return builder.buildFuture();
+    }
+
+    private static int reload(ServerCommandSource source) {
+        long started = System.nanoTime();
+        boolean ok = SVFrameMMO.reload();
+        long elapsedMs = Math.max(0L, (System.nanoTime() - started) / 1_000_000L);
+        if (!ok) {
+            source.sendError(Text.literal("[SVFrameMMO] Reload failed").formatted(Formatting.RED));
+            return 0;
+        }
+        source.sendFeedback(() -> Text.literal("[SVFrameMMO] ").formatted(Formatting.DARK_GRAY)
+                .append(Text.literal("Reload complete").formatted(Formatting.GREEN))
+                .append(Text.literal(" (" + elapsedMs + " ms)").formatted(Formatting.DARK_GRAY)), false);
+        source.sendFeedback(() -> Text.literal("Classes ").formatted(Formatting.GRAY)
+                .append(Text.literal(Integer.toString(SVFrameMMO.classes().size())).formatted(Formatting.WHITE))
+                .append(Text.literal("  •  Skills ").formatted(Formatting.DARK_GRAY))
+                .append(Text.literal(Integer.toString(SVFrameLib.inst().getSkills().getHandlers().size())).formatted(Formatting.WHITE))
+                .append(Text.literal("  •  Attributes ").formatted(Formatting.DARK_GRAY))
+                .append(Text.literal(Integer.toString(SVFrameMMO.attributes().size())).formatted(Formatting.WHITE))
+                .append(Text.literal("  •  Professions ").formatted(Formatting.DARK_GRAY))
+                .append(Text.literal(Integer.toString(SVFrameMMO.professions().size())).formatted(Formatting.WHITE))
+                .append(Text.literal("  •  Trees ").formatted(Formatting.DARK_GRAY))
+                .append(Text.literal(Integer.toString(SVFrameMMO.skillTrees().size())).formatted(Formatting.WHITE)), false);
+        return 1;
     }
 
     private static int profile(ServerCommandSource source, ServerPlayerEntity player) {
