@@ -71,6 +71,7 @@ public final class IntegrationConfig {
             PotaraItem spec = entry.getValue();
             if (spec == null) throw new IllegalArgumentException("Missing Potara config for " + entry.getKey());
             Identifier itemId = spec.itemId();
+            if (!"minecraft".equals(itemId.getNamespace())) throw new IllegalArgumentException("Potara item must be a vanilla Minecraft item for " + entry.getKey() + ": " + itemId);
             if (!Registries.ITEM.containsId(itemId)) throw new IllegalArgumentException("Unknown vanilla item for " + entry.getKey() + ": " + itemId);
             if (spec.customModelData < 0) throw new IllegalArgumentException("custom-model-data must be >= 0 for " + entry.getKey());
             String pair = itemId + "#" + spec.customModelData;
