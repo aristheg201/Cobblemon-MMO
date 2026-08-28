@@ -125,6 +125,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             throw new IllegalStateException("Cobblemon move catalog is loaded but zero SVFrameMMO Pokemon skills were generated");
         if (registered != generated)
             throw new IllegalStateException("Cobblemon move registration mismatch: generated=" + generated + ", registered=" + registered);
+        LOG.info("Cobblemon move skills published; generatedMoves={}, registeredSkills={}", generated, registered);
     }
 
     public static IntegrationConfig config() {
