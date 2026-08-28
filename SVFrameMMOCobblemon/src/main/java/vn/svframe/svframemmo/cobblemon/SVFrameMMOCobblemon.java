@@ -1,7 +1,6 @@
 package vn.svframe.svframemmo.cobblemon;
 
 import com.cobblemon.mod.common.api.events.CobblemonEvents;
-import com.cobblemon.mod.common.api.moves.Moves;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
@@ -51,20 +50,11 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         }
 
         SnowstormPackService.install();
-        // Idempotent: normally registered by the early SVFrameMMO entrypoint before class YAML is parsed.
-        FUSIONS.registerMoveSkillSource();
         MOVE_VFX.reload();
         LuckPermsIntegration.initialize();
         PlaceholderIntegration.registerIfPresent();
-        if (Moves.count() > 0) FUSIONS.reloadMoveDefinitions();
-        CobblemonEvents.COBBLEMON_INITIALISED.subscribe(ignored -> {
-            FUSIONS.reloadMoveDefinitions();
-            MOVE_VFX.reload();
-            // Class YAML may have been parsed by SVFrameMMO before Cobblemon populated Moves.all().
-            // Reparse once with live move metadata; the core remains Cobblemon-agnostic.
-            if (!SVFrameMMO.reload()) LOG.warn("SVFrameMMO reload after Cobblemon move registry initialization failed");
-        });
-        Moves.INSTANCE.getObservable().subscribe(ignored -> FUSIONS.reloadMoveDefinitions());
+        CobblemonEvents.COBBLEMON_INITIALISED.subscribe(ignored -> MOVE_VFX.reload());
+
         FusionLockHooks.register(FUSIONS);
         PotaraUseHandler.register(FUSIONS);
         PlayerCastSkillEvent.EVENT.register(event -> {
@@ -106,8 +96,8 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             FUSIONS.onDisconnect(handler.player);
             COSMETICS.onDisconnect(handler.player);
         });
-        LOG.info("Cobblemon Integration online; generatedMoves={}, moveVfxPlans={}, cosmetics={}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
-                FUSIONS.moveDefinitionCount(), MOVE_VFX.planCount(), COSMETICS.size(), config.fusion.potaraActionCooldownSeconds,
+        LOG.info("Cobblemon Integration online; moveVfxPlans={}, cosmetics={}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
+                MOVE_VFX.planCount(), COSMETICS.size(), config.fusion.potaraActionCooldownSeconds,
                 config.fusion.danceDurationSeconds, config.fusion.danceCooldownSeconds);
     }
 

@@ -36,14 +36,16 @@ jobs:
         with: { distribution: temurin, java-version: '21' }
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: '8.8' }
-      - name: Ownership gate
+      - name: Ownership and architecture gate
         shell: bash
         run: |
           set -euo pipefail
           ! grep -RIn --binary-files=without-match -Ei 'svframeitems|fusion_tier' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
+          ! grep -RIn --binary-files=without-match -Ei 'svframemmo-skill-source|source:[[:space:]]*cobblemon|SkillHandlerSource|Moves\.all\(|SVFrameMMO\.reload\(' SVFrameMMOCobblemon/src
           grep -q 'custom-model-data' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'DataComponentTypes.CUSTOM_MODEL_DATA' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/item/PotaraTierResolver.java
-          grep -q 'svframemmo-skill-source' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
+          grep -q 'slot > 4' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
+          grep -q 'session == null || !session.activated()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionService.java
           grep -q 'kyurem_black' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'kyurem_white' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'POTARA_FUSION_FORM_DELAY_TICKS = 88L' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
@@ -54,27 +56,49 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: '8.12.1' }
       - name: Build integration
-        run: cd SVFrameMMOCobblemon && gradle --no-daemon --stacktrace clean test nativeIntegrationSmoke remapJar
-      - name: Dedicated Integration Fabric boot
+        run: cd SVFrameMMOCobblemon && gradle --no-daemon --stacktrace clean test nativeIntegrationSmoke remapJar copyProductionRuntimeDeps
+      - name: Dedicated Integration Fabric production boot
         shell: bash
         run: |
           set -euo pipefail
           cd SVFrameMMOCobblemon
-          mkdir -p run
-          printf 'eula=true\n' > run/eula.txt
+          ROOT="$PWD"
+          SERVER="$ROOT/build/production-server"
+          rm -rf "$SERVER"
+          mkdir -p "$SERVER/mods" "$SERVER/extra-libs"
+
+          for jar in "$ROOT"/build/production-runtime-deps/*.jar; do
+            if unzip -Z1 "$jar" | grep -qx 'fabric.mod.json'; then
+              cp "$jar" "$SERVER/mods/"
+            else
+              cp "$jar" "$SERVER/extra-libs/"
+            fi
+          done
+
+          cp "$ROOT/../SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar" "$SERVER/mods/"
+          cp "$ROOT/../SVFrameMMO/build/libs/SVFrameMMO-1.13.1-fabric.jar" "$SERVER/mods/"
+          integration_jar=$(find "$ROOT/build/libs" -maxdepth 1 -type f -name 'SVFrameMMO-Cobblemon-Integration-*.jar' ! -name '*sources*' | head -n 1)
+          test -n "$integration_jar"
+          cp "$integration_jar" "$SERVER/mods/"
+
+          curl -fsSL 'https://maven.fabricmc.net/net/fabricmc/fabric-installer/1.0.3/fabric-installer-1.0.3.jar' -o "$SERVER/fabric-installer.jar"
+          cd "$SERVER"
+          java -jar fabric-installer.jar server -mcversion 1.21.1 -loader 0.18.4 -downloadMinecraft
+          printf 'eula=true\n' > eula.txt
+
           set +e
-          timeout 120s gradle --no-daemon runServer > build/integration-server.log 2>&1
+          timeout 150s java -Xms512M -Xmx2G -cp 'extra-libs/*:fabric-server-launch.jar' net.fabricmc.loader.impl.launch.server.FabricServerLauncher nogui > "$ROOT/build/integration-server.log" 2>&1
           status=$?
           set -e
-          cat build/integration-server.log
+          cat "$ROOT/build/integration-server.log"
           if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
-          grep -q 'Loading Minecraft 1.21.1 with Fabric Loader' build/integration-server.log
-          grep -q 'SVFrameMMO Fabric online' build/integration-server.log
-          grep -q 'Cobblemon Integration online' build/integration-server.log
-          grep -q 'Done (' build/integration-server.log
-          ! grep -q 'Mixin apply failed' build/integration-server.log
-          ! grep -q 'Could not execute entrypoint stage' build/integration-server.log
-          ! grep -Eq 'NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Exception in server tick loop' build/integration-server.log
+          grep -q 'Loading Minecraft 1.21.1 with Fabric Loader' "$ROOT/build/integration-server.log"
+          grep -q 'SVFrameMMO Fabric online' "$ROOT/build/integration-server.log"
+          grep -q 'Cobblemon Integration online' "$ROOT/build/integration-server.log"
+          grep -q 'Done (' "$ROOT/build/integration-server.log"
+          ! grep -q 'Mixin apply failed' "$ROOT/build/integration-server.log"
+          ! grep -q 'Could not execute entrypoint stage' "$ROOT/build/integration-server.log"
+          ! grep -Eq 'NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Exception in server tick loop' "$ROOT/build/integration-server.log"
       - name: Upload validated artifact
         uses: actions/upload-artifact@v4
         with:

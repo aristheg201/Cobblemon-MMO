@@ -11,9 +11,6 @@
   "entrypoints": {
     "main": [
       "vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon"
-    ],
-    "svframemmo-skill-source": [
-      "vn.svframe.svframemmo.cobblemon.integration.CobblemonSkillSourceEntrypoint"
     ]
   },
   "mixins": [

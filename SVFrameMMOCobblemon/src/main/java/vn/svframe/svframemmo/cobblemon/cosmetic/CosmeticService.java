@@ -1,5 +1,6 @@
 package vn.svframe.svframemmo.cobblemon.cosmetic;
 
+import com.cobblemon.mod.common.api.moves.Moves;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -17,6 +18,7 @@ import vn.svframe.svframelib.config.YamlLite;
 import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 import vn.svframe.svframemmo.cobblemon.integration.LuckPermsIntegration;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkill;
+import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkillAdapter;
 
 import java.io.Reader;
 import java.lang.reflect.Type;
@@ -171,8 +173,7 @@ public final class CosmeticService {
         PlayerState state = state(player.getUuid());
         if (!state.owned().contains(definition.id())) return Result.fail("You do not own this cosmetic.");
         if (!LuckPermsIntegration.has(player, definition.permission())) return Result.fail("You do not have permission to use this cosmetic.");
-        if (SVFrameLib.inst().getSkills().getHandler(definition.skillId()) == null)
-            return Result.fail("Target skill is not registered: " + definition.skillId());
+        if (!knownTargetSkill(definition.skillId())) return Result.fail("Unknown target skill: " + definition.skillId());
         String old = state.equipped().put(definition.skillId(), definition.id());
         if (definition.id().equals(old)) return Result.ok(definition);
         if (old != null) {
@@ -182,6 +183,14 @@ public final class CosmeticService {
         renderer.equip(player, definition);
         dirty = true;
         return Result.ok(definition);
+    }
+
+    private static boolean knownTargetSkill(String skillId) {
+        if (CobblemonMoveSkillAdapter.isCanonicalSkillId(skillId)) {
+            String moveId = CobblemonMoveSkillAdapter.moveIdFromCanonical(skillId);
+            return Moves.getByName(moveId) != null;
+        }
+        return SVFrameLib.inst().getSkills().getHandler(skillId) != null;
     }
 
     public boolean unequip(ServerPlayerEntity player, String skillId) {

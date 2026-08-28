@@ -18,6 +18,12 @@ repositories {
         filter { includeGroup 'maven.modrinth' }
     }
 }
+configurations {
+    productionRuntimeDeps {
+        canBeConsumed = false
+        canBeResolved = true
+    }
+}
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
@@ -38,6 +44,18 @@ dependencies {
     compileOnly "net.luckperms:api:5.4"
     modImplementation files('../SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar')
     modImplementation files('../SVFrameMMO/build/libs/SVFrameMMO-1.13.1-fabric.jar')
+
+    productionRuntimeDeps "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    productionRuntimeDeps "maven.modrinth:MdwFAVRL:kF7CvxTo"
+    productionRuntimeDeps "eu.pb4:polymer-core:0.9.19+1.21.1"
+    productionRuntimeDeps "eu.pb4:polymer-resource-pack:0.9.19+1.21.1"
+    productionRuntimeDeps "dev.architectury:architectury-fabric:13.0.8"
+    productionRuntimeDeps "io.wispforest:accessories-fabric:1.1.0-beta.52+1.21.1"
+    productionRuntimeDeps "io.wispforest:owo-lib:0.12.15.4+1.21"
+    productionRuntimeDeps "io.wispforest:endec:0.1.8.1"
+    productionRuntimeDeps "io.wispforest.endec:netty:0.1.4"
+    productionRuntimeDeps "io.wispforest.endec:gson:0.1.5.1"
+    productionRuntimeDeps "maven.modrinth:SszvX85I:ch7DfnXP"
 }
 tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8' }
 java { sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21; withSourcesJar() }
@@ -49,4 +67,11 @@ tasks.register('nativeIntegrationSmoke', JavaExec) {
     description = 'Runs native Cobblemon integration smoke checks on the Loom runtime classpath.'
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'vn.svframe.svframemmo.cobblemon.validation.NativeIntegrationSmoke'
+}
+
+tasks.register('copyProductionRuntimeDeps', Sync) {
+    group = 'verification'
+    description = 'Copies raw production-mapped mod/runtime artifacts for dedicated Fabric boot validation.'
+    from configurations.productionRuntimeDeps
+    into layout.buildDirectory.dir('production-runtime-deps')
 }
