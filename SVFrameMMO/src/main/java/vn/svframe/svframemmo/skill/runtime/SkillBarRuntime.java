@@ -122,12 +122,25 @@ public final class SkillBarRuntime {
         String rawId = split[0].trim();
         float volume = floatValue(split, 1, 1f);
         float pitch = floatValue(split, 2, 1f);
-        Identifier id;
-        if (rawId.indexOf(':') >= 0) id = Identifier.tryParse(rawId.toLowerCase(Locale.ROOT));
-        else id = Identifier.tryParse("minecraft:" + rawId.toLowerCase(Locale.ROOT).replace('_', '.'));
+        Identifier id = resolveSoundId(rawId);
         if (id == null) return;
         Registries.SOUND_EVENT.getEntry(id).ifPresent(sound -> player.getServerWorld().playSound(
                 null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, volume, pitch));
+    }
+
+    private static Identifier resolveSoundId(String rawId) {
+        if (rawId == null || rawId.isBlank()) return null;
+        if (rawId.indexOf(':') >= 0) {
+            Identifier direct = Identifier.tryParse(rawId.toLowerCase(Locale.ROOT));
+            return direct != null && Registries.SOUND_EVENT.containsId(direct) ? direct : null;
+        }
+        String legacy = rawId.trim().toUpperCase(Locale.ROOT);
+        for (Identifier candidate : Registries.SOUND_EVENT.getIds()) {
+            String normalized = candidate.getPath().replace('.', '_').replace('/', '_').toUpperCase(Locale.ROOT);
+            if (normalized.equals(legacy)) return candidate;
+        }
+        Identifier direct = Identifier.tryParse("minecraft:" + rawId.toLowerCase(Locale.ROOT));
+        return direct != null && Registries.SOUND_EVENT.containsId(direct) ? direct : null;
     }
 
     private static float floatValue(String[] values, int index, float fallback) {
