@@ -70,20 +70,22 @@ public final class CobblemonMoveSkillAdapter {
     public int size() { return definitions.size(); }
     public Map<String, ClassSkill> definitions() { return Map.copyOf(definitions); }
 
+    /** Fusion may only bind canonical handlers that are already present in SVFrameMMO/SVFrameLib's global skill registry. */
     public Overlay snapshot(Pokemon pokemon) {
         LinkedHashMap<Integer, ClassSkill> skills = new LinkedHashMap<>();
         ArrayList<String> ids = new ArrayList<>(4);
-        List<Move> moves = pokemon.getMoveSet().getMoves();
+        List<Move> currentMoves = pokemon.getMoveSet().getMoves();
         int slot = 1;
-        for (Move move : moves) {
+        for (Move move : currentMoves) {
             if (move == null || slot > 4) continue;
             String moveId = id(move.getName());
             ClassSkill skill = definitions.get(moveId);
             if (skill == null) {
-                MoveTemplate template = move.getTemplate();
-                CobblemonMoveSkill fallback = new CobblemonMoveSkill(defaultConfig(canonicalId(moveId), template),
-                        template.getName(), semantics, fusionService);
-                skill = new ClassSkill(fallback, 0, 1, true, true, false);
+                SkillHandler<?> registered = SVFrameLib.inst().getSkills().getHandler(canonicalId(moveId));
+                if (!(registered instanceof CobblemonMoveSkill handler))
+                    throw new IllegalStateException("Cobblemon move is not registered as an SVFrameMMO skill: " + move.getName());
+                skill = new ClassSkill(handler, 0, 1, true, true, false);
+                definitions.putIfAbsent(moveId, skill);
             }
             skills.put(slot++, skill);
             ids.add(moveId);
@@ -122,6 +124,8 @@ public final class CobblemonMoveSkillAdapter {
     private static MapConfigObject mergeConfig(String key, String requested, MoveTemplate move, ConfigObject configured) {
         LinkedHashMap<String, Object> merged;
         if (move == null) {
+            // Early class parsing can happen before Cobblemon populates Moves.all(). The handler resolves its live
+            // MoveTemplate dynamically and SVFrameMMO is reparsed once COBBLEMON_INITIALISED fires.
             merged = new LinkedHashMap<>();
             merged.put("name", requested);
             merged.put("lore", List.of("Cobblemon move: " + requested));
