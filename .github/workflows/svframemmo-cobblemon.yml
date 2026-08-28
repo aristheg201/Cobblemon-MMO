@@ -65,7 +65,7 @@ jobs:
       - name: Build SVFrameMMO
         run: cd SVFrameMMO && gradle --no-daemon clean test remapJar
       - uses: gradle/actions/setup-gradle@v4
-        with: { gradle-version: '8.12.1' }
+        with: { gradle-version: '9.2.0' }
       - name: Build integration
         run: cd SVFrameMMOCobblemon && gradle --no-daemon --stacktrace clean test nativeIntegrationSmoke remapJar copyProductionRuntimeDeps
       - name: Dedicated Integration Fabric production boot
