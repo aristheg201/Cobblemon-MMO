@@ -1,6 +1,7 @@
 package vn.svframe.svframemmo.cobblemon;
 
 import com.cobblemon.mod.common.api.events.CobblemonEvents;
+import com.cobblemon.mod.common.api.moves.Moves;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
@@ -27,6 +28,7 @@ import vn.svframe.svframemmo.cobblemon.integration.LuckPermsIntegration;
 import vn.svframe.svframemmo.cobblemon.integration.PlaceholderIntegration;
 import vn.svframe.svframemmo.cobblemon.item.PotaraTierResolver;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkill;
+import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkillAdapter;
 
 /** Separate native server-side integration mod bridging Cobblemon/Mega Showdown to SVFrameMMO. */
 public final class SVFrameMMOCobblemon implements ModInitializer {
@@ -50,10 +52,18 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         }
 
         SnowstormPackService.install();
+        CobblemonMoveSkillAdapter.registerSkillSource();
         MOVE_VFX.reload();
         LuckPermsIntegration.initialize();
         PlaceholderIntegration.registerIfPresent();
-        CobblemonEvents.COBBLEMON_INITIALISED.subscribe(ignored -> MOVE_VFX.reload());
+        if (Moves.count() > 0) CobblemonMoveSkillAdapter.reload();
+        CobblemonEvents.COBBLEMON_INITIALISED.subscribe(ignored -> {
+            CobblemonMoveSkillAdapter.reload();
+            MOVE_VFX.reload();
+            // Reparse configured classes once live move metadata exists; SVFrameMMO itself remains Cobblemon-agnostic.
+            if (!SVFrameMMO.reload()) LOG.warn("SVFrameMMO reload after Cobblemon move registry initialization failed");
+        });
+        Moves.INSTANCE.getObservable().subscribe(ignored -> CobblemonMoveSkillAdapter.reload());
 
         FusionLockHooks.register(FUSIONS);
         PotaraUseHandler.register(FUSIONS);
@@ -96,8 +106,8 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             FUSIONS.onDisconnect(handler.player);
             COSMETICS.onDisconnect(handler.player);
         });
-        LOG.info("Cobblemon Integration online; moveVfxPlans={}, cosmetics={}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
-                MOVE_VFX.planCount(), COSMETICS.size(), config.fusion.potaraActionCooldownSeconds,
+        LOG.info("Cobblemon Integration online; generatedMoves={}, moveVfxPlans={}, cosmetics={}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
+                CobblemonMoveSkillAdapter.size(), MOVE_VFX.planCount(), COSMETICS.size(), config.fusion.potaraActionCooldownSeconds,
                 config.fusion.danceDurationSeconds, config.fusion.danceCooldownSeconds);
     }
 
