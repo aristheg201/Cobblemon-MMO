@@ -11,8 +11,14 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vn.svframe.svframelib.api.event.skill.PlayerCastSkillEvent;
+import vn.svframe.svframelib.api.event.skill.SkillCastEvent;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.cobblemon.config.IntegrationConfig;
+import vn.svframe.svframemmo.cobblemon.cosmetic.CosmeticCommands;
+import vn.svframe.svframemmo.cobblemon.cosmetic.CosmeticDefaults;
+import vn.svframe.svframemmo.cobblemon.cosmetic.CosmeticService;
+import vn.svframe.svframemmo.cobblemon.cosmetic.SnowstormAssetLoader;
+import vn.svframe.svframemmo.cobblemon.cosmetic.SnowstormPackService;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionCommands;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionLockHooks;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionService;
@@ -31,11 +37,20 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
     private static final PotaraTierResolver POTARA = new PotaraTierResolver();
     private static final FusionService FUSIONS = new FusionService();
     private static final CobblemonMoveVfxService MOVE_VFX = new CobblemonMoveVfxService();
+    private static final CosmeticService COSMETICS = new CosmeticService();
 
     @Override public void onInitialize() {
         try { config = IntegrationConfig.load(); }
         catch (Exception error) { throw new IllegalStateException("Could not load SVFrameMMO Cobblemon integration config", error); }
 
+        try {
+            CosmeticDefaults.ensure();
+            COSMETICS.reloadDefinitions();
+        } catch (Exception error) {
+            throw new IllegalStateException("Could not initialize Cobblemon Integration cosmetic definitions", error);
+        }
+
+        SnowstormPackService.install();
         // Idempotent: normally registered by the early SVFrameMMO entrypoint before class YAML is parsed.
         FUSIONS.registerMoveSkillSource();
         MOVE_VFX.reload();
@@ -45,27 +60,54 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         CobblemonEvents.COBBLEMON_INITIALISED.subscribe(ignored -> {
             FUSIONS.reloadMoveDefinitions();
             MOVE_VFX.reload();
+            // Class YAML may have been parsed by SVFrameMMO before Cobblemon populated Moves.all().
+            // Reparse once with live move metadata; the core remains Cobblemon-agnostic.
+            if (!SVFrameMMO.reload()) LOG.warn("SVFrameMMO reload after Cobblemon move registry initialization failed");
         });
         Moves.INSTANCE.getObservable().subscribe(ignored -> FUSIONS.reloadMoveDefinitions());
         FusionLockHooks.register(FUSIONS);
         PotaraUseHandler.register(FUSIONS);
         PlayerCastSkillEvent.EVENT.register(event -> {
-            if (event.isCancelled() || event.getResult() == null || !event.getResult().isSuccessful(event.getMetadata())) return;
-            if (event.getCast().getHandler() instanceof CobblemonMoveSkill move)
+            COSMETICS.onSkillStart(event);
+            if (!event.isCancelled() && event.getResult() != null && event.getResult().isSuccessful(event.getMetadata())
+                    && event.getCast().getHandler() instanceof CobblemonMoveSkill move)
                 MOVE_VFX.renderActor(event.getPlayer(), move.template());
         });
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> FusionCommands.register(dispatcher, FUSIONS));
+        SkillCastEvent.EVENT.register(COSMETICS::onSkillSuccess);
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            FusionCommands.register(dispatcher, FUSIONS);
+            CosmeticCommands.register(dispatcher, COSMETICS);
+        });
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !FUSIONS.blocksDamage(entity));
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> FUSIONS.cooldowns().start(server));
-        ServerLifecycleEvents.SERVER_STOPPING.register(server -> FUSIONS.cooldowns().stop());
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            try {
+                SnowstormPackService.stage(new SnowstormAssetLoader().load(CosmeticDefaults.VFX));
+                SnowstormPackService.buildInitial();
+            } catch (Exception error) {
+                LOG.warn("Could not stage cosmetic Snowstorm assets; vanilla fallbacks remain available", error);
+            }
+        });
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            FUSIONS.cooldowns().start(server);
+            COSMETICS.start(server);
+        });
+        ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            FUSIONS.cooldowns().stop();
+            COSMETICS.stop();
+        });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             long tick = SVFrameMMO.currentTick();
             FUSIONS.tick(tick, server);
             FUSIONS.cooldowns().tick(tick);
+            COSMETICS.tick(tick, server);
         });
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> FUSIONS.onDisconnect(handler.player));
-        LOG.info("Cobblemon Integration online; generatedMoves={}, moveVfxPlans={}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
-                FUSIONS.moveDefinitionCount(), MOVE_VFX.planCount(), config.fusion.potaraActionCooldownSeconds,
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> COSMETICS.onJoin(handler.player));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            FUSIONS.onDisconnect(handler.player);
+            COSMETICS.onDisconnect(handler.player);
+        });
+        LOG.info("Cobblemon Integration online; generatedMoves={}, moveVfxPlans={}, cosmetics={}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
+                FUSIONS.moveDefinitionCount(), MOVE_VFX.planCount(), COSMETICS.size(), config.fusion.potaraActionCooldownSeconds,
                 config.fusion.danceDurationSeconds, config.fusion.danceCooldownSeconds);
     }
 
@@ -78,4 +120,5 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
     public static PotaraTierResolver potara() { return POTARA; }
     public static FusionService fusions() { return FUSIONS; }
     public static CobblemonMoveVfxService moveVfx() { return MOVE_VFX; }
+    public static CosmeticService cosmetics() { return COSMETICS; }
 }

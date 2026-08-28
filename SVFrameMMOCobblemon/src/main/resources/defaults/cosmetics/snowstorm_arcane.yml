@@ -1,0 +1,26 @@
+id: snowstorm_arcane
+name: "Vòng xoáy huyền thuật"
+skill: COBBLEMON_MOVE_PSYCHIC
+particle: arcane_orbit
+permission: svframemmo.cobblemon.cosmetic.use.snowstorm_arcane
+hide-without-resource-pack: false
+fallback:
+  particle: minecraft:enchant
+  count: 4
+  spread: 0.25
+  speed: 0.01
+phases:
+  PREVIEW:
+    interval-ticks: 6
+    duration-ticks: 120
+    anchor: CASTER
+  EQUIP_BURST:
+    repetitions: 1
+    anchor: CASTER
+  CAST_START:
+    repetitions: 4
+    interval-ticks: 3
+    anchor: CASTER
+  WHILE_EQUIPPED:
+    interval-ticks: 16
+    anchor: CASTER

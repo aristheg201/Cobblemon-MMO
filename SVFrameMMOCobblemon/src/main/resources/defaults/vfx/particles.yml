@@ -1,0 +1,42 @@
+particles:
+  electric_helix:
+    provider: MINECRAFT
+    particle: minecraft:electric_spark
+    shape: HELIX
+    count: 3
+    radius: 0.35
+    interval-ticks: 1
+  frost_ambient:
+    provider: COBBLEMON_SNOWSTORM
+    particle: cobblemon_mmo:snowstorm_frost
+    shape: POINT
+    count: 1
+    interval-ticks: 20
+    data:
+      fallback: minecraft:snowflake
+  ember_burst:
+    provider: COBBLEMON_SNOWSTORM
+    particle: cobblemon_mmo:snowstorm_ember
+    shape: POINT
+    count: 1
+    interval-ticks: 8
+    data:
+      fallback: minecraft:flame
+  arcane_orbit:
+    provider: COBBLEMON_SNOWSTORM
+    particle: cobblemon_mmo:snowstorm_arcane
+    shape: POINT
+    count: 1
+    interval-ticks: 6
+    data:
+      fallback: minecraft:enchant
+  amk_charge_dust:
+    provider: MINECRAFT
+    particle: minecraft:dust_color_transition
+    data:
+      from: "#d9d3ff"
+      to: "#6d5dfc"
+      scale: 0.9
+    shape: SPHERE
+    count: 48
+    radius: 2.5
