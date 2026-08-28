@@ -11,6 +11,7 @@ import vn.svframe.svframelib.player.skill.PassiveSkill;
 import vn.svframe.svframelib.player.skillmod.SkillModifier;
 import vn.svframe.svframelib.skill.SkillMetadata;
 import vn.svframe.svframelib.skill.result.SkillResult;
+import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.skill.ClassSkill;
 
@@ -54,7 +55,7 @@ public final class SkillRuntime {
 
         for (Map.Entry<Integer, String> entry : data.getSkillBindings().entrySet()) {
             int slot = entry.getKey();
-            ClassSkill skill = data.getProfess().getSkill(entry.getValue());
+            ClassSkill skill = resolve(data, entry.getValue());
             var slotDefinition = data.getProfess().getSkillSlot(slot);
             if (skill == null || slotDefinition == null || !data.canUseSkill(skill)) continue;
             Registration registration = new Registration(data.getMMOPlayerData());
@@ -80,13 +81,17 @@ public final class SkillRuntime {
 
     public SkillResult castBound(PlayerData data, int slot) {
         ClassSkill skill = data.getBoundSkill(slot);
+        if (skill == null) {
+            String id = data.getSkillBindings().get(slot);
+            if (id != null) skill = SVFrameMMO.externalSkills().get(id);
+        }
         if (skill == null) throw new IllegalArgumentException("No skill bound to slot " + slot);
         return cast(data, skill);
     }
 
     public SkillResult cast(PlayerData data, String skillId) {
-        ClassSkill skill = data.getProfess().getSkill(skillId);
-        if (skill == null) throw new IllegalArgumentException("Skill '" + skillId + "' does not belong to class '" + data.getClassId() + "'");
+        ClassSkill skill = resolve(data, skillId);
+        if (skill == null) throw new IllegalArgumentException("Unknown or unavailable SVFrameMMO skill '" + skillId + "'");
         return cast(data, skill);
     }
 
@@ -94,7 +99,7 @@ public final class SkillRuntime {
         return cast(data, skill, true);
     }
 
-    /** Casts a runtime-owned temporary skill without requiring it to belong to the player's persistent class. */
+    /** Casts a runtime-owned temporary skill without requiring it to belong to the player's persistent progression. */
     public SkillResult castTemporary(PlayerData data, ClassSkill skill) {
         return cast(data, skill, false);
     }
@@ -113,13 +118,17 @@ public final class SkillRuntime {
         return map == null ? 0 : map.size();
     }
 
+    private static ClassSkill resolve(PlayerData data, String skillId) {
+        ClassSkill skill = data.getProfess().getSkill(skillId);
+        return skill != null ? skill : SVFrameMMO.externalSkills().get(skillId);
+    }
+
     private static SkillModifier parseSlotBuff(PlayerData data, int slot, ClassSkill skill, String line, int index) {
         MMOLineConfig config = new MMOLineConfig(line);
         String key = config.getKey().trim().toLowerCase(Locale.ROOT).replace('-', '_');
         if (!key.equals("skill_buff")) throw new IllegalArgumentException("Skill slot buff must use skill_buff: " + line);
         String parameter = config.getString("modifier", config.getString("parameter", null));
         if (parameter == null || parameter.isBlank()) throw new IllegalArgumentException("Missing modifier in skill slot buff: " + line);
-        // Fail early when a class config references a parameter the handler does not expose.
         skill.getParameterFormula(parameter);
         double amount = config.getDouble("amount");
         ModifierType type = ModifierType.valueOf(UtilityMethods.enumName(config.getString("type", "FLAT")));
