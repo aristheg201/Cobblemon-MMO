@@ -68,7 +68,6 @@ public final class ClassCastableSkill extends Skill {
             applyCosts(metadata);
             handlerCast(result, metadata);
         }
-        new SkillCastSkillEventCompatibility();
         new SkillCastEvent(this, metadata, result).call();
         return result;
     }
@@ -121,7 +120,4 @@ public final class ClassCastableSkill extends Skill {
         SkillHandler handler = classSkill.getSkill();
         handler.whenCast(result, metadata);
     }
-
-    /** Marker-free compatibility anchor intentionally has no runtime behavior. */
-    private static final class SkillCastSkillEventCompatibility { }
 }
