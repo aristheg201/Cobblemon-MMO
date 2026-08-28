@@ -7,6 +7,7 @@ base { archivesName = 'SVFrameLib' }
 repositories {
     mavenCentral()
     maven { url = 'https://maven.fabricmc.net/' }
+    maven { url = 'https://api.modrinth.com/maven' }
 }
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
@@ -14,6 +15,12 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     compileOnly 'net.luckperms:api:5.4'
+
+    // Optional native economy integrations. These are compile-only and are detected through Fabric Loader at runtime.
+    modCompileOnly 'maven.modrinth:4Kma4Oms:CpGrhJed' // BEconomy 1.5.4 / BEconomy-1.5.jar
+    modCompileOnly 'maven.modrinth:s7N7AsqL:NQdxKsW7' // CobbleDollars Fabric 2.0.0+Beta-6.1+1.21.1
+    modCompileOnly 'maven.modrinth:MdwFAVRL:kF7CvxTo' // Cobblemon 1.7.3 compile surface required by CobbleDollars
+    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:2.4.10'
 
     testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'
