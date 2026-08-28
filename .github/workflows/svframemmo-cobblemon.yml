@@ -2,7 +2,7 @@ name: SVFrameMMO Cobblemon Integration Fabric 1.21.1
 on:
   push:
     branches: [svframemmo-cobblemon-integration-1.21.1]
-    paths: ['.github/workflows/svframemmo-cobblemon.yml', 'SVFrameMMOCobblemon/**', 'SVFrameMMO/**']
+    paths: ['.github/workflows/svframemmo-cobblemon.yml', 'SVFrameMMOCobblemon/**']
   workflow_dispatch:
 permissions:
   contents: read
@@ -22,6 +22,13 @@ jobs:
           git fetch --no-tags --depth=1 origin svframelib-fabric-1.21.1
           rm -rf SVFrameLib
           git checkout FETCH_HEAD -- SVFrameLib
+      - name: Sync SVFrameMMO
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframemmo-fabric-1.21.1
+          rm -rf SVFrameMMO
+          git checkout FETCH_HEAD -- SVFrameMMO
       - uses: actions/setup-java@v5
         with: { distribution: temurin, java-version: '21' }
       - uses: gradle/actions/setup-gradle@v4
@@ -33,6 +40,9 @@ jobs:
           ! grep -RIn --binary-files=without-match -Ei 'svframeitems|fusion_tier' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
           grep -q 'custom-model-data' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'DataComponentTypes.CUSTOM_MODEL_DATA' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/item/PotaraTierResolver.java
+          grep -q 'svframemmo-skill-source' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
+          grep -q 'kyurem_black' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
+          grep -q 'kyurem_white' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
       - name: Build SVFrameLib
         run: cd SVFrameLib && gradle --no-daemon clean test remapJar
       - name: Build SVFrameMMO
@@ -40,7 +50,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: '8.12.1' }
       - name: Build integration
-        run: cd SVFrameMMOCobblemon && gradle --no-daemon --stacktrace clean test remapJar
+        run: cd SVFrameMMOCobblemon && gradle --no-daemon --stacktrace clean test nativeIntegrationSmoke remapJar
       - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
