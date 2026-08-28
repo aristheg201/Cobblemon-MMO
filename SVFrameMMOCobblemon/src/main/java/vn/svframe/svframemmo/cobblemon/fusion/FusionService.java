@@ -7,7 +7,6 @@ import com.cobblemon.mod.common.api.moves.categories.DamageCategories;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
-import kotlin.Unit;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -66,29 +65,16 @@ public final class FusionService {
         return startResolved(player, resolved.pokemon(), entity, tier, -1L, false);
     }
 
-    /** Fusion Dance chooses directly from the party GUI; deployment is created automatically only when needed. */
+    /** Fusion Dance morphs directly from the selected party Pokemon; it never deploys a proxy Pokemon entity. */
     public StartResult startDance(ServerPlayerEntity player, Pokemon selected) {
         if (!cooldowns.danceReady(player.getUuid())) return StartResult.rejected("Fusion Dance is still on cooldown.");
         if (selected == null) return StartResult.rejected("No Pokemon was selected.");
         Pokemon pokemon = Cobblemon.INSTANCE.getStorage().getParty(player).get(selected.getUuid());
         if (pokemon == null || !pokemon.belongsTo(player)) return StartResult.rejected("That Pokemon is not in your current party.");
-        PokemonEntity entity = pokemon.getEntity();
-        if (entity != null && entity.isBattling()) return StartResult.rejected("That Pokemon is currently battling.");
-
-        boolean autoDeployed = false;
-        if (entity == null) {
-            try {
-                entity = pokemon.sendOut(player.getServerWorld(), player.getPos(), null, ignored -> Unit.INSTANCE);
-                autoDeployed = true;
-            } catch (RuntimeException error) {
-                return StartResult.rejected("Could not deploy the selected Pokemon for Fusion Dance.");
-            }
-        }
-        if (entity == null) return StartResult.rejected("Could not resolve the selected Pokemon entity.");
+        PokemonEntity deployed = pokemon.getEntity();
+        if (deployed != null && deployed.isBattling()) return StartResult.rejected("That Pokemon is currently battling.");
         long expiresAt = SVFrameMMO.currentTick() + SVFrameMMOCobblemon.config().fusion.danceDurationSeconds * 20L;
-        StartResult result = startResolved(player, pokemon, entity, FusionTier.DANCE, expiresAt, autoDeployed);
-        if (!result.success() && autoDeployed) pokemon.recall();
-        return result;
+        return startResolved(player, pokemon, null, FusionTier.DANCE, expiresAt, false);
     }
 
     private StartResult startResolved(ServerPlayerEntity player, Pokemon pokemon, PokemonEntity entity, FusionTier tier,
@@ -96,7 +82,8 @@ public final class FusionService {
         UUID playerId = player.getUuid();
         if (byPlayer.containsKey(playerId)) return StartResult.rejected("You are already fused.");
         if (!eligibility.allows(tier, pokemon)) return StartResult.rejected("This Pokemon is not eligible for that fusion rank.");
-        if (entity.isBattling()) return StartResult.rejected("That Pokemon is currently battling.");
+        if (entity != null && entity.isBattling()) return StartResult.rejected("That Pokemon is currently battling.");
+        if (tier != FusionTier.DANCE && entity == null) return StartResult.rejected("Potara requires the selected Pokemon to be deployed.");
         if (lockedPokemon.putIfAbsent(pokemon.getUuid(), playerId) != null)
             return StartResult.rejected("That Pokemon is already locked by a fusion.");
 
@@ -108,14 +95,14 @@ public final class FusionService {
 
             if (tier == FusionTier.DANCE) {
                 overlay = SVFrameMMO.temporarySkills().push(playerId, OVERLAY_OWNER, snapshot.skills());
-                FusionSession session = new FusionSession(playerId, pokemon.getUuid(), entity.getUuid(),
+                FusionSession session = new FusionSession(playerId, pokemon.getUuid(), null,
                         pokemon.getSpecies().getResourceIdentifier().toString(), pokemon.getDisplayName(false).getString(), tier,
-                        SVFrameMMO.currentTick(), expiresAt, false, originalTradeable, autoDeployed,
+                        SVFrameMMO.currentTick(), expiresAt, false, originalTradeable, false,
                         snapshot.moveIds(), overlay);
                 stats.apply(player, pokemon, tier);
                 if (byPlayer.putIfAbsent(playerId, session) != null) throw new IllegalStateException("Fusion session already exists");
-                // Fusion Dance intentionally has no fusion animation.
-                visuals.start(player, pokemon, entity, autoDeployed);
+                // Fusion Dance intentionally has no Potara animation and no deployed Pokemon proxy.
+                visuals.start(player, pokemon, null, false);
                 return new StartResult(session, null);
             }
 
