@@ -5,7 +5,15 @@ base { archivesName = 'SVFrameMMO-Cobblemon-Integration' }
 repositories {
     mavenCentral()
     maven { url = 'https://maven.fabricmc.net/' }
-    maven { url = 'https://maven.cobblemon.com/releases' }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Modrinth'
+                url = 'https://api.modrinth.com/maven'
+            }
+        }
+        filter { includeGroup 'maven.modrinth' }
+    }
 }
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
@@ -13,7 +21,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     modImplementation "net.fabricmc:fabric-language-kotlin:${fabric_kotlin_version}"
-    modImplementation "com.cobblemon:fabric:${cobblemon_version}"
+    modImplementation "maven.modrinth:MdwFAVRL:kF7CvxTo"
     modImplementation files('../SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar')
     modImplementation files('../SVFrameMMO/build/libs/SVFrameMMO-1.13.1-fabric.jar')
 }
