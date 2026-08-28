@@ -1,6 +1,7 @@
 package vn.svframe.svframemmo.cobblemon.item;
 
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -26,12 +27,12 @@ public final class PotaraTierResolver {
 
     public FusionTier resolve(ItemStack stack) {
         if (stack == null || stack.isEmpty()) return null;
-        Integer customModelData = stack.get(DataComponentTypes.CUSTOM_MODEL_DATA);
+        CustomModelDataComponent customModelData = stack.get(DataComponentTypes.CUSTOM_MODEL_DATA);
         if (customModelData == null) return null;
         Identifier itemId = Registries.ITEM.getId(stack.getItem());
         for (Map.Entry<FusionTier, IntegrationConfig.PotaraItem> entry : SVFrameMMOCobblemon.config().potara.byTier().entrySet()) {
             IntegrationConfig.PotaraItem configured = entry.getValue();
-            if (configured.customModelData == customModelData && configured.itemId().equals(itemId)) return entry.getKey();
+            if (configured.customModelData == customModelData.value() && configured.itemId().equals(itemId)) return entry.getKey();
         }
         return null;
     }
