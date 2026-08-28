@@ -41,7 +41,11 @@ jobs:
         run: |
           set -euo pipefail
           ! grep -RIn --binary-files=without-match -Ei 'svframeitems|fusion_tier' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
-          ! grep -RIn --binary-files=without-match -Ei 'svframemmo-skill-source|source:[[:space:]]*cobblemon|SkillHandlerSource|Moves\.all\(|SVFrameMMO\.reload\(' SVFrameMMOCobblemon/src
+          grep -q 'svframemmo-skill-source' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
+          grep -q 'SkillHandlerSource' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
+          grep -q 'Moves.all()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
+          grep -q 'source: cobblemon:<move>' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/CobblemonSkillSourceEntrypoint.java
+          grep -q 'SVFrameMMO.reload()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/SVFrameMMOCobblemon.java
           grep -q 'custom-model-data' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'DataComponentTypes.CUSTOM_MODEL_DATA' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/item/PotaraTierResolver.java
           grep -q 'slot > 4' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
