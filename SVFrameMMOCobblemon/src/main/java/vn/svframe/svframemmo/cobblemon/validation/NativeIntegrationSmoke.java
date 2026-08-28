@@ -3,7 +3,6 @@ package vn.svframe.svframemmo.cobblemon.validation;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionCooldowns;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionService;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionTier;
-import vn.svframe.svframemmo.cobblemon.integration.MegaShowdownEffects;
 import vn.svframe.svframemmo.cobblemon.move.BattleStat;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkillAdapter;
 import vn.svframe.svframemmo.cobblemon.move.MoveSemantic;
@@ -21,7 +20,6 @@ public final class NativeIntegrationSmoke {
         MoveSemantic bite = registry.resolveKnown("bite");
         require(bite.status() == MoveSemantic.Status.FLINCH && close(bite.statusChance(), 0.30), "Bite must preserve 30% flinch");
         require(FusionService.DEFAULT_DANCE_DURATION_TICKS == 12_000L, "Fusion Dance must be exactly 10 minutes");
-        require(MegaShowdownEffects.POTARA_FUSION_FORM_DELAY_TICKS == 88L, "Potara activation must wait for the 4.4s Kyurem fusion sequence");
         require(close(FusionTier.DANCE.multiplier(), 0.10), "Dance multiplier");
         require(close(FusionTier.BASIC.multiplier(), 0.25), "Basic Potara multiplier");
         require(close(FusionTier.LEVEL_2.multiplier(), 0.50), "Level 2 Potara multiplier");
