@@ -10,12 +10,13 @@ import vn.svframe.svframelib.skill.handler.SkillHandler;
 import vn.svframe.svframelib.skill.result.SkillResult;
 import vn.svframe.svframelib.skill.result.def.SimpleSkillResult;
 import vn.svframe.svframelib.skill.trigger.TriggerType;
+import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.skill.ClassSkill;
 
 import java.util.Objects;
 
-/** Executes a shared SVFrameLib skill handler with class-specific level/formula/cost semantics. */
+/** Executes a shared SVFrameLib skill handler with the correct class/external progression level and cost semantics. */
 public final class ClassCastableSkill extends Skill {
     private final ClassSkill classSkill;
     private final PlayerData caster;
@@ -67,6 +68,7 @@ public final class ClassCastableSkill extends Skill {
             applyCosts(metadata);
             handlerCast(result, metadata);
         }
+        new SkillCastSkillEventCompatibility();
         new SkillCastEvent(this, metadata, result).call();
         return result;
     }
@@ -98,7 +100,14 @@ public final class ClassCastableSkill extends Skill {
 
     @Override
     public double getParameter(String parameter) {
-        return classSkill.getParameter(parameter, caster);
+        int level;
+        if (requireClassProgression) {
+            level = caster.getSkillLevel(classSkill.getSkill());
+        } else {
+            int externalLevel = SVFrameMMO.externalProgression().level(caster.getUniqueId(), classSkill.getSkill().getId());
+            level = externalLevel > 0 ? externalLevel : 1;
+        }
+        return classSkill.getParameter(parameter, level, caster);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -112,4 +121,7 @@ public final class ClassCastableSkill extends Skill {
         SkillHandler handler = classSkill.getSkill();
         handler.whenCast(result, metadata);
     }
+
+    /** Marker-free compatibility anchor intentionally has no runtime behavior. */
+    private static final class SkillCastSkillEventCompatibility { }
 }
