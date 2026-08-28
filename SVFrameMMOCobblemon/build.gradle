@@ -31,6 +31,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     modImplementation "net.fabricmc:fabric-language-kotlin:${fabric_kotlin_version}"
     modImplementation "maven.modrinth:MdwFAVRL:kF7CvxTo"
+    modImplementation "maven.modrinth:j3wTk6KL:45LEbLo0"
     modImplementation "eu.pb4:polymer-core:0.9.19+1.21.1"
     modImplementation "eu.pb4:polymer-resource-pack:0.9.19+1.21.1"
     modImplementation "dev.architectury:architectury-fabric:13.0.8"
@@ -47,6 +48,7 @@ dependencies {
 
     productionRuntimeDeps "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     productionRuntimeDeps "maven.modrinth:MdwFAVRL:kF7CvxTo"
+    productionRuntimeDeps "maven.modrinth:j3wTk6KL:45LEbLo0"
     productionRuntimeDeps "eu.pb4:polymer-core:0.9.19+1.21.1"
     productionRuntimeDeps "eu.pb4:polymer-resource-pack:0.9.19+1.21.1"
     productionRuntimeDeps "dev.architectury:architectury-fabric:13.0.8"
