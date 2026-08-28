@@ -3,7 +3,7 @@
   "id": "svframemmo_cobblemon",
   "version": "${version}",
   "name": "SVFrameMMO: Cobblemon Integration",
-  "description": "Native Cobblemon/Mega Showdown bridge for SVFrameMMO with PocketMorph-backed fusion rendering.",
+  "description": "Native Cobblemon/Mega Showdown bridge for SVFrameMMO with integration-owned fusion rendering and move skills.",
   "authors": ["SVFrame"],
   "environment": "*",
   "entrypoints": {
@@ -12,15 +12,20 @@
     ],
     "main": [
       "vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon"
+    ],
+    "client": [
+      "vn.svframe.svframemmo.cobblemon.client.SVFrameMMOCobblemonClient"
     ]
   },
+  "mixins": [
+    "svframemmo_cobblemon.client.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.18.4",
     "minecraft": "1.21.1",
     "java": ">=21",
     "fabric-api": ">=0.116.9+1.21.1",
     "cobblemon": ">=1.7.3+1.21.1 <1.8.0",
-    "pocketmorph": ">=2.2.0",
     "svframelib": ">=1.7.1-fabric",
     "svframemmo": ">=1.13.1-fabric",
     "mega_showdown": ">=1.9.3",
