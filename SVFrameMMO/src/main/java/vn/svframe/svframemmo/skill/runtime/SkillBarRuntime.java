@@ -27,42 +27,30 @@ public final class SkillBarRuntime {
     private static final int SKILL_BAR_PRIORITY = ActionBarPriority.LOW;
     private final Map<UUID, Session> sessions = new ConcurrentHashMap<>();
 
-    /** Returns true when vanilla SWAP_ITEM_WITH_OFFHAND must be cancelled. */
     public boolean handleSwapHands(ServerPlayerEntity player) {
         SVFrameMMOConfig live = SVFrameMMO.config();
         SVFrameMMOConfig.SkillCasting config = live.skillCasting();
         if (!config.skillBarMode() || !config.opensWithSwapHands()) return false;
         if (config.ignoreSneak() && player.isSneaking()) return false;
-
         PlayerData data = SVFrameMMO.playerData().get(player);
         Session active = sessions.remove(player.getUuid());
-        if (active != null) {
-            close(data);
-            send(data, config.quitMessage());
-            return true;
-        }
-
-        // Always consume the configured opening key, even when casting cannot be entered.
+        if (active != null) { close(data); send(data, config.quitMessage()); return true; }
         if (player.isSpectator()) return true;
         if (player.isCreative() && !live.canCreativeCast()) return true;
         if (activeSkills(data, config).isEmpty()) return true;
-
         sessions.put(player.getUuid(), new Session(SVFrameMMO.currentTick()));
         send(data, config.enterMessage());
         showSkillBar(data, config);
         return true;
     }
 
-    /** Returns true when the held-slot packet must be cancelled because the number key was used to cast a skill. */
     public boolean handleSelectedSlot(ServerPlayerEntity player, int selectedSlot) {
         Session session = sessions.get(player.getUuid());
         if (session == null) return false;
         SVFrameMMOConfig.SkillCasting config = SVFrameMMO.config().skillCasting();
         if (config.ignoreSneak() && player.isSneaking()) return false;
-
         int currentSlot = player.getInventory().selectedSlot;
         if (selectedSlot < 0 || selectedSlot >= 9 || selectedSlot == currentSlot) return true;
-
         session.lastActivityTick = SVFrameMMO.currentTick();
         PlayerData data = SVFrameMMO.playerData().get(player);
         CastBinding binding = skillForClickedSlot(data, config, currentSlot, selectedSlot);
@@ -71,8 +59,6 @@ public final class SkillBarRuntime {
             else SVFrameMMO.skillRuntime().cast(data, binding.skill());
         }
         showSkillBar(data, config);
-
-        // Casting consumes the held-slot change, so restore the same slot client-side.
         player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(currentSlot));
         return true;
     }
@@ -90,11 +76,8 @@ public final class SkillBarRuntime {
                 if (activeSkills(data, live.skillCasting()).isEmpty()
                         || (live.skillCasting().timeoutTicks() > 0 && tick - session.lastActivityTick > live.skillCasting().timeoutTicks())) {
                     sessions.remove(data.getUniqueId());
-                    close(data); // Automatic close is silent; quit feedback is sent only by the opening key.
-                } else if ((tick & 15L) == 0L) {
-                    // Skill-bar state refreshes every 16 ticks.
-                    showSkillBar(data, live.skillCasting());
-                }
+                    close(data);
+                } else if ((tick & 15L) == 0L) showSkillBar(data, live.skillCasting());
             } else if (live.actionBar().enabled() && tick % live.actionBar().updateTicks() == 0L) {
                 data.getMMOPlayerData().getActionBar().show(DEFAULT_BAR_PRIORITY,
                         Math.max(2L, live.actionBar().updateTicks() + 1L),
@@ -103,22 +86,18 @@ public final class SkillBarRuntime {
         }
     }
 
-    private static void close(PlayerData data) {
-        data.getMMOPlayerData().getActionBar().reset(SKILL_BAR_PRIORITY);
-    }
+    private static void close(PlayerData data) { data.getMMOPlayerData().getActionBar().reset(SKILL_BAR_PRIORITY); }
 
     private static void send(PlayerData data, SVFrameMMOConfig.PlayerMessage options) {
         if (options == null || !data.isOnline()) return;
         String parsed = SVFrameLib.inst().parseColors(options.message());
         if (parsed != null && !parsed.isBlank()) {
-            if (options.actionBar())
-                data.getMMOPlayerData().getActionBar().show(options.priority(), options.duration(), parsed);
+            if (options.actionBar()) data.getMMOPlayerData().getActionBar().show(options.priority(), options.duration(), parsed);
             else data.getPlayer().sendMessage(net.minecraft.text.Text.literal(parsed), false);
         }
         playSound(data.getPlayer(), options.sound());
     }
 
-    /** Accepts Minecraft identifiers and legacy enum-style SOUND,volume,pitch values. */
     private static void playSound(ServerPlayerEntity player, String configured) {
         if (configured == null || configured.isBlank()) return;
         String[] split = configured.split(",", -1);
@@ -176,6 +155,24 @@ public final class SkillBarRuntime {
             return List.copyOf(result);
         }
 
+        // A configured external loadout is a deliberate four-slot active build and is independent of the current class.
+        Map<Integer, String> externalBindings = SVFrameMMO.externalProgression().bindings(data.getUniqueId());
+        if (!externalBindings.isEmpty()) {
+            ArrayList<Map.Entry<Integer, String>> bound = new ArrayList<>(externalBindings.entrySet());
+            bound.sort(Map.Entry.comparingByKey());
+            ArrayList<CastBinding> result = new ArrayList<>(4);
+            int compact = 1;
+            for (Map.Entry<Integer, String> entry : bound) {
+                ClassSkill skill = SVFrameMMO.externalSkills().get(entry.getValue());
+                if (skill == null || skill.getTrigger().isPassive()
+                        || !SVFrameMMO.externalProgression().isLearned(data.getUniqueId(), entry.getValue())) continue;
+                int castSlot = config.useLowestKeybinds() ? compact++ : entry.getKey();
+                result.add(new CastBinding(castSlot, skill, false));
+            }
+            result.sort(Comparator.comparingInt(CastBinding::castSlot));
+            return List.copyOf(result);
+        }
+
         ArrayList<Map.Entry<Integer, String>> bound = new ArrayList<>(data.getSkillBindings().entrySet());
         bound.sort(Map.Entry.comparingByKey());
         ArrayList<CastBinding> result = new ArrayList<>();
@@ -220,21 +217,13 @@ public final class SkillBarRuntime {
     private static String formatDefaultBar(PlayerData data, String raw) {
         String format = data.getProfess().hasActionBar() ? data.getProfess().getActionBar() : raw;
         if (format == null) return "";
-        return format
-                .replace("{health}", trim(data.getHealth()))
-                .replace("{max_health}", trim(data.getMaxResource(PlayerResource.HEALTH)))
-                .replace("{mana_icon}", manaIcon(data))
-                .replace("{mana}", trim(data.getMana()))
-                .replace("{max_mana}", trim(data.getMaxResource(PlayerResource.MANA)))
-                .replace("{stamina}", trim(data.getStamina()))
-                .replace("{max_stamina}", trim(data.getMaxResource(PlayerResource.STAMINA)))
-                .replace("{stellium}", trim(data.getStellium()))
-                .replace("{max_stellium}", trim(data.getMaxResource(PlayerResource.STELLIUM)))
-                .replace("{class}", data.getProfess().getName())
-                .replace("{xp}", trim(data.getExperience()))
-                .replace("{armor}", trim(data.getMMOPlayerData().getStatMap().getStat("ARMOR")))
-                .replace("{level}", Integer.toString(data.getLevel()))
-                .replace("{name}", data.getPlayer().getGameProfile().getName());
+        return format.replace("{health}", trim(data.getHealth())).replace("{max_health}", trim(data.getMaxResource(PlayerResource.HEALTH)))
+                .replace("{mana_icon}", manaIcon(data)).replace("{mana}", trim(data.getMana()))
+                .replace("{max_mana}", trim(data.getMaxResource(PlayerResource.MANA))).replace("{stamina}", trim(data.getStamina()))
+                .replace("{max_stamina}", trim(data.getMaxResource(PlayerResource.STAMINA))).replace("{stellium}", trim(data.getStellium()))
+                .replace("{max_stellium}", trim(data.getMaxResource(PlayerResource.STELLIUM))).replace("{class}", data.getProfess().getName())
+                .replace("{xp}", trim(data.getExperience())).replace("{armor}", trim(data.getMMOPlayerData().getStatMap().getStat("ARMOR")))
+                .replace("{level}", Integer.toString(data.getLevel())).replace("{name}", data.getPlayer().getGameProfile().getName());
     }
 
     private static String manaIcon(PlayerData data) {
