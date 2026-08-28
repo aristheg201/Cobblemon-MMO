@@ -15,6 +15,7 @@ import net.minecraft.text.Text;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.skill.ClassSkill;
+import vn.svframe.svframemmo.skill.gui.ExternalSkillGui;
 
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
@@ -23,14 +24,22 @@ import java.util.stream.Stream;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-/** Admin aliases for teaching either class skills or class-independent integration skills. */
+/** Admin skill grants plus the MMOCore-style learned external skill GUI entry point. */
 public final class SkillGrantCommands implements ModInitializer {
     @Override
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             registerGrant(dispatcher, "teachskill");
             registerGrant(dispatcher, "giveskill");
+            dispatcher.register(literal("mmo")
+                    .then(literal("skill").executes(ctx -> openSkills(ctx.getSource())))
+                    .then(literal("skills").executes(ctx -> openSkills(ctx.getSource()))));
         });
+    }
+
+    private static int openSkills(ServerCommandSource source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ExternalSkillGui.open(source.getPlayerOrThrow());
+        return 1;
     }
 
     private static void registerGrant(CommandDispatcher<ServerCommandSource> dispatcher, String literalName) {
