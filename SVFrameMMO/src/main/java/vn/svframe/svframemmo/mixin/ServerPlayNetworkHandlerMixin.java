@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import vn.svframe.svframemmo.SVFrameMMO;
 
-/** Converts vanilla swap-hands/held-slot packets into MMOCore-compatible skill-bar input server-side. */
+/** Converts vanilla swap-hands/held-slot packets into SVFrameMMO skill-bar input server-side. */
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin {
     @Shadow public ServerPlayerEntity player;
