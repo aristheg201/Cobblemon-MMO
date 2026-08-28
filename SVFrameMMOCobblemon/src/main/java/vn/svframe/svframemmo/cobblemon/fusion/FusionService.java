@@ -109,18 +109,51 @@ public final class FusionService {
                     SVFrameMMO.currentTick(), expiresAt, tier != FusionTier.DANCE, originalTradeable, autoDeployed,
                     snapshot.moveIds(), overlay);
             stats.apply(player, pokemon, tier);
-            visuals.start(player, pokemon, entity, autoDeployed);
             byPlayer.put(player.getUuid(), session);
-            if (tier != FusionTier.DANCE) MegaShowdownEffects.playPotaraFusionStart(pokemon, entity);
+
+            if (tier == FusionTier.DANCE) {
+                // Fusion Dance has no fusion animation by design.
+                visuals.start(player, pokemon, entity, autoDeployed);
+            } else {
+                // Potara uses Mega Showdown's exact Kyurem Black/White sequence first. The visible morph starts only
+                // after the effect's 4.0s transformation point and 4.4s cry timing have completed.
+                MegaShowdownEffects.playPotaraFusionStart(pokemon, entity);
+                schedulePotaraMorph(player, session);
+            }
             return new StartResult(session, null);
         } catch (RuntimeException error) {
             if (overlay != null) overlay.close();
             stats.remove(player);
+            byPlayer.remove(player.getUuid());
             visuals.stop(player, player.getUuid());
             pokemon.setTradeable(originalTradeable);
             lockedPokemon.remove(pokemon.getUuid(), player.getUuid());
             throw error;
         }
+    }
+
+    private void schedulePotaraMorph(ServerPlayerEntity player, FusionSession expected) {
+        MinecraftServer server = player.getServerWorld().getServer();
+        long at = SVFrameMMO.currentTick() + MegaShowdownEffects.POTARA_FUSION_FORM_DELAY_TICKS;
+        SVFrameMMO.delayedActions().schedule(at, () -> {
+            FusionSession current = byPlayer.get(expected.playerUuid());
+            if (current == null || current != expected) return;
+            ServerPlayerEntity livePlayer = server.getPlayerManager().getPlayer(expected.playerUuid());
+            if (livePlayer == null) return;
+            Pokemon livePokemon = Cobblemon.INSTANCE.getStorage().getParty(livePlayer).get(expected.pokemonUuid());
+            PokemonEntity liveEntity = livePokemon == null ? null : livePokemon.getEntity();
+            if (livePokemon == null || liveEntity == null || liveEntity.isRemoved()
+                    || !liveEntity.getUuid().equals(expected.deployedEntityUuid()) || liveEntity.isBattling()) {
+                finish(livePlayer, expected);
+                return;
+            }
+            try {
+                visuals.start(livePlayer, livePokemon, liveEntity, false);
+            } catch (RuntimeException error) {
+                SVFrameMMOCobblemon.LOG.warn("Could not enter Potara fused visual form after Mega Showdown sequence", error);
+                finish(livePlayer, expected);
+            }
+        });
     }
 
     public EndResult end(ServerPlayerEntity player, boolean manual) {
@@ -132,7 +165,6 @@ public final class FusionService {
 
     private EndResult finish(ServerPlayerEntity player, FusionSession session) {
         if (!byPlayer.remove(session.playerUuid(), session)) return EndResult.rejected("Fusion session already ended.");
-        // Unlock before visual cleanup because auto-deployed Dance Pokemon must be allowed to recall.
         lockedPokemon.remove(session.pokemonUuid(), session.playerUuid());
         session.overlay().close();
         realtime.clear(session.playerUuid());
