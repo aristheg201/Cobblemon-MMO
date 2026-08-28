@@ -18,17 +18,14 @@ import vn.svframe.svframelib.damage.DamageType;
 import vn.svframe.svframelib.skill.SkillMetadata;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
-import vn.svframe.svframemmo.cobblemon.integration.MegaShowdownEffects;
 import vn.svframe.svframemmo.cobblemon.move.BattleStat;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkillAdapter;
 import vn.svframe.svframemmo.cobblemon.move.MoveSemantic;
 import vn.svframe.svframemmo.cobblemon.move.MoveSemanticRegistry;
 import vn.svframe.svframemmo.cobblemon.move.RealtimeBattleState;
-import vn.svframe.svframemmo.skill.ClassSkill;
 import vn.svframe.svframemmo.skill.runtime.TemporarySkillOverlayRuntime;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -48,9 +45,8 @@ public final class FusionService {
     private final FusionCooldowns cooldowns = new FusionCooldowns();
     private final FusionVisualBridge visuals = new FusionVisualBridge();
     private final FusionStatBridge stats = new FusionStatBridge();
-    private final Map<UUID, FusionSession> byPlayer = new ConcurrentHashMap<>();
-    private final Map<UUID, UUID> lockedPokemon = new ConcurrentHashMap<>();
-    private final Map<UUID, Map<Integer, ClassSkill>> pendingPotaraSkills = new ConcurrentHashMap<>();
+    private final java.util.Map<UUID, FusionSession> byPlayer = new ConcurrentHashMap<>();
+    private final java.util.Map<UUID, UUID> lockedPokemon = new ConcurrentHashMap<>();
 
     public FusionSession session(UUID player) { return player == null ? null : byPlayer.get(player); }
     public boolean isPokemonLocked(UUID pokemon) { return pokemon != null && lockedPokemon.containsKey(pokemon); }
@@ -62,7 +58,7 @@ public final class FusionService {
         if (tier == null || tier == FusionTier.DANCE) return StartResult.rejected("Invalid Potara tier.");
         DeployedPartyPokemonResolver.Resolution resolved = resolver.resolve(player, entity);
         if (!resolved.accepted()) return StartResult.rejected(resolved.rejection());
-        return startResolved(player, resolved.pokemon(), entity, tier, -1L, false);
+        return startResolved(player, resolved.pokemon(), tier, -1L);
     }
 
     /** Fusion Dance morphs directly from the selected party Pokemon; it never deploys a proxy Pokemon entity. */
@@ -74,103 +70,65 @@ public final class FusionService {
         PokemonEntity deployed = pokemon.getEntity();
         if (deployed != null && deployed.isBattling()) return StartResult.rejected("That Pokemon is currently battling.");
         long expiresAt = SVFrameMMO.currentTick() + SVFrameMMOCobblemon.config().fusion.danceDurationSeconds * 20L;
-        return startResolved(player, pokemon, null, FusionTier.DANCE, expiresAt, false);
+        return startResolved(player, pokemon, FusionTier.DANCE, expiresAt);
     }
 
-    private StartResult startResolved(ServerPlayerEntity player, Pokemon pokemon, PokemonEntity entity, FusionTier tier,
-                                      long expiresAt, boolean autoDeployed) {
+    private StartResult startResolved(ServerPlayerEntity player, Pokemon pokemon, FusionTier tier, long expiresAt) {
         UUID playerId = player.getUuid();
+        UUID pokemonId = pokemon.getUuid();
         if (byPlayer.containsKey(playerId)) return StartResult.rejected("You are already fused.");
         if (!eligibility.allows(tier, pokemon)) return StartResult.rejected("This Pokemon is not eligible for that fusion rank.");
-        if (entity != null && entity.isBattling()) return StartResult.rejected("That Pokemon is currently battling.");
-        if (tier != FusionTier.DANCE && entity == null) return StartResult.rejected("Potara requires the selected Pokemon to be deployed.");
-        if (lockedPokemon.putIfAbsent(pokemon.getUuid(), playerId) != null)
-            return StartResult.rejected("That Pokemon is already locked by a fusion.");
+        if (lockedPokemon.containsKey(pokemonId)) return StartResult.rejected("That Pokemon is already locked by a fusion.");
+
+        PokemonEntity deployed = pokemon.getEntity();
+        if (tier != FusionTier.DANCE && (deployed == null || deployed.isRemoved()))
+            return StartResult.rejected("Potara requires the selected Pokemon to be deployed.");
+        if (deployed != null && deployed.isBattling()) return StartResult.rejected("That Pokemon is currently battling.");
 
         boolean originalTradeable = pokemon.getTradeable();
         TemporarySkillOverlayRuntime.Handle overlay = null;
         try {
             CobblemonMoveSkillAdapter.Overlay snapshot = moves.snapshot(pokemon);
+
+            // The clicked/deployed Pokemon is only the Potara selection target. Fusion itself is the player.
+            // Recall MUST happen before lockedPokemon is populated because FusionLockHooks intentionally cancels
+            // recalls for already-fused Pokemon. Keeping the entity deployed would recreate the old proxy design.
+            recallForFusionOrThrow(pokemon);
+
+            if (lockedPokemon.putIfAbsent(pokemonId, playerId) != null)
+                throw new IllegalStateException("That Pokemon became locked by another fusion.");
+
             pokemon.setTradeable(false);
-
-            if (tier == FusionTier.DANCE) {
-                overlay = SVFrameMMO.temporarySkills().push(playerId, OVERLAY_OWNER, snapshot.skills());
-                FusionSession session = new FusionSession(playerId, pokemon.getUuid(), null,
-                        pokemon.getSpecies().getResourceIdentifier().toString(), pokemon.getDisplayName(false).getString(), tier,
-                        SVFrameMMO.currentTick(), expiresAt, false, originalTradeable, false,
-                        snapshot.moveIds(), overlay);
-                stats.apply(player, pokemon, tier);
-                if (byPlayer.putIfAbsent(playerId, session) != null) throw new IllegalStateException("Fusion session already exists");
-                // Fusion Dance intentionally has no Potara animation and no deployed Pokemon proxy.
-                visuals.start(player, pokemon, null, false);
-                return new StartResult(session, null);
-            }
-
-            FusionSession pending = new FusionSession(playerId, pokemon.getUuid(), entity.getUuid(),
+            overlay = SVFrameMMO.temporarySkills().push(playerId, OVERLAY_OWNER, snapshot.skills());
+            FusionSession session = new FusionSession(playerId, pokemonId, null,
                     pokemon.getSpecies().getResourceIdentifier().toString(), pokemon.getDisplayName(false).getString(), tier,
-                    SVFrameMMO.currentTick(), expiresAt, true, originalTradeable, autoDeployed,
-                    snapshot.moveIds(), null);
-            pendingPotaraSkills.put(playerId, snapshot.skills());
-            if (byPlayer.putIfAbsent(playerId, pending) != null) throw new IllegalStateException("Fusion session already exists");
+                    SVFrameMMO.currentTick(), expiresAt, tier != FusionTier.DANCE, originalTradeable, false,
+                    snapshot.moveIds(), overlay);
 
-            // Potara uses Mega Showdown's Kyurem Black/White fusion sequence. The RPG stat bonus, forced four-move
-            // overlay and visible fused form are activated together only after the 4.4s sequence completes.
-            MegaShowdownEffects.playPotaraFusionStart(pokemon, entity);
-            schedulePotaraActivation(player, pending);
-            return new StartResult(pending, null);
+            stats.apply(player, pokemon, tier);
+            if (byPlayer.putIfAbsent(playerId, session) != null) throw new IllegalStateException("Fusion session already exists");
+            visuals.start(player, pokemon);
+            return new StartResult(session, null);
         } catch (RuntimeException error) {
             if (overlay != null) overlay.close();
-            pendingPotaraSkills.remove(playerId);
             stats.remove(player);
             byPlayer.remove(playerId);
             visuals.stop(player, playerId);
             pokemon.setTradeable(originalTradeable);
-            lockedPokemon.remove(pokemon.getUuid(), playerId);
+            lockedPokemon.remove(pokemonId, playerId);
             SVFrameMMOCobblemon.LOG.warn("Could not start {} fusion for {}", tier == FusionTier.DANCE ? "Dance" : "Potara", player.getName().getString(), error);
             return StartResult.rejected("Could not start fusion: " + safeMessage(error));
         }
     }
 
-    private void schedulePotaraActivation(ServerPlayerEntity player, FusionSession expected) {
-        MinecraftServer server = player.getServerWorld().getServer();
-        long at = SVFrameMMO.currentTick() + MegaShowdownEffects.POTARA_FUSION_FORM_DELAY_TICKS;
-        SVFrameMMO.delayedActions().schedule(at, () -> {
-            FusionSession current = byPlayer.get(expected.playerUuid());
-            if (current != expected) return;
-            ServerPlayerEntity livePlayer = server.getPlayerManager().getPlayer(expected.playerUuid());
-            if (livePlayer == null) return;
-            Pokemon livePokemon = Cobblemon.INSTANCE.getStorage().getParty(livePlayer).get(expected.pokemonUuid());
-            PokemonEntity liveEntity = livePokemon == null ? null : livePokemon.getEntity();
-            if (livePokemon == null || liveEntity == null || liveEntity.isRemoved()
-                    || !liveEntity.getUuid().equals(expected.deployedEntityUuid()) || liveEntity.isBattling()) {
-                finish(livePlayer, expected);
-                return;
-            }
-
-            Map<Integer, ClassSkill> skills = pendingPotaraSkills.remove(expected.playerUuid());
-            if (skills == null || skills.isEmpty()) {
-                SVFrameMMOCobblemon.LOG.warn("Potara pending skill snapshot was missing for {}", expected.playerUuid());
-                finish(livePlayer, expected);
-                return;
-            }
-
-            TemporarySkillOverlayRuntime.Handle overlay = null;
-            try {
-                overlay = SVFrameMMO.temporarySkills().push(expected.playerUuid(), OVERLAY_OWNER, skills);
-                FusionSession activated = expected.withOverlay(overlay);
-                if (!byPlayer.replace(expected.playerUuid(), expected, activated)) {
-                    overlay.close();
-                    return;
-                }
-                stats.apply(livePlayer, livePokemon, activated.tier());
-                visuals.start(livePlayer, livePokemon, liveEntity, activated.autoDeployed());
-            } catch (RuntimeException error) {
-                SVFrameMMOCobblemon.LOG.warn("Could not activate Potara fused form after Mega Showdown sequence", error);
-                FusionSession active = byPlayer.get(expected.playerUuid());
-                if (active != null) finish(livePlayer, active);
-                else if (overlay != null) overlay.close();
-            }
-        });
+    private static void recallForFusionOrThrow(Pokemon pokemon) {
+        PokemonEntity deployed = pokemon.getEntity();
+        if (deployed == null || deployed.isRemoved()) return;
+        if (deployed.isBattling()) throw new IllegalStateException("That Pokemon is currently battling.");
+        pokemon.recall();
+        PokemonEntity remaining = pokemon.getEntity();
+        if (remaining != null && !remaining.isRemoved())
+            throw new IllegalStateException("Pokemon recall was cancelled; fusion will not create a duplicate Pokemon entity.");
     }
 
     public EndResult end(ServerPlayerEntity player, boolean manual) {
@@ -182,7 +140,6 @@ public final class FusionService {
 
     private EndResult finish(ServerPlayerEntity player, FusionSession session) {
         if (!byPlayer.remove(session.playerUuid(), session)) return EndResult.rejected("Fusion session already ended.");
-        pendingPotaraSkills.remove(session.playerUuid());
         lockedPokemon.remove(session.pokemonUuid(), session.playerUuid());
         if (session.overlay() != null) session.overlay().close();
         realtime.clear(session.playerUuid());
