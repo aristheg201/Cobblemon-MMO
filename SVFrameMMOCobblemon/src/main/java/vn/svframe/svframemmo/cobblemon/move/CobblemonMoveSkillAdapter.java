@@ -10,6 +10,7 @@ import vn.svframe.svframelib.skill.handler.SkillHandler;
 import vn.svframe.svframelib.skill.handler.SkillHandlerSource;
 import vn.svframe.svframelib.util.configobject.ConfigObject;
 import vn.svframe.svframelib.util.configobject.MapConfigObject;
+import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionService;
 import vn.svframe.svframemmo.skill.ClassSkill;
 
@@ -26,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class CobblemonMoveSkillAdapter {
     public static final String SOURCE_KEY = "cobblemon";
+    public static final String REGISTRY_OWNER = "svframemmo_cobblemon";
     private static final String CANONICAL_PREFIX = "COBBLEMON_MOVE_";
     private static final ConcurrentHashMap<String, ClassSkill> DEFINITIONS = new ConcurrentHashMap<>();
     private static volatile CobblemonMoveSkillAdapter active;
@@ -49,7 +51,11 @@ public final class CobblemonMoveSkillAdapter {
         sourceRegistered = true;
     }
 
-    /** Register every live Cobblemon move as one canonical SVFrameMMO/SVFrameLib handler. */
+    /**
+     * Register every live Cobblemon move twice by design:
+     * 1) as an executable SVFrameLib SkillHandler; and
+     * 2) as an SVFrameMMO external progression skill which can be discovered/taught/bound by the MMO layer.
+     */
     public static synchronized void reload() {
         CobblemonMoveSkillAdapter adapter = requireActive();
         SkillManager manager = SVFrameLib.inst().getSkills();
@@ -67,10 +73,20 @@ public final class CobblemonMoveSkillAdapter {
             } else {
                 throw new IllegalStateException("Cobblemon move skill ID collision: " + canonicalId + " -> " + existing.getClass().getName());
             }
-            next.put(moveId, new ClassSkill(handler, 0, 1, true, true, false));
+
+            // Global registration does NOT mean every player automatically owns every Pokemon move.
+            // Fusion bypasses progression through its temporary four-move overlay; teach/give may unlock these definitions persistently.
+            ClassSkill definition = new ClassSkill(handler, 0, 1, false, true, false);
+            if (next.putIfAbsent(moveId, definition) != null)
+                throw new IllegalStateException("Two Cobblemon moves normalize to the same SVFrameMMO skill ID: " + moveId);
         }
+
         DEFINITIONS.clear();
         DEFINITIONS.putAll(next);
+        SVFrameMMO.externalSkills().replace(REGISTRY_OWNER, next.values());
+
+        if (SVFrameMMO.externalSkills().getByOwner(REGISTRY_OWNER).size() != next.size())
+            throw new IllegalStateException("SVFrameMMO external skill registry did not retain the complete Cobblemon move catalog");
     }
 
     public static int size() { return DEFINITIONS.size(); }
@@ -90,7 +106,7 @@ public final class CobblemonMoveSkillAdapter {
                 SkillHandler<?> registered = SVFrameLib.inst().getSkills().getHandler(canonicalId(moveId));
                 if (!(registered instanceof CobblemonMoveSkill handler))
                     throw new IllegalStateException("Cobblemon move is not registered as an SVFrameMMO skill: " + move.getName());
-                skill = new ClassSkill(handler, 0, 1, true, true, false);
+                skill = new ClassSkill(handler, 0, 1, false, true, false);
                 DEFINITIONS.putIfAbsent(moveId, skill);
             }
             skills.put(slot++, skill);
