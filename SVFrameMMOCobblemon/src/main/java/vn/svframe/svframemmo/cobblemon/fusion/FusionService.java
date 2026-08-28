@@ -49,6 +49,7 @@ public final class FusionService {
     private final Map<UUID, FusionSession> byPlayer = new ConcurrentHashMap<>();
     private final Map<UUID, UUID> lockedPokemon = new ConcurrentHashMap<>();
 
+    public void registerMoveSkillSource() { moves.registerSkillSource(); }
     public void reloadMoveDefinitions() { moves.reload(); }
     public int moveDefinitionCount() { return moves.size(); }
     public FusionSession session(UUID player) { return player == null ? null : byPlayer.get(player); }
@@ -64,6 +65,7 @@ public final class FusionService {
         return startResolved(player, resolved.pokemon(), entity, tier, -1L, false);
     }
 
+    /** Fusion Dance chooses directly from the party GUI; deployment is created automatically only when needed. */
     public StartResult startDance(ServerPlayerEntity player, Pokemon selected) {
         if (!cooldowns.danceReady(player.getUuid())) return StartResult.rejected("Fusion Dance is still on cooldown.");
         if (selected == null) return StartResult.rejected("No Pokemon was selected.");
@@ -109,7 +111,7 @@ public final class FusionService {
             stats.apply(player, pokemon, tier);
             visuals.start(player, pokemon, entity, autoDeployed);
             byPlayer.put(player.getUuid(), session);
-            MegaShowdownEffects.playFusionStart(pokemon, entity);
+            if (tier != FusionTier.DANCE) MegaShowdownEffects.playPotaraFusionStart(pokemon, entity);
             return new StartResult(session, null);
         } catch (RuntimeException error) {
             if (overlay != null) overlay.close();
@@ -130,6 +132,7 @@ public final class FusionService {
 
     private EndResult finish(ServerPlayerEntity player, FusionSession session) {
         if (!byPlayer.remove(session.playerUuid(), session)) return EndResult.rejected("Fusion session already ended.");
+        // Unlock before visual cleanup because auto-deployed Dance Pokemon must be allowed to recall.
         lockedPokemon.remove(session.pokemonUuid(), session.playerUuid());
         session.overlay().close();
         realtime.clear(session.playerUuid());
@@ -192,12 +195,14 @@ public final class FusionService {
         MoveTemplate move = cast.move().getTemplate();
         ServerPlayerEntity player = metadata.getCaster().getData().getPlayer();
         long tick = SVFrameMMO.currentTick();
+
         if (semantic.protect()) realtime.protect(player.getUuid(), tick, PROTECT_DURATION_TICKS);
         for (MoveSemantic.StageChange change : semantic.stages()) {
             UUID subject = change.target() == MoveSemantic.Target.SELF ? player.getUuid() : target == null ? null : target.getUuid();
             if (subject != null) realtime.add(subject, change.stat(), change.stages(), tick, STAGE_DURATION_TICKS);
             if (change.stat() == BattleStat.SPEED) applySpeedStage(change.target() == MoveSemantic.Target.SELF ? player : target, change.stages());
         }
+
         boolean hit = target == null || rollAccuracy(player, target, move, tick);
         double dealt = 0d;
         if (hit && target != null && move.getPower() > 0d) {
@@ -210,6 +215,7 @@ public final class FusionService {
                 dealt += perHit;
             }
         }
+
         if (hit && semantic.status() != MoveSemantic.Status.NONE && target != null
                 && ThreadLocalRandom.current().nextDouble() < semantic.statusChance()) applyStatus(target, semantic.status());
         if (semantic.healFraction() > 0d) player.heal((float) (player.getMaxHealth() * semantic.healFraction()));
@@ -220,6 +226,15 @@ public final class FusionService {
 
     public boolean blocksDamage(LivingEntity entity) {
         return entity != null && realtime.protectedNow(entity.getUuid(), SVFrameMMO.currentTick());
+    }
+
+    public void grantProtection(LivingEntity entity, long ticks) {
+        if (entity != null && ticks > 0L) realtime.protect(entity.getUuid(), SVFrameMMO.currentTick(), ticks);
+    }
+
+    public boolean isVisualEntityOf(UUID player, UUID entity) {
+        FusionSession session = player == null ? null : byPlayer.get(player);
+        return session != null && entity != null && entity.equals(session.deployedEntityUuid());
     }
 
     private boolean rollAccuracy(ServerPlayerEntity caster, LivingEntity target, MoveTemplate move, long tick) {
@@ -256,17 +271,22 @@ public final class FusionService {
         return physical ? Math.max(20d, 100d + target.getArmor() * 5d) : 100d;
     }
 
-    private static double stageMultiplier(int stage) { return stage >= 0 ? (2d + stage) / 2d : 2d / (2d - stage); }
+    private static double stageMultiplier(int stage) {
+        return stage >= 0 ? (2d + stage) / 2d : 2d / (2d - stage);
+    }
+
     private static double accuracyMultiplier(int stage) {
         int clamped = Math.max(-6, Math.min(6, stage));
         return clamped >= 0 ? (3d + clamped) / 3d : 3d / (3d - clamped);
     }
+
     private static void applySpeedStage(LivingEntity entity, int stages) {
         if (entity == null || stages == 0) return;
         int amplifier = Math.min(5, Math.max(0, Math.abs(stages) - 1));
         entity.addStatusEffect(new StatusEffectInstance(stages > 0 ? StatusEffects.SPEED : StatusEffects.SLOWNESS,
                 (int) STAGE_DURATION_TICKS, amplifier, false, false));
     }
+
     private static void applyStatus(LivingEntity target, MoveSemantic.Status status) {
         switch (status) {
             case PARALYSIS -> target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 2));
