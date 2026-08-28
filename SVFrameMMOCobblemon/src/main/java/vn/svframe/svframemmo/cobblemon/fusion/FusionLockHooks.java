@@ -21,9 +21,16 @@ public final class FusionLockHooks {
                     || fusions.isPokemonLocked(event.getTradeParticipant2Pokemon().getUuid())) event.cancel();
         });
         CobblemonEvents.BATTLE_STARTED_PRE.subscribe(event -> {
-            boolean locked = event.getBattle().getActors().stream()
-                    .flatMap(actor -> actor.getPokemonList().stream())
-                    .anyMatch(pokemon -> fusions.isPokemonLocked(pokemon.getUuid()));
+            boolean locked = false;
+            outer:
+            for (var actor : event.getBattle().getActors()) {
+                for (var pokemon : actor.getPokemonList()) {
+                    if (fusions.isPokemonLocked(pokemon.getUuid())) {
+                        locked = true;
+                        break outer;
+                    }
+                }
+            }
             if (locked) event.cancel();
         });
     }
