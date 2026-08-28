@@ -1,7 +1,10 @@
 package vn.svframe.svframemmo.skill.runtime;
 
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Identifier;
 import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.message.actionbar.ActionBarPriority;
 import vn.svframe.svframemmo.SVFrameMMO;
@@ -13,50 +16,60 @@ import vn.svframe.svframemmo.skill.ClassSkill;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Native server-side SKILL_BAR casting. F is the vanilla swap-hands packet; no client keybind is required. */
+/** Native MMOCore SKILL_BAR behavior. F is vanilla SWAP_ITEM_WITH_OFFHAND; no client keybind mod is required. */
 public final class SkillBarRuntime {
     private static final int DEFAULT_BAR_PRIORITY = ActionBarPriority.LOWEST;
     private static final int SKILL_BAR_PRIORITY = ActionBarPriority.LOW;
-    private static final int CAST_MESSAGE_PRIORITY = ActionBarPriority.NORMAL + 1;
     private final Map<UUID, Session> sessions = new ConcurrentHashMap<>();
 
     /** Returns true when vanilla SWAP_ITEM_WITH_OFFHAND must be cancelled. */
     public boolean handleSwapHands(ServerPlayerEntity player) {
-        SVFrameMMOConfig.SkillCasting config = SVFrameMMO.config().skillCasting();
-        if (!config.opensWithSwapHands()) return false;
+        SVFrameMMOConfig live = SVFrameMMO.config();
+        SVFrameMMOConfig.SkillCasting config = live.skillCasting();
+        if (!config.skillBarMode() || !config.opensWithSwapHands()) return false;
         if (config.ignoreSneak() && player.isSneaking()) return false;
+
         PlayerData data = SVFrameMMO.playerData().get(player);
         Session active = sessions.remove(player.getUuid());
         if (active != null) {
-            close(data, config.quitMessage());
+            close(data);
+            send(data, config.quitMessage());
             return true;
         }
-        if (!player.isSpectator() && !activeSkills(data, config).isEmpty()) {
-            sessions.put(player.getUuid(), new Session(SVFrameMMO.currentTick()));
-            data.getMMOPlayerData().getActionBar().show(CAST_MESSAGE_PRIORITY, 20L, SVFrameLib.inst().parseColors(config.enterMessage()));
-            showSkillBar(data, config);
-        }
+
+        // MMOCore always consumes the configured opening key, even when casting cannot be entered.
+        if (player.isSpectator()) return true;
+        if (player.isCreative() && !live.canCreativeCast()) return true;
+        if (activeSkills(data, config).isEmpty()) return true;
+
+        sessions.put(player.getUuid(), new Session(SVFrameMMO.currentTick()));
+        send(data, config.enterMessage());
+        showSkillBar(data, config);
         return true;
     }
 
-    /** Returns true when the hotbar slot change packet must be cancelled because it was used as a skill key. */
+    /** Returns true when the held-slot packet must be cancelled because the number key was used to cast a skill. */
     public boolean handleSelectedSlot(ServerPlayerEntity player, int selectedSlot) {
         Session session = sessions.get(player.getUuid());
         if (session == null) return false;
         SVFrameMMOConfig.SkillCasting config = SVFrameMMO.config().skillCasting();
         if (config.ignoreSneak() && player.isSneaking()) return false;
+
         int currentSlot = player.getInventory().selectedSlot;
+        if (selectedSlot < 0 || selectedSlot >= 9 || selectedSlot == currentSlot) return true;
+
         session.lastActivityTick = SVFrameMMO.currentTick();
-        if (selectedSlot >= 0 && selectedSlot < 9 && selectedSlot != currentSlot) {
-            PlayerData data = SVFrameMMO.playerData().get(player);
-            ClassSkill skill = skillForClickedSlot(data, config, currentSlot, selectedSlot);
-            if (skill != null) SVFrameMMO.skillRuntime().cast(data, skill);
-            showSkillBar(data, config);
-        }
+        PlayerData data = SVFrameMMO.playerData().get(player);
+        ClassSkill skill = skillForClickedSlot(data, config, currentSlot, selectedSlot);
+        if (skill != null) SVFrameMMO.skillRuntime().cast(data, skill);
+        showSkillBar(data, config);
+
+        // Client attempted to change held slot; MMOCore cancels PlayerItemHeldEvent, so restore the same slot client-side.
         player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(currentSlot));
         return true;
     }
@@ -71,21 +84,56 @@ public final class SkillBarRuntime {
             if (!data.isOnline()) continue;
             Session session = sessions.get(data.getUniqueId());
             if (session != null) {
-                if (activeSkills(data, live.skillCasting()).isEmpty() || (live.skillCasting().timeoutTicks() > 0 && tick - session.lastActivityTick > live.skillCasting().timeoutTicks())) {
+                if (activeSkills(data, live.skillCasting()).isEmpty()
+                        || (live.skillCasting().timeoutTicks() > 0 && tick - session.lastActivityTick > live.skillCasting().timeoutTicks())) {
                     sessions.remove(data.getUniqueId());
-                    close(data, null);
-                } else if ((tick & 7L) == 0L) showSkillBar(data, live.skillCasting());
+                    close(data); // automatic MMOCore close is silent; quit message is only sent by the opening key.
+                } else if ((tick & 15L) == 0L) {
+                    // MMOCore SkillBar renders every 16 ticks.
+                    showSkillBar(data, live.skillCasting());
+                }
             } else if (live.actionBar().enabled() && tick % live.actionBar().updateTicks() == 0L) {
-                data.getMMOPlayerData().getActionBar().show(DEFAULT_BAR_PRIORITY, Math.max(2L, live.actionBar().updateTicks() + 1L),
+                data.getMMOPlayerData().getActionBar().show(DEFAULT_BAR_PRIORITY,
+                        Math.max(2L, live.actionBar().updateTicks() + 1L),
                         SVFrameLib.inst().parseColors(formatDefaultBar(data, live.actionBar().format())));
             }
         }
     }
 
-    private void close(PlayerData data, String message) {
+    private static void close(PlayerData data) {
         data.getMMOPlayerData().getActionBar().reset(SKILL_BAR_PRIORITY);
-        if (message != null && !message.isBlank())
-            data.getMMOPlayerData().getActionBar().show(CAST_MESSAGE_PRIORITY, 20L, SVFrameLib.inst().parseColors(message));
+    }
+
+    private static void send(PlayerData data, SVFrameMMOConfig.PlayerMessage options) {
+        if (options == null || !data.isOnline()) return;
+        String parsed = SVFrameLib.inst().parseColors(options.message());
+        if (parsed != null && !parsed.isBlank()) {
+            if (options.actionBar())
+                data.getMMOPlayerData().getActionBar().show(options.priority(), options.duration(), parsed);
+            else data.getPlayer().sendMessage(net.minecraft.text.Text.literal(parsed), false);
+        }
+        playSound(data.getPlayer(), options.sound());
+    }
+
+    /** Accepts both Minecraft identifiers and MMOCore/Bukkit enum-style SOUND,volume,pitch values. */
+    private static void playSound(ServerPlayerEntity player, String configured) {
+        if (configured == null || configured.isBlank()) return;
+        String[] split = configured.split(",", -1);
+        String rawId = split[0].trim();
+        float volume = floatValue(split, 1, 1f);
+        float pitch = floatValue(split, 2, 1f);
+        Identifier id;
+        if (rawId.indexOf(':') >= 0) id = Identifier.tryParse(rawId.toLowerCase(Locale.ROOT));
+        else id = Identifier.tryParse("minecraft:" + rawId.toLowerCase(Locale.ROOT).replace('_', '.'));
+        if (id == null) return;
+        Registries.SOUND_EVENT.getEntry(id).ifPresent(sound -> player.getServerWorld().playSound(
+                null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, volume, pitch));
+    }
+
+    private static float floatValue(String[] values, int index, float fallback) {
+        if (index >= values.length) return fallback;
+        try { return Float.parseFloat(values[index].trim()); }
+        catch (RuntimeException ignored) { return fallback; }
     }
 
     private static ClassSkill skillForClickedSlot(PlayerData data, SVFrameMMOConfig.SkillCasting config, int currentSlot, int clickedSlot) {
@@ -124,7 +172,8 @@ public final class SkillBarRuntime {
             ClassSkill skill = binding.skill();
             var cooldowns = data.getMMOPlayerData().getCooldownMap();
             String format;
-            if (cooldowns.isOnCooldown(skill.getCooldownPath())) format = options.onCooldown().replace("{cooldown}", trim(cooldowns.getCooldown(skill.getCooldownPath())));
+            if (cooldowns.isOnCooldown(skill.getCooldownPath()))
+                format = options.onCooldown().replace("{cooldown}", Long.toString(Math.max(0L, (long) cooldowns.getCooldown(skill.getCooldownPath()))));
             else if (parameter(skill, "mana", data) > data.getMana()) format = options.noMana();
             else if (parameter(skill, "stamina", data) > data.getStamina()) format = options.noStamina();
             else format = options.ready();
@@ -169,7 +218,7 @@ public final class SkillBarRuntime {
 
     private static String trim(double value) {
         if (value == Math.rint(value)) return Long.toString((long) value);
-        return String.format(java.util.Locale.ROOT, "%.1f", value);
+        return String.format(Locale.ROOT, "%.1f", value);
     }
 
     private record CastBinding(int castSlot, ClassSkill skill) { }

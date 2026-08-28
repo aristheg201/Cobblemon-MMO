@@ -18,13 +18,11 @@ default-playerdata:
 passive-skill-needs-binding: true
 save-default-class-info: false
 player-resource-tick-period: 20
+can-creative-cast: false
 
 combat-log:
   timer: 10
 
-# Progress that can be carried from the class the player leaves into the class
-# they select. Class-specific skills, attributes, trees and unlocks always remain
-# isolated in per-class snapshots.
 share-across-classes:
   experience: false
   skill-points: false
@@ -32,25 +30,37 @@ share-across-classes:
   skill-reallocation-points: false
   attribute-reallocation-points: false
 
-# Native SVFrameMMO skill bar. The F key is Minecraft's vanilla SWAP_HANDS action;
-# SVFrameMMO consumes that packet while this casting mode is active. No client keybind mod is required.
+# MMOCore-compatible SKILL_BAR casting. F is Minecraft's vanilla SWAP_HANDS key.
 skill-casting:
+  mode: SKILL_BAR
   open: SWAP_HANDS
   ignore-sneak: false
   use-lowest-keybinds: true
+
+  # Optional. When present this is measured in ticks and must be > 0, exactly like MMOCore.
+  # time-out: 100
+
   message:
     enter:
       message: '&e&l☄ &a&lSKILL CASTING &e&l☄'
+      action-bar: true
+      duration: 20
+      priority: 31
+      sound: BLOCK_END_PORTAL_FRAME_FILL,1,2
     quit:
       message: '&e&l☄ &c&lSKILL CASTING &e&l☄'
+      action-bar: true
+      duration: 20
+      priority: 31
+      sound: BLOCK_FIRE_EXTINGUISH,1,2
+
   action-bar:
-    split: '&7 - &7'
+    split: '&7 &7 - &7 '
     ready: '&6[{index}] &a&l{skill}'
     on-cooldown: '&6[{index}] &c&l{skill} &6(&c{cooldown}&6)'
     no-mana: '&6[{index}] &9&l{skill}'
     no-stamina: '&6[{index}] &9&l{skill}'
 
-# Default persistent action bar. Individual classes may override this with their own action-bar value.
 action-bar:
   enabled: true
   ticks-to-update: 5
