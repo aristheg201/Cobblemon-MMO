@@ -1,12 +1,16 @@
 package vn.svframe.svframemmo.api;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import vn.svframe.svframelib.SVFrameLib;
+import vn.svframe.svframelib.api.economy.CurrencyKey;
+import vn.svframe.svframelib.api.economy.CurrencyService;
 import vn.svframe.svframelib.skill.result.SkillResult;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.experience.EXPSource;
 import vn.svframe.svframemmo.skilltree.NodeIncrementResult;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -55,5 +59,43 @@ public final class SVFrameMMOApi {
     public static SkillResult castBoundSkill(ServerPlayerEntity player, int slot) {
         PlayerData data = player(player);
         return SVFrameMMO.skillRuntime().castBound(data, slot);
+    }
+
+    /** Shared economy service backed by optional native BEconomy/CobbleDollars integrations in SVFrameLib. */
+    public static CurrencyService economy() {
+        return SVFrameLib.inst().getEconomy();
+    }
+
+    /** Currency syntax: beconomy, beconomy:&lt;currency-type&gt;, or cobbledollars. */
+    public static BigDecimal balance(ServerPlayerEntity player, String currency) {
+        return economy().balance(Objects.requireNonNull(player, "player"), CurrencyKey.parse(currency));
+    }
+
+    public static boolean hasCurrency(ServerPlayerEntity player, String currency, BigDecimal amount) {
+        return economy().has(Objects.requireNonNull(player, "player"), CurrencyKey.parse(currency), amount);
+    }
+
+    public static void setBalance(ServerPlayerEntity player, String currency, BigDecimal amount) {
+        economy().setBalance(Objects.requireNonNull(player, "player"), CurrencyKey.parse(currency), amount);
+    }
+
+    public static void deposit(ServerPlayerEntity player, String currency, BigDecimal amount) {
+        economy().deposit(Objects.requireNonNull(player, "player"), CurrencyKey.parse(currency), amount);
+    }
+
+    public static boolean withdraw(ServerPlayerEntity player, String currency, BigDecimal amount) {
+        return economy().withdraw(Objects.requireNonNull(player, "player"), CurrencyKey.parse(currency), amount);
+    }
+
+    public static boolean transfer(ServerPlayerEntity from, ServerPlayerEntity to, String currency, BigDecimal amount) {
+        return economy().transfer(Objects.requireNonNull(from, "from"), Objects.requireNonNull(to, "to"), CurrencyKey.parse(currency), amount);
+    }
+
+    public static boolean currencyAvailable(String currency) {
+        return economy().isAvailable(CurrencyKey.parse(currency));
+    }
+
+    public static String currencySymbol(String currency) {
+        return economy().symbol(CurrencyKey.parse(currency));
     }
 }
