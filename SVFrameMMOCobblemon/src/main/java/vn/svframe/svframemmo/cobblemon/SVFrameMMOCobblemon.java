@@ -24,6 +24,7 @@ import vn.svframe.svframemmo.cobblemon.fusion.FusionLockHooks;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionNetworkGuards;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionService;
 import vn.svframe.svframemmo.cobblemon.fusion.PotaraUseHandler;
+import vn.svframe.svframemmo.cobblemon.fusion.render.FusionMorphNetworking;
 import vn.svframe.svframemmo.cobblemon.integration.CobblemonMoveVfxService;
 import vn.svframe.svframemmo.cobblemon.integration.LuckPermsIntegration;
 import vn.svframe.svframemmo.cobblemon.integration.PlaceholderIntegration;
@@ -31,7 +32,7 @@ import vn.svframe.svframemmo.cobblemon.item.PotaraTierResolver;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkill;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkillAdapter;
 
-/** Separate native integration mod bridging Cobblemon/Mega Showdown/PocketMorph to SVFrameMMO. */
+/** Separate native integration mod bridging Cobblemon and Mega Showdown to SVFrameMMO. */
 public final class SVFrameMMOCobblemon implements ModInitializer {
     public static final String ID = "svframemmo_cobblemon";
     public static final Logger LOG = LoggerFactory.getLogger("SVFrameMMO: Cobblemon Integration");
@@ -42,6 +43,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
     private static final CosmeticService COSMETICS = new CosmeticService();
 
     @Override public void onInitialize() {
+        FusionMorphNetworking.register();
         try { config = IntegrationConfig.load(); }
         catch (Exception error) { throw new IllegalStateException("Could not load SVFrameMMO Cobblemon integration config", error); }
 
@@ -61,7 +63,6 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         CobblemonEvents.COBBLEMON_INITIALISED.subscribe(ignored -> {
             reloadMoveSkillsOrThrow();
             MOVE_VFX.reload();
-            // Reparse configured classes once live move metadata exists; SVFrameMMO itself remains Cobblemon-agnostic.
             if (!SVFrameMMO.reload()) LOG.warn("SVFrameMMO reload after Cobblemon move registry initialization failed");
         });
         Moves.INSTANCE.getObservable().subscribe(ignored -> reloadMoveSkillsOrThrow());
