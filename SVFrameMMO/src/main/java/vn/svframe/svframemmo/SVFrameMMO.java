@@ -24,6 +24,7 @@ import vn.svframe.svframemmo.manager.SkillTreeManager;
 import vn.svframe.svframemmo.player.DelayedActionRuntime;
 import vn.svframe.svframemmo.player.ResourceRegenRuntime;
 import vn.svframe.svframemmo.skill.SVFrameMMOSkillBootstrap;
+import vn.svframe.svframemmo.skill.runtime.SkillBarRuntime;
 import vn.svframe.svframemmo.skill.runtime.SkillRuntime;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ public final class SVFrameMMO implements ModInitializer {
     private static final BoosterManager BOOSTERS = new BoosterManager();
     private static final PermissionRegistry PERMISSIONS = new PermissionRegistry();
     private static final SkillRuntime SKILL_RUNTIME = new SkillRuntime();
+    private static final SkillBarRuntime SKILL_BAR = new SkillBarRuntime();
 
     private static volatile ClassManager classes = new ClassManager();
     private static volatile AttributeManager attributes = new AttributeManager();
@@ -81,17 +83,22 @@ public final class SVFrameMMO implements ModInitializer {
             LOG.info("SVFrameMMO Fabric online; " + definitionSummary() + ",players=" + PLAYER_DATA.all().size());
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            SKILL_BAR.clear();
             PLAYER_DATA.save();
             for (var data : PLAYER_DATA.all()) SKILL_RUNTIME.detach(data);
             try { if (profileRegistration != null) profileRegistration.close(); }
             catch (Exception ignored) { }
         });
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> PLAYER_DATA.join(handler.player));
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PLAYER_DATA.quit(handler.player));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            SKILL_BAR.detach(handler.player.getUuid());
+            PLAYER_DATA.quit(handler.player);
+        });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             tick++;
             REGEN.tick(tick);
             DELAYED_ACTIONS.tick(tick);
+            SKILL_BAR.tick(tick);
             SVFrameMMOConfig live = config;
             if (live.autosaveSeconds() > 0 && tick % (live.autosaveSeconds() * 20L) == 0) PLAYER_DATA.save();
         });
@@ -108,6 +115,7 @@ public final class SVFrameMMO implements ModInitializer {
             for (var data : PLAYER_DATA.all()) data.prepareReload();
             loadDefinitions();
             for (var data : PLAYER_DATA.all()) data.reloadDefinitions();
+            SKILL_BAR.clear();
             PLAYER_DATA.save();
             LOG.info("SVFrameMMO reloaded; " + definitionSummary());
             return true;
@@ -173,5 +181,6 @@ public final class SVFrameMMO implements ModInitializer {
     public static PermissionRegistry permissions() { return PERMISSIONS; }
     public static SkillTreeManager skillTrees() { return skillTrees; }
     public static SkillRuntime skillRuntime() { return SKILL_RUNTIME; }
+    public static SkillBarRuntime skillBar() { return SKILL_BAR; }
     public static DelayedActionRuntime delayedActions() { return DELAYED_ACTIONS; }
 }
