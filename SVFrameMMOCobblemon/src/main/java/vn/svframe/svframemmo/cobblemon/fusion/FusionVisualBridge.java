@@ -2,45 +2,91 @@ package vn.svframe.svframemmo.cobblemon.fusion;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
+import com.pixelpitstop.pocketmorph.CobblemonPropertiesResolver;
+import com.pixelpitstop.pocketmorph.CobblemonSpeciesResolver;
+import com.pixelpitstop.pocketmorph.ServerDisguiseSyncManager;
+import com.pixelpitstop.pocketmorph.SyncedDisguiseData;
+import com.pixelpitstop.pocketmorph.networking.ModPayloads;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Native server-side morph presentation. The real party Pokemon is used as the visible avatar while
- * the player is hidden. Only currently fused players are synchronized.
+ * Real fusion morph presentation backed by PocketMorph's authoritative disguise state.
+ * The player remains the real entity; no invisible-player + following-Pokemon proxy is used.
  */
 public final class FusionVisualBridge {
+    private static final String SOURCE = "SVFrameMMO Cobblemon fusion";
     private final Map<UUID, State> states = new ConcurrentHashMap<>();
 
     public void start(ServerPlayerEntity player, Pokemon pokemon, PokemonEntity entity, boolean autoDeployed) {
-        State state = new State(player.getUuid(), pokemon, entity, autoDeployed,
-                player.isInvisible(), entity.isInvulnerable(), entity.hasNoGravity());
-        State old = states.putIfAbsent(player.getUuid(), state);
-        if (old != null) throw new IllegalStateException("Fusion visual already active for " + player.getUuid());
-        player.setInvisible(true);
-        entity.setInvulnerable(true);
-        entity.setNoGravity(true);
-        synchronize(player, entity);
+        UUID playerId = player.getUuid();
+        if (states.containsKey(playerId)) throw new IllegalStateException("Fusion visual already active for " + playerId);
+
+        SyncedDisguiseData previous = ServerDisguiseSyncManager.get(playerId);
+        String species = CobblemonSpeciesResolver.normalizeSpeciesIdentifier(
+                pokemon.getSpecies().getResourceIdentifier().toString())
+                .orElseThrow(() -> new IllegalStateException("PocketMorph could not resolve " + pokemon.getSpecies().getName()));
+        String properties = buildProperties(species, pokemon);
+        SyncedDisguiseData requested = new SyncedDisguiseData(
+                playerId,
+                species,
+                properties,
+                false,
+                false,
+                false,
+                false,
+                false,
+                null,
+                null,
+                pokemon.getDisplayName(false).getString(),
+                true,
+                true,
+                false,
+                1.0f,
+                1.0f,
+                false,
+                0.0f,
+                false,
+                0.0f,
+                0.0f,
+                0.0f
+        );
+
+        try {
+            ServerDisguiseSyncManager.upsertAdministrative(player, requested, SOURCE);
+            SyncedDisguiseData applied = ServerDisguiseSyncManager.get(playerId);
+            if (applied == null || !CobblemonSpeciesResolver.speciesMatchesExactly(species, applied.species()))
+                throw new IllegalStateException("PocketMorph rejected the requested fusion disguise for " + species);
+
+            states.put(playerId, new State(playerId, species, previous));
+            ModPayloads.broadcastAuthoritativeSyncedState(player.getServerWorld().getServer(), applied, SOURCE);
+
+            // The fused player is the visible Pokemon now. The real party Pokemon must not remain as a duplicate entity.
+            PokemonEntity deployed = pokemon.getEntity();
+            if (deployed != null && !deployed.isRemoved() && !deployed.isBattling()) pokemon.recall();
+        } catch (RuntimeException error) {
+            restore(player, playerId, previous);
+            throw error;
+        }
     }
 
-    /** Returns fused players whose visible Pokemon can no longer be synchronized safely. */
+    /** Returns fused players whose PocketMorph disguise was externally removed or replaced. */
     public Set<UUID> tick(MinecraftServer server) {
         if (states.isEmpty()) return Set.of();
         java.util.HashSet<UUID> invalid = new java.util.HashSet<>();
         for (State state : states.values()) {
             ServerPlayerEntity player = server.getPlayerManager().getPlayer(state.playerUuid());
-            PokemonEntity entity = state.entity();
-            if (player == null || entity.isRemoved() || entity.getWorld() != player.getWorld()) {
+            SyncedDisguiseData active = ServerDisguiseSyncManager.get(state.playerUuid());
+            if (player == null || active == null || !CobblemonSpeciesResolver.speciesMatchesExactly(state.species(), active.species()))
                 invalid.add(state.playerUuid());
-                continue;
-            }
-            synchronize(player, entity);
         }
         return invalid;
     }
@@ -48,25 +94,43 @@ public final class FusionVisualBridge {
     public void stop(ServerPlayerEntity player, UUID playerId) {
         State state = states.remove(playerId);
         if (state == null) return;
-        if (player != null) player.setInvisible(state.playerWasInvisible());
-        PokemonEntity entity = state.entity();
-        if (!entity.isRemoved()) {
-            entity.setInvulnerable(state.entityWasInvulnerable());
-            entity.setNoGravity(state.entityHadNoGravity());
-            entity.setPokemonWalking(false);
-            entity.setPokemonFlying(false);
+        restore(player, playerId, state.previous());
+    }
+
+    private static void restore(ServerPlayerEntity player, UUID playerId, SyncedDisguiseData previous) {
+        if (player != null && previous != null) {
+            ServerDisguiseSyncManager.upsertAdministrative(player, previous, SOURCE + " restore");
+            SyncedDisguiseData restored = ServerDisguiseSyncManager.get(playerId);
+            if (restored != null)
+                ModPayloads.broadcastAuthoritativeSyncedState(player.getServerWorld().getServer(), restored, SOURCE + " restore");
+            return;
         }
-        if (state.autoDeployed()) state.pokemon().recall();
+
+        ServerDisguiseSyncManager.remove(playerId);
+        if (player != null)
+            ModPayloads.broadcastAuthoritativeClear(player.getServerWorld().getServer(), playerId, SOURCE);
     }
 
-    private static void synchronize(ServerPlayerEntity player, PokemonEntity entity) {
-        Vec3d velocity = player.getVelocity();
-        entity.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
-        entity.setVelocity(velocity);
-        entity.setPokemonWalking(player.isOnGround() && velocity.horizontalLengthSquared() > 0.0025d);
-        entity.setPokemonFlying(!player.isOnGround());
+    private static String buildProperties(String species, Pokemon pokemon) {
+        List<String> parts = new ArrayList<>();
+        parts.add("level=" + pokemon.getLevel());
+        if (pokemon.getShiny()) parts.add("shiny");
+
+        if (pokemon.getForm() != null) {
+            String form = pokemon.getForm().getName();
+            if (form != null && !form.isBlank() && !"normal".equalsIgnoreCase(form) && !"standard".equalsIgnoreCase(form))
+                parts.add("form=" + form.replace(' ', '_'));
+        }
+
+        if (pokemon.getGender() != null)
+            parts.add("gender=" + pokemon.getGender().name().toLowerCase(Locale.ROOT));
+
+        String requested = String.join(" ", parts);
+        CobblemonPropertiesResolver.ValidationResult validation = CobblemonPropertiesResolver.validate(species, requested);
+        if (!validation.valid())
+            throw new IllegalStateException("PocketMorph rejected Pokemon properties: " + validation.detail());
+        return validation.normalizedProperties();
     }
 
-    private record State(UUID playerUuid, Pokemon pokemon, PokemonEntity entity, boolean autoDeployed,
-                         boolean playerWasInvisible, boolean entityWasInvulnerable, boolean entityHadNoGravity) { }
+    private record State(UUID playerUuid, String species, SyncedDisguiseData previous) { }
 }
