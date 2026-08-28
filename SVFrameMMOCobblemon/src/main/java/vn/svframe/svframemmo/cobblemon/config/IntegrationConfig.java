@@ -19,6 +19,7 @@ import java.util.Set;
 public final class IntegrationConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("SVFrameMMOCobblemon/config.json");
+    private static final Set<String> POTARA_EFFECTS = Set.of("mega_showdown:kyurem_black", "mega_showdown:kyurem_white");
 
     public PotaraConfig potara = new PotaraConfig();
     public FusionConfig fusion = new FusionConfig();
@@ -56,10 +57,6 @@ public final class IntegrationConfig {
         @SerializedName("max-fallback-particles-per-emission") public int maxFallbackParticlesPerEmission = 32;
     }
 
-    /**
-     * Conversion from native Pokemon stats into flat SVFrame RPG stats before the fusion rank multiplier.
-     * Values are deliberately configurable because Pokemon and Minecraft stat scales are different.
-     */
     public static final class StatConversion {
         @SerializedName("hp-to-max-health") public double hpToMaxHealth = 0.10d;
         @SerializedName("special-attack-to-max-mana") public double specialAttackToMaxMana = 0.10d;
@@ -105,10 +102,10 @@ public final class IntegrationConfig {
         validateScale("special-attack-to-max-mana", fusion.statConversion.specialAttackToMaxMana);
         validateScale("speed-to-max-stamina", fusion.statConversion.speedToMaxStamina);
         validateScale("offense-to-attack-damage", fusion.statConversion.offenseToAttackDamage);
-        if (vfx.potaraFusionEffects == null || vfx.potaraFusionEffects.isEmpty()) throw new IllegalArgumentException("potara-fusion-effects must contain at least one Mega Showdown effect");
+        if (vfx.potaraFusionEffects == null || vfx.potaraFusionEffects.isEmpty()) throw new IllegalArgumentException("potara-fusion-effects must contain at least one Mega Showdown Kyurem fusion effect");
         for (String rawEffect : vfx.potaraFusionEffects) {
-            Identifier potaraEffect = Identifier.tryParse(rawEffect == null ? "" : rawEffect.trim());
-            if (potaraEffect == null || !"mega_showdown".equals(potaraEffect.getNamespace())) throw new IllegalArgumentException("potara-fusion-effects must contain only mega_showdown effect ids");
+            String normalized = rawEffect == null ? "" : rawEffect.trim().toLowerCase(java.util.Locale.ROOT);
+            if (!POTARA_EFFECTS.contains(normalized)) throw new IllegalArgumentException("potara-fusion-effects may only contain mega_showdown:kyurem_black and mega_showdown:kyurem_white");
         }
         if (!Double.isFinite(vfx.moveBroadcastRadius) || vfx.moveBroadcastRadius <= 0d || vfx.moveBroadcastRadius > 64d) throw new IllegalArgumentException("move-broadcast-radius must be 0..64");
         if (!Double.isFinite(vfx.fullQualityDistance) || vfx.fullQualityDistance < 0d || vfx.fullQualityDistance > vfx.moveBroadcastRadius) throw new IllegalArgumentException("full-quality-distance must be within move-broadcast-radius");
