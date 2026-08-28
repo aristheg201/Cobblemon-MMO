@@ -5,11 +5,13 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.event.PlayerAttackEvent;
 import vn.svframe.svframelib.fabric.runtime.RpgProfileRegistry;
 import vn.svframe.svframelib.player.resource.ResourceUpdateReason;
 import vn.svframe.svframelib.rpg.ManaModule;
+import vn.svframe.svframemmo.api.integration.SkillSourceBootstrap;
 import vn.svframe.svframemmo.command.SVFrameMMOCommands;
 import vn.svframe.svframemmo.config.DefaultFiles;
 import vn.svframe.svframemmo.config.SVFrameMMOConfig;
@@ -59,6 +61,9 @@ public final class SVFrameMMO implements ModInitializer {
         try {
             DefaultFiles.ensure();
             SVFrameLib.bootstrap();
+            for (SkillSourceBootstrap bootstrap : FabricLoader.getInstance().getEntrypoints("svframemmo-skill-source", SkillSourceBootstrap.class)) {
+                bootstrap.registerSkillSources();
+            }
             SVFrameMMOSkillBootstrap.register(DefaultFiles.ROOT.resolve("skills"));
             loadDefinitions();
         } catch (Exception exception) {
