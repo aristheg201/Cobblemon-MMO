@@ -42,6 +42,13 @@ jobs:
           set -euo pipefail
           ! grep -RIn --binary-files=without-match -Ei 'svframeitems|fusion_tier' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
           grep -q 'svframemmo-skill-source' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
+          ! grep -q '"mixins"' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
+          ! grep -RIn --binary-files=without-match '@Mixin' SVFrameMMOCobblemon/src/main/java
+          grep -q 'FusionNetworkGuards.register(FUSIONS)' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/SVFrameMMOCobblemon.java
+          grep -q 'unregisterGlobalReceiver' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionNetworkGuards.java
+          grep -q 'move_party_pokemon_to_pc' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionNetworkGuards.java
+          grep -q 'swap_pc_party_pokemon' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionNetworkGuards.java
+          grep -q 'pasture_pokemon' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionNetworkGuards.java
           grep -q 'SkillHandlerSource' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
           grep -q 'Moves.all()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
           grep -q 'source: cobblemon:<move>' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/CobblemonSkillSourceEntrypoint.java
@@ -53,9 +60,6 @@ jobs:
           grep -q 'kyurem_black' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'kyurem_white' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'POTARA_FUSION_FORM_DELAY_TICKS = 88L' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
-          for mixin in MovePartyPokemonToPCHandlerMixin SwapPCPartyPokemonHandlerMixin PasturePokemonHandlerMixin; do
-            grep -q 'Lnet/minecraft/class_3222;' "SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/${mixin}.java"
-          done
       - name: Build SVFrameLib
         run: cd SVFrameLib && gradle --no-daemon clean test remapJar
       - name: Build SVFrameMMO
@@ -119,10 +123,10 @@ jobs:
           grep -q 'Loading Minecraft 1.21.1 with Fabric Loader' "$ROOT/build/integration-server.log"
           grep -q 'SVFrameMMO Fabric online' "$ROOT/build/integration-server.log"
           grep -q 'Cobblemon Integration online' "$ROOT/build/integration-server.log"
+          grep -q 'Fusion storage network guards installed' "$ROOT/build/integration-server.log"
           grep -q 'Done (' "$ROOT/build/integration-server.log"
-          ! grep -q 'Mixin apply for mod svframemmo_cobblemon failed' "$ROOT/build/integration-server.log"
           ! grep -q 'Could not execute entrypoint stage' "$ROOT/build/integration-server.log"
-          ! grep -Eq 'NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Exception in server tick loop|ProviderMismatchException' "$ROOT/build/integration-server.log"
+          ! grep -Eq 'MixinTargetAlreadyLoadedException|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Exception in server tick loop|ProviderMismatchException' "$ROOT/build/integration-server.log"
       - name: Upload validated artifact
         uses: actions/upload-artifact@v4
         with:

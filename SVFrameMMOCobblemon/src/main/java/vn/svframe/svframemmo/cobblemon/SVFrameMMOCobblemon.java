@@ -21,6 +21,7 @@ import vn.svframe.svframemmo.cobblemon.cosmetic.SnowstormAssetLoader;
 import vn.svframe.svframemmo.cobblemon.cosmetic.SnowstormPackService;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionCommands;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionLockHooks;
+import vn.svframe.svframemmo.cobblemon.fusion.FusionNetworkGuards;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionService;
 import vn.svframe.svframemmo.cobblemon.fusion.PotaraUseHandler;
 import vn.svframe.svframemmo.cobblemon.integration.CobblemonMoveVfxService;
@@ -80,6 +81,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         });
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !FUSIONS.blocksDamage(entity));
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            FusionNetworkGuards.register(FUSIONS);
             try {
                 SnowstormPackService.stage(new SnowstormAssetLoader().load(CosmeticDefaults.VFX));
                 SnowstormPackService.buildInitial();
