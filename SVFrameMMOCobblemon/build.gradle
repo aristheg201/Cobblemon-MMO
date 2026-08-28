@@ -6,6 +6,7 @@ repositories {
     mavenCentral()
     maven { url = 'https://maven.fabricmc.net/' }
     maven { url = 'https://maven.nucleoid.xyz/' }
+    maven { url = 'https://maven.architectury.dev/' }
     exclusiveContent {
         forRepository {
             maven {
@@ -25,6 +26,9 @@ dependencies {
     modImplementation "maven.modrinth:MdwFAVRL:kF7CvxTo"
     modImplementation "eu.pb4:polymer-core:0.9.19+1.21.1"
     modImplementation "eu.pb4:polymer-resource-pack:0.9.19+1.21.1"
+    modImplementation "dev.architectury:architectury-fabric:13.0.8"
+    modImplementation "maven.modrinth:jtmvUHXj:uPPIhLTH"
+    modImplementation "maven.modrinth:ccKDOlHs:vCCHsvEa"
     modImplementation "maven.modrinth:SszvX85I:ch7DfnXP"
     modCompileOnly "maven.modrinth:placeholder-api:2.4.2+1.21"
     compileOnly "net.luckperms:api:5.4"
