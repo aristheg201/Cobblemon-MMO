@@ -112,6 +112,13 @@ public final class SVFrameLibIndicatorManager {
         if (!enabled || target == null || metadata == null || target.getWorld().isClient()) return;
         if (!(target.getWorld() instanceof ServerWorld world)) return;
 
+        // Indicators create/remove world entities. If an integration invokes combat from a network/worker thread,
+        // preserve the indicator instead of touching chunk/entity storage asynchronously.
+        if (!world.getServer().isOnThread()) {
+            world.getServer().execute(() -> damage(target, metadata));
+            return;
+        }
+
         List<Indicator> indicators = indicators(metadata);
         indicators.removeIf(indicator -> indicator.value() < minDamage);
         if (indicators.isEmpty()) return;
