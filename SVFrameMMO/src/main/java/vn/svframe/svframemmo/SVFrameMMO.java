@@ -25,6 +25,7 @@ import vn.svframe.svframemmo.manager.ProfessionManager;
 import vn.svframe.svframemmo.manager.SkillTreeManager;
 import vn.svframe.svframemmo.player.DelayedActionRuntime;
 import vn.svframe.svframemmo.player.ResourceRegenRuntime;
+import vn.svframe.svframemmo.skill.ExternalSkillProgression;
 import vn.svframe.svframemmo.skill.ExternalSkillRegistry;
 import vn.svframe.svframemmo.skill.SVFrameMMOSkillBootstrap;
 import vn.svframe.svframemmo.skill.runtime.SkillBarRuntime;
@@ -48,6 +49,7 @@ public final class SVFrameMMO implements ModInitializer {
     private static final SkillBarRuntime SKILL_BAR = new SkillBarRuntime();
     private static final TemporarySkillOverlayRuntime TEMPORARY_SKILLS = new TemporarySkillOverlayRuntime();
     private static final ExternalSkillRegistry EXTERNAL_SKILLS = new ExternalSkillRegistry();
+    private static final ExternalSkillProgression EXTERNAL_PROGRESSION = new ExternalSkillProgression();
 
     private static volatile ClassManager classes = new ClassManager();
     private static volatile AttributeManager attributes = new AttributeManager();
@@ -89,21 +91,27 @@ public final class SVFrameMMO implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> SVFrameMMOCommands.register(dispatcher));
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             PLAYER_DATA.start(server);
+            EXTERNAL_PROGRESSION.start(server);
             LOG.info("SVFrameMMO Fabric online; " + definitionSummary() + ",players=" + PLAYER_DATA.all().size());
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             SKILL_BAR.clear();
             TEMPORARY_SKILLS.clear();
             PLAYER_DATA.save();
+            EXTERNAL_PROGRESSION.save();
             for (var data : PLAYER_DATA.all()) SKILL_RUNTIME.detach(data);
             try { if (profileRegistration != null) profileRegistration.close(); }
             catch (Exception ignored) { }
         });
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> PLAYER_DATA.join(handler.player));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            PLAYER_DATA.join(handler.player);
+            EXTERNAL_PROGRESSION.validateBindings(handler.player.getUuid());
+        });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             SKILL_BAR.detach(handler.player.getUuid());
             TEMPORARY_SKILLS.clear(handler.player.getUuid());
             PLAYER_DATA.quit(handler.player);
+            EXTERNAL_PROGRESSION.save();
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             tick++;
@@ -111,7 +119,10 @@ public final class SVFrameMMO implements ModInitializer {
             DELAYED_ACTIONS.tick(tick);
             SKILL_BAR.tick(tick);
             SVFrameMMOConfig live = config;
-            if (live.autosaveSeconds() > 0 && tick % (live.autosaveSeconds() * 20L) == 0) PLAYER_DATA.save();
+            if (live.autosaveSeconds() > 0 && tick % (live.autosaveSeconds() * 20L) == 0) {
+                PLAYER_DATA.save();
+                EXTERNAL_PROGRESSION.save();
+            }
         });
         PlayerAttackEvent.EVENT.register(event -> {
             PLAYER_DATA.get(event.getPlayer()).markCombat();
@@ -128,6 +139,7 @@ public final class SVFrameMMO implements ModInitializer {
             for (var data : PLAYER_DATA.all()) data.reloadDefinitions();
             SKILL_BAR.clear();
             PLAYER_DATA.save();
+            EXTERNAL_PROGRESSION.save();
             LOG.info("SVFrameMMO reloaded; " + definitionSummary());
             return true;
         } catch (Exception exception) {
@@ -194,5 +206,6 @@ public final class SVFrameMMO implements ModInitializer {
     public static SkillBarRuntime skillBar() { return SKILL_BAR; }
     public static TemporarySkillOverlayRuntime temporarySkills() { return TEMPORARY_SKILLS; }
     public static ExternalSkillRegistry externalSkills() { return EXTERNAL_SKILLS; }
+    public static ExternalSkillProgression externalProgression() { return EXTERNAL_PROGRESSION; }
     public static DelayedActionRuntime delayedActions() { return DELAYED_ACTIONS; }
 }
