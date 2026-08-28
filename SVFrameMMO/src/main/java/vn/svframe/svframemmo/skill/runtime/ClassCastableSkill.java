@@ -19,14 +19,21 @@ import java.util.Objects;
 public final class ClassCastableSkill extends Skill {
     private final ClassSkill classSkill;
     private final PlayerData caster;
+    private final boolean requireClassProgression;
 
     public ClassCastableSkill(ClassSkill classSkill, PlayerData caster) {
+        this(classSkill, caster, true);
+    }
+
+    ClassCastableSkill(ClassSkill classSkill, PlayerData caster, boolean requireClassProgression) {
         super(Objects.requireNonNull(classSkill, "classSkill").getSkill());
         this.classSkill = classSkill;
         this.caster = Objects.requireNonNull(caster, "caster");
+        this.requireClassProgression = requireClassProgression;
     }
 
     public ClassSkill getClassSkill() { return classSkill; }
+    public boolean requiresClassProgression() { return requireClassProgression; }
 
     @Override
     public TriggerType getTrigger() { return classSkill.getTrigger(); }
@@ -66,7 +73,7 @@ public final class ClassCastableSkill extends Skill {
 
     private boolean validate(SkillMetadata metadata) {
         if (!caster.isOnline()) return false;
-        if (!caster.canUseSkill(classSkill)) return false;
+        if (requireClassProgression && !caster.canUseSkill(classSkill)) return false;
         MMOPlayerData mmo = caster.getMMOPlayerData();
         if (!getTrigger().isPassive() && mmo.getCooldownMap().isOnCooldown(this)) return false;
         double mana = Math.max(0d, metadata.getParameter("mana"));

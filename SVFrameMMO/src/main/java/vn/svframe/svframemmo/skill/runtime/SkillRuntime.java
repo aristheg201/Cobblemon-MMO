@@ -27,9 +27,7 @@ import java.util.UUID;
 public final class SkillRuntime {
     private final Map<UUID, Map<String, Registration>> registrations = new LinkedHashMap<>();
 
-    public synchronized void attach(PlayerData data) {
-        refresh(data);
-    }
+    public synchronized void attach(PlayerData data) { refresh(data); }
 
     public synchronized void detach(PlayerData data) {
         Map<String, Registration> removed = registrations.remove(data.getUniqueId());
@@ -90,12 +88,17 @@ public final class SkillRuntime {
         return cast(data, skill);
     }
 
-    public SkillResult cast(PlayerData data, ClassSkill skill) {
+    public SkillResult cast(PlayerData data, ClassSkill skill) { return cast(data, skill, true); }
+
+    /** Casts a runtime-owned temporary skill without requiring it to belong to the player's class. */
+    public SkillResult castTemporary(PlayerData data, ClassSkill skill) { return cast(data, skill, false); }
+
+    private SkillResult cast(PlayerData data, ClassSkill skill, boolean requireClassProgression) {
         Objects.requireNonNull(data, "data");
         Objects.requireNonNull(skill, "skill");
         if (skill.getTrigger().isPassive()) throw new IllegalArgumentException("Passive skills cannot be manually cast: " + skill.getSkill().getId());
         if (!data.isOnline()) throw new IllegalStateException("Cannot cast a skill for an offline player");
-        ClassCastableSkill cast = new ClassCastableSkill(skill, data);
+        ClassCastableSkill cast = new ClassCastableSkill(skill, data, requireClassProgression);
         return cast.cast(new SkillMetadata(cast, data.getMMOPlayerData()));
     }
 
@@ -110,12 +113,10 @@ public final class SkillRuntime {
         if (!key.equals("skill_buff")) throw new IllegalArgumentException("Skill slot buff must use skill_buff: " + line);
         String parameter = config.getString("modifier", config.getString("parameter", null));
         if (parameter == null || parameter.isBlank()) throw new IllegalArgumentException("Missing modifier in skill slot buff: " + line);
-        // Fail early when a class config references a parameter the handler does not expose.
         skill.getParameterFormula(parameter);
         double amount = config.getDouble("amount");
         ModifierType type = ModifierType.valueOf(UtilityMethods.enumName(config.getString("type", "FLAT")));
-        UUID id = UUID.nameUUIDFromBytes((data.getUniqueId() + ":slot:" + slot + ":" + skill.getSkill().getId() + ":" + index)
-                .getBytes(StandardCharsets.UTF_8));
+        UUID id = UUID.nameUUIDFromBytes((data.getUniqueId() + ":slot:" + slot + ":" + skill.getSkill().getId() + ":" + index).getBytes(StandardCharsets.UTF_8));
         return new SkillModifier(id, "svframemmo_skill_slot", parameter, List.of(skill.getSkill()), amount, type,
                 EquipmentSlot.OTHER, ModifierSource.OTHER);
     }
@@ -124,14 +125,10 @@ public final class SkillRuntime {
         private final MMOPlayerData data;
         private final List<PlayerModifier> modifiers = new ArrayList<>();
 
-        private Registration(MMOPlayerData data) {
-            this.data = Objects.requireNonNull(data, "data");
-        }
+        private Registration(MMOPlayerData data) { this.data = Objects.requireNonNull(data, "data"); }
 
         private void close() {
-            for (int i = modifiers.size() - 1; i >= 0; i--) {
-                modifiers.get(i).unregister(data);
-            }
+            for (int i = modifiers.size() - 1; i >= 0; i--) modifiers.get(i).unregister(data);
             modifiers.clear();
         }
     }

@@ -26,6 +26,7 @@ import vn.svframe.svframemmo.player.ResourceRegenRuntime;
 import vn.svframe.svframemmo.skill.SVFrameMMOSkillBootstrap;
 import vn.svframe.svframemmo.skill.runtime.SkillBarRuntime;
 import vn.svframe.svframemmo.skill.runtime.SkillRuntime;
+import vn.svframe.svframemmo.skill.runtime.TemporarySkillOverlayRuntime;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -42,6 +43,7 @@ public final class SVFrameMMO implements ModInitializer {
     private static final PermissionRegistry PERMISSIONS = new PermissionRegistry();
     private static final SkillRuntime SKILL_RUNTIME = new SkillRuntime();
     private static final SkillBarRuntime SKILL_BAR = new SkillBarRuntime();
+    private static final TemporarySkillOverlayRuntime TEMPORARY_SKILLS = new TemporarySkillOverlayRuntime();
 
     private static volatile ClassManager classes = new ClassManager();
     private static volatile AttributeManager attributes = new AttributeManager();
@@ -69,12 +71,8 @@ public final class SVFrameMMO implements ModInitializer {
         SVFrameLib.inst().setManaModule(new ManaModule() {
             @Override public double getMana(vn.svframe.svframelib.api.player.MMOPlayerData data) { return PLAYER_DATA.get(data.getUniqueId()).getMana(); }
             @Override public double getStamina(vn.svframe.svframelib.api.player.MMOPlayerData data) { return PLAYER_DATA.get(data.getUniqueId()).getStamina(); }
-            @Override public boolean setMana(vn.svframe.svframelib.api.player.MMOPlayerData data, double value, ResourceUpdateReason reason) {
-                return PLAYER_DATA.get(data.getUniqueId()).setMana(value, reason);
-            }
-            @Override public boolean setStamina(vn.svframe.svframelib.api.player.MMOPlayerData data, double value, ResourceUpdateReason reason) {
-                return PLAYER_DATA.get(data.getUniqueId()).setStamina(value, reason);
-            }
+            @Override public boolean setMana(vn.svframe.svframelib.api.player.MMOPlayerData data, double value, ResourceUpdateReason reason) { return PLAYER_DATA.get(data.getUniqueId()).setMana(value, reason); }
+            @Override public boolean setStamina(vn.svframe.svframelib.api.player.MMOPlayerData data, double value, ResourceUpdateReason reason) { return PLAYER_DATA.get(data.getUniqueId()).setStamina(value, reason); }
         });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> SVFrameMMOCommands.register(dispatcher));
@@ -84,6 +82,7 @@ public final class SVFrameMMO implements ModInitializer {
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             SKILL_BAR.clear();
+            TEMPORARY_SKILLS.clear();
             PLAYER_DATA.save();
             for (var data : PLAYER_DATA.all()) SKILL_RUNTIME.detach(data);
             try { if (profileRegistration != null) profileRegistration.close(); }
@@ -92,6 +91,7 @@ public final class SVFrameMMO implements ModInitializer {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> PLAYER_DATA.join(handler.player));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             SKILL_BAR.detach(handler.player.getUuid());
+            TEMPORARY_SKILLS.clear(handler.player.getUuid());
             PLAYER_DATA.quit(handler.player);
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
@@ -109,19 +109,18 @@ public final class SVFrameMMO implements ModInitializer {
         });
     }
 
-    /** Transactional definition reload: parse and validate new registries before swapping them live. */
     public static synchronized boolean reload() {
         try {
             for (var data : PLAYER_DATA.all()) data.prepareReload();
             loadDefinitions();
             for (var data : PLAYER_DATA.all()) data.reloadDefinitions();
             SKILL_BAR.clear();
+            TEMPORARY_SKILLS.clear();
             PLAYER_DATA.save();
             LOG.info("SVFrameMMO reloaded; " + definitionSummary());
             return true;
         } catch (Exception exception) {
             LOG.log(Level.SEVERE, "SVFrameMMO reload failed", exception);
-            // Existing registry objects are preserved because loadDefinitions swaps only after all validation succeeds.
             for (var data : PLAYER_DATA.all()) {
                 try { data.reloadDefinitions(); } catch (RuntimeException recovery) { LOG.log(Level.SEVERE, "Could not recover player runtime after failed reload", recovery); }
             }
@@ -148,10 +147,8 @@ public final class SVFrameMMO implements ModInitializer {
             if (playerClass.hasExperienceTable()) nextExperienceTables.getOrThrow(playerClass.getExperienceTableId());
             for (String treeId : playerClass.getSkillTreeIds()) nextSkillTrees.getOrThrow(treeId);
         }
-        for (var profession : nextProfessions.getAll())
-            if (profession.hasExperienceTable()) nextExperienceTables.getOrThrow(profession.getExperienceTableId());
-        for (var attribute : nextAttributes.getAll())
-            if (attribute.hasExperienceTable()) nextExperienceTables.getOrThrow(attribute.getExperienceTableId());
+        for (var profession : nextProfessions.getAll()) if (profession.hasExperienceTable()) nextExperienceTables.getOrThrow(profession.getExperienceTableId());
+        for (var attribute : nextAttributes.getAll()) if (attribute.hasExperienceTable()) nextExperienceTables.getOrThrow(attribute.getExperienceTableId());
         config = nextConfig;
         classes = nextClasses;
         attributes = nextAttributes;
@@ -182,5 +179,6 @@ public final class SVFrameMMO implements ModInitializer {
     public static SkillTreeManager skillTrees() { return skillTrees; }
     public static SkillRuntime skillRuntime() { return SKILL_RUNTIME; }
     public static SkillBarRuntime skillBar() { return SKILL_BAR; }
+    public static TemporarySkillOverlayRuntime temporarySkills() { return TEMPORARY_SKILLS; }
     public static DelayedActionRuntime delayedActions() { return DELAYED_ACTIONS; }
 }
