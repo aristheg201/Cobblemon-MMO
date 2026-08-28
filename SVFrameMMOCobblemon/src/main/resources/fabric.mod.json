@@ -4,10 +4,21 @@
   "version": "${version}",
   "name": "SVFrameMMO: Cobblemon Integration",
   "description": "Separate native server-side Cobblemon/Mega Showdown to SVFrameMMO integration mod.",
-  "authors": ["SVFrame"],
+  "authors": [
+    "SVFrame"
+  ],
   "environment": "*",
-  "entrypoints": { "main": ["vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon"] },
-  "mixins": ["svframemmo_cobblemon.mixins.json"],
+  "entrypoints": {
+    "main": [
+      "vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon"
+    ],
+    "svframemmo-skill-source": [
+      "vn.svframe.svframemmo.cobblemon.integration.CobblemonSkillSourceEntrypoint"
+    ]
+  },
+  "mixins": [
+    "svframemmo_cobblemon.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.18.4",
     "minecraft": "1.21.1",
@@ -15,10 +26,12 @@
     "fabric-api": ">=0.116.9+1.21.1",
     "cobblemon": ">=1.7.3+1.21.1 <1.8.0",
     "svframelib": ">=1.7.1-fabric",
-    "svframemmo": ">=1.13.1-fabric"
+    "svframemmo": ">=1.13.1-fabric",
+    "mega_showdown": ">=1.9.3",
+    "polymer-core": ">=0.9.19+1.21.1",
+    "polymer-resource-pack": ">=0.9.19+1.21.1"
   },
   "suggests": {
-    "mega_showdown": ">=1.9.3",
     "luckperms": "*",
     "placeholder-api": ">=2.4.2+1.21"
   }

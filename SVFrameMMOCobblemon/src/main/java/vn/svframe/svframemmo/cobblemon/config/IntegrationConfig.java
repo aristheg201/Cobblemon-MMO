@@ -22,6 +22,7 @@ public final class IntegrationConfig {
 
     public PotaraConfig potara = new PotaraConfig();
     public FusionConfig fusion = new FusionConfig();
+    public VfxConfig vfx = new VfxConfig();
 
     public static final class PotaraConfig {
         @SerializedName("potara-earrings") public PotaraItem basic = new PotaraItem("minecraft:amethyst_shard", 71001);
@@ -44,6 +45,15 @@ public final class IntegrationConfig {
         @SerializedName("dance-duration-seconds") public int danceDurationSeconds = 10 * 60;
         @SerializedName("dance-cooldown-seconds") public int danceCooldownSeconds = 15 * 60;
         @SerializedName("stat-conversion") public StatConversion statConversion = new StatConversion();
+    }
+
+    public static final class VfxConfig {
+        @SerializedName("potara-fusion-effects") public java.util.List<String> potaraFusionEffects = java.util.List.of("mega_showdown:kyurem_black", "mega_showdown:kyurem_white");
+        @SerializedName("move-broadcast-radius") public double moveBroadcastRadius = 32d;
+        @SerializedName("full-quality-distance") public double fullQualityDistance = 18d;
+        @SerializedName("max-viewers-per-emission") public int maxViewersPerEmission = 48;
+        @SerializedName("max-snowstorm-packets-per-tick") public int maxSnowstormPacketsPerTick = 256;
+        @SerializedName("max-fallback-particles-per-emission") public int maxFallbackParticlesPerEmission = 32;
     }
 
     /**
@@ -87,13 +97,24 @@ public final class IntegrationConfig {
         if (potara == null) potara = new PotaraConfig();
         if (fusion == null) fusion = new FusionConfig();
         if (fusion.statConversion == null) fusion.statConversion = new StatConversion();
-        if (fusion.potaraActionCooldownSeconds < 0) throw new IllegalArgumentException("potara-action-cooldown-seconds must be >= 0");
-        if (fusion.danceDurationSeconds < 1) throw new IllegalArgumentException("dance-duration-seconds must be >= 1");
-        if (fusion.danceCooldownSeconds < 0) throw new IllegalArgumentException("dance-cooldown-seconds must be >= 0");
+        if (vfx == null) vfx = new VfxConfig();
+        if (fusion.potaraActionCooldownSeconds != 10) throw new IllegalArgumentException("potara-action-cooldown-seconds is fixed at 10");
+        if (fusion.danceDurationSeconds != 10 * 60) throw new IllegalArgumentException("dance-duration-seconds is fixed at 600");
+        if (fusion.danceCooldownSeconds != 15 * 60) throw new IllegalArgumentException("dance-cooldown-seconds is fixed at 900");
         validateScale("hp-to-max-health", fusion.statConversion.hpToMaxHealth);
         validateScale("special-attack-to-max-mana", fusion.statConversion.specialAttackToMaxMana);
         validateScale("speed-to-max-stamina", fusion.statConversion.speedToMaxStamina);
         validateScale("offense-to-attack-damage", fusion.statConversion.offenseToAttackDamage);
+        if (vfx.potaraFusionEffects == null || vfx.potaraFusionEffects.isEmpty()) throw new IllegalArgumentException("potara-fusion-effects must contain at least one Mega Showdown effect");
+        for (String rawEffect : vfx.potaraFusionEffects) {
+            Identifier potaraEffect = Identifier.tryParse(rawEffect == null ? "" : rawEffect.trim());
+            if (potaraEffect == null || !"mega_showdown".equals(potaraEffect.getNamespace())) throw new IllegalArgumentException("potara-fusion-effects must contain only mega_showdown effect ids");
+        }
+        if (!Double.isFinite(vfx.moveBroadcastRadius) || vfx.moveBroadcastRadius <= 0d || vfx.moveBroadcastRadius > 64d) throw new IllegalArgumentException("move-broadcast-radius must be 0..64");
+        if (!Double.isFinite(vfx.fullQualityDistance) || vfx.fullQualityDistance < 0d || vfx.fullQualityDistance > vfx.moveBroadcastRadius) throw new IllegalArgumentException("full-quality-distance must be within move-broadcast-radius");
+        if (vfx.maxViewersPerEmission < 1 || vfx.maxViewersPerEmission > 128) throw new IllegalArgumentException("max-viewers-per-emission must be 1..128");
+        if (vfx.maxSnowstormPacketsPerTick < 1 || vfx.maxSnowstormPacketsPerTick > 4096) throw new IllegalArgumentException("max-snowstorm-packets-per-tick must be 1..4096");
+        if (vfx.maxFallbackParticlesPerEmission < 1 || vfx.maxFallbackParticlesPerEmission > 256) throw new IllegalArgumentException("max-fallback-particles-per-emission must be 1..256");
 
         Set<String> pairs = new HashSet<>();
         for (Map.Entry<FusionTier, PotaraItem> entry : potara.byTier().entrySet()) {
