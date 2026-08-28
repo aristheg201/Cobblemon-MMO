@@ -51,6 +51,7 @@ jobs:
           grep -q 'pasture_pokemon' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionNetworkGuards.java
           grep -q 'SkillHandlerSource' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
           grep -q 'Moves.all()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
+          grep -q 'SVFrameMMO.externalSkills().replace' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
           grep -q 'source: cobblemon:<move>' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/CobblemonSkillSourceEntrypoint.java
           grep -q 'SVFrameMMO.reload()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/SVFrameMMOCobblemon.java
           grep -q 'custom-model-data' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
@@ -121,8 +122,8 @@ jobs:
             exit 1
           fi
           grep -q 'Loading Minecraft 1.21.1 with Fabric Loader' "$ROOT/build/integration-server.log"
-          grep -q 'SVFrameMMO Fabric online' "$ROOT/build/integration-server.log"
-          grep -q 'Cobblemon Integration online' "$ROOT/build/integration-server.log"
+          grep -Eq 'SVFrameMMO Fabric online; .*externalSkills=[1-9][0-9]*' "$ROOT/build/integration-server.log"
+          grep -Eq 'Cobblemon Integration online; generatedMoves=[1-9][0-9]*, registeredSkills=[1-9][0-9]*' "$ROOT/build/integration-server.log"
           grep -q 'Fusion storage network guards installed' "$ROOT/build/integration-server.log"
           grep -q 'Done (' "$ROOT/build/integration-server.log"
           ! grep -q 'Could not execute entrypoint stage' "$ROOT/build/integration-server.log"
