@@ -32,14 +32,14 @@ public record SVFrameMMOConfig(
         SkillCasting skillCasting,
         ActionBar actionBar) {
 
-    /** MMOCore-compatible SKILL_BAR configuration. Time-out is expressed in server ticks. */
+    /** Native SKILL_BAR configuration. Time-out is expressed in server ticks. */
     public record SkillCasting(String mode, String openKey, boolean ignoreSneak, boolean useLowestKeybinds, int timeoutTicks,
                                PlayerMessage enterMessage, PlayerMessage quitMessage, SkillBarActionBar actionBar) {
         public boolean skillBarMode() { return "SKILL_BAR".equals(mode); }
         public boolean opensWithSwapHands() { return "SWAP_HANDS".equals(openKey); }
     }
 
-    /** MMOCore PlayerMessage-compatible subset used by skill-casting enter/quit feedback. */
+    /** Player message options used by skill-casting enter/quit feedback. */
     public record PlayerMessage(String message, boolean actionBar, int duration, int priority, String sound) { }
     public record SkillBarActionBar(String split, String ready, String onCooldown, String noMana, String noStamina) { }
     public record ActionBar(boolean enabled, int updateTicks, String format) { }
@@ -60,7 +60,7 @@ public record SVFrameMMOConfig(
 
         String castingMode = UtilityMethods.enumName(string(casting.get("mode"), "SKILL_BAR"));
         if (!"SKILL_BAR".equals(castingMode))
-            throw new IOException("SVFrameMMO currently supports MMOCore SKILL_BAR casting mode only, got: " + castingMode);
+            throw new IOException("SVFrameMMO currently supports SKILL_BAR casting mode only, got: " + castingMode);
         int timeout = casting.containsKey("time-out") ? integer(casting.get("time-out"), -1) : 0;
         if (casting.containsKey("time-out") && timeout <= 0)
             throw new IOException("skill-casting.time-out must be strictly positive when configured");

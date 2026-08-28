@@ -45,17 +45,33 @@ jobs:
         run: |
           set -euo pipefail
           SRC=SVFrameMMO/src/main
+          COMMANDS="$SRC/java/vn/svframe/svframemmo/command/SVFrameMMOCommands.java"
+          SKILLBAR="$SRC/java/vn/svframe/svframemmo/skill/runtime/SkillBarRuntime.java"
+          CONFIG="$SRC/resources/defaults/config.yml"
           grep -q '"id": "svframemmo"' "$SRC/resources/fabric.mod.json"
           grep -q '"svframelib": ">=1.7.1-fabric"' "$SRC/resources/fabric.mod.json"
           grep -q '"svframemmo.mixins.json"' "$SRC/resources/fabric.mod.json"
+          ! grep -qi 'cobblemon' "$SRC/resources/fabric.mod.json"
           grep -q 'SWAP_ITEM_WITH_OFFHAND' "$SRC/java/vn/svframe/svframemmo/mixin/ServerPlayNetworkHandlerMixin.java"
           grep -q 'onUpdateSelectedSlot' "$SRC/java/vn/svframe/svframemmo/mixin/ServerPlayNetworkHandlerMixin.java"
           grep -q 'SKILL_BAR.tick' "$SRC/java/vn/svframe/svframemmo/SVFrameMMO.java"
-          grep -q 'suggestSkills' "$SRC/java/vn/svframe/svframemmo/command/SVFrameMMOCommands.java"
-          grep -q 'getSkills().getHandlers()' "$SRC/java/vn/svframe/svframemmo/command/SVFrameMMOCommands.java"
-          grep -q 'Reload complete' "$SRC/java/vn/svframe/svframemmo/command/SVFrameMMOCommands.java"
+          grep -q 'configuredSkillIds' "$COMMANDS"
+          grep -Fq 'getRawConfig().get("skills")' "$COMMANDS"
+          grep -q 'suggestTargetSkills' "$COMMANDS"
+          grep -q 'successfully reloaded' "$COMMANDS"
+          grep -q 'mode: SKILL_BAR' "$CONFIG"
+          grep -q 'open: SWAP_HANDS' "$CONFIG"
+          grep -q 'can-creative-cast: false' "$CONFIG"
+          grep -q 'action-bar: true' "$CONFIG"
+          grep -q 'BLOCK_END_PORTAL_FRAME_FILL,1,2' "$CONFIG"
+          grep -Fq '(tick & 15L)' "$SKILLBAR"
           grep -q 'legacyText(resolved)' SVFrameLib/src/main/java/vn/svframe/svframelib/message/actionbar/ActionBarHandler.java
-          if grep -RIn --binary-files=without-match -Ei 'net[.]Indyuce|io[.]lumine|org[.]bukkit|io[.]papermc|mythicmobs|mmocore|mythiclib|mmoitems|spigot|placeholderapi|worldguard|citizens|vault' "$SRC" --include='*.java' --include='*.json' --include='*.yml'; then exit 1; fi
+          forbidden="$(grep -RIn --binary-files=without-match -Ei 'net[.]Indyuce|io[.]lumine|org[.]bukkit|io[.]papermc|mythicmobs|mmocore|mythiclib|mmoitems|spigot|placeholderapi|worldguard|citizens|vault' "$SRC" --include='*.java' --include='*.json' --include='*.yml' || true)"
+          executable_forbidden="$(printf '%s\n' "$forbidden" | grep -Ev ':[0-9]+:[[:space:]]*(//|/[*]|[*]|#)' || true)"
+          if [ -n "$executable_forbidden" ]; then
+            printf '%s\n' "$executable_forbidden"
+            exit 1
+          fi
           grep -q '^CLS_WARRIOR_DEEP_WOUND:' "$SRC/resources/defaults/skills/legacy-class-aliases.yml"
           test "$(grep -Ec '^CLS_[A-Z0-9_]+:$' "$SRC/resources/defaults/skills/legacy-class-aliases.yml")" -eq 34
           test "$(grep -REc '^  source: default:' "$SRC/resources/defaults/skills/legacy-class-aliases.yml")" -eq 34

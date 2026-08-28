@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Native MMOCore SKILL_BAR behavior. F is vanilla SWAP_ITEM_WITH_OFFHAND; no client keybind mod is required. */
+/** Native SKILL_BAR behavior. F is vanilla SWAP_ITEM_WITH_OFFHAND; no client keybind mod is required. */
 public final class SkillBarRuntime {
     private static final int DEFAULT_BAR_PRIORITY = ActionBarPriority.LOWEST;
     private static final int SKILL_BAR_PRIORITY = ActionBarPriority.LOW;
@@ -42,7 +42,7 @@ public final class SkillBarRuntime {
             return true;
         }
 
-        // MMOCore always consumes the configured opening key, even when casting cannot be entered.
+        // Always consume the configured opening key, even when casting cannot be entered.
         if (player.isSpectator()) return true;
         if (player.isCreative() && !live.canCreativeCast()) return true;
         if (activeSkills(data, config).isEmpty()) return true;
@@ -69,7 +69,7 @@ public final class SkillBarRuntime {
         if (skill != null) SVFrameMMO.skillRuntime().cast(data, skill);
         showSkillBar(data, config);
 
-        // Client attempted to change held slot; MMOCore cancels PlayerItemHeldEvent, so restore the same slot client-side.
+        // Casting consumes the held-slot change, so restore the same slot client-side.
         player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(currentSlot));
         return true;
     }
@@ -87,9 +87,9 @@ public final class SkillBarRuntime {
                 if (activeSkills(data, live.skillCasting()).isEmpty()
                         || (live.skillCasting().timeoutTicks() > 0 && tick - session.lastActivityTick > live.skillCasting().timeoutTicks())) {
                     sessions.remove(data.getUniqueId());
-                    close(data); // automatic MMOCore close is silent; quit message is only sent by the opening key.
+                    close(data); // Automatic close is silent; quit feedback is sent only by the opening key.
                 } else if ((tick & 15L) == 0L) {
-                    // MMOCore SkillBar renders every 16 ticks.
+                    // Skill-bar state refreshes every 16 ticks.
                     showSkillBar(data, live.skillCasting());
                 }
             } else if (live.actionBar().enabled() && tick % live.actionBar().updateTicks() == 0L) {
@@ -115,7 +115,7 @@ public final class SkillBarRuntime {
         playSound(data.getPlayer(), options.sound());
     }
 
-    /** Accepts both Minecraft identifiers and MMOCore/Bukkit enum-style SOUND,volume,pitch values. */
+    /** Accepts Minecraft identifiers and legacy enum-style SOUND,volume,pitch values. */
     private static void playSound(ServerPlayerEntity player, String configured) {
         if (configured == null || configured.isBlank()) return;
         String[] split = configured.split(",", -1);

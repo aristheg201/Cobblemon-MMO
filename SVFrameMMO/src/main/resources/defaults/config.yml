@@ -18,6 +18,8 @@ default-playerdata:
 passive-skill-needs-binding: true
 save-default-class-info: false
 player-resource-tick-period: 20
+
+# Creative players cannot enter skill casting unless explicitly enabled.
 can-creative-cast: false
 
 combat-log:
@@ -30,14 +32,14 @@ share-across-classes:
   skill-reallocation-points: false
   attribute-reallocation-points: false
 
-# MMOCore-compatible SKILL_BAR casting. F is Minecraft's vanilla SWAP_HANDS key.
+# SKILL_BAR casting. F is Minecraft's vanilla SWAP_HANDS key.
 skill-casting:
   mode: SKILL_BAR
   open: SWAP_HANDS
   ignore-sneak: false
   use-lowest-keybinds: true
 
-  # Optional. When present this is measured in ticks and must be > 0, exactly like MMOCore.
+  # Optional. When present this is measured in ticks and must be > 0.
   # time-out: 100
 
   message:
