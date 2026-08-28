@@ -4,6 +4,9 @@ on:
     branches: [svframemmo-cobblemon-integration-1.21.1]
     paths: ['.github/workflows/svframemmo-cobblemon.yml', 'SVFrameMMOCobblemon/**']
   workflow_dispatch:
+concurrency:
+  group: svframemmo-cobblemon-integration-1.21.1
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -43,6 +46,7 @@ jobs:
           grep -q 'svframemmo-skill-source' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
           grep -q 'kyurem_black' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'kyurem_white' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
+          grep -q 'POTARA_FUSION_FORM_DELAY_TICKS = 88L' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
       - name: Build SVFrameLib
         run: cd SVFrameLib && gradle --no-daemon clean test remapJar
       - name: Build SVFrameMMO
@@ -51,12 +55,33 @@ jobs:
         with: { gradle-version: '8.12.1' }
       - name: Build integration
         run: cd SVFrameMMOCobblemon && gradle --no-daemon --stacktrace clean test nativeIntegrationSmoke remapJar
-      - name: Upload JAR
+      - name: Dedicated Integration Fabric boot
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameMMOCobblemon
+          mkdir -p run
+          printf 'eula=true\n' > run/eula.txt
+          set +e
+          timeout 120s gradle --no-daemon runServer > build/integration-server.log 2>&1
+          status=$?
+          set -e
+          cat build/integration-server.log
+          if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
+          grep -q 'Loading Minecraft 1.21.1 with Fabric Loader' build/integration-server.log
+          grep -q 'SVFrameMMO Fabric online' build/integration-server.log
+          grep -q 'Cobblemon Integration online' build/integration-server.log
+          grep -q 'Done (' build/integration-server.log
+          ! grep -q 'Mixin apply failed' build/integration-server.log
+          ! grep -q 'Could not execute entrypoint stage' build/integration-server.log
+          ! grep -Eq 'NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Exception in server tick loop' build/integration-server.log
+      - name: Upload validated artifact
         uses: actions/upload-artifact@v4
         with:
           name: SVFrameMMO-Cobblemon-Integration
           path: |
             SVFrameMMOCobblemon/build/libs/SVFrameMMO-Cobblemon-Integration-*.jar
             !SVFrameMMOCobblemon/build/libs/*sources*.jar
+            SVFrameMMOCobblemon/build/integration-server.log
           if-no-files-found: error
           retention-days: 14
