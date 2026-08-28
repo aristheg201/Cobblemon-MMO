@@ -32,7 +32,7 @@ share-across-classes:
   skill-reallocation-points: false
   attribute-reallocation-points: false
 
-# Native MMOCore-style skill bar. The F key is Minecraft's vanilla SWAP_HANDS action;
+# Native SVFrameMMO skill bar. The F key is Minecraft's vanilla SWAP_HANDS action;
 # SVFrameMMO consumes that packet while this casting mode is active. No client keybind mod is required.
 skill-casting:
   open: SWAP_HANDS
