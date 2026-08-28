@@ -3,6 +3,7 @@ package vn.svframe.svframemmo.cobblemon;
 import com.cobblemon.mod.common.api.events.CobblemonEvents;
 import com.cobblemon.mod.common.api.moves.Moves;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -10,12 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.cobblemon.config.IntegrationConfig;
+import vn.svframe.svframemmo.cobblemon.fusion.FusionCommands;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionLockHooks;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionService;
 import vn.svframe.svframemmo.cobblemon.fusion.PotaraUseHandler;
+import vn.svframe.svframemmo.cobblemon.integration.LuckPermsIntegration;
+import vn.svframe.svframemmo.cobblemon.integration.PlaceholderIntegration;
 import vn.svframe.svframemmo.cobblemon.item.PotaraTierResolver;
 
-/** Native server-side Cobblemon bridge owned by SVFrameMMO. */
+/** Separate native server-side integration mod bridging Cobblemon/Mega Showdown to SVFrameMMO. */
 public final class SVFrameMMOCobblemon implements ModInitializer {
     public static final String ID = "svframemmo_cobblemon";
     public static final Logger LOG = LoggerFactory.getLogger("SVFrameMMO: Cobblemon Integration");
@@ -27,15 +31,20 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         try { config = IntegrationConfig.load(); }
         catch (Exception error) { throw new IllegalStateException("Could not load SVFrameMMO Cobblemon integration config", error); }
 
+        LuckPermsIntegration.initialize();
+        PlaceholderIntegration.registerIfPresent();
         if (Moves.count() > 0) FUSIONS.reloadMoveDefinitions();
         CobblemonEvents.COBBLEMON_INITIALISED.subscribe(ignored -> FUSIONS.reloadMoveDefinitions());
         Moves.INSTANCE.getObservable().subscribe(ignored -> FUSIONS.reloadMoveDefinitions());
         FusionLockHooks.register(FUSIONS);
         PotaraUseHandler.register(FUSIONS);
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> FusionCommands.register(dispatcher, FUSIONS));
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !FUSIONS.blocksDamage(entity));
         ServerTickEvents.END_SERVER_TICK.register(server -> FUSIONS.tick(SVFrameMMO.currentTick(), server));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> FUSIONS.onDisconnect(handler.player));
-        LOG.info("SVFrameMMO: Cobblemon Integration online; moves={}, Potara uses deployed-party right click", FUSIONS.moveDefinitionCount());
+        LOG.info("Cobblemon Integration online; moves={}, Potara interaction cooldown={}s, Fusion Dance={}s/{}s cooldown",
+                FUSIONS.moveDefinitionCount(), config.fusion.potaraActionCooldownSeconds,
+                config.fusion.danceDurationSeconds, config.fusion.danceCooldownSeconds);
     }
 
     public static IntegrationConfig config() {

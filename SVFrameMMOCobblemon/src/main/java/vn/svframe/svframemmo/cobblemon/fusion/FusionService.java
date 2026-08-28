@@ -7,6 +7,7 @@ import com.cobblemon.mod.common.api.moves.categories.DamageCategories;
 import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
+import kotlin.Unit;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -17,6 +18,7 @@ import net.minecraft.util.math.Vec3d;
 import vn.svframe.svframelib.damage.DamageType;
 import vn.svframe.svframelib.skill.SkillMetadata;
 import vn.svframe.svframemmo.SVFrameMMO;
+import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 import vn.svframe.svframemmo.cobblemon.integration.MegaShowdownEffects;
 import vn.svframe.svframemmo.cobblemon.move.BattleStat;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkillAdapter;
@@ -30,9 +32,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-/** Event-driven fusion runtime. Only active fusion sessions are ticked. */
+/** Event/state-driven fusion runtime. Only active fusion sessions are ticked. */
 public final class FusionService {
-    public static final long DANCE_DURATION_TICKS = 10L * 60L * 20L;
+    public static final long DEFAULT_DANCE_DURATION_TICKS = 10L * 60L * 20L;
     private static final long STAGE_DURATION_TICKS = 30L * 20L;
     private static final long PROTECT_DURATION_TICKS = 20L;
 
@@ -41,6 +43,9 @@ public final class FusionService {
     private final MoveSemanticRegistry semantics = new MoveSemanticRegistry();
     private final RealtimeBattleState realtime = new RealtimeBattleState();
     private final CobblemonMoveSkillAdapter moves = new CobblemonMoveSkillAdapter(this, semantics);
+    private final FusionCooldowns cooldowns = new FusionCooldowns();
+    private final FusionVisualBridge visuals = new FusionVisualBridge();
+    private final FusionStatBridge stats = new FusionStatBridge();
     private final Map<UUID, FusionSession> byPlayer = new ConcurrentHashMap<>();
     private final Map<UUID, UUID> lockedPokemon = new ConcurrentHashMap<>();
 
@@ -49,37 +54,67 @@ public final class FusionService {
     public FusionSession session(UUID player) { return player == null ? null : byPlayer.get(player); }
     public boolean isPokemonLocked(UUID pokemon) { return pokemon != null && lockedPokemon.containsKey(pokemon); }
     public int activeCount() { return byPlayer.size(); }
+    public FusionCooldowns cooldowns() { return cooldowns; }
+    public int potaraCooldownSeconds() { return SVFrameMMOCobblemon.config().fusion.potaraActionCooldownSeconds; }
 
     public StartResult startPotara(ServerPlayerEntity player, PokemonEntity entity, FusionTier tier) {
         if (tier == null || tier == FusionTier.DANCE) return StartResult.rejected("Invalid Potara tier.");
-        return start(player, entity, tier, false, -1L);
-    }
-
-    public StartResult startDance(ServerPlayerEntity player, PokemonEntity entity) {
-        return start(player, entity, FusionTier.DANCE, false, SVFrameMMO.currentTick() + DANCE_DURATION_TICKS);
-    }
-
-    private StartResult start(ServerPlayerEntity player, PokemonEntity entity, FusionTier tier, boolean manualForDance, long expiresAt) {
-        if (byPlayer.containsKey(player.getUuid())) return StartResult.rejected("You are already fused.");
         DeployedPartyPokemonResolver.Resolution resolved = resolver.resolve(player, entity);
         if (!resolved.accepted()) return StartResult.rejected(resolved.rejection());
-        Pokemon pokemon = resolved.pokemon();
-        if (!eligibility.allows(tier, pokemon)) return StartResult.rejected("This Pokemon is not eligible for that Potara tier.");
+        return startResolved(player, resolved.pokemon(), entity, tier, -1L, false);
+    }
+
+    public StartResult startDance(ServerPlayerEntity player, Pokemon selected) {
+        if (!cooldowns.danceReady(player.getUuid())) return StartResult.rejected("Fusion Dance is still on cooldown.");
+        if (selected == null) return StartResult.rejected("No Pokemon was selected.");
+        Pokemon pokemon = Cobblemon.INSTANCE.getStorage().getParty(player).get(selected.getUuid());
+        if (pokemon == null || !pokemon.belongsTo(player)) return StartResult.rejected("That Pokemon is not in your current party.");
+        PokemonEntity entity = pokemon.getEntity();
+        if (entity != null && entity.isBattling()) return StartResult.rejected("That Pokemon is currently battling.");
+
+        boolean autoDeployed = false;
+        if (entity == null) {
+            try {
+                entity = pokemon.sendOut(player.getServerWorld(), player.getPos(), null, ignored -> Unit.INSTANCE);
+                autoDeployed = true;
+            } catch (RuntimeException error) {
+                return StartResult.rejected("Could not deploy the selected Pokemon for Fusion Dance.");
+            }
+        }
+        if (entity == null) return StartResult.rejected("Could not resolve the selected Pokemon entity.");
+        long expiresAt = SVFrameMMO.currentTick() + SVFrameMMOCobblemon.config().fusion.danceDurationSeconds * 20L;
+        StartResult result = startResolved(player, pokemon, entity, FusionTier.DANCE, expiresAt, autoDeployed);
+        if (!result.success() && autoDeployed) pokemon.recall();
+        return result;
+    }
+
+    private StartResult startResolved(ServerPlayerEntity player, Pokemon pokemon, PokemonEntity entity, FusionTier tier,
+                                      long expiresAt, boolean autoDeployed) {
+        if (byPlayer.containsKey(player.getUuid())) return StartResult.rejected("You are already fused.");
+        if (!eligibility.allows(tier, pokemon)) return StartResult.rejected("This Pokemon is not eligible for that fusion rank.");
+        if (entity.isBattling()) return StartResult.rejected("That Pokemon is currently battling.");
         if (lockedPokemon.putIfAbsent(pokemon.getUuid(), player.getUuid()) != null)
             return StartResult.rejected("That Pokemon is already locked by a fusion.");
 
         boolean originalTradeable = pokemon.getTradeable();
+        vn.svframe.svframemmo.skill.runtime.TemporarySkillOverlayRuntime.Handle overlay = null;
         try {
             CobblemonMoveSkillAdapter.Overlay snapshot = moves.snapshot(pokemon);
             pokemon.setTradeable(false);
-            var overlay = SVFrameMMO.temporarySkills().push(player.getUuid(), "svframemmo_cobblemon:fusion", snapshot.skills());
-            FusionSession session = new FusionSession(player.getUuid(), pokemon.getUuid(), entity.getUuid(), tier,
-                    SVFrameMMO.currentTick(), expiresAt, tier != FusionTier.DANCE || manualForDance,
-                    originalTradeable, snapshot.moveIds(), overlay);
+            overlay = SVFrameMMO.temporarySkills().push(player.getUuid(), "svframemmo_cobblemon:fusion", snapshot.skills());
+            FusionSession session = new FusionSession(player.getUuid(), pokemon.getUuid(), entity.getUuid(),
+                    pokemon.getSpecies().getResourceIdentifier().toString(), pokemon.getDisplayName(false).getString(), tier,
+                    SVFrameMMO.currentTick(), expiresAt, tier != FusionTier.DANCE, originalTradeable, autoDeployed,
+                    snapshot.moveIds(), overlay);
+            stats.apply(player, pokemon, tier);
+            visuals.start(player, pokemon, entity, autoDeployed);
             byPlayer.put(player.getUuid(), session);
             MegaShowdownEffects.playFusionStart(pokemon, entity);
             return new StartResult(session, null);
         } catch (RuntimeException error) {
+            if (overlay != null) overlay.close();
+            stats.remove(player);
+            visuals.stop(player, player.getUuid());
             pokemon.setTradeable(originalTradeable);
             lockedPokemon.remove(pokemon.getUuid(), player.getUuid());
             throw error;
@@ -94,12 +129,15 @@ public final class FusionService {
     }
 
     private EndResult finish(ServerPlayerEntity player, FusionSession session) {
-        if (!byPlayer.remove(player.getUuid(), session)) return EndResult.rejected("Fusion session already ended.");
-        lockedPokemon.remove(session.pokemonUuid(), player.getUuid());
+        if (!byPlayer.remove(session.playerUuid(), session)) return EndResult.rejected("Fusion session already ended.");
+        lockedPokemon.remove(session.pokemonUuid(), session.playerUuid());
         session.overlay().close();
-        realtime.clear(player.getUuid());
-        Pokemon pokemon = Cobblemon.INSTANCE.getStorage().getParty(player).get(session.pokemonUuid());
+        realtime.clear(session.playerUuid());
+        if (player != null) stats.remove(player);
+        Pokemon pokemon = player == null ? null : Cobblemon.INSTANCE.getStorage().getParty(player).get(session.pokemonUuid());
         if (pokemon != null) pokemon.setTradeable(session.originalTradeable());
+        visuals.stop(player, session.playerUuid());
+        if (session.dance()) cooldowns.markDance(session.playerUuid(), SVFrameMMOCobblemon.config().fusion.danceCooldownSeconds);
         return new EndResult(session, null);
     }
 
@@ -111,6 +149,12 @@ public final class FusionService {
     public void tick(long tick, MinecraftServer server) {
         realtime.tick(tick);
         if (byPlayer.isEmpty()) return;
+        for (UUID invalid : visuals.tick(server)) {
+            FusionSession session = byPlayer.get(invalid);
+            if (session == null) continue;
+            ServerPlayerEntity player = server.getPlayerManager().getPlayer(invalid);
+            if (player != null) finish(player, session);
+        }
         for (FusionSession session : List.copyOf(byPlayer.values())) {
             if (!session.expired(tick)) continue;
             ServerPlayerEntity player = server.getPlayerManager().getPlayer(session.playerUuid());
@@ -122,8 +166,8 @@ public final class FusionService {
         FusionSession session = byPlayer.get(player.getUuid());
         if (session == null || !session.moveIds().contains(moveId)) return null;
         Pokemon pokemon = Cobblemon.INSTANCE.getStorage().getParty(player).get(session.pokemonUuid());
-        if (pokemon == null || pokemon.getEntity() == null || !pokemon.getEntity().getUuid().equals(session.deployedEntityUuid())) return null;
-        if (pokemon.getEntity().isBattling()) return null;
+        if (pokemon == null) return null;
+        if (pokemon.getEntity() != null && pokemon.getEntity().isBattling()) return null;
         for (Move move : pokemon.getMoveSet().getMoves()) {
             if (move != null && CobblemonMoveSkillAdapter.id(move.getName()).equals(moveId)) {
                 if (move.getCurrentPp() <= 0) {
@@ -148,14 +192,12 @@ public final class FusionService {
         MoveTemplate move = cast.move().getTemplate();
         ServerPlayerEntity player = metadata.getCaster().getData().getPlayer();
         long tick = SVFrameMMO.currentTick();
-
         if (semantic.protect()) realtime.protect(player.getUuid(), tick, PROTECT_DURATION_TICKS);
         for (MoveSemantic.StageChange change : semantic.stages()) {
             UUID subject = change.target() == MoveSemantic.Target.SELF ? player.getUuid() : target == null ? null : target.getUuid();
             if (subject != null) realtime.add(subject, change.stat(), change.stages(), tick, STAGE_DURATION_TICKS);
             if (change.stat() == BattleStat.SPEED) applySpeedStage(change.target() == MoveSemantic.Target.SELF ? player : target, change.stages());
         }
-
         boolean hit = target == null || rollAccuracy(player, target, move, tick);
         double dealt = 0d;
         if (hit && target != null && move.getPower() > 0d) {
@@ -168,7 +210,6 @@ public final class FusionService {
                 dealt += perHit;
             }
         }
-
         if (hit && semantic.status() != MoveSemantic.Status.NONE && target != null
                 && ThreadLocalRandom.current().nextDouble() < semantic.statusChance()) applyStatus(target, semantic.status());
         if (semantic.healFraction() > 0d) player.heal((float) (player.getMaxHealth() * semantic.healFraction()));
@@ -215,22 +256,17 @@ public final class FusionService {
         return physical ? Math.max(20d, 100d + target.getArmor() * 5d) : 100d;
     }
 
-    private static double stageMultiplier(int stage) {
-        return stage >= 0 ? (2d + stage) / 2d : 2d / (2d - stage);
-    }
-
+    private static double stageMultiplier(int stage) { return stage >= 0 ? (2d + stage) / 2d : 2d / (2d - stage); }
     private static double accuracyMultiplier(int stage) {
         int clamped = Math.max(-6, Math.min(6, stage));
         return clamped >= 0 ? (3d + clamped) / 3d : 3d / (3d - clamped);
     }
-
     private static void applySpeedStage(LivingEntity entity, int stages) {
         if (entity == null || stages == 0) return;
         int amplifier = Math.min(5, Math.max(0, Math.abs(stages) - 1));
         entity.addStatusEffect(new StatusEffectInstance(stages > 0 ? StatusEffects.SPEED : StatusEffects.SLOWNESS,
                 (int) STAGE_DURATION_TICKS, amplifier, false, false));
     }
-
     private static void applyStatus(LivingEntity target, MoveSemantic.Status status) {
         switch (status) {
             case PARALYSIS -> target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 2));

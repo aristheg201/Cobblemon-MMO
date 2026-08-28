@@ -3,7 +3,7 @@
   "id": "svframemmo_cobblemon",
   "version": "${version}",
   "name": "SVFrameMMO: Cobblemon Integration",
-  "description": "Native server-side bridge between Cobblemon and SVFrameMMO.",
+  "description": "Separate native server-side Cobblemon/Mega Showdown to SVFrameMMO integration mod.",
   "authors": ["SVFrame"],
   "environment": "*",
   "entrypoints": { "main": ["vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon"] },
@@ -17,5 +17,9 @@
     "svframelib": ">=1.7.1-fabric",
     "svframemmo": ">=1.13.1-fabric"
   },
-  "suggests": { "mega_showdown": ">=1.9.3" }
+  "suggests": {
+    "mega_showdown": ">=1.9.3",
+    "luckperms": "*",
+    "placeholder-api": ">=2.4.2+1.21"
+  }
 }

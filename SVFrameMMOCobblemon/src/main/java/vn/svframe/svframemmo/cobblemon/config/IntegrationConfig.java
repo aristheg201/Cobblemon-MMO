@@ -21,6 +21,7 @@ public final class IntegrationConfig {
     private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("SVFrameMMOCobblemon/config.json");
 
     public PotaraConfig potara = new PotaraConfig();
+    public FusionConfig fusion = new FusionConfig();
 
     public static final class PotaraConfig {
         @SerializedName("potara-earrings") public PotaraItem basic = new PotaraItem("minecraft:amethyst_shard", 71001);
@@ -36,6 +37,24 @@ public final class IntegrationConfig {
             out.put(FusionTier.GOD, god);
             return Map.copyOf(out);
         }
+    }
+
+    public static final class FusionConfig {
+        @SerializedName("potara-action-cooldown-seconds") public int potaraActionCooldownSeconds = 10;
+        @SerializedName("dance-duration-seconds") public int danceDurationSeconds = 10 * 60;
+        @SerializedName("dance-cooldown-seconds") public int danceCooldownSeconds = 15 * 60;
+        @SerializedName("stat-conversion") public StatConversion statConversion = new StatConversion();
+    }
+
+    /**
+     * Conversion from native Pokemon stats into flat SVFrame RPG stats before the fusion rank multiplier.
+     * Values are deliberately configurable because Pokemon and Minecraft stat scales are different.
+     */
+    public static final class StatConversion {
+        @SerializedName("hp-to-max-health") public double hpToMaxHealth = 0.10d;
+        @SerializedName("special-attack-to-max-mana") public double specialAttackToMaxMana = 0.10d;
+        @SerializedName("speed-to-max-stamina") public double speedToMaxStamina = 0.10d;
+        @SerializedName("offense-to-attack-damage") public double offenseToAttackDamage = 0.02d;
     }
 
     public static final class PotaraItem {
@@ -66,6 +85,16 @@ public final class IntegrationConfig {
 
     private void validate() {
         if (potara == null) potara = new PotaraConfig();
+        if (fusion == null) fusion = new FusionConfig();
+        if (fusion.statConversion == null) fusion.statConversion = new StatConversion();
+        if (fusion.potaraActionCooldownSeconds < 0) throw new IllegalArgumentException("potara-action-cooldown-seconds must be >= 0");
+        if (fusion.danceDurationSeconds < 1) throw new IllegalArgumentException("dance-duration-seconds must be >= 1");
+        if (fusion.danceCooldownSeconds < 0) throw new IllegalArgumentException("dance-cooldown-seconds must be >= 0");
+        validateScale("hp-to-max-health", fusion.statConversion.hpToMaxHealth);
+        validateScale("special-attack-to-max-mana", fusion.statConversion.specialAttackToMaxMana);
+        validateScale("speed-to-max-stamina", fusion.statConversion.speedToMaxStamina);
+        validateScale("offense-to-attack-damage", fusion.statConversion.offenseToAttackDamage);
+
         Set<String> pairs = new HashSet<>();
         for (Map.Entry<FusionTier, PotaraItem> entry : potara.byTier().entrySet()) {
             PotaraItem spec = entry.getValue();
@@ -77,5 +106,9 @@ public final class IntegrationConfig {
             String pair = itemId + "#" + spec.customModelData;
             if (!pairs.add(pair)) throw new IllegalArgumentException("Duplicate Potara vanilla item/CMD pair: " + pair);
         }
+    }
+
+    private static void validateScale(String name, double value) {
+        if (!Double.isFinite(value) || value < 0d) throw new IllegalArgumentException(name + " must be finite and >= 0");
     }
 }
