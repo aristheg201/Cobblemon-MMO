@@ -7,6 +7,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 import vn.svframe.svframemmo.cobblemon.integration.LuckPermsIntegration;
+import vn.svframe.svframemmo.cobblemon.integration.MegaShowdownEffects;
 
 /** Potara activation/unfusion: configured vanilla item + CMD, interacting with the exact party Pokemon. */
 public final class PotaraUseHandler {
@@ -48,6 +49,30 @@ public final class PotaraUseHandler {
                 fusions.cooldowns().markPotara(serverPlayer.getUuid(), fusions.potaraCooldownSeconds());
                 serverPlayer.sendMessage(Text.literal("Potara fusion ended."), true);
                 return ActionResult.SUCCESS;
+            }
+
+            // Validate the exact same ownership/deployment/tier constraints before presenting the Potara effect. The
+            // subsequent startPotara call runs on this same server thread, recalls the Pokemon and morphs immediately.
+            DeployedPartyPokemonResolver.Resolution selected = new DeployedPartyPokemonResolver().resolve(serverPlayer, pokemonEntity);
+            if (!selected.accepted()) {
+                serverPlayer.sendMessage(Text.literal(selected.rejection()), true);
+                return ActionResult.FAIL;
+            }
+            if (!new FusionEligibility().allows(tier, selected.pokemon())) {
+                serverPlayer.sendMessage(Text.literal("This Pokemon is not eligible for that fusion rank."), true);
+                return ActionResult.FAIL;
+            }
+            if (fusions.isPokemonLocked(selected.pokemon().getUuid())) {
+                serverPlayer.sendMessage(Text.literal("That Pokemon is already locked by a fusion."), true);
+                return ActionResult.FAIL;
+            }
+
+            try {
+                MegaShowdownEffects.playPotaraFusionStart(selected.pokemon(), pokemonEntity);
+            } catch (RuntimeException error) {
+                SVFrameMMOCobblemon.LOG.warn("Could not play Potara Mega Showdown effect for {}", serverPlayer.getName().getString(), error);
+                serverPlayer.sendMessage(Text.literal("Could not start the Potara fusion effect."), true);
+                return ActionResult.FAIL;
             }
 
             FusionService.StartResult result = fusions.startPotara(serverPlayer, pokemonEntity, tier);
