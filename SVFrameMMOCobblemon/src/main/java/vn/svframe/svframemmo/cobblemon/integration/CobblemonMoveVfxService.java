@@ -2,11 +2,13 @@ package vn.svframe.svframemmo.cobblemon.integration;
 
 import com.cobblemon.mod.common.api.moves.MoveTemplate;
 import com.cobblemon.mod.common.net.messages.client.effect.SpawnSnowstormParticlePacket;
+import com.cobblemon.mod.common.net.messages.client.sound.UnvalidatedPlaySoundS2CPacket;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
@@ -48,8 +50,10 @@ public final class CobblemonMoveVfxService {
         if (caster == null || move == null) return;
         String id = CobblemonMoveSkillAdapter.id(move.getName());
         CobblemonActionEffectParser.MovePlan plan = plans.get(id);
+        Vec3d actorPosition = caster.getPos().add(0d, 1d, 0d);
         if (plan != null) {
-            scheduleParticles(caster, caster.getPos().add(0d, 1d, 0d), plan.actorParticles());
+            scheduleParticles(caster, actorPosition, plan.actorParticles());
+            scheduleSounds(caster, actorPosition, plan.actorSounds());
             scheduleAnimations(caster, plan.actorAnimations());
         } else caster.swingHand(Hand.MAIN_HAND, true);
         CobblemonActionEffectParser.MegaAccent accent = megaEffects.get(effectKey(id));
@@ -59,7 +63,20 @@ public final class CobblemonMoveVfxService {
     public void renderImpact(ServerPlayerEntity caster, MoveTemplate move, Vec3d position) {
         if (caster == null || move == null || position == null) return;
         CobblemonActionEffectParser.MovePlan plan = plans.get(CobblemonMoveSkillAdapter.id(move.getName()));
-        if (plan != null) scheduleParticles(caster, position, plan.targetParticles());
+        if (plan != null) {
+            scheduleParticles(caster, position, plan.targetParticles());
+            scheduleSounds(caster, position, plan.targetSounds());
+            return;
+        }
+
+        // Cobblemon's generic_move action-effect dynamically resolves these exact IDs from q.move.type.
+        if (move.getPower() > 0d) {
+            String type = move.getElementalType().getName().toLowerCase(Locale.ROOT);
+            Identifier particle = Identifier.tryParse("cobblemon:impact_" + type);
+            Identifier sound = Identifier.tryParse("cobblemon:impact." + type);
+            if (particle != null) emit(caster, position, particle, 0);
+            if (sound != null) emitSound(caster, position, sound);
+        }
     }
 
     private void scheduleParticles(ServerPlayerEntity caster, Vec3d position, List<CobblemonActionEffectParser.ParticleCue> cues) {
@@ -68,6 +85,11 @@ public final class CobblemonMoveVfxService {
             final int cueIndex = i;
             later(cue.delayTicks(), () -> emit(caster, position, cue.effectId(), cueIndex));
         }
+    }
+
+    private void scheduleSounds(ServerPlayerEntity caster, Vec3d position, List<CobblemonActionEffectParser.SoundCue> cues) {
+        for (CobblemonActionEffectParser.SoundCue cue : cues)
+            later(cue.delayTicks(), () -> emitSound(caster, position, cue.soundId()));
     }
 
     private void scheduleAnimations(ServerPlayerEntity caster, List<CobblemonActionEffectParser.AnimationCue> cues) {
@@ -89,20 +111,34 @@ public final class CobblemonMoveVfxService {
 
     private void emit(ServerPlayerEntity caster, Vec3d position, Identifier effectId, int cueIndex) {
         if (!caster.isAlive() || caster.isDisconnected()) return;
-        ServerWorld world = caster.getServerWorld();
+        List<ServerPlayerEntity> viewers = viewers(caster, position);
         var cfg = SVFrameMMOCobblemon.config().vfx;
-        double radius = Math.max(1d, Math.min(64d, cfg.moveBroadcastRadius));
-        double radiusSq = radius * radius;
-        List<ServerPlayerEntity> viewers = world.getPlayers().stream()
-                .filter(viewer -> !viewer.isDisconnected() && viewer.squaredDistanceTo(position) <= radiusSq)
-                .sorted(Comparator.comparingDouble(viewer -> viewer.squaredDistanceTo(position)))
-                .limit(Math.max(1, Math.min(128, cfg.maxViewersPerEmission)))
-                .toList();
         for (ServerPlayerEntity viewer : viewers) {
             if (viewer.squaredDistanceTo(position) > cfg.fullQualityDistance * cfg.fullQualityDistance && (cueIndex & 1) == 1) continue;
             if (!claimPacket()) break;
             new SpawnSnowstormParticlePacket(effectId, position).sendToPlayer(viewer);
         }
+    }
+
+    private void emitSound(ServerPlayerEntity caster, Vec3d position, Identifier soundId) {
+        if (!caster.isAlive() || caster.isDisconnected()) return;
+        for (ServerPlayerEntity viewer : viewers(caster, position)) {
+            if (!claimPacket()) break;
+            new UnvalidatedPlaySoundS2CPacket(soundId, SoundCategory.PLAYERS,
+                    position.x, position.y, position.z, 1.0f, 1.0f).sendToPlayer(viewer);
+        }
+    }
+
+    private static List<ServerPlayerEntity> viewers(ServerPlayerEntity caster, Vec3d position) {
+        ServerWorld world = caster.getServerWorld();
+        var cfg = SVFrameMMOCobblemon.config().vfx;
+        double radius = Math.max(1d, Math.min(64d, cfg.moveBroadcastRadius));
+        double radiusSq = radius * radius;
+        return world.getPlayers().stream()
+                .filter(viewer -> !viewer.isDisconnected() && viewer.squaredDistanceTo(position) <= radiusSq)
+                .sorted(Comparator.comparingDouble(viewer -> viewer.squaredDistanceTo(position)))
+                .limit(Math.max(1, Math.min(128, cfg.maxViewersPerEmission)))
+                .toList();
     }
 
     private synchronized boolean claimPacket() {
