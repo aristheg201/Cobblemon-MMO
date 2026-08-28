@@ -67,11 +67,11 @@ final class CosmeticRenderer {
 
     private void emit(ServerPlayerEntity caster, CosmeticDefinition cosmetic, CosmeticDefinition.Phase phase, Vec3d target, int emissionIndex) {
         if (caster.isDisconnected() || !caster.isAlive()) return;
-        Vec3d origin = switch (phase.anchor()) {
+        Vec3d anchor = switch (phase.anchor()) {
             case TARGET -> target == null ? caster.getPos() : target;
             case CAST_POSITION, CASTER -> caster.getPos();
         };
-        origin = origin.add(phase.offsetX(), phase.offsetY(), phase.offsetZ());
+        final Vec3d origin = anchor.add(phase.offsetX(), phase.offsetY(), phase.offsetZ());
         double radiusSq = phase.broadcastRadius() * phase.broadcastRadius();
         var viewers = caster.getServerWorld().getPlayers().stream()
                 .filter(viewer -> !viewer.isDisconnected() && viewer.squaredDistanceTo(origin) <= radiusSq)
