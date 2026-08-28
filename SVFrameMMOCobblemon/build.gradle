@@ -22,7 +22,8 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     modImplementation "net.fabricmc:fabric-language-kotlin:${fabric_kotlin_version}"
     modImplementation "maven.modrinth:MdwFAVRL:kF7CvxTo"
-    modCompileOnly "maven.modrinth:SszvX85I:ch7DfnXP"
+    modImplementation "maven.modrinth:xGdtZczs:xqZ9fctS"
+    modImplementation "maven.modrinth:SszvX85I:ch7DfnXP"
     modCompileOnly "maven.modrinth:placeholder-api:2.4.2+1.21"
     compileOnly "net.luckperms:api:5.4"
     modImplementation files('../SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar')
@@ -31,3 +32,11 @@ dependencies {
 tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8' }
 java { sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21; withSourcesJar() }
 processResources { filesMatching('fabric.mod.json') { expand version: project.version } }
+
+tasks.register('nativeIntegrationSmoke', JavaExec) {
+    dependsOn classes
+    group = 'verification'
+    description = 'Runs native Cobblemon integration smoke checks on the Loom runtime classpath.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'vn.svframe.svframemmo.cobblemon.validation.NativeIntegrationSmoke'
+}
