@@ -1,36 +1,57 @@
 package vn.svframe.svframemmo.manager;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.WorldSavePath;
+import vn.svframe.svframemmo.config.DefaultFiles;
 import vn.svframe.svframemmo.api.player.PlayerData;
-import vn.svframe.svframemmo.api.player.profess.SavedClassState;
+import vn.svframe.svframemmo.persistence.JsonPlayerDataStore;
+import vn.svframe.svframemmo.persistence.MysqlPlayerDataStore;
+import vn.svframe.svframemmo.persistence.PersistenceConfig;
+import vn.svframe.svframemmo.persistence.PlayerDataSnapshot;
+import vn.svframe.svframemmo.persistence.PlayerDataStore;
+import vn.svframe.svframemmo.persistence.YamlPlayerDataStore;
 
-import java.io.Reader;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
-/** Atomic JSON persistence backend for all native SVFrameMMO player state. */
+/** Backend-independent native userdata manager with JSON migration, YAML and MySQL storage. */
 public final class PlayerDataManager {
+    private static final Logger LOG = Logger.getLogger("SVFrameMMO-PlayerData");
     private final Map<UUID, PlayerData> data = new ConcurrentHashMap<>();
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private Path file;
+    private Path worldRoot;
+    private PersistenceConfig persistenceConfig;
+    private PlayerDataStore store;
 
-    public void start(MinecraftServer server) {
-        file = server.getSavePath(WorldSavePath.ROOT).resolve("svframemmo-playerdata.json");
-        load();
+    public synchronized void start(MinecraftServer server) {
+        closeStore();
+        worldRoot = server.getSavePath(WorldSavePath.ROOT);
+        try {
+            persistenceConfig = PersistenceConfig.load(DefaultFiles.ROOT.resolve("config.yml"));
+            store = createStore(persistenceConfig.backend());
+            Map<UUID, PlayerDataSnapshot> loaded = store.loadAll();
+            JsonPlayerDataStore legacy = new JsonPlayerDataStore(worldRoot.resolve("svframemmo-playerdata.json"));
+            if (persistenceConfig.backend() != PersistenceConfig.Backend.JSON && persistenceConfig.autoMigrateJson()
+                    && loaded.isEmpty() && legacy.exists()) {
+                Map<UUID, PlayerDataSnapshot> migrated = legacy.loadAll();
+                if (!migrated.isEmpty()) {
+                    store.saveAll(migrated);
+                    loaded = migrated;
+                    LOG.info("Migrated " + migrated.size() + " native JSON userdata records to " + store.id() + ".");
+                }
+            }
+            restoreAll(loaded);
+            LOG.info("SVFrameMMO userdata backend: " + store.id() + ", records=" + data.size());
+        } catch (Exception exception) {
+            closeStore();
+            throw new IllegalStateException("Could not initialize SVFrameMMO userdata backend", exception);
+        }
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) join(player);
     }
 
@@ -49,71 +70,59 @@ public final class PlayerDataManager {
     public PlayerData find(UUID id) { return data.get(id); }
     public PlayerData get(ServerPlayerEntity player) { return join(player); }
     public Collection<PlayerData> all() { return List.copyOf(data.values()); }
+    public synchronized String backendName() { return store == null ? "UNINITIALIZED" : store.id(); }
 
     public synchronized void save() {
-        if (file == null) return;
+        if (store == null) return;
+        try { store.saveAll(snapshots()); }
+        catch (Exception exception) { throw new IllegalStateException("Could not save SVFrameMMO player data to " + store.id(), exception); }
+    }
+
+    /** Exports current in-memory state without changing the live backend. */
+    public synchronized int exportTo(PersistenceConfig.Backend target) {
+        if (store == null) throw new IllegalStateException("Player data backend is not initialized");
+        PlayerDataStore destination = null;
         try {
-            Files.createDirectories(file.getParent());
-            Map<String, Saved> out = new TreeMap<>();
-            for (Map.Entry<UUID, PlayerData> entry : data.entrySet()) {
-                PlayerData value = entry.getValue();
-                out.put(entry.getKey().toString(), new Saved(
-                        value.getClassId(), value.getLevel(), value.getExperience(),
-                        value.getClassPoints(), value.getSkillPoints(), value.getAttributePoints(),
-                        value.getAttributeReallocationPoints(), value.getSkillReallocationPoints(), value.getSkillTreeReallocationPoints(),
-                        value.getHealth(), value.getMana(), value.getStamina(), value.getStellium(),
-                        value.getAttributes().mapPoints(), value.getSkillLevels(), value.getSkillBindings(),
-                        value.getUnlockedItems(), value.getClaimCounts(),
-                        value.getProfessions().levelMap(), value.getProfessions().experienceMap(),
-                        value.getSkillTrees().pointMap(), value.getSkillTrees().nodeLevelMap(),
-                        value.getClassSlots()));
-            }
-            Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
-            Files.writeString(tmp, gson.toJson(out));
-            try { Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE); }
-            catch (java.nio.file.AtomicMoveNotSupportedException ignored) { Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING); }
+            destination = createStore(target);
+            Map<UUID, PlayerDataSnapshot> snapshots = snapshots();
+            destination.saveAll(snapshots);
+            return snapshots.size();
         } catch (Exception exception) {
-            throw new IllegalStateException("Could not save SVFrameMMO player data", exception);
+            throw new IllegalStateException("Could not export userdata to " + target, exception);
+        } finally {
+            if (destination != null && destination != store) try { destination.close(); } catch (Exception ignored) { }
         }
     }
 
-    private synchronized void load() {
+    public synchronized void close() { save(); closeStore(); }
+
+    private void restoreAll(Map<UUID, PlayerDataSnapshot> loaded) {
         data.clear();
-        if (file == null || !Files.exists(file)) return;
-        try (Reader reader = Files.newBufferedReader(file)) {
-            JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
-            for (Map.Entry<String, com.google.gson.JsonElement> entry : root.entrySet()) {
-                UUID id = UUID.fromString(entry.getKey());
-                Saved saved = gson.fromJson(entry.getValue(), Saved.class);
-                PlayerData value = PlayerData.blank(id);
-                value.restore(saved.playerClass, saved.level, saved.experience,
-                        saved.classPoints, saved.skillPoints, saved.attributePoints,
-                        saved.attributeReallocationPoints, saved.skillReallocationPoints, saved.skillTreeReallocationPoints,
-                        saved.health <= 0d ? vn.svframe.svframemmo.SVFrameMMO.config().defaultHealth() : saved.health,
-                        saved.mana, saved.stamina, saved.stellium,
-                        saved.attributes, saved.skills, saved.bindings, saved.unlockedItems, saved.claims,
-                        saved.professionLevels, saved.professionExperience,
-                        saved.skillTreePoints, saved.skillTreeNodeLevels,
-                        saved.classSlots);
-                data.put(id, value);
-            }
-        } catch (Exception exception) {
-            throw new IllegalStateException("Could not load SVFrameMMO player data", exception);
-        }
+        loaded.forEach((id, snapshot) -> {
+            PlayerData value = PlayerData.blank(id);
+            snapshot.apply(value);
+            data.put(id, value);
+        });
     }
 
-    private record Saved(String playerClass, int level, double experience,
-                         int classPoints, int skillPoints, int attributePoints,
-                         int attributeReallocationPoints, int skillReallocationPoints, int skillTreeReallocationPoints,
-                         double health, double mana, double stamina, double stellium,
-                         Map<String, Integer> attributes,
-                         Map<String, Integer> skills,
-                         Map<Integer, String> bindings,
-                         Set<String> unlockedItems,
-                         Map<String, Integer> claims,
-                         Map<String, Integer> professionLevels,
-                         Map<String, Double> professionExperience,
-                         Map<String, Integer> skillTreePoints,
-                         Map<String, Integer> skillTreeNodeLevels,
-                         Map<String, SavedClassState> classSlots) { }
+    private Map<UUID, PlayerDataSnapshot> snapshots() {
+        LinkedHashMap<UUID, PlayerDataSnapshot> out = new LinkedHashMap<>();
+        data.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> out.put(entry.getKey(), PlayerDataSnapshot.capture(entry.getValue())));
+        return out;
+    }
+
+    private PlayerDataStore createStore(PersistenceConfig.Backend backend) throws Exception {
+        if (worldRoot == null) throw new IllegalStateException("World root is not initialized");
+        return switch (backend) {
+            case JSON -> new JsonPlayerDataStore(worldRoot.resolve("svframemmo-playerdata.json"));
+            case YAML -> new YamlPlayerDataStore(worldRoot.resolve(persistenceConfig.yamlDirectory()));
+            case MYSQL -> new MysqlPlayerDataStore(persistenceConfig);
+        };
+    }
+
+    private void closeStore() {
+        if (store == null) return;
+        try { store.close(); } catch (Exception exception) { LOG.warning("Could not close userdata backend: " + exception.getMessage()); }
+        store = null;
+    }
 }

@@ -11,7 +11,9 @@
       "vn.svframe.svframemmo.command.SkillGrantCommands",
       "vn.svframe.svframemmo.command.AdminParityCommands",
       "vn.svframe.svframemmo.command.ResetParityCommands",
-      "vn.svframe.svframemmo.command.ImportParityCommands"
+      "vn.svframe.svframemmo.command.ImportParityCommands",
+      "vn.svframe.svframemmo.command.ExportDataCommands",
+      "vn.svframe.svframemmo.persistence.PersistenceBootstrap"
     ]
   },
   "mixins": ["svframemmo.mixins.json"],

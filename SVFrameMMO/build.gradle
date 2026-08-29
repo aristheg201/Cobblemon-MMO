@@ -9,6 +9,9 @@ dependencies {
  modImplementation "net.fabricmc:fabric-loader:${loader_version}"
  modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
  modImplementation files('../SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar')
+ include(implementation('com.zaxxer:HikariCP:6.1.0'))
+ include(implementation('com.mysql:mysql-connector-j:9.7.0'))
+ include(implementation('com.google.protobuf:protobuf-java:4.31.1'))
 }
 tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8' }
 java { sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21; withSourcesJar() }
