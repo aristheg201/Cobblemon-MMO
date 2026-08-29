@@ -148,6 +148,11 @@ public final class SkillBarRuntime {
         SVFrameMMOConfig live = SVFrameMMO.config();
         for (PlayerData data : SVFrameMMO.playerData().all()) {
             if (!data.isOnline()) continue;
+            var mmo = data.getMMOPlayerData();
+            if (data.getPlayer().isDead() || !mmo.isPlaying()) {
+                mmo.getActionBar().reset(DEFAULT_BAR_PRIORITY);
+                continue;
+            }
             Session session = sessions.get(data.getUniqueId());
             if (session != null) {
                 List<CastBinding> active = activeSkills(data, live.skillCasting());
@@ -164,9 +169,9 @@ public final class SkillBarRuntime {
                     else if (live.skillCasting().comboMode()) showCombo(data, session, live.skillCasting());
                 }
             } else if (live.actionBar().enabled() && tick % live.actionBar().updateTicks() == 0L) {
-                data.getMMOPlayerData().getActionBar().show(DEFAULT_BAR_PRIORITY,
+                mmo.getActionBar().show(DEFAULT_BAR_PRIORITY,
                         Math.max(2L, live.actionBar().updateTicks() + 1L),
-                        SVFrameLib.inst().parseColors(formatDefaultBar(data, live.actionBar().format())));
+                        () -> SVFrameLib.inst().parseColors(formatDefaultBar(data, live.actionBar().format())));
             }
         }
     }
@@ -539,7 +544,7 @@ public final class SkillBarRuntime {
                 .replace("{max_stamina}", trim(data.getMaxResource(PlayerResource.STAMINA))).replace("{stellium}", trim(data.getStellium()))
                 .replace("{max_stellium}", trim(data.getMaxResource(PlayerResource.STELLIUM))).replace("{class}", data.getProfess().getName())
                 .replace("{xp}", trim(data.getExperience())).replace("{armor}", trim(data.getMMOPlayerData().getStatMap().getStat("ARMOR")))
-                .replace("{level}", Integer.toString(data.getLevel())).replace("{name}", data.getPlayer().getGameProfile().getName());
+                .replace("{level}", Integer.toString(data.getLevel())).replace("{name}", data.getPlayer().getDisplayName().getString());
     }
 
     private static String manaIcon(PlayerData data) {
@@ -548,7 +553,7 @@ public final class SkillBarRuntime {
             Object icon = mana.get("icon");
             if (icon != null) return SVFrameLib.inst().parseColors(String.valueOf(icon));
         }
-        return "♦";
+        return "§9✦";
     }
 
     private static String trim(double value) {
