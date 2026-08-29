@@ -49,7 +49,7 @@ final class YamlSnapshotCodec {
     }
 
     private static StringBuilder indent(StringBuilder out, int count) { return out.append(" ".repeat(Math.max(0, count))); }
-    private static String safeKey(String key) { return key.matches("[A-Za-z0-9_.:-]+") ? key : quote(key); }
+    private static String safeKey(String key) { return key.matches("[A-Za-z0-9_.-]+") ? key : quote(key); }
     private static String scalar(Object value) {
         if (value == null) return "null";
         if (value instanceof Boolean) return String.valueOf(value);
