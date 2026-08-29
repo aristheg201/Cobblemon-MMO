@@ -5,6 +5,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.UtilityMethods;
 import vn.svframe.svframelib.api.MMOLineConfig;
 import vn.svframe.svframelib.api.player.EquipmentSlot;
