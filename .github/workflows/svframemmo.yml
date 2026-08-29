@@ -47,6 +47,7 @@ jobs:
           SRC=SVFrameMMO/src/main
           COMMANDS="$SRC/java/vn/svframe/svframemmo/command/SVFrameMMOCommands.java"
           SKILLBAR="$SRC/java/vn/svframe/svframemmo/skill/runtime/SkillBarRuntime.java"
+          CAST_CONFIG="$SRC/java/vn/svframe/svframemmo/config/SVFrameMMOConfig.java"
           CONFIG="$SRC/resources/defaults/config.yml"
           grep -q '"id": "svframemmo"' "$SRC/resources/fabric.mod.json"
           grep -q '"svframelib": ">=1.7.1-fabric"' "$SRC/resources/fabric.mod.json"
@@ -64,7 +65,13 @@ jobs:
           grep -q 'can-creative-cast: false' "$CONFIG"
           grep -q 'action-bar: true' "$CONFIG"
           grep -q 'BLOCK_END_PORTAL_FRAME_FILL,1,2' "$CONFIG"
-          grep -Fq '(tick & 15L)' "$SKILLBAR"
+          grep -q 'SKILL_SCROLLER' "$CAST_CONFIG"
+          grep -q 'KEY_COMBOS' "$CAST_CONFIG"
+          grep -q 'NONE' "$CAST_CONFIG"
+          grep -q 'PlayerEnterCastingModeEvent' "$SKILLBAR"
+          grep -q 'PlayerExitCastingModeEvent' "$SKILLBAR"
+          grep -q 'PlayerKeyPressEvent' "$SKILLBAR"
+          grep -Eq '\((tick|session[.]counter) & 15L\)' "$SKILLBAR"
           grep -q 'legacyText(resolved)' SVFrameLib/src/main/java/vn/svframe/svframelib/message/actionbar/ActionBarHandler.java
           forbidden="$(grep -RIn --binary-files=without-match -Ei 'net[.]Indyuce|io[.]lumine|org[.]bukkit|io[.]papermc|mythicmobs|mmocore|mythiclib|mmoitems|spigot|placeholderapi|worldguard|citizens|vault' "$SRC" --include='*.java' --include='*.json' --include='*.yml' || true)"
           executable_forbidden="$(printf '%s\n' "$forbidden" | grep -Ev ':[0-9]+:[[:space:]]*(//|/[*]|[*]|#)' || true)"
