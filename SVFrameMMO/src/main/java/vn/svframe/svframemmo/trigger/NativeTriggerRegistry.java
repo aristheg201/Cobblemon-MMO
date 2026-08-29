@@ -2,6 +2,7 @@ package vn.svframe.svframemmo.trigger;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import vn.svframe.svframelib.UtilityMethods;
@@ -10,6 +11,9 @@ import vn.svframe.svframelib.api.player.EquipmentSlot;
 import vn.svframe.svframelib.api.stat.modifier.StatModifier;
 import vn.svframe.svframelib.player.modifier.ModifierSource;
 import vn.svframe.svframelib.player.modifier.ModifierType;
+import vn.svframe.svframelib.player.skillmod.SkillModifier;
+import vn.svframe.svframelib.script.util.expression.bool.BooleanExpression;
+import vn.svframe.svframelib.skill.handler.SkillHandler;
 import vn.svframe.svframelib.player.resource.ResourceUpdateReason;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.PlayerData;
@@ -20,13 +24,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 
-/** Parses the SVFrameMMO 1.13.1 line-trigger surface into native Fabric behavior. */
+/** Parses the native line-trigger surface into server behavior. */
 public final class NativeTriggerRegistry {
     private NativeTriggerRegistry() { }
 
@@ -50,7 +53,9 @@ public final class NativeTriggerRegistry {
             case "unlockslot", "unlock-slot" -> unlockSlot(config);
             case "message" -> message(config);
             case "command" -> command(config);
-            case "item" -> item(config);
+            case "item", "vanilla" -> item(config);
+            case "sound", "playsound", "play-sound" -> sound(config);
+            case "skill-buff", "skill-modifier", "skillmodifier" -> skillModifier(config, line);
             case "stat", "statmodifier", "stat-modifier" -> stat(config, line);
             default -> throw new IllegalArgumentException("Unsupported native trigger type '" + config.getKey() + "'");
         };
@@ -175,6 +180,61 @@ public final class NativeTriggerRegistry {
         });
     }
 
+    private static Trigger sound(MMOLineConfig config) {
+        Identifier sound = resolveSoundId(config.getString("sound"));
+        if (sound == null) throw new IllegalArgumentException("Unknown sound '" + config.getString("sound") + "'");
+        float volume = (float) config.getDouble("volume", 1d);
+        float pitch = (float) config.getDouble("pitch", 1d);
+        return simple(player -> {
+            var online = player.getPlayer();
+            if (online == null) return;
+            Registries.SOUND_EVENT.getEntry(sound).ifPresent(entry -> online.getServerWorld().playSound(
+                    null, online.getX(), online.getY(), online.getZ(), entry, SoundCategory.PLAYERS, volume, pitch));
+        });
+    }
+
+    private static Identifier resolveSoundId(String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        if (raw.indexOf(':') >= 0) {
+            Identifier direct = Identifier.tryParse(raw.toLowerCase(Locale.ROOT));
+            return direct != null && Registries.SOUND_EVENT.containsId(direct) ? direct : null;
+        }
+        String legacy = raw.trim().toUpperCase(Locale.ROOT);
+        for (Identifier candidate : Registries.SOUND_EVENT.getIds()) {
+            String normalized = candidate.getPath().replace('.', '_').replace('/', '_').toUpperCase(Locale.ROOT);
+            if (normalized.equals(legacy)) return candidate;
+        }
+        Identifier direct = Identifier.tryParse("minecraft:" + raw.toLowerCase(Locale.ROOT));
+        return direct != null && Registries.SOUND_EVENT.containsId(direct) ? direct : null;
+    }
+
+    private static Trigger skillModifier(MMOLineConfig config, String sourceLine) {
+        String parameter = config.getString("modifier");
+        double amount = config.getDouble("amount");
+        String formula = config.getString("formula", "true");
+        ModifierType type = ModifierType.valueOf(UtilityMethods.enumName(config.getString("type", "FLAT")));
+        List<SkillHandler<?>> targets = SVFrameLib.inst().getSkills().getHandlers().stream()
+                .filter(skill -> evaluateSkillFormula(skill, formula)).toList();
+        UUID modifierId = UUID.nameUUIDFromBytes(("svframemmo:skill-trigger:" + sourceLine).getBytes(StandardCharsets.UTF_8));
+        return new Trigger() {
+            private SkillModifier modifier() {
+                return new SkillModifier(modifierId, "svframemmo_skill_trigger", parameter, targets, amount, type,
+                        EquipmentSlot.OTHER, ModifierSource.OTHER);
+            }
+            @Override public void apply(PlayerData player) { modifier().register(player.getMMOPlayerData()); }
+            @Override public void remove(PlayerData player) { modifier().unregister(player.getMMOPlayerData()); }
+            @Override public boolean removable() { return true; }
+            @Override public boolean temporary() { return true; }
+        };
+    }
+
+    private static boolean evaluateSkillFormula(SkillHandler<?> skill, String formula) {
+        String parsed = formula;
+        for (String category : skill.getCategories()) parsed = parsed.replace("<" + category + ">", "true");
+        parsed = parsed.replaceAll("<.*?>", "false");
+        return BooleanExpression.eval(parsed);
+    }
+
     private static Trigger stat(MMOLineConfig config, String sourceLine) {
         String stat = UtilityMethods.enumName(config.getString("stat"));
         double amount = config.getDouble("amount");
@@ -216,13 +276,16 @@ public final class NativeTriggerRegistry {
 
     private record DelayedTrigger(Trigger delegate, long delayTicks) implements Trigger {
         DelayedTrigger { Objects.requireNonNull(delegate, "delegate"); }
-        @Override public void apply(PlayerData player) { delegate.apply(player); }
+        @Override public void apply(PlayerData player) {
+            SVFrameMMO.delayedActions().schedule(SVFrameMMO.currentTick() + delayTicks, () -> delegate.apply(player));
+        }
         @Override public void remove(PlayerData player) { delegate.remove(player); }
         @Override public boolean removable() { return delegate.removable(); }
         @Override public boolean temporary() { return delegate.temporary(); }
+        @Override public long delayTicks() { return 0L; }
     }
 
-    /** SVFrameMMO random amount syntax: one number or inclusive min-max. */
+    /** Random amount syntax: one number or inclusive min-max. */
     public static double roll(String raw) {
         String value = raw == null ? "0" : raw.trim();
         int split = findRangeDash(value);

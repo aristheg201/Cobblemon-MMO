@@ -18,13 +18,14 @@ public final class ClassSelect extends AbstractClassSelect {
         return null;
     }
 
-    public ProfessSelectionInventory newInventory(PlayerData data) { return new ProfessSelectionInventory(data); }
+    public ProfessSelectionInventory newInventory(PlayerData data) { return new ProfessSelectionInventory(data, false); }
+    public ProfessSelectionInventory newInventory(PlayerData data, boolean forced) { return new ProfessSelectionInventory(data, forced); }
 
     public final class ClassItem extends AbstractClassItem<ProfessSelectionInventory> {
         ClassItem(Map<String, ?> config) { super(config, "class-".length()); }
 
         @Override public void onClick(ProfessSelectionInventory inv, PluginInventory.Click click) {
-            if (inv.playerData.getClassPoints() < 1) {
+            if (!inv.forced && inv.playerData.getClassPoints() < 1) {
                 GuiSupport.action(inv.getPlayer(), "&cYou do not have any class points.");
                 return;
             }
@@ -36,14 +37,19 @@ public final class ClassSelect extends AbstractClassSelect {
                 GuiSupport.action(inv.getPlayer(), "&cYou are already " + playerClass.getName());
                 return;
             }
-            inv.getNavigator().unblockClosing();
+            if (!inv.forced) inv.getNavigator().unblockClosing();
             PlayerClass deepest = findDeepestSubclass(inv.playerData, playerClass);
-            SVFrameMMO.gui().confirmation(deepest).newInventory(inv, false).open();
+            SVFrameMMO.gui().confirmation(deepest).newInventory(inv, inv.forced).open();
         }
     }
 
     public final class ProfessSelectionInventory extends AbstractClassGeneratedInventory {
-        ProfessSelectionInventory(PlayerData data) { super(new Navigator(data.getMMOPlayerData()), data); }
+        private final boolean forced;
+        ProfessSelectionInventory(PlayerData data, boolean forced) {
+            super(new Navigator(data.getMMOPlayerData()), data);
+            this.forced = forced;
+            if (forced) getNavigator().blockClosing();
+        }
     }
 
     private static boolean hasClassPermission(ProfessSelectionInventory inv, PlayerClass playerClass) {

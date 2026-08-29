@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-/** Owns runtime-only passive registrations and skill-slot parameter buffs. */
+/** Owns runtime-only passive registrations, class scripts and skill-slot parameter buffs. */
 public final class SkillRuntime {
     private final Map<UUID, Map<String, Registration>> registrations = new LinkedHashMap<>();
 
@@ -50,6 +50,14 @@ public final class SkillRuntime {
             next.put("permanent:" + skill.getSkill().getId(), registration);
         }
 
+        int classScriptIndex = 0;
+        for (PassiveSkill script : data.getProfess().getScripts()) {
+            Registration registration = new Registration(data.getMMOPlayerData());
+            script.register(data.getMMOPlayerData());
+            registration.modifiers.add(script);
+            next.put("class-script:" + classScriptIndex++, registration);
+        }
+
         for (Map.Entry<Integer, String> entry : data.getSkillBindings().entrySet()) {
             int slot = entry.getKey();
             ClassSkill skill = data.getProfess().getSkill(entry.getValue());
@@ -71,7 +79,6 @@ public final class SkillRuntime {
             next.put("slot:" + slot, registration);
         }
 
-        // Integration-contributed passives are owned by ExternalSkillProgression, never by the current class.
         for (Map.Entry<String, Integer> learned : SVFrameMMO.externalProgression().learned(data.getUniqueId()).entrySet()) {
             ClassSkill skill = SVFrameMMO.externalSkills().get(learned.getKey());
             if (skill == null || !skill.getTrigger().isPassive()) continue;

@@ -19,6 +19,10 @@ passive-skill-needs-binding: true
 save-default-class-info: false
 player-resource-tick-period: 20
 
+# Force newly-created native player data to choose a non-default class before closing the selection flow.
+# Existing player data is migrated as already chosen the first time this feature is enabled.
+force-class-selection: true
+
 # Creative players cannot enter skill casting unless explicitly enabled.
 can-creative-cast: false
 
@@ -32,6 +36,7 @@ share-across-classes:
   skill-reallocation-points: false
   attribute-reallocation-points: false
 
+# Supported modes: SKILL_BAR, SKILL_SCROLLER, KEY_COMBOS, NONE.
 # SKILL_BAR casting. F is Minecraft's vanilla SWAP_HANDS key.
 skill-casting:
   mode: SKILL_BAR

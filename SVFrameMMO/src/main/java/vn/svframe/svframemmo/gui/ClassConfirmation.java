@@ -7,6 +7,7 @@ import vn.svframe.svframelib.gui.editable.item.InventoryItem;
 import vn.svframe.svframelib.gui.editable.item.PhysicalItem;
 import vn.svframe.svframelib.gui.editable.item.builtin.GoBackItem;
 import vn.svframe.svframelib.gui.editable.placeholder.Placeholders;
+import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.event.PlayerClassChangeEvent;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.api.player.profess.PlayerClass;
@@ -74,12 +75,13 @@ public final class ClassConfirmation extends AbstractClassSelect {
         }
 
         @Override public void onClick(ClassConfirmationInventory inv, PluginInventory.Click click) {
-            if (inv.playerData.getClassPoints() < 1) {
+            if (!inv.forceSetClass && inv.playerData.getClassPoints() < 1) {
                 GuiSupport.action(inv.getPlayer(), "&cYou do not have any class points.");
                 return;
             }
             if (!inv.playerData.changeClass(inv.profess, PlayerClassChangeEvent.Reason.GUI)) return;
             inv.playerData.giveClassPoints(-1);
+            if (inv.forceSetClass) SVFrameMMO.classSelection().markChosen(inv.playerData);
             inv.getNavigator().unblockClosing();
             GuiSupport.action(inv.getPlayer(), "&aSelected class " + inv.profess.getName());
             inv.getPlayer().closeHandledScreen();

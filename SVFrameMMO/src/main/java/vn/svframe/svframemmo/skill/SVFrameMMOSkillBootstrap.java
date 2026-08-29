@@ -8,6 +8,7 @@ import vn.svframe.svframelib.skill.SkillMetadata;
 import vn.svframe.svframelib.skill.handler.SkillHandler;
 import vn.svframe.svframelib.skill.parameter.value.ScalingFormula;
 import vn.svframe.svframelib.skill.result.SkillResult;
+import vn.svframe.svframelib.skill.trigger.TriggerType;
 import vn.svframe.svframelib.util.configobject.MapConfigObject;
 import vn.svframe.svframemmo.script.mechanic.ManaMechanic;
 import vn.svframe.svframemmo.script.mechanic.StaminaMechanic;
@@ -25,7 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-/** Registers native class skills plus validated aliases for legacy default-skill definitions. */
+/** Registers native class skills, class-event trigger types and validated legacy aliases. */
 public final class SVFrameMMOSkillBootstrap {
     private static final String LEGACY_ALIAS_FILE = "legacy-class-aliases.yml";
     private static final int EXPECTED_NATIVE_ALIASES = 34;
@@ -35,6 +36,10 @@ public final class SVFrameMMOSkillBootstrap {
 
     public static void register(Path dir) throws IOException {
         SkillManager skills = SVFrameLib.inst().getSkills();
+        registerTrigger("ENTER_COMBAT");
+        registerTrigger("QUIT_COMBAT");
+        registerTrigger("LEVEL_UP");
+        registerTrigger("CLASS_CHOSEN");
         skills.registerBuiltinSkillHandlerType(Ambers.class);
         skills.registerBuiltinSkillHandlerType(Neptune_Gift.class);
         skills.registerBuiltinSkillHandlerType(Sneaky_Picky.class);
@@ -54,6 +59,11 @@ public final class SVFrameMMOSkillBootstrap {
     }
 
     public static int aliasCount() { return aliasCount; }
+
+    private static void registerTrigger(String id) {
+        try { TriggerType.valueOf(id); }
+        catch (IllegalArgumentException ignored) { TriggerType.register(new TriggerType(id)); }
+    }
 
     private static int registerNativeAliases(SkillManager manager, Path file) throws IOException {
         Map<String, Object> root = YamlLite.map(YamlLite.parse(file));
