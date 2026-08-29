@@ -94,7 +94,7 @@ public record SVFrameMMOConfig(
 
         Keybind openKey = null;
         if ("SKILL_BAR".equals(castingMode)) {
-            try { openKey = new Keybind(first(casting, "open", "open-key")); }
+            try { openKey = new Keybind(string(first(casting, "open", "open-key"), "SWAP_HANDS")); }
             catch (RuntimeException exception) { throw new IOException("Invalid SKILL_BAR open key", exception); }
         }
 
