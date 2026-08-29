@@ -10,22 +10,22 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
+/** Installs immutable bundled defaults on first boot without overwriting server edits. */
 public final class DefaultFiles {
     public static final Path ROOT = FabricLoader.getInstance().getConfigDir().resolve("SVFrameMMO").toAbsolutePath().normalize();
     private static final List<String> FILES = List.of(
-            "config.yml", "stats.yml",
+            "config.yml", "stats.yml", "exp-sources.yml",
             "classes/human.yml", "classes/marksman.yml", "classes/paladin.yml", "classes/rogue.yml", "classes/warrior.yml",
             "classes/mage/mage.yml", "classes/mage/arcane-mage.yml",
             "attributes/default_attributes.yml",
-            "skills/ambers.yml", "skills/neptune-gift.yml", "skills/sneaky-picky.yml", "skills/legacy-class-aliases.yml",
+            "skills/ambers.yml", "skills/neptune-gift.yml", "skills/sneaky-picky.yml", "skills/staff-attack.yml", "skills/legacy-class-aliases.yml",
             "professions/alchemy.yml", "professions/enchanting.yml", "professions/farming.yml", "professions/fishing.yml",
             "professions/mining.yml", "professions/smelting.yml", "professions/smithing.yml", "professions/woodcutting.yml",
             "exp-tables/default.yml", "exp-curves/levels.txt",
-            "skill-trees/combat.yml", "skill-trees/general.yml", "skill-trees/loop.yml",
-            "skill-trees/mage-arcane-mage.yml", "skill-trees/rogue-marksman.yml", "skill-trees/warrior-paladin.yml",
-            "gui/class-select.yml", "gui/class-confirm/class-confirm-default.yml", "gui/subclass-select.yml",
-            "gui/attribute-view.yml", "gui/player-stats.yml", "gui/skill-list.yml", "gui/skill-tree.yml",
-            "gui/specific-skill-tree/specific-skill-tree-default.yml");
+            "skill-trees/combat.yml", "skill-trees/general.yml", "skill-trees/loop.yml", "skill-trees/mage-arcane-mage.yml",
+            "skill-trees/rogue-marksman.yml", "skill-trees/warrior-paladin.yml",
+            "gui/class-select.yml", "gui/class-confirm/class-confirm-default.yml", "gui/subclass-select.yml", "gui/attribute-view.yml",
+            "gui/player-stats.yml", "gui/skill-list.yml", "gui/skill-tree.yml", "gui/specific-skill-tree/specific-skill-tree-default.yml");
 
     private DefaultFiles() { }
 
@@ -43,8 +43,10 @@ public final class DefaultFiles {
                 try {
                     Files.copy(input, temporary, StandardCopyOption.REPLACE_EXISTING);
                     try { Files.move(temporary, output, StandardCopyOption.ATOMIC_MOVE); }
-                    catch (AtomicMoveNotSupportedException exception) { Files.move(temporary, output, StandardCopyOption.REPLACE_EXISTING); }
-                } finally { Files.deleteIfExists(temporary); }
+                    catch (AtomicMoveNotSupportedException ignored) { Files.move(temporary, output, StandardCopyOption.REPLACE_EXISTING); }
+                } finally {
+                    Files.deleteIfExists(temporary);
+                }
             }
         }
     }

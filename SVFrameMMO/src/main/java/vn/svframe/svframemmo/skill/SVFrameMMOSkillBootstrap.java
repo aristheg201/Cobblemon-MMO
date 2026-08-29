@@ -6,6 +6,7 @@ import vn.svframe.svframelib.config.YamlLite;
 import vn.svframe.svframelib.manager.SkillManager;
 import vn.svframe.svframelib.skill.SkillMetadata;
 import vn.svframe.svframelib.skill.handler.SkillHandler;
+import vn.svframe.svframelib.skill.parameter.value.ScalingFormula;
 import vn.svframe.svframelib.skill.result.SkillResult;
 import vn.svframe.svframelib.util.configobject.MapConfigObject;
 import vn.svframe.svframemmo.script.mechanic.ManaMechanic;
@@ -14,11 +15,15 @@ import vn.svframe.svframemmo.script.mechanic.StelliumMechanic;
 import vn.svframe.svframemmo.skill.list.Ambers;
 import vn.svframe.svframemmo.skill.list.Neptune_Gift;
 import vn.svframe.svframemmo.skill.list.Sneaky_Picky;
+import vn.svframe.svframemmo.skill.list.Staff_Attack;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /** Registers native class skills plus validated aliases for legacy default-skill definitions. */
 public final class SVFrameMMOSkillBootstrap {
@@ -33,6 +38,7 @@ public final class SVFrameMMOSkillBootstrap {
         skills.registerBuiltinSkillHandlerType(Ambers.class);
         skills.registerBuiltinSkillHandlerType(Neptune_Gift.class);
         skills.registerBuiltinSkillHandlerType(Sneaky_Picky.class);
+        skills.registerBuiltinSkillHandlerType(Staff_Attack.class);
         skills.registerMechanic("mana", ManaMechanic::new);
         skills.registerMechanic("stamina", StaminaMechanic::new);
         skills.registerMechanic("stellium", StelliumMechanic::new);
@@ -40,6 +46,7 @@ public final class SVFrameMMOSkillBootstrap {
         registerHandler(skills, new Ambers(config(dir, "ambers.yml", "AMBERS")));
         registerHandler(skills, new Neptune_Gift(config(dir, "neptune-gift.yml", "NEPTUNE_GIFT")));
         registerHandler(skills, new Sneaky_Picky(config(dir, "sneaky-picky.yml", "SNEAKY_PICKY")));
+        registerHandler(skills, new Staff_Attack(config(dir, "staff-attack.yml", "STAFF_ATTACK")));
 
         aliasCount = registerNativeAliases(skills, dir.resolve(LEGACY_ALIAS_FILE));
         if (aliasCount != EXPECTED_NATIVE_ALIASES)
@@ -73,10 +80,19 @@ public final class SVFrameMMOSkillBootstrap {
             if (target == null)
                 throw new IOException("Native source skill '" + targetId + "' required by alias '" + aliasId + "' is not registered");
 
-            manager.registerSkillHandler(new NativeAliasSkillHandler(new MapConfigObject(aliasId, section), target));
+            manager.registerSkillHandler(new NativeAliasSkillHandler(
+                    new MapConfigObject(aliasId, section), target, configuredParameterIds(section)));
             loaded++;
         }
         return loaded;
+    }
+
+    private static Set<String> configuredParameterIds(Map<String, Object> section) {
+        Object raw = section.get("parameters");
+        if (!(raw instanceof Map<?, ?> parameters)) return Set.of();
+        LinkedHashSet<String> result = new LinkedHashSet<>();
+        parameters.keySet().forEach(key -> result.add(String.valueOf(key)));
+        return Set.copyOf(result);
     }
 
     private static MapConfigObject config(Path dir, String file, String id) throws IOException {
@@ -93,16 +109,52 @@ public final class SVFrameMMOSkillBootstrap {
         return result;
     }
 
-    /**
-     * Keeps the alias ID, UI metadata and parameter formulas while executing the real native source handler.
-     * Raw dispatch is safe because getResult() returns the exact result implementation expected by the same delegate.
-     */
     private static final class NativeAliasSkillHandler extends SkillHandler<SkillResult> {
         private final SkillHandler<?> delegate;
+        private final Set<String> configuredParameters;
 
-        private NativeAliasSkillHandler(MapConfigObject config, SkillHandler<?> delegate) {
+        private NativeAliasSkillHandler(MapConfigObject config, SkillHandler<?> delegate, Set<String> configuredParameters) {
             super(config);
             this.delegate = delegate;
+            this.configuredParameters = Set.copyOf(configuredParameters);
+        }
+
+        private boolean inherits(String id) {
+            return !configuredParameters.contains(id) && delegate.getParameters().contains(id);
+        }
+
+        @Override
+        public Set<String> getParameters() {
+            LinkedHashSet<String> result = new LinkedHashSet<>(delegate.getParameters());
+            result.addAll(super.getParameters());
+            return Set.copyOf(result);
+        }
+
+        @Override
+        public Set<String> getModifiers() {
+            LinkedHashSet<String> result = new LinkedHashSet<>(delegate.getModifiers());
+            result.addAll(super.getModifiers());
+            return Set.copyOf(result);
+        }
+
+        @Override
+        public String getParameterName(String id) {
+            return inherits(id) ? delegate.getParameterName(id) : super.getParameterName(id);
+        }
+
+        @Override
+        public double getDefaultItemParameter(String id) {
+            return inherits(id) ? delegate.getDefaultItemParameter(id) : super.getDefaultItemParameter(id);
+        }
+
+        @Override
+        public ScalingFormula getDefaultFormula(String id) {
+            return inherits(id) ? delegate.getDefaultFormula(id) : super.getDefaultFormula(id);
+        }
+
+        @Override
+        public DecimalFormat getParameterDecimalFormat(String id) {
+            return inherits(id) ? delegate.getParameterDecimalFormat(id) : super.getParameterDecimalFormat(id);
         }
 
         @Override

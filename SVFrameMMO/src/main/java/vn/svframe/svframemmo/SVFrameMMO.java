@@ -16,6 +16,9 @@ import vn.svframe.svframemmo.command.RpgGuiCommands;
 import vn.svframe.svframemmo.command.SVFrameMMOCommands;
 import vn.svframe.svframemmo.config.DefaultFiles;
 import vn.svframe.svframemmo.config.SVFrameMMOConfig;
+import vn.svframe.svframemmo.experience.source.ExperienceSourceGroups;
+import vn.svframe.svframemmo.experience.source.ExperienceSourceRuntime;
+import vn.svframe.svframemmo.experience.source.NativeExperienceRuntime;
 import vn.svframe.svframemmo.gui.RpgGuiManager;
 import vn.svframe.svframemmo.manager.AttributeManager;
 import vn.svframe.svframemmo.manager.BoosterManager;
@@ -53,6 +56,8 @@ public final class SVFrameMMO implements ModInitializer {
     private static final ExternalSkillRegistry EXTERNAL_SKILLS = new ExternalSkillRegistry();
     private static final ExternalSkillProgression EXTERNAL_PROGRESSION = new ExternalSkillProgression();
     private static final RpgGuiManager GUI = new RpgGuiManager();
+    private static final ExperienceSourceRuntime EXPERIENCE_SOURCES = new ExperienceSourceRuntime();
+    private static final NativeExperienceRuntime NATIVE_EXPERIENCE = new NativeExperienceRuntime(EXPERIENCE_SOURCES);
 
     private static volatile ClassManager classes = new ClassManager();
     private static volatile AttributeManager attributes = new AttributeManager();
@@ -74,6 +79,7 @@ public final class SVFrameMMO implements ModInitializer {
             SVFrameMMOSkillBootstrap.register(DefaultFiles.ROOT.resolve("skills"));
             loadDefinitions();
             GUI.reload();
+            NATIVE_EXPERIENCE.install();
         } catch (Exception exception) {
             throw new IllegalStateException("Could not initialize SVFrameMMO native progression data", exception);
         }
@@ -104,6 +110,7 @@ public final class SVFrameMMO implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             SKILL_BAR.clear();
             TEMPORARY_SKILLS.clear();
+            NATIVE_EXPERIENCE.clear();
             PLAYER_DATA.save();
             EXTERNAL_PROGRESSION.save();
             for (var data : PLAYER_DATA.all()) SKILL_RUNTIME.detach(data);
@@ -125,6 +132,7 @@ public final class SVFrameMMO implements ModInitializer {
             REGEN.tick(tick);
             DELAYED_ACTIONS.tick(tick);
             SKILL_BAR.tick(tick);
+            NATIVE_EXPERIENCE.tick(server, tick);
             SVFrameMMOConfig live = config;
             if (live.autosaveSeconds() > 0 && tick % (live.autosaveSeconds() * 20L) == 0) {
                 PLAYER_DATA.save();
@@ -135,6 +143,7 @@ public final class SVFrameMMO implements ModInitializer {
             PLAYER_DATA.get(event.getPlayer()).markCombat();
             var target = event.getAttack().getTarget();
             if (target instanceof net.minecraft.server.network.ServerPlayerEntity player) PLAYER_DATA.get(player).markCombat();
+            NATIVE_EXPERIENCE.onPlayerAttack(event);
         });
     }
 
@@ -173,6 +182,8 @@ public final class SVFrameMMO implements ModInitializer {
         nextProfessions.reload(DefaultFiles.ROOT.resolve("professions"), nextClasses.getCurves());
         nextExperienceTables.reload(DefaultFiles.ROOT.resolve("exp-tables"));
         nextSkillTrees.reload(DefaultFiles.ROOT.resolve("skill-trees"));
+        var sharedExperienceSources = ExperienceSourceGroups.load(DefaultFiles.ROOT.resolve("exp-sources.yml"));
+        EXPERIENCE_SOURCES.reload(nextClasses, nextProfessions, sharedExperienceSources);
 
         for (var playerClass : nextClasses.getAll()) {
             if (playerClass.hasExperienceTable()) nextExperienceTables.getOrThrow(playerClass.getExperienceTableId());
@@ -193,6 +204,7 @@ public final class SVFrameMMO implements ModInitializer {
     public static String definitionSummary() {
         return "classes=" + classes.size() + ",attributes=" + attributes.size() + ",professions=" + professions.size()
                 + ",expTables=" + experienceTables.size() + ",skillTrees=" + skillTrees.size()
+                + ",expSources=" + EXPERIENCE_SOURCES.classSourceCount() + "/" + EXPERIENCE_SOURCES.professionSourceCount()
                 + ",skills=" + SVFrameLib.inst().getSkills().getHandlers().size() + ",externalSkills=" + EXTERNAL_SKILLS.size();
     }
 
@@ -217,4 +229,6 @@ public final class SVFrameMMO implements ModInitializer {
     public static ExternalSkillProgression externalProgression() { return EXTERNAL_PROGRESSION; }
     public static DelayedActionRuntime delayedActions() { return DELAYED_ACTIONS; }
     public static RpgGuiManager gui() { return GUI; }
+    public static ExperienceSourceRuntime experienceSources() { return EXPERIENCE_SOURCES; }
+    public static NativeExperienceRuntime nativeExperience() { return NATIVE_EXPERIENCE; }
 }
