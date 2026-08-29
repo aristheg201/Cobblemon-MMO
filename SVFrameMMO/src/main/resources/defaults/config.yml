@@ -60,6 +60,9 @@ enable-specific-skill-tree-gui: true
 skill-tree-scroll-step-x: 1
 skill-tree-scroll-step-y: 1
 
+# Sneak-right-click another player to inspect their Player Stats GUI.
+shift-click-player-profile-check: false
+
 # Force newly-created native player data to choose a non-default class before closing the selection flow.
 # Existing player data is migrated as already chosen the first time this feature is enabled.
 force-class-selection: true

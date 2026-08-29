@@ -72,6 +72,7 @@ public final class RpgGuiManager {
         skillTree = nextTree;
         confirmations.clear(); confirmations.putAll(nextConfirm);
         specificTrees.clear(); specificTrees.putAll(nextSpecific);
+        PlayerProfileInteractionRuntime.install();
     }
 
     private static Map<String, Object> load(String relative) throws IOException {
