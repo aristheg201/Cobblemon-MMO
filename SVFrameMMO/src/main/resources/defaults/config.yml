@@ -103,3 +103,7 @@ pvp_mode:
     combat: 45
     toggle_on: 5
     toggle_off: 3
+
+# Currency backend routed through SVFrameLib CurrencyService.
+economy:
+  currency: beconomy:primary
