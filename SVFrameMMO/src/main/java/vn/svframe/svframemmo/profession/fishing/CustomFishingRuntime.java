@@ -34,7 +34,9 @@ import java.util.logging.Logger;
 
 /** Native Fabric implementation of MMOCore's tug-based custom fishing profession gameplay. */
 public final class CustomFishingRuntime {
+    /** Returned by {@link #onUse} when vanilla fishing must continue untouched. */
     public static final int PASS = Integer.MIN_VALUE;
+
     private static final Logger LOG = Logger.getLogger("SVFrameMMO-CustomFishing");
     private static final CustomFishingRuntime INSTANCE = new CustomFishingRuntime();
     private static final long TIMEOUT_TICKS = 20L;
@@ -50,8 +52,14 @@ public final class CustomFishingRuntime {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> clear());
     }
 
-    public static CustomFishingRuntime instance() { return INSTANCE; }
+    public static CustomFishingRuntime instance() {
+        return INSTANCE;
+    }
 
+    /**
+     * Handles a rod use for an existing fishing hook.
+     * @return {@link #PASS} to keep vanilla behavior, otherwise the rod durability cost returned by FishingBobberEntity.use.
+     */
     public synchronized int onUse(FishingBobberEntity hook, ServerPlayerEntity player, ItemStack rod, boolean biteReady) {
         if (hook == null || player == null) return PASS;
         reloadIfNeeded();
@@ -91,7 +99,9 @@ public final class CustomFishingRuntime {
         sessions.clear();
     }
 
-    public synchronized int activeSessions() { return sessions.size(); }
+    public synchronized int activeSessions() {
+        return sessions.size();
+    }
 
     private int pull(Session session) {
         ServerPlayerEntity player = findPlayer(session.playerId);
@@ -151,7 +161,8 @@ public final class CustomFishingRuntime {
         if (session.vanillaExperience > 0) player.addExperience(session.vanillaExperience);
         Profession fishing = SVFrameMMO.professions().get("fishing");
         if (fishing != null && session.professionExperience > 0)
-            data.getProfessions().giveExperience(fishing, session.professionExperience, EXPSource.FISHING);
+            data.getProfessions().giveExperience(fishing, session.professionExperience, EXPSource.SOURCE);
+
         hook.discard();
     }
 
@@ -161,8 +172,11 @@ public final class CustomFishingRuntime {
         synchronized (this) {
             for (Session session : List.copyOf(sessions.values())) {
                 ServerPlayerEntity player = server.getPlayerManager().getPlayer(session.playerId);
-                if (player == null || session.hook.isRemoved()) close(session, false);
-                else if (session.expired(now)) close(session, true);
+                if (player == null || session.hook.isRemoved()) {
+                    close(session, false);
+                } else if (session.expired(now)) {
+                    close(session, true);
+                }
             }
         }
     }
@@ -178,14 +192,14 @@ public final class CustomFishingRuntime {
     }
 
     private ServerPlayerEntity findPlayer(UUID id) {
-        for (Session session : sessions.values()) {
-            MinecraftServer server = session.hook.getServer();
-            if (server != null) return server.getPlayerManager().getPlayer(id);
-        }
-        return null;
+        MinecraftServer server = sessions.values().stream().findFirst().map(s -> s.hook.getServer()).orElse(null);
+        return server == null ? null : server.getPlayerManager().getPlayer(id);
     }
 
-    private static PlayerData playerData(ServerPlayerEntity player) { return SVFrameMMO.playerData().get(player); }
+    private static PlayerData playerData(ServerPlayerEntity player) {
+        return SVFrameMMO.playerData().get(player);
+    }
+
     private static double pct(PlayerData data, String stat) {
         return Math.max(0d, Math.min(1d, data.getMMOPlayerData().getStatMap().getStat(stat) / 100d));
     }
@@ -194,9 +208,13 @@ public final class CustomFishingRuntime {
         Profession profession = SVFrameMMO.professions().get("fishing");
         if (profession == loadedProfession) return;
         loadedProfession = profession;
-        if (profession == null) { tables = List.of(); return; }
-        try { tables = parseTables(map(profession.getRawConfig().get("on-fish"))); }
-        catch (RuntimeException exception) {
+        if (profession == null) {
+            tables = List.of();
+            return;
+        }
+        try {
+            tables = parseTables(map(profession.getRawConfig().get("on-fish")));
+        } catch (RuntimeException exception) {
             LOG.log(Level.WARNING, "Could not reload native custom fishing", exception);
             tables = List.of();
         }
@@ -224,6 +242,7 @@ public final class CustomFishingRuntime {
             for (FishingCondition condition : conditions) if (!condition.matches(player, hook)) return false;
             return true;
         }
+
         FishingDrop roll(PlayerData player) {
             if (items.isEmpty()) return null;
             double luck = CHANCE_FACTOR * player.getMMOPlayerData().getStatMap().getStat("CHANCE");
@@ -231,7 +250,8 @@ public final class CustomFishingRuntime {
             double total = 0d;
             for (FishingDrop item : items) total += Math.pow(Math.max(1d, item.weight), exponent);
             if (total <= 0d) return items.getFirst();
-            double roll = ThreadLocalRandom.current().nextDouble(total), cursor = 0d;
+            double roll = ThreadLocalRandom.current().nextDouble(total);
+            double cursor = 0d;
             for (FishingDrop item : items) {
                 cursor += Math.pow(Math.max(1d, item.weight), exponent);
                 if (roll <= cursor) return item;
@@ -243,9 +263,11 @@ public final class CustomFishingRuntime {
     @FunctionalInterface
     private interface FishingCondition {
         boolean matches(ServerPlayerEntity player, FishingBobberEntity hook);
+
         static FishingCondition parse(String line) {
             MMOLineConfig config = new MMOLineConfig(line);
-            return switch (norm(config.getKey())) {
+            String key = norm(config.getKey());
+            return switch (key) {
                 case "world" -> {
                     Set<String> values = csv(config.getString("name", ""));
                     yield (player, hook) -> {
@@ -289,6 +311,7 @@ public final class CustomFishingRuntime {
             return new FishingDrop(Registries.ITEM.get(id), tugs, experience, vanillaExp,
                     Math.max(0d, Math.min(1d, chance)), amount, weight <= 0d ? 1d : weight);
         }
+
         ItemStack rollStack(PlayerData player) {
             double effectiveLuck = CHANCE_FACTOR * player.getMMOPlayerData().getStatMap().getStat("CHANCE");
             double adjustedChance = Math.pow(chance, Math.pow(1d + Math.max(-.99d, effectiveLuck), CHANCE_POWER));
@@ -311,9 +334,14 @@ public final class CustomFishingRuntime {
                 int a = (int) Math.round(Double.parseDouble(value.substring(0, dash)));
                 int b = (int) Math.round(Double.parseDouble(value.substring(dash + 1)));
                 return new Range(Math.min(a, b), Math.max(a, b));
-            } catch (RuntimeException ignored) { return new Range(fallback, fallback); }
+            } catch (RuntimeException ignored) {
+                return new Range(fallback, fallback);
+            }
         }
-        int roll() { return min >= max ? min : ThreadLocalRandom.current().nextInt(min, max + 1); }
+
+        int roll() {
+            return min >= max ? min : ThreadLocalRandom.current().nextInt(min, max + 1);
+        }
     }
 
     private static Map<String, Object> map(Object raw) {
@@ -322,6 +350,7 @@ public final class CustomFishingRuntime {
         source.forEach((key, value) -> result.put(String.valueOf(key), value));
         return result;
     }
+
     private static List<String> strings(Object raw) {
         if (raw instanceof Collection<?> collection) {
             ArrayList<String> result = new ArrayList<>();
@@ -330,15 +359,21 @@ public final class CustomFishingRuntime {
         }
         return raw == null ? List.of() : List.of(String.valueOf(raw));
     }
+
     private static Set<String> csv(String raw) {
         if (raw == null || raw.isBlank()) return Set.of();
         var result = new java.util.LinkedHashSet<String>();
         for (String part : raw.split(",")) if (!part.isBlank()) result.add(part.trim().toLowerCase(Locale.ROOT));
         return Set.copyOf(result);
     }
-    private static String norm(String raw) { return raw == null ? "" : raw.trim().toLowerCase(Locale.ROOT).replace('_', '-'); }
+
+    private static String norm(String raw) {
+        return raw == null ? "" : raw.trim().toLowerCase(Locale.ROOT).replace('_', '-');
+    }
+
     private static double decimal(String raw, double fallback) {
-        try { return Double.parseDouble(raw); } catch (RuntimeException ignored) { return fallback; }
+        try { return Double.parseDouble(raw); }
+        catch (RuntimeException ignored) { return fallback; }
     }
 
     private static final class Session {
@@ -351,6 +386,7 @@ public final class CustomFishingRuntime {
         int pulls;
         long lastPullTick;
         boolean critical;
+
         Session(FishingBobberEntity hook, UUID playerId, FishingDrop drop, int requiredPulls,
                 int professionExperience, int vanillaExperience, long now) {
             this.hook = hook;
@@ -361,6 +397,9 @@ public final class CustomFishingRuntime {
             this.vanillaExperience = vanillaExperience;
             this.lastPullTick = now;
         }
-        boolean expired(long now) { return now - lastPullTick > TIMEOUT_TICKS; }
+
+        boolean expired(long now) {
+            return now - lastPullTick > TIMEOUT_TICKS;
+        }
     }
 }
