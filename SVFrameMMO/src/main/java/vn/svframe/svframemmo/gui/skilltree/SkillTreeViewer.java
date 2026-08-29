@@ -123,7 +123,7 @@ public final class SkillTreeViewer extends EditableInventory {
             if (index >= 0) { lore.remove(index); lore.addAll(index, tree.getLore()); }
         }
         @Override public net.minecraft.item.ItemStack getDisplayedItem(SkillTreeInventory inv, int n) {
-            SkillTree tree = at(inv, n); if (tree == null) return null;
+            SkillTree tree = at(inv, n); if (tree == null) return net.minecraft.item.ItemStack.EMPTY;
             return super.getDisplayedItem(inv, new ItemOptions(n, tree.getIcon()));
         }
         @Override public Placeholders getPlaceholders(SkillTreeInventory inv, int n) {
@@ -171,7 +171,7 @@ public final class SkillTreeViewer extends EditableInventory {
 
         @Override public net.minecraft.item.ItemStack getDisplayedItem(SkillTreeInventory inv, int n) {
             IconOptions icon = inv.computeIcon(inv.getCoordinates(n));
-            return icon == null ? null : super.getDisplayedItem(inv, new ItemOptions(n, icon));
+            return icon == null ? net.minecraft.item.ItemStack.EMPTY : super.getDisplayedItem(inv, new ItemOptions(n, icon));
         }
 
         @Override public Placeholders getPlaceholders(SkillTreeInventory inv, int n) {
