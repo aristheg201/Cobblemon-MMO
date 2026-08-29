@@ -2,6 +2,7 @@ package vn.svframe.svframemmo.skill.cast;
 
 import vn.svframe.svframelib.UtilityMethods;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -12,11 +13,6 @@ public final class Keybind {
     private final Boolean sneak;
 
     public Keybind(Object raw) {
-        if (raw instanceof String text) {
-            key = PlayerKey.valueOf(UtilityMethods.enumName(text));
-            sneak = null;
-            return;
-        }
         if (raw instanceof Map<?, ?> section) {
             Map<String, Object> config = stringMap(section);
             key = PlayerKey.valueOf(UtilityMethods.enumName(String.valueOf(config.getOrDefault("key", "NONE"))));
@@ -24,7 +20,12 @@ public final class Keybind {
             sneak = rawSneak == null ? null : rawSneak instanceof Boolean flag ? flag : Boolean.parseBoolean(String.valueOf(rawSneak));
             return;
         }
-        throw new IllegalArgumentException("Keybind requires a string or configuration section");
+        if (raw != null && !(raw instanceof Collection<?>)) {
+            key = PlayerKey.valueOf(UtilityMethods.enumName(String.valueOf(raw)));
+            sneak = null;
+            return;
+        }
+        throw new IllegalArgumentException("Keybind requires a scalar key name or configuration section");
     }
 
     public Keybind(PlayerKey key, Boolean sneak) {
