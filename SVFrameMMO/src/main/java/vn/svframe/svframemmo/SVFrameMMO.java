@@ -33,6 +33,7 @@ import vn.svframe.svframemmo.manager.SkillTreeManager;
 import vn.svframe.svframemmo.player.ClassSelectionRuntime;
 import vn.svframe.svframemmo.player.DelayedActionRuntime;
 import vn.svframe.svframemmo.player.ResourceRegenRuntime;
+import vn.svframe.svframemmo.placeholder.SVFrameMMOPlaceholders;
 import vn.svframe.svframemmo.skill.ExternalSkillProgression;
 import vn.svframe.svframemmo.skill.ExternalSkillRegistry;
 import vn.svframe.svframemmo.skill.SVFrameMMOSkillBootstrap;
@@ -84,6 +85,7 @@ public final class SVFrameMMO implements ModInitializer {
             }
             SVFrameMMOSkillBootstrap.register(DefaultFiles.ROOT.resolve("skills"));
             loadDefinitions();
+            SVFrameMMOPlaceholders.install();
             SKILL_BAR.install();
             GUI.reload();
             NATIVE_EXPERIENCE.install();
