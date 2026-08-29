@@ -17,6 +17,7 @@
     "MobEntitySpawnerOriginMixin",
     "ServerPlayerInteractionManagerMixin",
     "CustomMiningRestrictionMixin",
+    "EconomyRuntimeMixin",
     "PlayerDataResourceMixin",
     "PlayerVanillaExperienceMixin"
   ],
