@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 /** Connects configurable items and withdraw parity to the already validated economy runtime lifecycle. */
-@Mixin(EconomyRuntime.class)
+@Mixin(value = EconomyRuntime.class, remap = false)
 public abstract class EconomyRuntimeMixin {
     @Inject(method = "reload", at = @At("HEAD"))
     private void svframemmo$reloadConfigItems(CallbackInfo ci) {
