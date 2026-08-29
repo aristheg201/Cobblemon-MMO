@@ -9,7 +9,8 @@
     "main": [
       "vn.svframe.svframemmo.SVFrameMMO",
       "vn.svframe.svframemmo.command.SkillGrantCommands",
-      "vn.svframe.svframemmo.command.AdminParityCommands"
+      "vn.svframe.svframemmo.command.AdminParityCommands",
+      "vn.svframe.svframemmo.command.ResetParityCommands"
     ]
   },
   "mixins": ["svframemmo.mixins.json"],
