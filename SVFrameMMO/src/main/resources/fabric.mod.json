@@ -10,7 +10,8 @@
       "vn.svframe.svframemmo.SVFrameMMO",
       "vn.svframe.svframemmo.command.SkillGrantCommands",
       "vn.svframe.svframemmo.command.AdminParityCommands",
-      "vn.svframe.svframemmo.command.ResetParityCommands"
+      "vn.svframe.svframemmo.command.ResetParityCommands",
+      "vn.svframe.svframemmo.command.ImportParityCommands"
     ]
   },
   "mixins": ["svframemmo.mixins.json"],
