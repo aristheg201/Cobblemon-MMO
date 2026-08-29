@@ -9,16 +9,17 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import vn.svframe.svframemmo.SVFrameMMO;
+import vn.svframe.svframemmo.profession.fishing.CustomFishingRuntime;
 
 @Mixin(FishingBobberEntity.class)
 public abstract class FishingBobberExperienceMixin {
     @Shadow private boolean caughtFish;
 
-    @Inject(method = "use", at = @At("HEAD"))
-    private void svframemmo$fish(ItemStack usedItem, CallbackInfoReturnable<Integer> cir) {
-        if (!caughtFish) return;
+    @Inject(method = "use", at = @At("HEAD"), cancellable = true)
+    private void svframemmo$customFishing(ItemStack usedItem, CallbackInfoReturnable<Integer> cir) {
         PlayerEntity owner = ((FishingBobberEntity) (Object) this).getPlayerOwner();
-        if (owner instanceof ServerPlayerEntity serverPlayer) SVFrameMMO.nativeExperience().onFishCaught(serverPlayer, ItemStack.EMPTY);
+        if (!(owner instanceof ServerPlayerEntity player)) return;
+        int result = CustomFishingRuntime.instance().onUse((FishingBobberEntity) (Object) this, player, usedItem, caughtFish);
+        if (result != CustomFishingRuntime.PASS) cir.setReturnValue(result);
     }
 }
