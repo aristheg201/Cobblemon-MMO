@@ -93,7 +93,11 @@ public final class SkillTreeViewer extends EditableInventory {
     private final class DirectionItem extends SimpleItem<SkillTreeInventory> {
         private final int dx, dy;
         DirectionItem(Map<String, ?> config, int dx, int dy) { super(config); this.dx = dx; this.dy = dy; }
-        @Override public void onClick(SkillTreeInventory inv, PluginInventory.Click click) { inv.x += dx; inv.y += dy; inv.open(); }
+        @Override public void onClick(SkillTreeInventory inv, PluginInventory.Click click) {
+            inv.x += dx * SVFrameMMO.config().skillTreeScrollStepX();
+            inv.y += dy * SVFrameMMO.config().skillTreeScrollStepY();
+            inv.open();
+        }
     }
 
     private final class TreePageItem extends SimpleItem<SkillTreeInventory> {

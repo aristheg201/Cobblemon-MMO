@@ -2,6 +2,7 @@ package vn.svframe.svframemmo.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -28,17 +29,10 @@ public final class RpgGuiCommands {
         dispatcher.register(literal("player").executes(ctx -> openStats(ctx.getSource())));
         dispatcher.register(literal("p").executes(ctx -> openStats(ctx.getSource())));
         dispatcher.register(literal("profile").executes(ctx -> openStats(ctx.getSource())));
-        dispatcher.register(literal("skilltrees").executes(ctx -> openTrees(ctx.getSource(), null))
-                .then(argument("tree", StringArgumentType.word()).suggests((ctx, builder) -> {
-                    PlayerData data = data(ctx.getSource());
-                    String remaining = builder.getRemainingLowerCase();
-                    for (String id : data.getProfess().getSkillTreeIds())
-                        if (id.toLowerCase(java.util.Locale.ROOT).startsWith(remaining)) builder.suggest(id);
-                    return builder.buildFuture();
-                }).executes(ctx -> openTrees(ctx.getSource(), StringArgumentType.getString(ctx, "tree")))));
-        dispatcher.register(literal("st").executes(ctx -> openTrees(ctx.getSource(), null)));
-        dispatcher.register(literal("trees").executes(ctx -> openTrees(ctx.getSource(), null)));
-        dispatcher.register(literal("tree").executes(ctx -> openTrees(ctx.getSource(), null)));
+        dispatcher.register(skillTreeCommand("skilltrees"));
+        dispatcher.register(skillTreeCommand("st"));
+        dispatcher.register(skillTreeCommand("trees"));
+        dispatcher.register(skillTreeCommand("tree"));
 
         dispatcher.register(literal("mmo")
                 .then(literal("class").executes(ctx -> openClass(ctx.getSource())))
@@ -51,10 +45,20 @@ public final class RpgGuiCommands {
                 .then(literal("skills").executes(ctx -> openSkills(ctx.getSource())))
                 .then(literal("stats").executes(ctx -> openStats(ctx.getSource())))
                 .then(literal("profile").executes(ctx -> openStats(ctx.getSource())))
-                .then(literal("skilltree").executes(ctx -> openTrees(ctx.getSource(), null))
-                        .then(argument("tree", StringArgumentType.word())
-                                .executes(ctx -> openTrees(ctx.getSource(), StringArgumentType.getString(ctx, "tree")))))
-                .then(literal("skilltrees").executes(ctx -> openTrees(ctx.getSource(), null))));
+                .then(skillTreeCommand("skilltree"))
+                .then(skillTreeCommand("skilltrees")));
+    }
+
+    private static LiteralArgumentBuilder<ServerCommandSource> skillTreeCommand(String name) {
+        LiteralArgumentBuilder<ServerCommandSource> root = literal(name);
+        if (SVFrameMMO.config().enableGlobalSkillTreeGui()) root.executes(ctx -> openTrees(ctx.getSource(), null));
+        return root.then(argument("tree", StringArgumentType.word()).suggests((ctx, builder) -> {
+            PlayerData data = data(ctx.getSource());
+            String remaining = builder.getRemainingLowerCase();
+            for (String id : data.getProfess().getSkillTreeIds())
+                if (id.toLowerCase(java.util.Locale.ROOT).startsWith(remaining)) builder.suggest(id);
+            return builder.buildFuture();
+        }).executes(ctx -> openTrees(ctx.getSource(), StringArgumentType.getString(ctx, "tree"))));
     }
 
     private static int openClass(ServerCommandSource source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
