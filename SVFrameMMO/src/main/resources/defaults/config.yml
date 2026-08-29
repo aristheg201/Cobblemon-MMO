@@ -54,6 +54,9 @@ prevent-spawner-xp: true
 # lava/water generator mechanics are treated as player-placed for mining EXP and mining triggers.
 should-cobblestone-generators-give-exp: false
 
+# Show world-visible main-class EXP holograms for experience sources which provide a location.
+display-main-class-exp-holograms: true
+
 # Skill-tree command/UI behavior retained from MMOCore.
 enable-global-skill-tree-gui: true
 enable-specific-skill-tree-gui: true

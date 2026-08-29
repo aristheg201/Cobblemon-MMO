@@ -21,6 +21,9 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.screen.CraftingScreenHandler;
+import net.minecraft.screen.EnchantmentScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -33,6 +36,8 @@ import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
 import vn.svframe.svframemmo.experience.Profession;
+import vn.svframe.svframemmo.mixin.CraftingScreenHandlerAccessor;
+import vn.svframe.svframemmo.mixin.EnchantmentScreenHandlerAccessor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,7 +100,7 @@ public final class NativeExperienceRuntime {
             sources.accept(SVFrameMMO.playerData().get(attacker), ExperienceSignal.builder("killmob")
                     .primary(id(Registries.ENTITY_TYPE.getId(entity.getType()).toString()))
                     .attribute("name", name)
-                    .build());
+                    .build(), ExperienceHologramRuntime.HologramLocation.center(entity));
         });
 
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> clear());
@@ -123,7 +128,8 @@ public final class NativeExperienceRuntime {
         if (player == null || world == null || pos == null || state == null) return;
         playerPlaced.add(PlacedBlock.of(world, pos));
         if (!player.isCreative() && !player.isSpectator())
-            sources.accept(SVFrameMMO.playerData().get(player), ExperienceSignal.builder("placeblock").primary(blockId(state)).build());
+            sources.accept(SVFrameMMO.playerData().get(player), ExperienceSignal.builder("placeblock").primary(blockId(state)).build(),
+                    ExperienceHologramRuntime.HologramLocation.block(world, pos));
     }
 
     /** Marks non-natural block formation without emitting the player place-block EXP source. */
@@ -133,11 +139,16 @@ public final class NativeExperienceRuntime {
     }
 
     public void onCrafted(ServerPlayerEntity player, ItemStack stack) {
-        if (stack != null && !stack.isEmpty()) emit(player, "craftitem", itemId(stack), Math.max(1, stack.getCount()));
+        if (stack == null || stack.isEmpty()) return;
+        ExperienceHologramRuntime.HologramLocation location = null;
+        if (player.currentScreenHandler instanceof CraftingScreenHandler handler)
+            location = screenLocation(((CraftingScreenHandlerAccessor) (Object) handler).svframemmo$context());
+        emit(player, "craftitem", itemId(stack), Math.max(1, stack.getCount()), location);
     }
 
-    public void onSmelted(ServerPlayerEntity player, ItemStack stack) {
-        if (stack != null && !stack.isEmpty()) emit(player, "smeltitem", itemId(stack), Math.max(1, stack.getCount()));
+    public void onSmelted(ServerPlayerEntity player, ItemStack stack) { onSmelted(player, stack, null); }
+    public void onSmelted(ServerPlayerEntity player, ItemStack stack, ExperienceHologramRuntime.HologramLocation location) {
+        if (stack != null && !stack.isEmpty()) emit(player, "smeltitem", itemId(stack), Math.max(1, stack.getCount()), location);
     }
 
     public void onEaten(ServerPlayerEntity player, ItemStack stack) {
@@ -145,17 +156,22 @@ public final class NativeExperienceRuntime {
     }
 
     public void onTamed(ServerPlayerEntity player, LivingEntity entity) {
-        if (entity != null) emit(player, "tame", id(Registries.ENTITY_TYPE.getId(entity.getType()).toString()), 1d);
+        if (entity != null) emit(player, "tame", id(Registries.ENTITY_TYPE.getId(entity.getType()).toString()), 1d,
+                ExperienceHologramRuntime.HologramLocation.center(entity));
     }
 
-    public void onFishCaught(ServerPlayerEntity player, ItemStack stack) {
-        emit(player, "fishitem", stack == null || stack.isEmpty() ? "" : itemId(stack), Math.max(1, stack == null ? 1 : stack.getCount()));
+    public void onFishCaught(ServerPlayerEntity player, ItemStack stack) { onFishCaught(player, stack, null); }
+    public void onFishCaught(ServerPlayerEntity player, ItemStack stack, ExperienceHologramRuntime.HologramLocation location) {
+        emit(player, "fishitem", stack == null || stack.isEmpty() ? "" : itemId(stack), Math.max(1, stack == null ? 1 : stack.getCount()), location);
     }
 
     /** Uses each profession's own base-enchant-exp map rather than a global approximation. */
     public void onEnchanted(ServerPlayerEntity player, ItemStack result) {
         if (player == null || result == null || result.isEmpty()) return;
         PlayerData data = SVFrameMMO.playerData().get(player);
+        ExperienceHologramRuntime.HologramLocation location = null;
+        if (player.currentScreenHandler instanceof EnchantmentScreenHandler handler)
+            location = screenLocation(((EnchantmentScreenHandlerAccessor) (Object) handler).svframemmo$context());
         LinkedHashSet<String> enchantments = new LinkedHashSet<>();
         Map<String, Integer> levels = new HashMap<>();
         var component = result.getEnchantments();
@@ -167,13 +183,13 @@ public final class NativeExperienceRuntime {
         }
         if (enchantments.isEmpty()) return;
         ExperienceSignal baseSignal = tagged("enchantitem", enchantments, 1d);
-        sources.acceptClass(data, baseSignal);
+        sources.acceptClass(data, baseSignal, location);
         for (Profession profession : SVFrameMMO.professions().getAll()) {
             double dynamic = 0d;
             Object raw = profession.getRawConfig().get("base-enchant-exp");
             for (String enchantment : enchantments)
                 dynamic += mapNumber(raw, enchantment, 0d) * levels.getOrDefault(enchantment, 0);
-            if (dynamic > 0d) sources.acceptProfession(data, profession, tagged("enchantitem", enchantments, dynamic));
+            if (dynamic > 0d) sources.acceptProfession(data, profession, tagged("enchantitem", enchantments, dynamic), location);
         }
     }
 
@@ -183,13 +199,14 @@ public final class NativeExperienceRuntime {
         int repaired = Math.max(0, before.getDamage() - result.getDamage());
         if (repaired <= 0) return;
         PlayerData data = SVFrameMMO.playerData().get(player);
+        ExperienceHologramRuntime.HologramLocation location = ExperienceHologramRuntime.HologramLocation.player(player);
         ExperienceSignal classSignal = ExperienceSignal.builder("repairitem").primary(itemId(result)).units(repaired / 100d).build();
-        sources.acceptClass(data, classSignal);
+        sources.acceptClass(data, classSignal, location);
         for (Profession profession : SVFrameMMO.professions().getAll()) {
             double perHundred = mapNumber(profession.getRawConfig().get("repair-exp"), itemId(result), 0d);
             if (perHundred <= 0d) continue;
             sources.acceptProfession(data, profession, ExperienceSignal.builder("repairitem")
-                    .primary(itemId(result)).units(perHundred * repaired / 100d).build());
+                    .primary(itemId(result)).units(perHundred * repaired / 100d).build(), location);
         }
     }
 
@@ -206,7 +223,8 @@ public final class NativeExperienceRuntime {
         PotionContentsComponent oldContents = before == null ? null : before.get(DataComponentTypes.POTION_CONTENTS);
         String oldPotionKey = potionKey(oldContents);
         PlayerData data = SVFrameMMO.playerData().get(player);
-        for (String effect : effects) sources.acceptClass(data, ExperienceSignal.builder("brewpotion").primary(effect).build());
+        ExperienceHologramRuntime.HologramLocation location = ExperienceHologramRuntime.HologramLocation.player(player);
+        for (String effect : effects) sources.acceptClass(data, ExperienceSignal.builder("brewpotion").primary(effect).build(), location);
 
         for (Profession profession : SVFrameMMO.professions().getAll()) {
             Object alchemy = profession.getRawConfig().get("alchemy-experience");
@@ -220,7 +238,7 @@ public final class NativeExperienceRuntime {
             for (String effect : effects) {
                 double dynamic = mapNumber(effectMap, effect, mapNumber(effectMap, normalizePotionEffect(potionKey), 0d)) * modifier;
                 if (dynamic > 0d) sources.acceptProfession(data, profession,
-                        ExperienceSignal.builder("brewpotion").primary(effect).units(dynamic).build());
+                        ExperienceSignal.builder("brewpotion").primary(effect).units(dynamic).build(), location);
             }
         }
     }
@@ -256,7 +274,7 @@ public final class NativeExperienceRuntime {
                 .attribute("crop-mature", isMatureCrop(state))
                 .attribute("player-placed", placed)
                 .attribute("silk-touch", hasSilkTouch(player, world))
-                .build());
+                .build(), ExperienceHologramRuntime.HologramLocation.block(world, pos));
     }
 
     private void tickPlayer(ServerPlayerEntity player, long tick) {
@@ -288,9 +306,23 @@ public final class NativeExperienceRuntime {
     }
 
     private void emit(ServerPlayerEntity player, String type, String primary, double units) {
+        emit(player, type, primary, units, null);
+    }
+
+    private void emit(ServerPlayerEntity player, String type, String primary, double units,
+                      ExperienceHologramRuntime.HologramLocation hologramLocation) {
         if (player == null || units <= 0d) return;
         sources.accept(SVFrameMMO.playerData().get(player), ExperienceSignal.builder(type)
-                .primary(primary == null ? "" : primary).units(units).build());
+                .primary(primary == null ? "" : primary).units(units).build(), hologramLocation);
+    }
+
+    private static ExperienceHologramRuntime.HologramLocation screenLocation(ScreenHandlerContext context) {
+        if (context == null) return null;
+        ExperienceHologramRuntime.HologramLocation[] result = new ExperienceHologramRuntime.HologramLocation[1];
+        context.run((world, pos) -> {
+            if (world instanceof ServerWorld serverWorld) result[0] = ExperienceHologramRuntime.HologramLocation.block(serverWorld, pos);
+        });
+        return result[0];
     }
 
     private static ExperienceSignal tagged(String type, Set<String> tags, double units) {

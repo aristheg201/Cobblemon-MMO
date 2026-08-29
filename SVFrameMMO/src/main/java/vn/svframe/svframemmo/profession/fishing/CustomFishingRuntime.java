@@ -19,6 +19,7 @@ import vn.svframe.svframemmo.api.event.CustomPlayerFishEvent;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.experience.EXPSource;
 import vn.svframe.svframemmo.experience.Profession;
+import vn.svframe.svframemmo.experience.source.ExperienceHologramRuntime;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -165,13 +166,15 @@ public final class CustomFishingRuntime {
             Vec3d delta = player.getPos().subtract(hook.getPos());
             double horizontal = Math.sqrt(delta.x * delta.x + delta.z * delta.z);
             entity.setVelocity(delta.x * .08d, delta.y * .031d + horizontal * .05d, delta.z * .08d);
-            SVFrameMMO.nativeExperience().onFishCaught(player, finalCaught);
+            SVFrameMMO.nativeExperience().onFishCaught(player, finalCaught,
+                    new ExperienceHologramRuntime.HologramLocation(world, hook.getPos().add(0d, 1d, 0d)));
         }
 
         if (session.vanillaExperience > 0) player.addExperience(session.vanillaExperience);
         Profession fishing = SVFrameMMO.professions().get("fishing");
         if (fishing != null && session.professionExperience > 0)
-            data.getProfessions().giveExperience(fishing, session.professionExperience, EXPSource.SOURCE);
+            ExperienceHologramRuntime.instance().giveProfession(data, fishing, session.professionExperience, EXPSource.SOURCE,
+                    new ExperienceHologramRuntime.HologramLocation(player.getServerWorld(), session.hologramLocation));
 
         hook.discard();
     }
@@ -393,6 +396,7 @@ public final class CustomFishingRuntime {
         final int requiredPulls;
         final int professionExperience;
         final int vanillaExperience;
+        final Vec3d hologramLocation;
         int pulls;
         long lastPullTick;
         boolean critical;
@@ -405,6 +409,7 @@ public final class CustomFishingRuntime {
             this.requiredPulls = requiredPulls;
             this.professionExperience = professionExperience;
             this.vanillaExperience = vanillaExperience;
+            this.hologramLocation = hook.getPos();
             this.lastPullTick = now;
         }
 

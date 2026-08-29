@@ -33,31 +33,42 @@ public final class ExperienceSourceRuntime {
         professionSources = immutable(nextProfessions);
     }
 
-    public void accept(PlayerData data, ExperienceSignal signal) {
-        acceptClass(data, signal);
+    public void accept(PlayerData data, ExperienceSignal signal) { accept(data, signal, null); }
+
+    public void accept(PlayerData data, ExperienceSignal signal, ExperienceHologramRuntime.HologramLocation hologramLocation) {
+        acceptClass(data, signal, hologramLocation);
         if (data == null || signal == null || !data.isOnline() || signal.units() <= 0d) return;
-        for (Profession profession : SVFrameMMO.professions().getAll()) acceptProfession(data, profession, signal);
+        for (Profession profession : SVFrameMMO.professions().getAll()) acceptProfession(data, profession, signal, hologramLocation);
     }
 
     /** Dispenses a gameplay signal only to the player's active class. */
-    public void acceptClass(PlayerData data, ExperienceSignal signal) {
+    public void acceptClass(PlayerData data, ExperienceSignal signal) { acceptClass(data, signal, null); }
+
+    public void acceptClass(PlayerData data, ExperienceSignal signal, ExperienceHologramRuntime.HologramLocation hologramLocation) {
         if (data == null || signal == null || !data.isOnline() || signal.units() <= 0d) return;
         List<ExperienceSourceDefinition> main = classSources.getOrDefault(data.getProfess().getId(), List.of());
         for (ExperienceSourceDefinition source : main) {
             if (!source.matches(signal)) continue;
             double value = source.experience(signal);
-            if (value > 0d) data.giveExperience(value, EXPSource.SOURCE);
+            if (value <= 0d) continue;
+            if (hologramLocation == null) data.giveExperience(value, EXPSource.SOURCE);
+            else ExperienceHologramRuntime.instance().giveClass(data, value, EXPSource.SOURCE, hologramLocation);
         }
     }
 
     /** Dispenses a gameplay signal to one concrete profession (used by profession-specific formulas). */
-    public void acceptProfession(PlayerData data, Profession profession, ExperienceSignal signal) {
+    public void acceptProfession(PlayerData data, Profession profession, ExperienceSignal signal) { acceptProfession(data, profession, signal, null); }
+
+    public void acceptProfession(PlayerData data, Profession profession, ExperienceSignal signal,
+                                 ExperienceHologramRuntime.HologramLocation hologramLocation) {
         if (data == null || profession == null || signal == null || !data.isOnline() || signal.units() <= 0d) return;
         List<ExperienceSourceDefinition> sources = professionSources.getOrDefault(profession.getId(), List.of());
         for (ExperienceSourceDefinition source : sources) {
             if (!source.matches(signal)) continue;
             double value = source.experience(signal);
-            if (value > 0d) data.getProfessions().giveExperience(profession, value, EXPSource.SOURCE);
+            if (value <= 0d) continue;
+            if (hologramLocation == null) data.getProfessions().giveExperience(profession, value, EXPSource.SOURCE);
+            else ExperienceHologramRuntime.instance().giveProfession(data, profession, value, EXPSource.SOURCE, hologramLocation);
         }
     }
 

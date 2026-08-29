@@ -14,7 +14,7 @@ import java.util.List;
 public final class DefaultFiles {
     public static final Path ROOT = FabricLoader.getInstance().getConfigDir().resolve("SVFrameMMO").toAbsolutePath().normalize();
     private static final List<String> FILES = List.of(
-            "config.yml", "stats.yml", "exp-sources.yml", "restrictions.yml", "items.yml",
+            "config.yml", "messages.yml", "stats.yml", "exp-sources.yml", "restrictions.yml", "items.yml",
             "classes/human.yml", "classes/marksman.yml", "classes/paladin.yml", "classes/rogue.yml", "classes/warrior.yml",
             "classes/mage/mage.yml", "classes/mage/arcane-mage.yml",
             "attributes/default_attributes.yml",

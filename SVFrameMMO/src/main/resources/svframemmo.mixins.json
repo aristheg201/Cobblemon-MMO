@@ -22,7 +22,11 @@
     "PlayerDataResourceMixin",
     "PlayerVanillaExperienceMixin",
     "PlayerDataUnlockEventMixin",
-    "CommandManagerMixin"
+    "CommandManagerMixin",
+    "DisplayEntityAccessor",
+    "TextDisplayEntityAccessor",
+    "CraftingScreenHandlerAccessor",
+    "EnchantmentScreenHandlerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
