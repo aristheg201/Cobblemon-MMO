@@ -10,12 +10,12 @@ import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
 
-@Mixin(PlayerData.class)
+@Mixin(value = PlayerData.class, remap = false)
 public abstract class PlayerDataResourceMixin {
     @Unique private double svframemmo$oldResource;
     @Unique private PlayerResource svframemmo$resource;
 
-    @Inject(method = "setResource", at = @At("HEAD"))
+    @Inject(method = "setResource", at = @At("HEAD"), remap = false)
     private void svframemmo$captureResource(PlayerResource resource, double amount, ResourceUpdateReason reason,
                                              CallbackInfoReturnable<Boolean> cir) {
         PlayerData self = (PlayerData) (Object) this;
@@ -23,7 +23,7 @@ public abstract class PlayerDataResourceMixin {
         svframemmo$oldResource = self.getResource(resource);
     }
 
-    @Inject(method = "setResource", at = @At("RETURN"))
+    @Inject(method = "setResource", at = @At("RETURN"), remap = false)
     private void svframemmo$resourceCommitted(PlayerResource resource, double amount, ResourceUpdateReason reason,
                                                CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValueZ() || svframemmo$resource != resource) return;
