@@ -81,7 +81,9 @@ public final class SVFrameMMO implements ModInitializer {
             GUI.reload();
             NATIVE_EXPERIENCE.install();
             vn.svframe.svframemmo.profession.mining.CustomMiningRuntime.instance();
+            vn.svframe.svframemmo.profession.fishing.CustomFishingRuntime.instance();
             vn.svframe.svframemmo.experience.vanilla.VanillaProgressionRuntime.instance();
+            vn.svframe.svframemmo.pvp.PvpModeRuntime.instance();
         } catch (Exception exception) {
             throw new IllegalStateException("Could not initialize SVFrameMMO native progression data", exception);
         }
@@ -103,6 +105,7 @@ public final class SVFrameMMO implements ModInitializer {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             SVFrameMMOCommands.register(dispatcher);
             RpgGuiCommands.register(dispatcher);
+            vn.svframe.svframemmo.pvp.PvpModeRuntime.instance().registerCommand(dispatcher);
         });
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             PLAYER_DATA.start(server);
@@ -142,6 +145,7 @@ public final class SVFrameMMO implements ModInitializer {
             }
         });
         PlayerAttackEvent.EVENT.register(event -> {
+            if (event.isCancelled()) return;
             PLAYER_DATA.get(event.getPlayer()).markCombat();
             var target = event.getAttack().getTarget();
             if (target instanceof net.minecraft.server.network.ServerPlayerEntity player) PLAYER_DATA.get(player).markCombat();
@@ -155,6 +159,7 @@ public final class SVFrameMMO implements ModInitializer {
             for (var data : PLAYER_DATA.all()) data.prepareReload();
             loadDefinitions();
             GUI.reload();
+            vn.svframe.svframemmo.pvp.PvpModeRuntime.instance().reload();
             for (var data : PLAYER_DATA.all()) data.reloadDefinitions();
             SKILL_BAR.clear();
             PLAYER_DATA.save();
