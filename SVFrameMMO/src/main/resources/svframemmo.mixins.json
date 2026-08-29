@@ -20,7 +20,8 @@
     "EconomyRuntimeMixin",
     "PlayerDataResourceMixin",
     "PlayerVanillaExperienceMixin",
-    "PlayerDataUnlockEventMixin"
+    "PlayerDataUnlockEventMixin",
+    "CommandManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
