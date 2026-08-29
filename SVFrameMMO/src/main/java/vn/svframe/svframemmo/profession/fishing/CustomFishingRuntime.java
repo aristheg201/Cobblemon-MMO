@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import vn.svframe.svframelib.api.MMOLineConfig;
 import vn.svframe.svframemmo.SVFrameMMO;
+import vn.svframe.svframemmo.api.event.CustomPlayerFishEvent;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.experience.EXPSource;
 import vn.svframe.svframemmo.experience.Profession;
@@ -32,7 +33,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** Native Fabric implementation of MMOCore's tug-based custom fishing profession gameplay. */
+/** Native Fabric implementation of the tug-based custom fishing profession gameplay. */
 public final class CustomFishingRuntime {
     /** Returned by {@link #onUse} when vanilla fishing must continue untouched. */
     public static final int PASS = Integer.MIN_VALUE;
@@ -151,11 +152,20 @@ public final class CustomFishingRuntime {
         if (!caught.isEmpty()) {
             ServerWorld world = player.getServerWorld();
             ItemEntity entity = new ItemEntity(world, hook.getX(), hook.getY(), hook.getZ(), caught.copy());
+            world.spawnEntity(entity);
+
+            CustomPlayerFishEvent event = new CustomPlayerFishEvent(data, entity).call();
+            if (event.isCancelled()) {
+                entity.discard();
+                hook.discard();
+                return;
+            }
+
+            ItemStack finalCaught = event.getCaught().copy();
             Vec3d delta = player.getPos().subtract(hook.getPos());
             double horizontal = Math.sqrt(delta.x * delta.x + delta.z * delta.z);
             entity.setVelocity(delta.x * .08d, delta.y * .031d + horizontal * .05d, delta.z * .08d);
-            world.spawnEntity(entity);
-            SVFrameMMO.nativeExperience().onFishCaught(player, caught);
+            SVFrameMMO.nativeExperience().onFishCaught(player, finalCaught);
         }
 
         if (session.vanillaExperience > 0) player.addExperience(session.vanillaExperience);

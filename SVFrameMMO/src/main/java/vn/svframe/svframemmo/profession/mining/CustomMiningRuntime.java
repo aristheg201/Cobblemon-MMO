@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import vn.svframe.svframelib.api.MMOLineConfig;
 import vn.svframe.svframelib.config.YamlLite;
 import vn.svframe.svframemmo.SVFrameMMO;
+import vn.svframe.svframemmo.api.event.CustomBlockMineEvent;
 import vn.svframe.svframemmo.config.DefaultFiles;
 import vn.svframe.svframemmo.experience.Profession;
 import vn.svframe.svframemmo.trigger.NativeTriggerRegistry;
@@ -68,13 +69,21 @@ public final class CustomMiningRuntime {
         Definition definition = findDefinition(state);
         if (definition == null) return settings.protectVanillaBlocks ? BreakDecision.DENY : BreakDecision.PASS;
         if (!definition.matchesConditions(player, world, pos, state)) return BreakDecision.DENY;
-        if (settings.enableToolRestrictions && state.isToolRequired() && !player.getMainHandStack().isSuitableFor(state)) return BreakDecision.DENY;
+
+        boolean restricted = settings.enableToolRestrictions && state.isToolRequired() && !player.getMainHandStack().isSuitableFor(state);
+        List<ItemStack> drops = definition.rollDrops();
+        var event = new CustomBlockMineEvent(
+                SVFrameMMO.playerData().get(player), world, pos, state, definition.apiInfo(), drops, restricted).call();
+        if (event.isCancelled()) return BreakDecision.DENY;
+        drops = event.getDrops();
+
         boolean placed = playerPlaced.remove(key);
         if (definition.vanillaDrops) {
-            pendingVanilla.put(new PendingKey(player.getUuid(), key), new PendingBreak(definition, state, placed));
+            pendingVanilla.put(new PendingKey(player.getUuid(), key),
+                    new PendingBreak(definition, state, placed, List.copyOf(drops)));
             return BreakDecision.PASS;
         }
-        completeCustomBreak(player, world, pos, state, definition, placed);
+        completeCustomBreak(player, world, pos, state, definition, placed, drops);
         return BreakDecision.HANDLED;
     }
 
@@ -87,25 +96,30 @@ public final class CustomMiningRuntime {
             if (pending.playerPlaced) playerPlaced.add(key);
             return;
         }
-        applyRewards(player, player.getServerWorld(), pos, pending.definition, pending.playerPlaced);
+        applyRewards(player, player.getServerWorld(), pos, pending.definition, pending.playerPlaced, pending.drops);
         scheduleRegen(player.getServerWorld(), pos, pending.originalState, pending.definition);
     }
 
-    private void completeCustomBreak(ServerPlayerEntity player, ServerWorld world, BlockPos pos, BlockState state, Definition definition, boolean placed) {
-        List<ItemStack> drops = definition.rollDrops();
+    private void completeCustomBreak(ServerPlayerEntity player, ServerWorld world, BlockPos pos, BlockState state,
+                                     Definition definition, boolean placed, List<ItemStack> drops) {
         world.breakBlock(pos, false, player);
         ItemStack tool = player.getMainHandStack();
         if (!tool.isEmpty() && tool.isDamageable())
             tool.damage(1, world, player, item -> player.sendEquipmentBreakStatus(item, net.minecraft.entity.EquipmentSlot.MAINHAND));
-        for (ItemStack stack : drops) if (!stack.isEmpty()) Block.dropStack(world, pos, stack);
+        drop(world, pos, drops);
         applyTriggers(player, definition, placed);
         SVFrameMMO.nativeExperience().onCustomBlockBroken(player, world, pos, state, placed);
         scheduleRegen(world, pos, state, definition);
     }
 
-    private void applyRewards(ServerPlayerEntity player, ServerWorld world, BlockPos pos, Definition definition, boolean placed) {
-        for (ItemStack stack : definition.rollDrops()) if (!stack.isEmpty()) Block.dropStack(world, pos, stack);
+    private void applyRewards(ServerPlayerEntity player, ServerWorld world, BlockPos pos, Definition definition,
+                              boolean placed, List<ItemStack> drops) {
+        drop(world, pos, drops);
         applyTriggers(player, definition, placed);
+    }
+
+    private static void drop(ServerWorld world, BlockPos pos, List<ItemStack> drops) {
+        for (ItemStack stack : drops) if (stack != null && !stack.isEmpty()) Block.dropStack(world, pos, stack);
     }
 
     private void applyTriggers(ServerPlayerEntity player, Definition definition, boolean placed) {
@@ -258,6 +272,9 @@ public final class CustomMiningRuntime {
             for (Drop drop : drops) { ItemStack stack = drop.roll(); if (!stack.isEmpty()) result.add(stack); }
             return result;
         }
+        CustomBlockMineEvent.BlockInfo apiInfo() {
+            return new CustomBlockMineEvent.BlockInfo(id, Identifier.of(blockId), vanillaDrops, regenTicks);
+        }
     }
 
     private interface BlockCondition {
@@ -336,7 +353,7 @@ public final class CustomMiningRuntime {
     private static double parseDouble(String raw, double fallback) { try { return Double.parseDouble(raw); } catch (RuntimeException ignored) { return fallback; } }
 
     public enum BreakDecision { PASS, DENY, HANDLED }
-    private record PendingBreak(Definition definition, BlockState originalState, boolean playerPlaced) { }
+    private record PendingBreak(Definition definition, BlockState originalState, boolean playerPlaced, List<ItemStack> drops) { }
     private record PendingKey(java.util.UUID player, BlockKey block) { }
     private record RegenEntry(BlockKey key, BlockState originalState, long restoreTick) { }
     private record BlockKey(net.minecraft.registry.RegistryKey<net.minecraft.world.World> dimension, long pos) {
