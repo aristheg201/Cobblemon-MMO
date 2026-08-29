@@ -10,6 +10,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
@@ -23,6 +24,7 @@ import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
 import vn.svframe.svframemmo.experience.Booster;
 import vn.svframe.svframemmo.experience.Profession;
 import vn.svframe.svframemmo.manager.ConfigItemManager;
+import vn.svframe.svframemmo.player.AdminRuntimeState;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -36,6 +38,7 @@ public final class AdminParityCommands implements ModInitializer {
     @Override
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> register(dispatcher));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> AdminRuntimeState.clear(handler.player.getUuid()));
     }
 
     private static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -58,7 +61,10 @@ public final class AdminParityCommands implements ModInitializer {
                                                         LongArgumentType.getLong(ctx, "duration"))))))
                         .then(literal("info")
                                 .then(argument("player", EntityArgumentType.player())
-                                        .executes(ctx -> info(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))))));
+                                        .executes(ctx -> info(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))))
+                        .then(literal("nocd")
+                                .then(argument("player", EntityArgumentType.player())
+                                        .executes(ctx -> toggleNoCooldown(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player")))))));
     }
 
     private static com.mojang.brigadier.builder.LiteralArgumentBuilder<ServerCommandSource> boosterTree() {
@@ -185,6 +191,13 @@ public final class AdminParityCommands implements ModInitializer {
             source.sendFeedback(() -> Text.literal(profession.getName() + ": Lvl " + data.getProfessions().getLevel(profession)
                     + " - " + trim(data.getProfessions().getExperience(profession)) + " / "
                     + data.getProfessions().getLevelUpExperience(profession)), false);
+        return 1;
+    }
+
+    private static int toggleNoCooldown(ServerCommandSource source, ServerPlayerEntity player) {
+        boolean enabled = AdminRuntimeState.toggleNoCooldown(player.getUuid());
+        source.sendFeedback(() -> Text.literal("NoCD " + (enabled ? "enabled" : "disabled")
+                + " for " + player.getName().getString() + "."), true);
         return 1;
     }
 
