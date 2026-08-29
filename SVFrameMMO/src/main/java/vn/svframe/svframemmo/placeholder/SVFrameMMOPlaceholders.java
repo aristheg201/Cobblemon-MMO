@@ -63,6 +63,7 @@ public final class SVFrameMMOPlaceholders {
             case "since_enter_combat" -> number(SVFrameMMO.classTriggers().secondsSinceEnter(playerId));
             case "since_last_hit" -> number(SVFrameMMO.classTriggers().secondsSinceLastHit(playerId));
             case "pvp_mode" -> Boolean.toString(data.isOnline() && PvpModeRuntime.instance().isEnabled(data.getPlayer()));
+            case "invulnerability_left" -> number(data.isOnline() ? PvpModeRuntime.instance().invulnerabilitySecondsLeft(data.getPlayer()) : 0d);
             default -> resolveParameterized(data, raw, key);
         };
     }

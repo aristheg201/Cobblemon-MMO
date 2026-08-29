@@ -62,6 +62,11 @@ public final class PvpModeRuntime {
         return state(player).invulnerableUntilTick > SVFrameMMO.currentTick();
     }
 
+    public synchronized double invulnerabilitySecondsLeft(ServerPlayerEntity player) {
+        if (player == null) return 0d;
+        return Math.max(0d, (state(player).invulnerableUntilTick - SVFrameMMO.currentTick()) / 20d);
+    }
+
     private synchronized int toggle(ServerPlayerEntity player) {
         Settings cfg = settings;
         if (!cfg.enabled) {
