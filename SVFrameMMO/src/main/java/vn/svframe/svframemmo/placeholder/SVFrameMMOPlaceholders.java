@@ -60,6 +60,8 @@ public final class SVFrameMMOPlaceholders {
             case "stellium_bar" -> bar(data.getStellium(), data.getMaxResource(PlayerResource.STELLIUM), "§9", "§b", "§f");
             case "is_casting" -> Boolean.toString(SVFrameMMO.skillBar().isCasting(playerId));
             case "in_combat" -> Boolean.toString(data.isInCombat());
+            case "since_enter_combat" -> number(SVFrameMMO.classTriggers().secondsSinceEnter(playerId));
+            case "since_last_hit" -> number(SVFrameMMO.classTriggers().secondsSinceLastHit(playerId));
             case "pvp_mode" -> Boolean.toString(data.isOnline() && PvpModeRuntime.instance().isEnabled(data.getPlayer()));
             default -> resolveParameterized(data, raw, key);
         };

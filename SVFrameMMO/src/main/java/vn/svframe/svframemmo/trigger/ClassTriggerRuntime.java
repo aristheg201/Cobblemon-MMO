@@ -21,11 +21,15 @@ import java.util.concurrent.ConcurrentHashMap;
 /** Dispatches class-defined gameplay triggers from native server events. */
 public final class ClassTriggerRuntime {
     private final Set<UUID> combat = ConcurrentHashMap.newKeySet();
+    private final java.util.Map<UUID, CombatTiming> combatTiming = new ConcurrentHashMap<>();
 
     public void onJoin(PlayerData data) {
         if (data == null || !data.isOnline()) return;
         data.getMMOPlayerData().triggerSkills(TriggerType.LOGIN);
-        if (data.isInCombat()) combat.add(data.getUniqueId());
+        if (data.isInCombat()) {
+            combat.add(data.getUniqueId());
+            combatTiming.putIfAbsent(data.getUniqueId(), new CombatTiming(SVFrameMMO.currentTick(), SVFrameMMO.currentTick()));
+        }
     }
 
     public void onAttack(PlayerAttackEvent event) {
@@ -87,6 +91,7 @@ public final class ClassTriggerRuntime {
                 continue;
             }
             if (!data.isInCombat() && combat.remove(id)) {
+                combatTiming.remove(id);
                 new PlayerCombatEvent(data, false).call();
                 data.getProfess().fireEventTriggers("quit-combat", data);
                 data.getMMOPlayerData().triggerSkills(trigger("QUIT_COMBAT"));
@@ -94,17 +99,35 @@ public final class ClassTriggerRuntime {
         }
     }
 
-    public void detach(UUID id) { combat.remove(id); }
-    public void clear() { combat.clear(); }
+    public void detach(UUID id) { combat.remove(id); combatTiming.remove(id); }
+    public void clear() { combat.clear(); combatTiming.clear(); }
+
+    public double secondsSinceEnter(UUID id) {
+        CombatTiming timing = combatTiming.get(id);
+        PlayerData data = SVFrameMMO.playerData().find(id);
+        return timing == null || data == null || !data.isInCombat() ? -1d : Math.max(0d, (SVFrameMMO.currentTick() - timing.enteredTick()) / 20d);
+    }
+
+    public double secondsSinceLastHit(UUID id) {
+        CombatTiming timing = combatTiming.get(id);
+        PlayerData data = SVFrameMMO.playerData().find(id);
+        return timing == null || data == null || !data.isInCombat() ? -1d : Math.max(0d, (SVFrameMMO.currentTick() - timing.lastHitTick()) / 20d);
+    }
 
     private void enterCombat(PlayerData data) {
-        boolean first = combat.add(data.getUniqueId()) || !data.isInCombat();
+        UUID id = data.getUniqueId();
+        boolean first = combat.add(id) || !data.isInCombat();
+        long now = SVFrameMMO.currentTick();
+        CombatTiming previous = combatTiming.get(id);
+        combatTiming.put(id, first || previous == null ? new CombatTiming(now, now) : new CombatTiming(previous.enteredTick(), now));
         data.markCombat();
         if (!first) return;
         new PlayerCombatEvent(data, true).call();
         data.getProfess().fireEventTriggers("enter-combat", data);
         if (data.isOnline()) data.getMMOPlayerData().triggerSkills(trigger("ENTER_COMBAT"));
     }
+
+    private record CombatTiming(long enteredTick, long lastHitTick) { }
 
     private static TriggerType trigger(String id) { return TriggerType.valueOf(id); }
 
