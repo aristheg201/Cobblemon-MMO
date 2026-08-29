@@ -6,6 +6,7 @@ import vn.svframe.svframelib.damage.DamageType;
 import vn.svframe.svframelib.skill.trigger.TriggerType;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.event.PlayerClassChangeEvent;
+import vn.svframe.svframemmo.api.event.PlayerCombatEvent;
 import vn.svframe.svframemmo.api.event.PlayerLevelChangeEvent;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.api.player.profess.PlayerClass;
@@ -86,6 +87,7 @@ public final class ClassTriggerRuntime {
                 continue;
             }
             if (!data.isInCombat() && combat.remove(id)) {
+                new PlayerCombatEvent(data, false).call();
                 data.getProfess().fireEventTriggers("quit-combat", data);
                 data.getMMOPlayerData().triggerSkills(trigger("QUIT_COMBAT"));
             }
@@ -99,6 +101,7 @@ public final class ClassTriggerRuntime {
         boolean first = combat.add(data.getUniqueId()) || !data.isInCombat();
         data.markCombat();
         if (!first) return;
+        new PlayerCombatEvent(data, true).call();
         data.getProfess().fireEventTriggers("enter-combat", data);
         if (data.isOnline()) data.getMMOPlayerData().triggerSkills(trigger("ENTER_COMBAT"));
     }

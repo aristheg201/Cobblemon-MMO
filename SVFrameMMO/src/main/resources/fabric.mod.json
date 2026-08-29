@@ -13,7 +13,8 @@
       "vn.svframe.svframemmo.command.ResetParityCommands",
       "vn.svframe.svframemmo.command.ImportParityCommands",
       "vn.svframe.svframemmo.command.ExportDataCommands",
-      "vn.svframe.svframemmo.persistence.PersistenceBootstrap"
+      "vn.svframe.svframemmo.persistence.PersistenceBootstrap",
+      "vn.svframe.svframemmo.runtime.PublicApiEventRuntime"
     ]
   },
   "mixins": ["svframemmo.mixins.json"],

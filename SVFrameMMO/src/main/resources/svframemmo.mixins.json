@@ -19,7 +19,8 @@
     "CustomMiningRestrictionMixin",
     "EconomyRuntimeMixin",
     "PlayerDataResourceMixin",
-    "PlayerVanillaExperienceMixin"
+    "PlayerVanillaExperienceMixin",
+    "PlayerDataUnlockEventMixin"
   ],
   "injectors": {
     "defaultRequire": 1
