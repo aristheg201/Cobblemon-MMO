@@ -238,7 +238,12 @@ public final class NativeExperienceRuntime {
     public int trackedAttackers() { return lastAttackers.size(); }
 
     private void onBlockBroken(ServerPlayerEntity player, ServerWorld world, BlockPos pos, BlockState state) {
-        boolean placed = playerPlaced.remove(PlacedBlock.of(world, pos));
+        onCustomBlockBroken(player, world, pos, state, false);
+    }
+
+    /** Emits the same mining signal for custom-mining breaks which intentionally bypass vanilla tryBreakBlock. */
+    public void onCustomBlockBroken(ServerPlayerEntity player, ServerWorld world, BlockPos pos, BlockState state, boolean knownPlayerPlaced) {
+        boolean placed = knownPlayerPlaced | playerPlaced.remove(PlacedBlock.of(world, pos));
         if (player.isCreative() || player.isSpectator()) return;
         sources.accept(SVFrameMMO.playerData().get(player), ExperienceSignal.builder("mineblock")
                 .primary(blockId(state))
@@ -290,7 +295,7 @@ public final class NativeExperienceRuntime {
 
     private static String movingType(ServerPlayerEntity player) {
         if (player.isSneaking()) return "SNEAK";
-        if (player.getAbilities().flying || player.isGliding()) return "FLY";
+        if (player.getAbilities().flying || player.getPose() == net.minecraft.entity.EntityPose.FALL_FLYING) return "FLY";
         if (player.isTouchingWater()) return "SWIM";
         if (player.isSprinting()) return "SPRINT";
         return "WALK";
