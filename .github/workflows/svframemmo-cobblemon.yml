@@ -41,7 +41,8 @@ jobs:
         run: |
           set -euo pipefail
           ! grep -RIn --binary-files=without-match -Ei 'svframeitems|fusion_tier' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
-          ! grep -RIn --binary-files=without-match -Ei 'pocketmorph|com\.pixelpitstop|SszvX85I' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
+          ! grep -RIn --binary-files=without-match -Ei 'pocketmorph|com\.pixelpitstop|j3wTk6KL' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
+          grep -q 'maven.modrinth:SszvX85I:ch7DfnXP' SVFrameMMOCobblemon/build.gradle
           grep -q 'svframemmo-skill-source' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
           grep -q '"client"' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
           grep -q '"mixins"' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
