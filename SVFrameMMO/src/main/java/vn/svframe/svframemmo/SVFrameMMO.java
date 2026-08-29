@@ -84,6 +84,7 @@ public final class SVFrameMMO implements ModInitializer {
             vn.svframe.svframemmo.profession.fishing.CustomFishingRuntime.instance();
             vn.svframe.svframemmo.experience.vanilla.VanillaProgressionRuntime.instance();
             vn.svframe.svframemmo.pvp.PvpModeRuntime.instance();
+            vn.svframe.svframemmo.economy.EconomyRuntime.instance();
         } catch (Exception exception) {
             throw new IllegalStateException("Could not initialize SVFrameMMO native progression data", exception);
         }
@@ -106,6 +107,7 @@ public final class SVFrameMMO implements ModInitializer {
             SVFrameMMOCommands.register(dispatcher);
             RpgGuiCommands.register(dispatcher);
             vn.svframe.svframemmo.pvp.PvpModeRuntime.instance().registerCommand(dispatcher);
+            vn.svframe.svframemmo.economy.EconomyRuntime.instance().registerCommand(dispatcher);
         });
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             PLAYER_DATA.start(server);
@@ -160,6 +162,7 @@ public final class SVFrameMMO implements ModInitializer {
             loadDefinitions();
             GUI.reload();
             vn.svframe.svframemmo.pvp.PvpModeRuntime.instance().reload();
+            vn.svframe.svframemmo.economy.EconomyRuntime.instance().reload();
             for (var data : PLAYER_DATA.all()) data.reloadDefinitions();
             SKILL_BAR.clear();
             PLAYER_DATA.save();
