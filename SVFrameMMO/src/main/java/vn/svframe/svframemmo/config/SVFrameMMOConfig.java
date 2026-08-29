@@ -17,6 +17,7 @@ import java.util.Set;
 public record SVFrameMMOConfig(
         int resourceTickPeriod,
         int combatTimerSeconds,
+        int globalSkillCooldownTicks,
         int autosaveSeconds,
         int defaultLevel,
         int defaultClassPoints,
@@ -127,6 +128,7 @@ public record SVFrameMMOConfig(
         return new SVFrameMMOConfig(
                 Math.max(1, integer(first(root, "player-resource-tick-period", "player_resource_tick_period"), 20)),
                 Math.max(0, integer(combat.get("timer"), 10)),
+                Math.max(0, integer(first(root, "global-skill-cooldown", "global_skill_cooldown"), 10)),
                 autosaveEnabled ? Math.max(1, integer(autosave.get("interval"), 1800)) : 0,
                 Math.max(1, integer(defaults.get("level"), 1)),
                 Math.max(0, integer(defaults.get("class-points"), 0)),

@@ -44,6 +44,9 @@ passive-skill-needs-binding: true
 save-default-class-info: false
 player-resource-tick-period: 20
 
+# Global active-skill cooldown in ticks. Set to 0 to disable.
+global-skill-cooldown: 10
+
 # Force newly-created native player data to choose a non-default class before closing the selection flow.
 # Existing player data is migrated as already chosen the first time this feature is enabled.
 force-class-selection: true

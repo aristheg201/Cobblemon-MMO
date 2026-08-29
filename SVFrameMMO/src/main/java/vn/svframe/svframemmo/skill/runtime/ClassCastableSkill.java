@@ -19,6 +19,8 @@ import java.util.Objects;
 
 /** Executes a shared SVFrameLib skill handler with the correct class/external progression level and cost semantics. */
 public final class ClassCastableSkill extends Skill {
+    private static final String GLOBAL_COOLDOWN = "svframemmo_global_skill";
+
     private final ClassSkill classSkill;
     private final PlayerData caster;
     private final boolean requireClassProgression;
@@ -77,7 +79,11 @@ public final class ClassCastableSkill extends Skill {
         if (!caster.isOnline()) return false;
         if (requireClassProgression && !caster.canUseSkill(classSkill)) return false;
         MMOPlayerData mmo = caster.getMMOPlayerData();
-        if (!getTrigger().isPassive() && mmo.getCooldownMap().isOnCooldown(this)) return false;
+        if (!getTrigger().isPassive()) {
+            int globalTicks = SVFrameMMO.config().globalSkillCooldownTicks();
+            if (globalTicks > 0 && mmo.getCooldownMap().isOnCooldown(GLOBAL_COOLDOWN)) return false;
+            if (mmo.getCooldownMap().isOnCooldown(this)) return false;
+        }
         double mana = Math.max(0d, metadata.getParameter("mana"));
         double stamina = Math.max(0d, metadata.getParameter("stamina"));
         return caster.getMana() >= mana && caster.getStamina() >= stamina;
@@ -85,11 +91,13 @@ public final class ClassCastableSkill extends Skill {
 
     private void applyCosts(SkillMetadata metadata) {
         if (getTrigger().isPassive()) return;
+        MMOPlayerData mmo = caster.getMMOPlayerData();
+        int globalTicks = SVFrameMMO.config().globalSkillCooldownTicks();
+        if (globalTicks > 0) mmo.getCooldownMap().applyCooldown(GLOBAL_COOLDOWN, globalTicks / 20d);
         if (AdminRuntimeState.isNoCooldown(caster.getUniqueId())) {
             caster.markCombat();
             return;
         }
-        MMOPlayerData mmo = caster.getMMOPlayerData();
         double cooldown = Math.max(0d, metadata.getParameter("cooldown"));
         if (cooldown > 0d) {
             double reduction = Math.max(0d, Math.min(1d, mmo.getStatMap().getStat("COOLDOWN_REDUCTION") / 100d));
