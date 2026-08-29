@@ -68,7 +68,7 @@ action-bar:
   ticks-to-update: 5
   format: '&c❤ {health}/{max_health} &f| {mana_icon} {mana}/{max_mana} &f| &7⛨ {armor}'
 
-# Native MMOCore custom mining. Empty conditions means server-wide.
+# Native custom mining. Empty conditions means server-wide.
 custom-mining:
   enable: true
   enable-tool-restrictions: false
@@ -84,3 +84,22 @@ override-vanilla-exp: true
 death-exp-loss:
   enabled: false
   percent: 30
+
+# Native PvP-mode parity. Requires an SVFrameLib region/flag provider to define pvp-mode regions.
+pvp_mode:
+  enabled: false
+  min_level: 0
+  max_level_difference: 10
+  combat_timeout: 30
+  invulnerability:
+    time:
+      region_change: 60
+      command: 30
+    can_damage: false
+    apply_to_pvp_flag: true
+  cooldown:
+    region_enter: 20
+    region_leave: 20
+    combat: 45
+    toggle_on: 5
+    toggle_off: 3
