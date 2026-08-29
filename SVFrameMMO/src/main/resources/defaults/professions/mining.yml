@@ -3,22 +3,198 @@ experience:
   base: 20
   per-level: 3
 exp-curve: '{level} * 150'
-exp-sources:
-  - 'mineblock{type=COAL_ORE;amount=2-4;silk-touch=false}'
-  - 'mineblock{type=DEEPSLATE_COAL_ORE;amount=2-4;silk-touch=false}'
-  - 'mineblock{type=COPPER_ORE;amount=3-5;silk-touch=false}'
-  - 'mineblock{type=DEEPSLATE_COPPER_ORE;amount=3-5;silk-touch=false}'
-  - 'mineblock{type=IRON_ORE;amount=5;silk-touch=false}'
-  - 'mineblock{type=DEEPSLATE_IRON_ORE;amount=5;silk-touch=false}'
-  - 'mineblock{type=GOLD_ORE;amount=5;silk-touch=false}'
-  - 'mineblock{type=DEEPSLATE_GOLD_ORE;amount=5;silk-touch=false}'
-  - 'mineblock{type=LAPIS_ORE;amount=13;silk-touch=false}'
-  - 'mineblock{type=DEEPSLATE_LAPIS_ORE;amount=13;silk-touch=false}'
-  - 'mineblock{type=REDSTONE_ORE;amount=10;silk-touch=false}'
-  - 'mineblock{type=DEEPSLATE_REDSTONE_ORE;amount=10;silk-touch=false}'
-  - 'mineblock{type=EMERALD_ORE;amount=32;silk-touch=false}'
-  - 'mineblock{type=DEEPSLATE_EMERALD_ORE;amount=32;silk-touch=false}'
-  - 'mineblock{type=DIAMOND_ORE;amount=20;silk-touch=false}'
-  - 'mineblock{type=DEEPSLATE_DIAMOND_ORE;amount=20;silk-touch=false}'
-  - 'mineblock{type=NETHER_GOLD_ORE;amount=8;silk-touch=false}'
-  - 'mineblock{type=ANCIENT_DEBRIS;amount=40;silk-touch=false}'
+
+on-mine:
+  gold:
+    material: 'vanilla{type=GOLD_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=GOLD_ORE}'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=STONE}'
+    triggers:
+      - 'exp{profession=mining;amount=5}'
+  iron:
+    material: 'vanilla{type=IRON_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=IRON_ORE}'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=STONE}'
+    triggers:
+      - 'exp{profession=mining;amount=5}'
+  lapis:
+    material: 'vanilla{type=LAPIS_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=LAPIS_LAZULI} 1 4-20'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=STONE}'
+    triggers:
+      - 'exp{profession=mining;amount=13}'
+  redstone:
+    material: 'vanilla{type=REDSTONE_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=REDSTONE} 1 4-20'
+        - 'vanilla{type=REDSTONE_TORCH} .1 1-3'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=STONE}'
+    triggers:
+      - 'exp{profession=mining;amount=10}'
+  emerald:
+    material: 'vanilla{type=EMERALD_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=EMERALD} 1 1-9'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=STONE}'
+    triggers:
+      - 'exp{profession=mining;amount=32}'
+  diamond:
+    material: 'vanilla{type=DIAMOND_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=DIAMOND} 1 1-3'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=STONE}'
+    triggers:
+      - 'exp{profession=mining;amount=20}'
+  deepslate-gold:
+    material: 'vanilla{type=DEEPSLATE_GOLD_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=RAW_GOLD} 1 1-3'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=DEEPSLATE}'
+    triggers:
+      - 'exp{profession=mining;amount=5}'
+  deepslate-iron:
+    material: 'vanilla{type=DEEPSLATE_IRON_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=RAW_IRON} 1 1-3'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=DEEPSLATE}'
+    triggers:
+      - 'exp{profession=mining;amount=5}'
+  deepslate-lapis:
+    material: 'vanilla{type=DEEPSLATE_LAPIS_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=LAPIS_LAZULI} 1 4-20'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=DEEPSLATE}'
+    triggers:
+      - 'exp{profession=mining;amount=13}'
+  deepslate-redstone:
+    material: 'vanilla{type=DEEPSLATE_REDSTONE_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=REDSTONE} 1 4-20'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=DEEPSLATE}'
+    triggers:
+      - 'exp{profession=mining;amount=10}'
+  deepslate-emerald:
+    material: 'vanilla{type=DEEPSLATE_EMERALD_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=EMERALD} 1 1-9'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=DEEPSLATE}'
+    triggers:
+      - 'exp{profession=mining;amount=32}'
+  deepslate-diamond:
+    material: 'vanilla{type=DEEPSLATE_DIAMOND_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=DIAMOND} 1 1-3'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=DEEPSLATE}'
+    triggers:
+      - 'exp{profession=mining;amount=20}'
+  coal:
+    material: 'vanilla{type=COAL_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=COAL} 1 1-3'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=STONE}'
+    triggers:
+      - 'exp{profession=mining;amount=2-4}'
+  copper:
+    material: 'vanilla{type=COPPER_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=RAW_COPPER} 1 2-5'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=STONE}'
+    triggers:
+      - 'exp{profession=mining;amount=3-5}'
+  nether-gold:
+    material: 'vanilla{type=NETHER_GOLD_ORE}'
+    drop-table:
+      items:
+        - 'vanilla{type=GOLD_NUGGET} 1 2-6'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2000
+      temp-block: 'vanilla{type=NETHERRACK}'
+    triggers:
+      - 'exp{profession=mining;amount=8}'
+  ancient-debris:
+    material: 'vanilla{type=ANCIENT_DEBRIS}'
+    drop-table:
+      items:
+        - 'vanilla{type=ANCIENT_DEBRIS}'
+    options:
+      vanilla-drops: false
+    regen:
+      time: 2400
+      temp-block: 'vanilla{type=NETHERRACK}'
+    triggers:
+      - 'exp{profession=mining;amount=40}'

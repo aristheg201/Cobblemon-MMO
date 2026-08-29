@@ -67,3 +67,20 @@ action-bar:
   enabled: true
   ticks-to-update: 5
   format: '&c❤ {health}/{max_health} &f| {mana_icon} {mana}/{max_mana} &f| &7⛨ {armor}'
+
+# Native MMOCore custom mining. Empty conditions means server-wide.
+custom-mining:
+  enable: true
+  enable-tool-restrictions: false
+  protect-vanilla-blocks: false
+
+# Convert earned vanilla XP into class XP. Vanilla XP is additionally suppressed when override-vanilla-exp is true.
+vanilla-exp-redirection:
+  enabled: false
+  ratio: 0.8
+
+override-vanilla-exp: true
+
+death-exp-loss:
+  enabled: false
+  percent: 30

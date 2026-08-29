@@ -14,7 +14,10 @@
     "FishingBobberExperienceMixin",
     "BrewingStandExperienceMixin",
     "LivingEntitySpawnerOriginMixin",
-    "MobEntitySpawnerOriginMixin"
+    "MobEntitySpawnerOriginMixin",
+    "ServerPlayerInteractionManagerMixin",
+    "PlayerDataResourceMixin",
+    "PlayerVanillaExperienceMixin"
   ],
   "injectors": {
     "defaultRequire": 1

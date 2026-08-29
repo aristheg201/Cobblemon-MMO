@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import vn.svframe.svframemmo.SVFrameMMO;
+import vn.svframe.svframemmo.profession.mining.CustomMiningRuntime;
 
 @Mixin(BlockItem.class)
 public abstract class BlockItemExperienceMixin {
@@ -22,5 +23,6 @@ public abstract class BlockItemExperienceMixin {
         BlockPos pos = context.getBlockPos();
         BlockState state = world.getBlockState(pos);
         SVFrameMMO.nativeExperience().onBlockPlaced(player, world, pos, state);
+        CustomMiningRuntime.instance().markPlaced(world, pos);
     }
 }

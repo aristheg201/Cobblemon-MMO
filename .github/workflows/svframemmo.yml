@@ -106,7 +106,7 @@ jobs:
           grep -q 'Loading Minecraft 1.21.1 with Fabric Loader 0.18.4' build/combined-server.log
           grep -q 'SVFrameLib online' build/combined-server.log
           grep -q 'SVFrameLib Fabric online; skills=94,scripts=100,customTriggers=1' build/combined-server.log
-          grep -q 'SVFrameMMO Fabric online; classes=7,attributes=3,professions=8,expTables=3,skillTrees=6,skills=127' build/combined-server.log
+          grep -q 'SVFrameMMO Fabric online; classes=7,attributes=3,professions=8,expTables=3,skillTrees=6,skills=128' build/combined-server.log
           grep -q 'Done (' build/combined-server.log
           test -f run/config/SVFrameMMO/skills/legacy-class-aliases.yml
           grep -q '^CLS_WARRIOR_DEEP_WOUND:' run/config/SVFrameMMO/skills/legacy-class-aliases.yml

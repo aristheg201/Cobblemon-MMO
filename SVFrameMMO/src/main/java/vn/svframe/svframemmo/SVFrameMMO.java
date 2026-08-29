@@ -80,6 +80,8 @@ public final class SVFrameMMO implements ModInitializer {
             loadDefinitions();
             GUI.reload();
             NATIVE_EXPERIENCE.install();
+            vn.svframe.svframemmo.profession.mining.CustomMiningRuntime.instance();
+            vn.svframe.svframemmo.experience.vanilla.VanillaProgressionRuntime.instance();
         } catch (Exception exception) {
             throw new IllegalStateException("Could not initialize SVFrameMMO native progression data", exception);
         }
