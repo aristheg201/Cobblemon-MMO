@@ -5,6 +5,7 @@
   "mixins": [
     "ServerPlayNetworkHandlerMixin",
     "BlockItemExperienceMixin",
+    "FluidBlockExperienceMixin",
     "LivingEntityExperienceMixin",
     "CraftingResultSlotExperienceMixin",
     "FurnaceOutputSlotExperienceMixin",

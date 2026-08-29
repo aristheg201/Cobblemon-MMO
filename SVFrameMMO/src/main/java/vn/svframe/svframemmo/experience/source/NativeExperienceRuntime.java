@@ -126,6 +126,12 @@ public final class NativeExperienceRuntime {
             sources.accept(SVFrameMMO.playerData().get(player), ExperienceSignal.builder("placeblock").primary(blockId(state)).build());
     }
 
+    /** Marks non-natural block formation without emitting the player place-block EXP source. */
+    public synchronized void markPlayerPlaced(ServerWorld world, BlockPos pos) {
+        if (world == null || pos == null) return;
+        playerPlaced.add(PlacedBlock.of(world, pos));
+    }
+
     public void onCrafted(ServerPlayerEntity player, ItemStack stack) {
         if (stack != null && !stack.isEmpty()) emit(player, "craftitem", itemId(stack), Math.max(1, stack.getCount()));
     }
