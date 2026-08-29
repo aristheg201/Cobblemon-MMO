@@ -12,9 +12,11 @@ import vn.svframe.svframelib.fabric.runtime.RpgProfileRegistry;
 import vn.svframe.svframelib.player.resource.ResourceUpdateReason;
 import vn.svframe.svframelib.rpg.ManaModule;
 import vn.svframe.svframemmo.api.integration.SkillSourceBootstrap;
+import vn.svframe.svframemmo.command.RpgGuiCommands;
 import vn.svframe.svframemmo.command.SVFrameMMOCommands;
 import vn.svframe.svframemmo.config.DefaultFiles;
 import vn.svframe.svframemmo.config.SVFrameMMOConfig;
+import vn.svframe.svframemmo.gui.RpgGuiManager;
 import vn.svframe.svframemmo.manager.AttributeManager;
 import vn.svframe.svframemmo.manager.BoosterManager;
 import vn.svframe.svframemmo.manager.ClassManager;
@@ -50,6 +52,7 @@ public final class SVFrameMMO implements ModInitializer {
     private static final TemporarySkillOverlayRuntime TEMPORARY_SKILLS = new TemporarySkillOverlayRuntime();
     private static final ExternalSkillRegistry EXTERNAL_SKILLS = new ExternalSkillRegistry();
     private static final ExternalSkillProgression EXTERNAL_PROGRESSION = new ExternalSkillProgression();
+    private static final RpgGuiManager GUI = new RpgGuiManager();
 
     private static volatile ClassManager classes = new ClassManager();
     private static volatile AttributeManager attributes = new AttributeManager();
@@ -70,6 +73,7 @@ public final class SVFrameMMO implements ModInitializer {
             }
             SVFrameMMOSkillBootstrap.register(DefaultFiles.ROOT.resolve("skills"));
             loadDefinitions();
+            GUI.reload();
         } catch (Exception exception) {
             throw new IllegalStateException("Could not initialize SVFrameMMO native progression data", exception);
         }
@@ -88,7 +92,10 @@ public final class SVFrameMMO implements ModInitializer {
             }
         });
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> SVFrameMMOCommands.register(dispatcher));
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            SVFrameMMOCommands.register(dispatcher);
+            RpgGuiCommands.register(dispatcher);
+        });
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             PLAYER_DATA.start(server);
             EXTERNAL_PROGRESSION.start(server);
@@ -136,6 +143,7 @@ public final class SVFrameMMO implements ModInitializer {
         try {
             for (var data : PLAYER_DATA.all()) data.prepareReload();
             loadDefinitions();
+            GUI.reload();
             for (var data : PLAYER_DATA.all()) data.reloadDefinitions();
             SKILL_BAR.clear();
             PLAYER_DATA.save();
@@ -208,4 +216,5 @@ public final class SVFrameMMO implements ModInitializer {
     public static ExternalSkillRegistry externalSkills() { return EXTERNAL_SKILLS; }
     public static ExternalSkillProgression externalProgression() { return EXTERNAL_PROGRESSION; }
     public static DelayedActionRuntime delayedActions() { return DELAYED_ACTIONS; }
+    public static RpgGuiManager gui() { return GUI; }
 }

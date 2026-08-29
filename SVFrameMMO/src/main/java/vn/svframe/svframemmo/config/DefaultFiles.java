@@ -22,7 +22,10 @@ public final class DefaultFiles {
             "professions/mining.yml", "professions/smelting.yml", "professions/smithing.yml", "professions/woodcutting.yml",
             "exp-tables/default.yml", "exp-curves/levels.txt",
             "skill-trees/combat.yml", "skill-trees/general.yml", "skill-trees/loop.yml",
-            "skill-trees/mage-arcane-mage.yml", "skill-trees/rogue-marksman.yml", "skill-trees/warrior-paladin.yml");
+            "skill-trees/mage-arcane-mage.yml", "skill-trees/rogue-marksman.yml", "skill-trees/warrior-paladin.yml",
+            "gui/class-select.yml", "gui/class-confirm/class-confirm-default.yml", "gui/subclass-select.yml",
+            "gui/attribute-view.yml", "gui/player-stats.yml", "gui/skill-list.yml", "gui/skill-tree.yml",
+            "gui/specific-skill-tree/specific-skill-tree-default.yml");
 
     private DefaultFiles() { }
 
