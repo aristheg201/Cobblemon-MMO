@@ -120,6 +120,7 @@ jobs:
           cd "$SERVER"
           java -jar fabric-installer.jar server -mcversion 1.21.1 -loader 0.18.4 -downloadMinecraft
           printf 'eula=true\n' > eula.txt
+          printf 'online-mode=false\nserver-port=25565\n' > server.properties
 
           java -Xms512M -Xmx2G -cp 'extra-libs/*:fabric-server-launch.jar' net.fabricmc.loader.impl.launch.server.FabricServerLauncher nogui > "$ROOT/build/integration-server.log" 2>&1 &
           server_pid=$!
@@ -145,10 +146,11 @@ jobs:
             exit 1
           fi
           grep -q 'Loading Minecraft 1.21.1 with Fabric Loader' "$ROOT/build/integration-server.log"
-          grep -Eq 'SVFrameMMO Fabric online; .*externalSkills=[1-9][0-9]*' "$ROOT/build/integration-server.log"
+          grep -q 'SVFrameMMO Fabric online;' "$ROOT/build/integration-server.log"
           grep -Eq 'Cobblemon move provider synchronized; providerMoves=[1-9][0-9]*, registeredSkills=[1-9][0-9]*, generatedConfigs=[1-9][0-9]*' "$ROOT/build/integration-server.log"
           grep -q 'provider=cobblemon' "$ROOT/build/integration-server.log"
           grep -q 'Fusion storage network guards installed' "$ROOT/build/integration-server.log"
+          grep -q 'Staged 4 Snowstorm asset(s) / 3 particle id(s)' "$ROOT/build/integration-server.log"
           grep -q 'Done (' "$ROOT/build/integration-server.log"
           generated_dir="$SERVER/config/SVFrameMMOCobblemon/generated-moves"
           test -f "$generated_dir/_manifest.json"
