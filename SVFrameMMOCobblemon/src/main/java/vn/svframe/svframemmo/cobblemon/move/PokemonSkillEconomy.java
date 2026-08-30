@@ -65,7 +65,7 @@ public final class PokemonSkillEconomy {
         BigInteger balance = (BigInteger) get.invoke(null, player);
         if (balance == null || balance.compareTo(whole) < 0) return ChargeResult.insufficient("Not enough CobbleDollars.");
         set.invoke(null, player, balance.subtract(whole));
-        return ChargeResult.charged();
+        return ChargeResult.success();
     }
 
     private static boolean refundCobbleDollars(ServerPlayerEntity player, BigDecimal amount) throws ReflectiveOperationException {
@@ -85,7 +85,7 @@ public final class PokemonSkillEconomy {
         BEconomyApi api = resolveBEconomy();
         Object result = api.decrease.invoke(api.receiver, player, currencyType, amount);
         if (!(result instanceof Boolean success)) return ChargeResult.failed("BEconomy decreaseBalance returned an unsupported result.");
-        return success ? ChargeResult.charged() : ChargeResult.insufficient("Not enough " + currencyType + ".");
+        return success ? ChargeResult.success() : ChargeResult.insufficient("Not enough " + currencyType + ".");
     }
 
     private boolean refundBEconomy(UUID player, String currency, BigDecimal amount) throws ReflectiveOperationException {
@@ -121,7 +121,7 @@ public final class PokemonSkillEconomy {
             try {
                 Object transaction = account.getClass().getMethod("withdraw", BigDecimal.class).invoke(account, amount);
                 boolean successful = (Boolean) transaction.getClass().getMethod("successful").invoke(transaction);
-                return successful ? ChargeResult.charged() : ChargeResult.insufficient("Not enough " + context.currencyKey + ".");
+                return successful ? ChargeResult.success() : ChargeResult.insufficient("Not enough " + context.currencyKey + ".");
             } catch (ReflectiveOperationException error) {
                 throw new IllegalStateException("Impactor withdrawal failed", error);
             }
@@ -205,7 +205,7 @@ public final class PokemonSkillEconomy {
     private record ImpactorContext(Object service, Object currency, String currencyKey, Method accountMethod) { }
 
     public record ChargeResult(boolean charged, boolean insufficient, String message) {
-        public static ChargeResult charged() { return new ChargeResult(true, false, ""); }
+        public static ChargeResult success() { return new ChargeResult(true, false, ""); }
         public static ChargeResult insufficient(String message) { return new ChargeResult(false, true, message); }
         public static ChargeResult failed(String message) { return new ChargeResult(false, false, message); }
     }
