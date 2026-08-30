@@ -63,11 +63,12 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
     public void whenCast(Result result, SkillMetadata metadata) {
         if (!result.success) return;
         ServerPlayerEntity player = metadata.getCaster().getData().getPlayer();
+        SkillMetadata elementalMetadata = new CobblemonElementalSkillMetadata(metadata, result.move.getElementalType());
         if (result.fusion != null) {
             if (!fusions.consumePp(result.fusion)) return;
-            fusions.executeMove(result.fusion, result.target, result.semantic, metadata);
+            fusions.executeMove(result.fusion, result.target, result.semantic, elementalMetadata);
         } else {
-            executeStandalone(player, result, metadata);
+            executeStandalone(player, result, elementalMetadata);
         }
         if (result.target != null)
             SVFrameMMOCobblemon.moveVfx().renderImpact(player, result.move, result.target.getBoundingBox().getCenter());
