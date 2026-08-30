@@ -1,33 +1,18 @@
+# SVFrameMMO - Fabric 1.21.1
+# Production-oriented defaults for the classless, skill-first server setup.
 config-version: 11
 
-auto-save:
-  enabled: true
-  interval: 1800
-
-# Native userdata storage. YAML mirrors the original file-per-player backend.
-# JSON is retained as a migration/export backend for worlds created by earlier native builds.
+# ---------------------------------------------------------------------------
+# Player data
+# ---------------------------------------------------------------------------
 storage:
   backend: YAML
   yaml-directory: svframemmo-userdata
   auto-migrate-json: true
 
-# MySQL-compatible userdata backend. Set storage.backend to MYSQL when enabled.
-mysql:
-  enabled: false
-  host: localhost
-  port: 3306
-  database: minecraft
-  user: mmolover
-  pass: change-me
-  maxPoolSize: 10
-  maxLifeTime: 300000
-  connectionTimeOut: 10000
-  leakDetectionThreshold: 150000
-  properties:
-    cachePrepStmts: true
-    prepStmtCacheSize: 250
-    prepStmtCacheSqlLimit: 2048
-  userdata-table-name: svframemmo_playerdata
+auto-save:
+  enabled: true
+  interval: 1800
 
 default-playerdata:
   level: 1
@@ -37,45 +22,81 @@ default-playerdata:
   reallocation-points: 0
   health: 20
   mana: 100
-  stellium: 100
   stamina: 100
+  stellium: 100
 
+# This server uses skills as the player build, not mandatory classes.
+force-class-selection: false
 passive-skill-needs-binding: true
 save-default-class-info: false
 player-resource-tick-period: 20
+can-creative-cast: false
 
-# Global active-skill cooldown in ticks. Set to 0 to disable.
+# ---------------------------------------------------------------------------
+# Always-visible HUD
+# ---------------------------------------------------------------------------
+# max-vanilla-health is the REAL MAX_HEALTH cap, not only display text.
+# 40 HP = 20 hearts = at most two vanilla heart rows.
+action-bar:
+  enabled: true
+  always-visible: true
+  priority: 100
+  ticks-to-update: 5
+  max-vanilla-health: 40
+  casting-separator: ' &8||&r '
+  format: '&c❤ &f{health}/{max_health} &8│ &b✦ &f{mana}/{max_mana} &8│ &e⚡ &f{stamina}/{max_stamina} &8│ &d✹ &f{stellium}/{max_stellium} &8│ &7⛨ &f{armor}'
+
+# ---------------------------------------------------------------------------
+# Skill casting
+# ---------------------------------------------------------------------------
+# Press F (SWAP_HANDS) to enter/leave the six-slot skill bar.
+# Resource HUD remains visible while this mode is open.
 global-skill-cooldown: 10
 
-# Prevent mobs created by vanilla monster spawners from granting kill-mob MMO EXP.
+skill-casting:
+  mode: SKILL_BAR
+  open: SWAP_HANDS
+  ignore-sneak: false
+  use-lowest-keybinds: true
+
+  message:
+    enter:
+      message: '&aSkill casting enabled'
+      action-bar: false
+      duration: 20
+      priority: 31
+      sound: BLOCK_END_PORTAL_FRAME_FILL,1,2
+    quit:
+      message: '&cSkill casting disabled'
+      action-bar: false
+      duration: 20
+      priority: 31
+      sound: BLOCK_FIRE_EXTINGUISH,1,2
+
+  action-bar:
+    split: '&8 · '
+    ready: '&6[{index}] &a{skill}'
+    on-cooldown: '&6[{index}] &c{skill}&7 {cooldown}s'
+    no-mana: '&6[{index}] &b{skill}'
+    no-stamina: '&6[{index}] &e{skill}'
+
+# ---------------------------------------------------------------------------
+# Combat / progression
+# ---------------------------------------------------------------------------
+combat-log:
+  timer: 10
+
 prevent-spawner-xp: true
-
-# MMOCore-compatible generator policy. When false, cobblestone, obsidian and basalt formed by
-# lava/water generator mechanics are treated as player-placed for mining EXP and mining triggers.
 should-cobblestone-generators-give-exp: false
-
-# Show world-visible main-class EXP holograms for experience sources which provide a location.
 display-main-class-exp-holograms: true
 
-# Skill-tree command/UI behavior retained from MMOCore.
 enable-global-skill-tree-gui: true
 enable-specific-skill-tree-gui: true
 skill-tree-scroll-step-x: 1
 skill-tree-scroll-step-y: 1
-
-# Sneak-right-click another player to inspect their Player Stats GUI.
 shift-click-player-profile-check: false
 
-# Force newly-created native player data to choose a non-default class before closing the selection flow.
-# Existing player data is migrated as already chosen the first time this feature is enabled.
-force-class-selection: true
-
-# Creative players cannot enter skill casting unless explicitly enabled.
-can-creative-cast: false
-
-combat-log:
-  timer: 10
-
+# Retained for compatibility with the native MMOCore parity layer.
 share-across-classes:
   experience: false
   skill-points: false
@@ -83,50 +104,14 @@ share-across-classes:
   skill-reallocation-points: false
   attribute-reallocation-points: false
 
-# Supported modes: SKILL_BAR, SKILL_SCROLLER, KEY_COMBOS, NONE.
-# SKILL_BAR casting. F is Minecraft's vanilla SWAP_HANDS key.
-skill-casting:
-  mode: SKILL_BAR
-  open: SWAP_HANDS
-  ignore-sneak: false
-  use-lowest-keybinds: true
-
-  # Optional. When present this is measured in ticks and must be > 0.
-  # time-out: 100
-
-  message:
-    enter:
-      message: '&e&l☄ &a&lSKILL CASTING &e&l☄'
-      action-bar: true
-      duration: 20
-      priority: 31
-      sound: BLOCK_END_PORTAL_FRAME_FILL,1,2
-    quit:
-      message: '&e&l☄ &c&lSKILL CASTING &e&l☄'
-      action-bar: true
-      duration: 20
-      priority: 31
-      sound: BLOCK_FIRE_EXTINGUISH,1,2
-
-  action-bar:
-    split: '&7 &7 - &7 '
-    ready: '&6[{index}] &a&l{skill}'
-    on-cooldown: '&6[{index}] &c&l{skill} &6(&c{cooldown}&6)'
-    no-mana: '&6[{index}] &9&l{skill}'
-    no-stamina: '&6[{index}] &9&l{skill}'
-
-action-bar:
-  enabled: true
-  ticks-to-update: 5
-  format: '&c❤ {health}/{max_health} &f| {mana_icon} {mana}/{max_mana} &f| &7⛨ {armor}'
-
-# Native custom mining. Empty conditions means server-wide.
+# ---------------------------------------------------------------------------
+# World / profession systems
+# ---------------------------------------------------------------------------
 custom-mining:
   enable: true
   enable-tool-restrictions: false
   protect-vanilla-blocks: false
 
-# Convert earned vanilla XP into class XP. Vanilla XP is additionally suppressed when override-vanilla-exp is true.
 vanilla-exp-redirection:
   enabled: false
   ratio: 0.8
@@ -137,7 +122,9 @@ death-exp-loss:
   enabled: false
   percent: 30
 
-# Native PvP-mode parity. Requires an SVFrameLib region/flag provider to define pvp-mode regions.
+# ---------------------------------------------------------------------------
+# PvP
+# ---------------------------------------------------------------------------
 pvp_mode:
   enabled: false
   min_level: 0
@@ -156,6 +143,28 @@ pvp_mode:
     toggle_on: 5
     toggle_off: 3
 
-# Currency backend routed through SVFrameLib CurrencyService.
+# ---------------------------------------------------------------------------
+# Economy
+# ---------------------------------------------------------------------------
 economy:
   currency: beconomy:primary
+
+# ---------------------------------------------------------------------------
+# Optional MySQL backend
+# ---------------------------------------------------------------------------
+mysql:
+  enabled: false
+  host: localhost
+  port: 3306
+  database: minecraft
+  user: mmolover
+  pass: change-me
+  maxPoolSize: 10
+  maxLifeTime: 300000
+  connectionTimeOut: 10000
+  leakDetectionThreshold: 150000
+  properties:
+    cachePrepStmts: true
+    prepStmtCacheSize: 250
+    prepStmtCacheSqlLimit: 2048
+  userdata-table-name: svframemmo_playerdata

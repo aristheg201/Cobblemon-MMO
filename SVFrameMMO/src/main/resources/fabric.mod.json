@@ -8,6 +8,7 @@
   "entrypoints": {
     "main": [
       "vn.svframe.svframemmo.SVFrameMMO",
+      "vn.svframe.svframemmo.runtime.PersistentHudRuntime",
       "vn.svframe.svframemmo.command.SkillGrantCommands",
       "vn.svframe.svframemmo.command.AdminParityCommands",
       "vn.svframe.svframemmo.command.ResetParityCommands",

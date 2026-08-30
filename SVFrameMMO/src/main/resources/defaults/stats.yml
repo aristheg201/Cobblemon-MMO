@@ -8,6 +8,7 @@ default:
     MAX_HEALTH:
         base: 20
         per-level: 0
+        max: 40
     MAX_ABSORPTION:
         base: 0.0
         per-level: 0
@@ -30,13 +31,13 @@ default:
         base: .1
         per-level: 0
     MAX_MANA:
-        base: 20
+        base: 100
         per-level: 0
     MAX_STAMINA:
-        base: 20
+        base: 100
         per-level: 0
     MAX_STELLIUM:
-        base: 20
+        base: 100
         per-level: 0
     MANA_REGENERATION:
         base: .166
