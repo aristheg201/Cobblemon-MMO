@@ -3,66 +3,66 @@ package vn.svframe.svframemmo.cobblemon.integration;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.github.yajatkaul.mega_showdown.api.codec.Effect;
-import com.github.yajatkaul.mega_showdown.api.codec.particles.AnimationData;
 import com.github.yajatkaul.mega_showdown.api.codec.particles.SnowStormParticle;
-import com.github.yajatkaul.mega_showdown.utils.PokemonBehaviourHelper;
 import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 /** Potara presentation sourced directly from Mega Showdown's real Kyurem fusion effect definitions. */
 public final class MegaShowdownEffects {
+    private static final double COMPLETION_MARGIN_SECONDS = 0.15d;
+
     private MegaShowdownEffects() { }
 
     /**
-     * Plays the configured Mega Showdown Potara effect immediately without using its delayed form-change timing.
-     * Particle IDs, Minecraft particles and sounds remain owned by Mega Showdown. Animation cues are dispatched
-     * synchronously before the party Pokemon is recalled so the original cry/animation is not lost with the entity.
+     * Starts the original Mega Showdown Kyurem fusion effect without rewriting its delays.
+     *
+     * <p>The deployed Pokemon entity must remain alive until {@link PotaraPresentation#delayTicks()} has elapsed,
+     * because Mega Showdown's Snowstorm emitters are anchored to that entity. Recalling the Pokemon immediately
+     * destroys the emitter and leaves only the sound.</p>
      */
-    public static String playPotaraFusionStart(Pokemon pokemon, PokemonEntity entity) {
-        if (pokemon == null || entity == null) throw new IllegalArgumentException("Pokemon and entity are required for Potara fusion VFX");
+    public static PotaraPresentation playPotaraFusionStart(Pokemon pokemon, PokemonEntity entity) {
+        if (pokemon == null || entity == null)
+            throw new IllegalArgumentException("Pokemon and entity are required for Potara fusion VFX");
+
         List<String> effects = SVFrameMMOCobblemon.config().vfx.potaraFusionEffects;
-        if (effects == null || effects.isEmpty()) throw new IllegalStateException("No Potara Mega Showdown effects are configured");
+        if (effects == null || effects.isEmpty())
+            throw new IllegalStateException("No Potara Mega Showdown effects are configured");
+
         String effectId = effects.get(ThreadLocalRandom.current().nextInt(effects.size()));
+        Effect effect = requireRenderableEffect(effectId);
+        SnowStormParticle snowstorm = effect.snowStorm().orElseThrow();
 
-        Effect original = Effect.getEffect(effectId);
-        Effect immediate = new Effect(
-                original.minecraft(),
-                original.snowStorm().map(MegaShowdownEffects::immediateSnowstorm),
-                Optional.empty(),
-                original.battle_pause_revert()
-        );
+        // Run Mega Showdown's exact codec. It owns the Kyurem buildup/godrays/cyclone/burst particle timeline,
+        // sound and animation timing. PotaraUseHandler delays the recall/morph until this timeline completes.
+        effect.applyEffects(pokemon, List.of(), Optional.empty(), entity);
 
-        // Keep Mega Showdown's own effect execution for particle and sound codecs, but do not wait 4/4.4 seconds.
-        immediate.applyEffects(pokemon, List.of(), Optional.empty(), entity);
-
-        // AnimationData.after(0) still schedules against the entity. Potara recalls the entity immediately afterwards,
-        // so dispatch the exact Mega Showdown apply animation/expression set synchronously instead.
-        original.snowStorm().flatMap(SnowStormParticle::animations).ifPresent(animation ->
-                PokemonBehaviourHelper.Companion.playAnimation(
-                        entity,
-                        new HashSet<>(animation.animations_apply()),
-                        animation.expressions_apply()
-                ));
-        return effectId;
+        double seconds = snowstorm.apply_after().map(Float::doubleValue).orElse(0d);
+        seconds = Math.max(seconds, snowstorm.animations().map(animation -> (double) animation.applyDelay()).orElse(0d));
+        long delayTicks = Math.max(1L, (long) Math.ceil((seconds + COMPLETION_MARGIN_SECONDS) * 20d));
+        return new PotaraPresentation(effectId, delayTicks);
     }
 
-    private static SnowStormParticle immediateSnowstorm(SnowStormParticle source) {
-        return new SnowStormParticle(
-                source.source_apply(),
-                source.target_apply(),
-                source.source_revert(),
-                source.target_revert(),
-                source.particle_apply(),
-                Optional.empty(),
-                source.particle_revert(),
-                source.revert_after(),
-                source.sound_apply(),
-                source.sound_revert(),
-                Optional.<AnimationData>empty()
-        );
+    /** Production-boot validation: configured Potara effects must resolve to a real Snowstorm apply particle. */
+    public static void validateConfiguredEffects() {
+        List<String> effects = SVFrameMMOCobblemon.config().vfx.potaraFusionEffects;
+        if (effects == null || effects.isEmpty())
+            throw new IllegalStateException("No Potara Mega Showdown effects are configured");
+        for (String effectId : effects) requireRenderableEffect(effectId);
     }
+
+    private static Effect requireRenderableEffect(String effectId) {
+        if (effectId == null || effectId.isBlank())
+            throw new IllegalArgumentException("Potara Mega Showdown effect ID must not be blank");
+        Effect effect = Effect.getEffect(effectId);
+        SnowStormParticle snowstorm = effect.snowStorm()
+                .orElseThrow(() -> new IllegalStateException("Mega Showdown effect has no Snowstorm section: " + effectId));
+        if (snowstorm.particle_apply().isEmpty() || snowstorm.particle_apply().orElse("").isBlank())
+            throw new IllegalStateException("Mega Showdown effect has no apply particle: " + effectId);
+        return effect;
+    }
+
+    public record PotaraPresentation(String effectId, long delayTicks) { }
 }

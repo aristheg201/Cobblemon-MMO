@@ -75,8 +75,12 @@ jobs:
           grep -q 'DataComponentTypes.CUSTOM_MODEL_DATA' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/item/PotaraTierResolver.java
           grep -q 'slot > 4' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
           grep -q 'MegaShowdownEffects.playPotaraFusionStart' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/PotaraUseHandler.java
+          grep -q 'PENDING_FUSIONS' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/PotaraUseHandler.java
+          grep -q 'delayedActions().schedule' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/PotaraUseHandler.java
           grep -q 'Effect.getEffect' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
-          grep -q 'immediate.applyEffects' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
+          grep -q 'effect.applyEffects' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
+          grep -q 'apply_after' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
+          grep -q 'animation.applyDelay' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
           grep -q 'UnvalidatedPlaySoundS2CPacket' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/CobblemonMoveVfxService.java
           grep -q 'kyurem_black' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'kyurem_white' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
