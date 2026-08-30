@@ -29,7 +29,7 @@ public final class CobblemonElementalSkillMetadata extends SkillMetadata {
                 source.hasAttackSource() ? source.getAttackSource() : null,
                 source.getSourceEvent());
         this.cobblemonType = Objects.requireNonNull(cobblemonType, "cobblemonType");
-        this.element = Element.forDamage(cobblemonType.getName(), cobblemonType.getName());
+        this.element = Element.forDamage(cobblemonType.getName(), cobblemonType.getDisplayName().getString());
     }
 
     public ElementalType cobblemonType() { return cobblemonType; }
