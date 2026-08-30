@@ -263,6 +263,7 @@ vn/svframe/svframelib/fabric/runtime/NativeStatHandler
 vn/svframe/svframelib/fabric/runtime/NativeStatModifier
 vn/svframe/svframelib/fabric/runtime/NativeTemporaryStatModifier
 vn/svframe/svframelib/fabric/runtime/ProjectilePassiveSnapshotHolder
+vn/svframe/svframelib/fabric/runtime/RegisteredDamageMetadataBridge
 vn/svframe/svframelib/fabric/runtime/RpgProfileRegistry
 vn/svframe/svframelib/fabric/runtime/RpgResourceRegistry
 vn/svframe/svframelib/fabric/runtime/SVFrameLibCraftingRuntime
