@@ -61,17 +61,21 @@ public final class PersistentHudRuntime implements ModInitializer {
 
             // HUD ownership is based on the native SVFrameMMO PlayerData lifecycle, not
             // SVFrameLib profile readiness. Classless servers legitimately use the
-            // fallback MMO session before/without choosing a profile, and gating this on
-            // MMOPlayerData#isPlaying() silently disabled the entire HUD for those players.
+            // fallback MMO session before/without choosing a profile.
             enforceHealthCap(data, hud.maxVanillaHealth());
 
             if (!live.actionBar().enabled() || data.getPlayer().isDead()) continue;
             boolean casting = SVFrameMMO.skillBar().isCasting(data.getUniqueId());
             if (casting && !hud.alwaysVisible()) continue;
 
-            String base = formatBase(data, live.actionBar().format(), hud.maxVanillaHealth());
+            // A single Minecraft action bar has finite horizontal space. Keep the full
+            // resource readout while idle, then switch only the resource portion to a
+            // compact layout while the six skill slots are visible. Resources therefore
+            // remain permanently visible without turning the action bar into a debug log.
+            String resourceFormat = casting ? hud.castingFormat() : live.actionBar().format();
+            String base = formatBase(data, resourceFormat, hud.maxVanillaHealth());
             String output = casting
-                    ? base + hud.castingSeparator() + formatSkills(data, live.skillCasting())
+                    ? base + hud.castingSeparator() + formatSkills(data, live.skillCasting(), hud.skillNameMaxLength())
                     : base;
             String rendered = SVFrameLib.inst().parseColors(output);
             mmo.getActionBar().show(hud.priority(), Math.max(2L, period + 2L), rendered);
@@ -88,7 +92,10 @@ public final class PersistentHudRuntime implements ModInitializer {
                     bool(first(section, "always-visible", "always_visible"), true),
                     Math.max(50, integer(section.get("priority"), 100)),
                     clamp(number(first(section, "max-vanilla-health", "max_vanilla_health"), 40d), 2d, 1024d),
-                    string(first(section, "casting-separator", "casting_separator"), " &8||&r ")
+                    string(first(section, "casting-separator", "casting_separator"), " &8│&r "),
+                    string(first(section, "casting-format", "casting_format"),
+                            "&c❤&f{health} &b✦&f{mana} &e⚡&f{stamina} &d✹&f{stellium} &7⛨&f{armor}"),
+                    Math.max(6, Math.min(32, integer(first(section, "skill-name-max-length", "skill_name_max_length"), 14)))
             );
         } catch (Exception exception) {
             LOG.log(Level.WARNING, "Could not read extended action-bar HUD options; using safe defaults", exception);
@@ -119,14 +126,14 @@ public final class PersistentHudRuntime implements ModInitializer {
                 .replace("{level}", Integer.toString(data.getLevel()));
     }
 
-    private static String formatSkills(PlayerData data, SVFrameMMOConfig.SkillCasting casting) {
+    private static String formatSkills(PlayerData data, SVFrameMMOConfig.SkillCasting casting, int maxNameLength) {
         Map<Integer, PlayerSkillCatalog.Entry> bindings = PlayerSkillCatalog.bindings(data);
         SVFrameMMOConfig.SkillBarActionBar style = casting.actionBar();
         List<String> parts = new ArrayList<>(GLOBAL_SKILL_SLOTS);
         for (int slot = 1; slot <= GLOBAL_SKILL_SLOTS; slot++) {
             PlayerSkillCatalog.Entry entry = bindings.get(slot);
             if (entry == null) {
-                parts.add("&8[" + slot + "] -");
+                parts.add("&8" + slot + "›—");
                 continue;
             }
             ClassSkill skill = entry.skill();
@@ -143,11 +150,18 @@ public final class PersistentHudRuntime implements ModInitializer {
 
             parts.add(template
                     .replace("{index}", Integer.toString(slot))
-                    .replace("{skill}", skill.getSkill().getName())
+                    .replace("{skill}", compactSkillName(skill.getSkill().getName(), maxNameLength))
                     .replace("{cooldown}", cooldown(cooldown))
                     .replace("{level}", Integer.toString(level)));
         }
         return String.join(style.split(), parts);
+    }
+
+    private static String compactSkillName(String raw, int maxLength) {
+        String name = raw == null ? "Skill" : raw.trim();
+        if (name.length() <= maxLength) return name;
+        if (maxLength <= 1) return "…";
+        return name.substring(0, maxLength - 1).stripTrailing() + "…";
     }
 
     private static double parameter(ClassSkill skill, String id, int level, PlayerData data) {
@@ -248,7 +262,23 @@ public final class PersistentHudRuntime implements ModInitializer {
         return value instanceof Boolean flag ? flag : value == null ? fallback : Boolean.parseBoolean(String.valueOf(value));
     }
 
-    private record HudOptions(boolean alwaysVisible, int priority, double maxVanillaHealth, String castingSeparator) {
-        private static HudOptions defaults() { return new HudOptions(true, 100, 40d, " &8||&r "); }
+    private record HudOptions(
+            boolean alwaysVisible,
+            int priority,
+            double maxVanillaHealth,
+            String castingSeparator,
+            String castingFormat,
+            int skillNameMaxLength
+    ) {
+        private static HudOptions defaults() {
+            return new HudOptions(
+                    true,
+                    100,
+                    40d,
+                    " &8│&r ",
+                    "&c❤&f{health} &b✦&f{mana} &e⚡&f{stamina} &d✹&f{stellium} &7⛨&f{armor}",
+                    14
+            );
+        }
     }
 }
