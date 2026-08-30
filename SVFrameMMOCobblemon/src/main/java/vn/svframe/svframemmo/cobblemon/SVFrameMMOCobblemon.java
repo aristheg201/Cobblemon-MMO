@@ -29,6 +29,7 @@ import vn.svframe.svframemmo.cobblemon.integration.CobblemonMoveVfxService;
 import vn.svframe.svframemmo.cobblemon.integration.LuckPermsIntegration;
 import vn.svframe.svframemmo.cobblemon.integration.PlaceholderIntegration;
 import vn.svframe.svframemmo.cobblemon.item.PotaraTierResolver;
+import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveConfigGenerator;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkill;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkillAdapter;
 import vn.svframe.svframemmo.cobblemon.move.PokemonSkillCommands;
@@ -59,16 +60,16 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
 
         SnowstormPackService.install();
         CobblemonMoveSkillAdapter.registerSkillSource();
-        MOVE_VFX.reload();
         LuckPermsIntegration.initialize();
         PlaceholderIntegration.registerIfPresent();
-        if (Moves.count() > 0) reloadMoveSkillsOrThrow();
+        if (Moves.count() > 0) synchronizeMoveProviderOrThrow();
         CobblemonEvents.COBBLEMON_INITIALISED.subscribe(ignored -> {
-            reloadMoveSkillsOrThrow();
-            MOVE_VFX.reload();
+            synchronizeMoveProviderOrThrow();
             if (!SVFrameMMO.reload()) LOG.warn("SVFrameMMO reload after Cobblemon move registry initialization failed");
         });
-        Moves.INSTANCE.getObservable().subscribe(ignored -> reloadMoveSkillsOrThrow());
+        // Cobblemon is the provider. Any registry mutation (including moves added by a newer Cobblemon/add-on)
+        // re-projects skills, presentation data and generated configs from the new live registry automatically.
+        Moves.INSTANCE.getObservable().subscribe(ignored -> synchronizeMoveProviderOrThrow());
 
         FusionLockHooks.register(FUSIONS);
         PotaraUseHandler.register(FUSIONS);
@@ -115,22 +116,30 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
                 COSMETICS.onDisconnect(handler.player);
             });
         });
-        LOG.info("Cobblemon Integration online; generatedMoves={}, registeredSkills={}, moveVfxPlans={}, cosmetics={}, PokemonSkillShop={}/{}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
-                CobblemonMoveSkillAdapter.size(),
+        LOG.info("Cobblemon Integration online; provider=cobblemon, providerMoves={}, registeredSkills={}, specificMoveVfx={}, genericMoveVfx={}, cosmetics={}, PokemonSkillShop={}/{}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
+                CobblemonMoveSkillAdapter.providerSize(),
                 SVFrameMMO.externalSkills().getByOwner(CobblemonMoveSkillAdapter.REGISTRY_OWNER).size(),
-                MOVE_VFX.planCount(), COSMETICS.size(), config.pokemonSkills.enabled, config.pokemonSkills.normalizedProvider(),
+                MOVE_VFX.planCount(), MOVE_VFX.genericPlanCount(), COSMETICS.size(),
+                config.pokemonSkills.enabled, config.pokemonSkills.normalizedProvider(),
                 config.fusion.potaraActionCooldownSeconds, config.fusion.danceDurationSeconds, config.fusion.danceCooldownSeconds);
     }
 
-    private static void reloadMoveSkillsOrThrow() {
+    private static synchronized void synchronizeMoveProviderOrThrow() {
+        MOVE_VFX.reload();
         CobblemonMoveSkillAdapter.reload();
+        int provider = CobblemonMoveSkillAdapter.providerSize();
         int generated = CobblemonMoveSkillAdapter.size();
         int registered = SVFrameMMO.externalSkills().getByOwner(CobblemonMoveSkillAdapter.REGISTRY_OWNER).size();
-        if (generated <= 0)
-            throw new IllegalStateException("Cobblemon move catalog is loaded but zero SVFrameMMO Pokemon skills were generated");
-        if (registered != generated)
-            throw new IllegalStateException("Cobblemon move registration mismatch: generated=" + generated + ", registered=" + registered);
-        LOG.info("Cobblemon move skills published; generatedMoves={}, registeredSkills={}", generated, registered);
+        int configs;
+        try { configs = CobblemonMoveConfigGenerator.regenerate(MOVE_VFX); }
+        catch (Exception error) { throw new IllegalStateException("Could not generate Cobblemon provider move configs", error); }
+        if (provider <= 0)
+            throw new IllegalStateException("Cobblemon move provider is loaded but exposes zero moves");
+        if (generated != provider || registered != provider || configs != provider)
+            throw new IllegalStateException("Cobblemon provider synchronization mismatch: provider=" + provider
+                    + ", generated=" + generated + ", registered=" + registered + ", configs=" + configs);
+        LOG.info("Cobblemon move provider synchronized; providerMoves={}, registeredSkills={}, generatedConfigs={}, specificMoveVfx={}, genericMoveVfx={}",
+                provider, registered, configs, MOVE_VFX.planCount(), MOVE_VFX.genericPlanCount());
     }
 
     public static IntegrationConfig config() {

@@ -33,50 +33,95 @@ import java.util.stream.Stream;
 /** Replays Cobblemon's real move action-effect timelines and optional Mega Showdown Snowstorm accents. */
 public final class CobblemonMoveVfxService {
     private static final Logger LOG = LoggerFactory.getLogger("SVFrameMMO/Cobblemon-Move-VFX");
-    private volatile Map<String, CobblemonActionEffectParser.MovePlan> plans = Map.of();
+    private volatile Map<String, CobblemonActionEffectParser.MovePlan> specificPlans = Map.of();
+    private volatile Map<String, CobblemonActionEffectParser.MovePlan> genericProfiles = Map.of();
+    private volatile CobblemonActionEffectParser.MovePlan genericMove;
     private volatile Map<String, CobblemonActionEffectParser.MegaAccent> megaEffects = Map.of();
     private long packetBudgetTick = Long.MIN_VALUE;
     private int packetsThisTick;
 
     public synchronized void reload() {
-        plans = loadPlans();
+        LoadedPlans loaded = loadPlans();
+        specificPlans = loaded.specific();
+        genericProfiles = loaded.genericProfiles();
+        genericMove = loaded.genericMove();
         megaEffects = loadMegaEffects();
-        LOG.info("Loaded {} Cobblemon move VFX timeline(s) and {} Mega Showdown descriptor(s)", plans.size(), megaEffects.size());
+        LOG.info("Loaded Cobblemon move presentation provider; specific={}, genericProfiles={}, genericMove={}, MegaShowdown={}",
+                specificPlans.size(), genericProfiles.size(), genericMove != null, megaEffects.size());
     }
 
-    public int planCount() { return plans.size(); }
+    public int planCount() { return specificPlans.size(); }
+    public int genericPlanCount() { return genericProfiles.size() + (genericMove == null ? 0 : 1); }
+    public boolean hasSpecificPlan(String moveId) {
+        if (moveId == null) return false;
+        return specificPlans.containsKey(CobblemonMoveSkillAdapter.id(moveId));
+    }
+    public boolean hasGenericPlan() { return genericMove != null || !genericProfiles.isEmpty(); }
+
+    public String presentationSource(MoveTemplate move) {
+        if (move == null) return "none";
+        String id = CobblemonMoveSkillAdapter.id(move.getName());
+        if (specificPlans.containsKey(id)) return "cobblemon:action_effects/moves/" + id;
+        String profile = genericProfileKey(move);
+        if (genericProfiles.containsKey(profile)) return "cobblemon:action_effects/moves/generic/" + profile;
+        return genericMove == null ? "none" : "cobblemon:action_effects/moves/generic_move";
+    }
 
     public void renderActor(ServerPlayerEntity caster, MoveTemplate move) {
         if (caster == null || move == null) return;
-        String id = CobblemonMoveSkillAdapter.id(move.getName());
-        CobblemonActionEffectParser.MovePlan plan = plans.get(id);
+        CobblemonActionEffectParser.MovePlan plan = planFor(move);
         Vec3d actorPosition = caster.getPos().add(0d, 1d, 0d);
         if (plan != null) {
             scheduleParticles(caster, actorPosition, plan.actorParticles());
             scheduleSounds(caster, actorPosition, plan.actorSounds());
             scheduleAnimations(caster, plan.actorAnimations());
         } else caster.swingHand(Hand.MAIN_HAND, true);
-        CobblemonActionEffectParser.MegaAccent accent = megaEffects.get(effectKey(id));
+        CobblemonActionEffectParser.MegaAccent accent = megaEffects.get(effectKey(CobblemonMoveSkillAdapter.id(move.getName())));
         if (accent != null) scheduleMega(caster, accent);
     }
 
     public void renderImpact(ServerPlayerEntity caster, MoveTemplate move, Vec3d position) {
         if (caster == null || move == null || position == null) return;
-        CobblemonActionEffectParser.MovePlan plan = plans.get(CobblemonMoveSkillAdapter.id(move.getName()));
-        if (plan != null) {
-            scheduleParticles(caster, position, plan.targetParticles());
-            scheduleSounds(caster, position, plan.targetSounds());
+        String id = CobblemonMoveSkillAdapter.id(move.getName());
+        CobblemonActionEffectParser.MovePlan specific = specificPlans.get(id);
+        if (specific != null) {
+            scheduleParticles(caster, position, specific.targetParticles());
+            scheduleSounds(caster, position, specific.targetSounds());
             return;
         }
 
-        // Cobblemon's generic_move action-effect dynamically resolves these exact IDs from q.move.type.
-        if (move.getPower() > 0d) {
+        CobblemonActionEffectParser.MovePlan fallback = fallbackPlan(move);
+        if (fallback != null) {
+            scheduleParticles(caster, position, fallback.targetParticles());
+            scheduleSounds(caster, position, fallback.targetSounds());
+        }
+
+        // generic_move.json builds these IDs dynamically from q.move.type. Dynamic Molang strings cannot be
+        // represented by Identifier until the move is known, so resolve them here from the live Cobblemon template.
+        if (fallback == genericMove && move.getPower() > 0d) {
             String type = move.getElementalType().getName().toLowerCase(Locale.ROOT);
-            Identifier particle = Identifier.tryParse("cobblemon:impact_" + type);
+            Identifier impact = Identifier.tryParse("cobblemon:impact_" + type);
+            Identifier hit = Identifier.tryParse("cobblemon:hit");
             Identifier sound = Identifier.tryParse("cobblemon:impact." + type);
-            if (particle != null) emit(caster, position, particle, 0);
+            if (impact != null) emit(caster, position, impact, 0);
+            if (hit != null) emit(caster, position, hit, 1);
             if (sound != null) emitSound(caster, position, sound);
         }
+    }
+
+    private CobblemonActionEffectParser.MovePlan planFor(MoveTemplate move) {
+        CobblemonActionEffectParser.MovePlan specific = specificPlans.get(CobblemonMoveSkillAdapter.id(move.getName()));
+        return specific != null ? specific : fallbackPlan(move);
+    }
+
+    private CobblemonActionEffectParser.MovePlan fallbackPlan(MoveTemplate move) {
+        CobblemonActionEffectParser.MovePlan profile = genericProfiles.get(genericProfileKey(move));
+        return profile != null ? profile : genericMove;
+    }
+
+    private static String genericProfileKey(MoveTemplate move) {
+        return move.getDamageCategory().getName().toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "") + "_"
+                + move.getElementalType().getName().toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
     }
 
     private void scheduleParticles(ServerPlayerEntity caster, Vec3d position, List<CobblemonActionEffectParser.ParticleCue> cues) {
@@ -150,23 +195,32 @@ public final class CobblemonMoveVfxService {
         return true;
     }
 
-    private static Map<String, CobblemonActionEffectParser.MovePlan> loadPlans() {
+    private static LoadedPlans loadPlans() {
         Optional<Path> directory = FabricLoader.getInstance().getModContainer("cobblemon")
                 .flatMap(container -> container.findPath("data/cobblemon/action_effects/moves"));
-        if (directory.isEmpty()) return Map.of();
-        LinkedHashMap<String, CobblemonActionEffectParser.MovePlan> result = new LinkedHashMap<>();
+        if (directory.isEmpty()) return new LoadedPlans(Map.of(), Map.of(), null);
+        LinkedHashMap<String, CobblemonActionEffectParser.MovePlan> specific = new LinkedHashMap<>();
+        LinkedHashMap<String, CobblemonActionEffectParser.MovePlan> generic = new LinkedHashMap<>();
+        final CobblemonActionEffectParser.MovePlan[] genericMove = { null };
         try (Stream<Path> files = Files.walk(directory.get())) {
             files.filter(path -> path.getFileName().toString().endsWith(".json")).sorted().forEach(path -> {
                 try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
                     CobblemonActionEffectParser.MovePlan plan = CobblemonActionEffectParser.parseMove(JsonParser.parseReader(reader).getAsJsonObject());
-                    if (!plan.empty()) {
-                        String file = path.getFileName().toString();
-                        result.put(CobblemonMoveSkillAdapter.id(file.substring(0, file.length() - 5)), plan);
+                    if (plan.empty()) return;
+                    String relative = directory.get().relativize(path).toString().replace('\\', '/');
+                    String file = path.getFileName().toString();
+                    String base = file.substring(0, file.length() - 5);
+                    if ("generic_move.json".equals(relative)) {
+                        genericMove[0] = plan;
+                    } else if (relative.startsWith("generic/")) {
+                        generic.put(base.toLowerCase(Locale.ROOT), plan);
+                    } else {
+                        specific.put(CobblemonMoveSkillAdapter.id(base), plan);
                     }
                 } catch (Exception error) { LOG.debug("Skipping invalid move VFX {}", path, error); }
             });
         } catch (Exception error) { LOG.error("Cannot read Cobblemon move action effects", error); }
-        return Map.copyOf(result);
+        return new LoadedPlans(Map.copyOf(specific), Map.copyOf(generic), genericMove[0]);
     }
 
     private static Map<String, CobblemonActionEffectParser.MegaAccent> loadMegaEffects() {
@@ -195,4 +249,8 @@ public final class CobblemonMoveVfxService {
         if (namespace >= 0) lower = lower.substring(namespace + 1);
         return lower.replaceAll("[^a-z0-9_.-]", "");
     }
+
+    private record LoadedPlans(Map<String, CobblemonActionEffectParser.MovePlan> specific,
+                               Map<String, CobblemonActionEffectParser.MovePlan> genericProfiles,
+                               CobblemonActionEffectParser.MovePlan genericMove) { }
 }

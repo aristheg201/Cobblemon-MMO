@@ -16,14 +16,15 @@ import vn.svframe.svframemmo.skill.ClassSkill;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Exposes the complete live Cobblemon move catalog as native SVFrameMMO skills.
- * Fusion separately snapshots exactly the selected Pokemon's four current moves and force-binds only those four.
+ * Cobblemon is the provider/source-of-truth for Pokemon move skills.
+ * Every live entry in {@link Moves} is projected into SVFrameLib/SVFrameMMO; no static move catalog is maintained here.
  */
 public final class CobblemonMoveSkillAdapter {
     public static final String SOURCE_KEY = "cobblemon";
@@ -42,7 +43,7 @@ public final class CobblemonMoveSkillAdapter {
         active = this;
     }
 
-    /** Register source: cobblemon:<move> before SVFrameMMO class definitions are parsed. */
+    /** Register source syntax {@code cobblemon:<move>} before SVFrameMMO definitions are parsed. */
     public static synchronized void registerSkillSource() {
         if (sourceRegistered) return;
         CobblemonMoveSkillAdapter adapter = requireActive();
@@ -51,11 +52,7 @@ public final class CobblemonMoveSkillAdapter {
         sourceRegistered = true;
     }
 
-    /**
-     * Register every live Cobblemon move twice by design:
-     * 1) as an executable SVFrameLib SkillHandler; and
-     * 2) as an SVFrameMMO external progression skill which can be discovered/taught/bound by the MMO layer.
-     */
+    /** Re-project the complete live Cobblemon move registry into SVFrameMMO. */
     public static synchronized void reload() {
         CobblemonMoveSkillAdapter adapter = requireActive();
         SkillManager manager = SVFrameLib.inst().getSkills();
@@ -68,18 +65,21 @@ public final class CobblemonMoveSkillAdapter {
             if (existing == null) {
                 handler = new CobblemonMoveSkill(defaultConfig(canonicalId, move), move.getName(), adapter.semantics, adapter.fusionService);
                 manager.registerSkillHandler(handler);
-            } else if (existing instanceof CobblemonMoveSkill cobblemon) {
-                handler = cobblemon;
+            } else if (existing instanceof CobblemonMoveSkill) {
+                // Refresh provider-derived parameters (cooldown/categories/etc.) when Cobblemon reloads its move registry.
+                // The manager's identity entry remains stable; the external ClassSkill uses this fresh handler instance.
+                handler = new CobblemonMoveSkill(defaultConfig(canonicalId, move), move.getName(), adapter.semantics, adapter.fusionService);
             } else {
                 throw new IllegalStateException("Cobblemon move skill ID collision: " + canonicalId + " -> " + existing.getClass().getName());
             }
 
-            // Global registration does NOT mean every player automatically owns every Pokemon move.
-            // Fusion bypasses progression through its temporary four-move overlay; teach/give may unlock these definitions persistently.
             ClassSkill definition = new ClassSkill(handler, 0, 1, false, true, false);
             if (next.putIfAbsent(moveId, definition) != null)
                 throw new IllegalStateException("Two Cobblemon moves normalize to the same SVFrameMMO skill ID: " + moveId);
         }
+
+        if (next.size() != Moves.count())
+            throw new IllegalStateException("Cobblemon provider projection mismatch: registry=" + Moves.count() + ", projected=" + next.size());
 
         DEFINITIONS.clear();
         DEFINITIONS.putAll(next);
@@ -90,9 +90,10 @@ public final class CobblemonMoveSkillAdapter {
     }
 
     public static int size() { return DEFINITIONS.size(); }
+    public static int providerSize() { return Moves.count(); }
     public static Map<String, ClassSkill> definitions() { return Map.copyOf(DEFINITIONS); }
 
-    /** Snapshot exactly the Pokemon's current move slots at fusion start; normal global skill availability is untouched. */
+    /** Snapshot exactly the Pokemon's current move slots at fusion start; normal global skill ownership is untouched. */
     public Overlay snapshot(Pokemon pokemon) {
         LinkedHashMap<Integer, ClassSkill> skills = new LinkedHashMap<>();
         ArrayList<String> ids = new ArrayList<>(4);
@@ -103,9 +104,9 @@ public final class CobblemonMoveSkillAdapter {
             String moveId = id(move.getName());
             ClassSkill skill = DEFINITIONS.get(moveId);
             if (skill == null) {
-                SkillHandler<?> registered = SVFrameLib.inst().getSkills().getHandler(canonicalId(moveId));
-                if (!(registered instanceof CobblemonMoveSkill handler))
-                    throw new IllegalStateException("Cobblemon move is not registered as an SVFrameMMO skill: " + move.getName());
+                MoveTemplate template = move.getTemplate();
+                CobblemonMoveSkill handler = new CobblemonMoveSkill(defaultConfig(canonicalId(moveId), template),
+                        template.getName(), semantics, fusionService);
                 skill = new ClassSkill(handler, 0, 1, false, true, false);
                 DEFINITIONS.putIfAbsent(moveId, skill);
             }
@@ -132,14 +133,34 @@ public final class CobblemonMoveSkillAdapter {
         parameters.put("timer", 0d);
         parameters.put("delay", 0d);
         LinkedHashMap<String, Object> values = new LinkedHashMap<>();
+        values.put("source", SOURCE_KEY + ":" + id(move.getName()));
         values.put("name", move.getDisplayName().getString());
         values.put("lore", List.of(move.getDescription().getString(),
                 "Cobblemon move: " + move.getName(),
-                "Type: " + move.getElementalType().getName() + " / " + move.getDamageCategory().getName()));
+                "Type: " + move.getElementalType().getName() + " / " + move.getDamageCategory().getName(),
+                "Provider: cobblemon"));
         values.put("trigger", "CAST");
-        values.put("categories", List.of("COBBLEMON_MOVE", move.getElementalType().getName().toUpperCase(Locale.ROOT)));
+        values.put("categories", categories(move, profile));
         values.put("parameters", parameters);
         return new MapConfigObject(key, values);
+    }
+
+    static List<String> categories(MoveTemplate move, CobblemonMoveProfile profile) {
+        LinkedHashSet<String> categories = new LinkedHashSet<>();
+        String type = token(move.getElementalType().getName());
+        String category = token(move.getDamageCategory().getName());
+        String target = token(move.getTarget().name());
+        categories.add("COBBLEMON_MOVE");
+        categories.add(type);
+        categories.add("COBBLEMON_TYPE_" + type);
+        categories.add("COBBLEMON_CATEGORY_" + category);
+        categories.add("COBBLEMON_TARGET_" + target);
+        categories.add("COBBLEMON_EXECUTOR_" + profile.executor().name());
+        categories.add(move.getPower() > 0d ? "COBBLEMON_DAMAGE" : "COBBLEMON_STATUS");
+        if (move.getPriority() > 0) categories.add("COBBLEMON_PRIORITY");
+        if (profile.requiresSingleTarget()) categories.add("COBBLEMON_SINGLE_TARGET");
+        if (profile.executor() == CobblemonMoveProfile.Executor.AOE) categories.add("COBBLEMON_AOE");
+        return List.copyOf(categories);
     }
 
     @SuppressWarnings("unchecked")
@@ -147,9 +168,11 @@ public final class CobblemonMoveSkillAdapter {
         LinkedHashMap<String, Object> merged;
         if (move == null) {
             merged = new LinkedHashMap<>();
+            merged.put("source", SOURCE_KEY + ":" + requested);
             merged.put("name", requested);
-            merged.put("lore", List.of("Cobblemon move: " + requested));
+            merged.put("lore", List.of("Cobblemon move: " + requested, "Provider: cobblemon"));
             merged.put("trigger", "CAST");
+            merged.put("categories", List.of("COBBLEMON_MOVE"));
             merged.put("parameters", new LinkedHashMap<>(Map.of("cooldown", 1.5d, "mana", 0d, "stamina", 0d, "timer", 0d, "delay", 0d)));
         } else merged = new LinkedHashMap<>(defaultConfig(key, move).asMap());
         if (configured instanceof MapConfigObject map) {
@@ -183,6 +206,10 @@ public final class CobblemonMoveSkillAdapter {
         String compact = raw == null ? "" : raw.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
         if (compact.isBlank()) throw new IllegalArgumentException("Move id must not be blank");
         return compact;
+    }
+    private static String token(String raw) {
+        String value = raw == null ? "UNKNOWN" : raw.trim().toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]+", "_");
+        return value.isBlank() ? "UNKNOWN" : value;
     }
 
     public record Overlay(Map<Integer, ClassSkill> skills, List<String> moveIds) { }

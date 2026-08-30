@@ -19,6 +19,7 @@ final class CobblemonActionEffectParser {
     private static final int MAX_ANIMATION_CUES = 8;
     private static final int MAX_TIMELINE_TICKS = 600;
     private static final Pattern MOLANG_SOUND = Pattern.compile("q\\.sound\\(\\s*['\"]([^'\"]+)['\"]\\s*\\)");
+    private static final Pattern MOLANG_PARTICLE = Pattern.compile("q\\.particle\\(\\s*['\"]([^'\"]+)['\"](?:\\s*,\\s*['\"]([^'\"]+)['\"])?\\s*\\)");
 
     private CobblemonActionEffectParser() {}
 
@@ -91,10 +92,18 @@ final class CobblemonActionEffectParser {
             } else if ("entity_molang".equals(type)) {
                 boolean target = isTargetCue(step, null);
                 for (String expression : strings(step, "expressions")) {
-                    Matcher matcher = MOLANG_SOUND.matcher(expression);
-                    while (matcher.find()) {
-                        Identifier sound = soundId(matcher.group(1));
+                    Matcher soundMatcher = MOLANG_SOUND.matcher(expression);
+                    while (soundMatcher.find()) {
+                        Identifier sound = soundId(soundMatcher.group(1));
                         if (sound != null) sounds.add(new RawSoundCue(sound, at, target));
+                    }
+                    Matcher particleMatcher = MOLANG_PARTICLE.matcher(expression);
+                    while (particleMatcher.find()) {
+                        Identifier effect = Identifier.tryParse(particleMatcher.group(1));
+                        if (effect == null) continue;
+                        String locator = particleMatcher.group(2);
+                        boolean particleTarget = target || (locator != null && locator.toLowerCase(Locale.ROOT).contains("target"));
+                        particles.add(new RawParticleCue(effect, at, particleTarget));
                     }
                 }
             }
