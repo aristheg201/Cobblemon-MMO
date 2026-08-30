@@ -21,11 +21,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Persistent progression for skills contributed by integration mods.
  *
- * <p>This state is deliberately independent of {@code PlayerData}'s class-scoped skill maps. External skills survive
- * class changes and own a four-slot loadout, matching the learned-skill/loadout model used by CobblemonMMO.</p>
+ * <p>This state is deliberately independent of {@code PlayerData}'s legacy class-scoped skill maps. External skills
+ * survive class changes and use the six-slot global SVFrameMMO skill loadout. Provider-specific temporary overlays,
+ * such as a fused Pokemon's four-move set, remain independent from this persistent loadout.</p>
  */
 public final class ExternalSkillProgression {
-    public static final int LOADOUT_SIZE = 4;
+    public static final int LOADOUT_SIZE = 6;
 
     private final Map<UUID, Profile> profiles = new ConcurrentHashMap<>();
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
