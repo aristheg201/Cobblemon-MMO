@@ -67,7 +67,8 @@ public final class ClassSkill {
     public boolean isUnlockedByDefault() { return unlockedByDefault; }
     public boolean isPermanent() { return permanent; }
     public String getUnlockNamespacedKey() { return "skill:" + skill.getLowerCaseId(); }
-    public String getCooldownPath() { return "skill_" + skill.getId(); }
+    /** Must match Skill/ClassCastableSkill's CooldownMap key so HUD and runtime read the same cooldown. */
+    public String getCooldownPath() { return skill.getLowerCaseId(); }
 
     public ScalingFormula getParameterFormula(String parameter) {
         return Objects.requireNonNull(parameters.get(parameter), "Could not find parameter called '" + parameter + "'");

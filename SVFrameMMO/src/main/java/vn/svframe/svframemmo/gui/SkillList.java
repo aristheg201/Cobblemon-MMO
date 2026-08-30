@@ -11,7 +11,6 @@ import vn.svframe.svframelib.gui.editable.item.builtin.NextPageItem;
 import vn.svframe.svframelib.gui.editable.item.builtin.PreviousPageItem;
 import vn.svframe.svframelib.gui.editable.placeholder.Placeholders;
 import vn.svframe.svframelib.gui.util.IconOptions;
-import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.api.player.profess.PlayerClass;
 import vn.svframe.svframemmo.skill.PlayerSkillCatalog;
@@ -46,13 +45,13 @@ public final class SkillList extends EditableInventory {
         @Override public boolean hasDifferentDisplay() { return true; }
         @Override public Placeholders getPlaceholders(SkillViewerInventory inv, int i) {
             return GuiSupport.placeholders("skill_points", inv.playerData.getSkillPoints(),
-                    "points", inv.playerData.getSkillReallocationPoints(), "total", classPointsSpent(inv.playerData));
+                    "points", inv.playerData.getSkillReallocationPoints(), "total", PlayerSkillCatalog.spentPoints(inv.playerData));
         }
         @Override public void onClick(SkillViewerInventory inv, PluginInventory.Click click) {
-            int spent = classPointsSpent(inv.playerData);
+            int spent = PlayerSkillCatalog.spentPoints(inv.playerData);
             if (spent < 1) { GuiSupport.action(inv.getPlayer(), "&cYou have not spent any skill points."); return; }
             if (inv.playerData.getSkillReallocationPoints() < 1) { GuiSupport.action(inv.getPlayer(), "&cYou need a skill reallocation point."); return; }
-            for (var skill : inv.playerData.getProfess().getSkills()) inv.playerData.setSkillLevel(skill.getSkill(), 1);
+            PlayerSkillCatalog.resetSpentLevels(inv.playerData);
             inv.playerData.giveSkillPoints(spent);
             inv.playerData.giveSkillReallocationPoints(-1);
             GuiSupport.action(inv.getPlayer(), "&aSkill points reallocated. Available: &6" + inv.playerData.getSkillPoints());
@@ -75,7 +74,7 @@ public final class SkillList extends EditableInventory {
             return getDisplayedItem(inv, new ItemOptions(n, inv.selected.skill().getSkill().getIcon()));
         }
         @Override public Placeholders getPlaceholders(SkillViewerInventory inv, int n) {
-            if (inv.selected == null) return new Placeholders();
+            if (inv.selected == null) return structuralPlaceholders();
             return skillPlaceholders(inv.selected, inv.selected.level());
         }
     }
@@ -96,7 +95,7 @@ public final class SkillList extends EditableInventory {
             return super.getDisplayedItem(inv, n);
         }
         @Override public Placeholders getPlaceholders(SkillViewerInventory inv, int n) {
-            if (inv.selected == null) return new Placeholders();
+            if (inv.selected == null) return structuralPlaceholders();
             int level = inv.selected.level() + n - offset;
             return skillPlaceholders(inv.selected, level);
         }
@@ -145,10 +144,12 @@ public final class SkillList extends EditableInventory {
             int slot = inv.slotNumber(n);
             PlayerClass.SkillSlotDefinition definition = inv.playerData.getProfess().getSkillSlot(slot);
             PlayerSkillCatalog.Entry bound = PlayerSkillCatalog.bindings(inv.playerData).get(slot);
-            return GuiSupport.placeholders(
+            Placeholders placeholders = GuiSupport.placeholders(
                     "slot", definition == null ? "Skill Slot " + slot : definition.name(),
                     "selected", inv.selected == null ? none : inv.selected.skill().getSkill().getName(),
-                    "skill", bound == null ? none : bound.skill().getSkill().getName());
+                    "skill", bound == null ? none : bound.skill().getSkill().getName(),
+                    "slot_lore", "{slot-lore}", "skill_lore", "{skill-lore}");
+            return placeholders;
         }
         @Override public boolean hasDifferentDisplay() { return true; }
         @Override public void onClick(SkillViewerInventory inv, PluginInventory.Click click) {
@@ -214,7 +215,7 @@ public final class SkillList extends EditableInventory {
         }
         @Override public Placeholders getPlaceholders(SkillViewerInventory inv, int n) {
             int index = inv.getPageIndex(n);
-            return index < 0 || index >= inv.skills.size() ? new Placeholders() : skillPlaceholders(inv.skills.get(index), inv.skills.get(index).level());
+            return index < 0 || index >= inv.skills.size() ? structuralPlaceholders() : skillPlaceholders(inv.skills.get(index), inv.skills.get(index).level());
         }
         @Override public void onClick(SkillViewerInventory inv, PluginInventory.Click click) {
             if (disableClick) return;
@@ -233,12 +234,17 @@ public final class SkillList extends EditableInventory {
         private final int shiftCost;
         UpgradeItem(Map<String, ?> config) { super(config); shiftCost = Math.max(1, GuiSupport.integer(config, "shift-cost", 5)); }
         @Override public Placeholders getPlaceholders(SkillViewerInventory inv, int n) {
-            if (inv.selected == null) return new Placeholders();
+            if (inv.selected == null) return structuralPlaceholders();
             String name = inv.selected.skill().getSkill().getName();
-            return GuiSupport.placeholders("skill_caps", name.toUpperCase(java.util.Locale.ROOT), "skill", name,
-                    "skill_points", inv.playerData.getSkillPoints(), "shift_points", shiftCost);
+            Placeholders placeholders = skillPlaceholders(inv.selected, inv.selected.level());
+            placeholders.register("skill_caps", name.toUpperCase(java.util.Locale.ROOT));
+            placeholders.register("skill_points", inv.playerData.getSkillPoints());
+            placeholders.register("shift_points", shiftCost);
+            return placeholders;
         }
-        @Override public boolean isDisplayed(SkillViewerInventory inv) { return inv.selected != null && inv.selected.origin() == PlayerSkillCatalog.Origin.CLASS; }
+        @Override public boolean isDisplayed(SkillViewerInventory inv) {
+            return inv.selected != null && inv.selected.learned() && inv.selected.skill().isUpgradable();
+        }
         @Override public void onClick(SkillViewerInventory inv, PluginInventory.Click click) { if (inv.selected != null) inv.tryUpgrade(inv.selected, click, shiftCost); }
     }
 
@@ -282,7 +288,13 @@ public final class SkillList extends EditableInventory {
                 if (index < skills.size()) selected = skills.get(index);
             }
         }
-        @Override public String getRawName() { return guiName.replace("{skill}", selected == null ? "None" : selected.skill().getSkill().getName()); }
+
+        @Override public String getRawName() {
+            String name = selected == null ? "None" : selected.skill().getSkill().getName();
+            return guiName.replace("{skill}", name).replace("{selected}", name);
+        }
+        /** Resolve the selected-skill placeholder here as well so title correctness does not depend on base GUI bake order. */
+        @Override public String getTitle() { return GuiSupport.colors(getRawName()); }
         @Override public int getMaxPage() { return computeMaxPage(skills.size()); }
 
         int slotNumber(int visualIndex) {
@@ -291,36 +303,41 @@ public final class SkillList extends EditableInventory {
         }
 
         void tryUpgrade(PlayerSkillCatalog.Entry entry, PluginInventory.Click click, int shiftCost) {
-            if (entry.origin() != PlayerSkillCatalog.Origin.CLASS) { GuiSupport.action(getPlayer(), "&cIntegration skills are leveled by their source system."); return; }
-            if (!entry.learned()) { GuiSupport.action(getPlayer(), "&cRequired class level has not been met."); return; }
+            if (!entry.learned()) { GuiSupport.action(getPlayer(), "&cThis skill is locked."); return; }
             if (!entry.skill().isUpgradable()) { GuiSupport.action(getPlayer(), "&cThis skill cannot be upgraded."); return; }
-            int current = playerData.getSkillLevel(entry.id());
+            int current = entry.level();
             if (entry.skill().hasMaxLevel() && current >= entry.skill().getMaxLevel()) { GuiSupport.action(getPlayer(), "&cSkill is already maxed out."); return; }
-            int amount = shiftCost > 0 && GuiSupport.shift(click) ? shiftCost : 1;
-            if (playerData.getSkillPoints() < amount) { GuiSupport.action(getPlayer(), "&cNot enough skill points. Required: " + amount); return; }
-            playerData.giveSkillPoints(-amount);
-            playerData.setSkillLevel(entry.id(), current + amount);
+            int requested = shiftCost > 0 && GuiSupport.shift(click) ? shiftCost : 1;
+            if (entry.skill().hasMaxLevel()) requested = Math.min(requested, entry.skill().getMaxLevel() - current);
+            if (requested <= 0) { GuiSupport.action(getPlayer(), "&cSkill is already maxed out."); return; }
+            if (playerData.getSkillPoints() < requested) { GuiSupport.action(getPlayer(), "&cNot enough skill points. Required: " + requested); return; }
+            int purchased = PlayerSkillCatalog.upgrade(playerData, entry, requested);
+            if (purchased < 1) { GuiSupport.action(getPlayer(), "&cSkill progression request was rejected."); return; }
             refreshCatalog();
             selected = skills.stream().filter(e -> e.id().equals(entry.id())).findFirst().orElse(selected);
-            GuiSupport.action(getPlayer(), "&aUpgraded &6" + entry.skill().getSkill().getName() + "&a to level &6" + playerData.getSkillLevel(entry.id()));
+            GuiSupport.action(getPlayer(), "&aUpgraded &6" + entry.skill().getSkill().getName() + "&a to level &6" + selected.level());
             open();
         }
-    }
-
-    private static int classPointsSpent(PlayerData data) {
-        int total = 0;
-        for (var skill : data.getProfess().getSkills()) total += Math.max(0, data.getSkillLevel(skill.getSkill().getId()) - 1);
-        return total;
     }
 
     private static boolean isMax(PlayerSkillCatalog.Entry entry) {
         return entry.skill().hasMaxLevel() && entry.level() >= entry.skill().getMaxLevel();
     }
 
+    private static Placeholders structuralPlaceholders() {
+        return GuiSupport.placeholders("unlocked", "{unlocked}", "locked", "{locked}",
+                "max_level", "{max_level}", "lore", "{lore}");
+    }
+
     private static Placeholders skillPlaceholders(PlayerSkillCatalog.Entry entry, int level) {
-        return GuiSupport.placeholders("selected", entry.skill().getSkill().getName(), "skill", entry.skill().getSkill().getName(),
-                "unlock", entry.skill().getUnlockLevel(), "level", level, "roman", GuiSupport.roman(level),
-                "source", entry.origin() == PlayerSkillCatalog.Origin.CLASS ? "Class" : "Integration");
+        Placeholders placeholders = structuralPlaceholders();
+        placeholders.register("selected", entry.skill().getSkill().getName());
+        placeholders.register("skill", entry.skill().getSkill().getName());
+        placeholders.register("unlock", entry.skill().getUnlockLevel());
+        placeholders.register("level", level);
+        placeholders.register("roman", GuiSupport.roman(level));
+        placeholders.register("source", entry.origin() == PlayerSkillCatalog.Origin.CLASS ? "Class" : "Integration");
+        return placeholders;
     }
 
     private static List<String> calculateLore(SkillViewerInventory inv, PlayerSkillCatalog.Entry entry, int level) {
