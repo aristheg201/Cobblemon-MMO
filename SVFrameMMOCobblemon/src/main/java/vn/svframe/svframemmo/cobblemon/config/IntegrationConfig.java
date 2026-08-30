@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,10 +21,12 @@ public final class IntegrationConfig {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path FILE = FabricLoader.getInstance().getConfigDir().resolve("SVFrameMMOCobblemon/config.json");
     private static final Set<String> POTARA_EFFECTS = Set.of("mega_showdown:kyurem_black", "mega_showdown:kyurem_white");
+    private static final Set<String> ECONOMY_PROVIDERS = Set.of("cobbledollars", "beconomy", "impactor");
 
     public PotaraConfig potara = new PotaraConfig();
     public FusionConfig fusion = new FusionConfig();
     public VfxConfig vfx = new VfxConfig();
+    @SerializedName("pokemon-skills") public PokemonSkillShopConfig pokemonSkills = new PokemonSkillShopConfig();
 
     public static final class PotaraConfig {
         @SerializedName("potara-earrings") public PotaraItem basic = new PotaraItem("minecraft:amethyst_shard", 71001);
@@ -57,6 +60,19 @@ public final class IntegrationConfig {
         @SerializedName("max-fallback-particles-per-emission") public int maxFallbackParticlesPerEmission = 32;
     }
 
+    public static final class PokemonSkillShopConfig {
+        public boolean enabled = true;
+        @SerializedName("economy-provider") public String economyProvider = "cobbledollars";
+        public String currency = "cobbledollars";
+        @SerializedName("default-price") public double defaultPrice = 2500d;
+        public Map<String, Double> prices = new LinkedHashMap<>();
+        public String title = "Pokemon Skills";
+
+        public String normalizedProvider() {
+            return economyProvider == null ? "" : economyProvider.trim().toLowerCase(Locale.ROOT);
+        }
+    }
+
     public static final class StatConversion {
         @SerializedName("hp-to-max-health") public double hpToMaxHealth = 0.10d;
         @SerializedName("special-attack-to-max-mana") public double specialAttackToMaxMana = 0.10d;
@@ -87,6 +103,7 @@ public final class IntegrationConfig {
         IntegrationConfig parsed = GSON.fromJson(Files.readString(FILE), IntegrationConfig.class);
         if (parsed == null) parsed = new IntegrationConfig();
         parsed.validate();
+        Files.writeString(FILE, GSON.toJson(parsed));
         return parsed;
     }
 
@@ -95,6 +112,8 @@ public final class IntegrationConfig {
         if (fusion == null) fusion = new FusionConfig();
         if (fusion.statConversion == null) fusion.statConversion = new StatConversion();
         if (vfx == null) vfx = new VfxConfig();
+        if (pokemonSkills == null) pokemonSkills = new PokemonSkillShopConfig();
+        if (pokemonSkills.prices == null) pokemonSkills.prices = new LinkedHashMap<>();
         if (fusion.potaraActionCooldownSeconds != 10) throw new IllegalArgumentException("potara-action-cooldown-seconds is fixed at 10");
         if (fusion.danceDurationSeconds != 10 * 60) throw new IllegalArgumentException("dance-duration-seconds is fixed at 600");
         if (fusion.danceCooldownSeconds != 15 * 60) throw new IllegalArgumentException("dance-cooldown-seconds is fixed at 900");
@@ -104,7 +123,7 @@ public final class IntegrationConfig {
         validateScale("offense-to-attack-damage", fusion.statConversion.offenseToAttackDamage);
         if (vfx.potaraFusionEffects == null || vfx.potaraFusionEffects.isEmpty()) throw new IllegalArgumentException("potara-fusion-effects must contain at least one Mega Showdown Kyurem fusion effect");
         for (String rawEffect : vfx.potaraFusionEffects) {
-            String normalized = rawEffect == null ? "" : rawEffect.trim().toLowerCase(java.util.Locale.ROOT);
+            String normalized = rawEffect == null ? "" : rawEffect.trim().toLowerCase(Locale.ROOT);
             if (!POTARA_EFFECTS.contains(normalized)) throw new IllegalArgumentException("potara-fusion-effects may only contain mega_showdown:kyurem_black and mega_showdown:kyurem_white");
         }
         if (!Double.isFinite(vfx.moveBroadcastRadius) || vfx.moveBroadcastRadius <= 0d || vfx.moveBroadcastRadius > 64d) throw new IllegalArgumentException("move-broadcast-radius must be 0..64");
@@ -112,6 +131,26 @@ public final class IntegrationConfig {
         if (vfx.maxViewersPerEmission < 1 || vfx.maxViewersPerEmission > 128) throw new IllegalArgumentException("max-viewers-per-emission must be 1..128");
         if (vfx.maxSnowstormPacketsPerTick < 1 || vfx.maxSnowstormPacketsPerTick > 4096) throw new IllegalArgumentException("max-snowstorm-packets-per-tick must be 1..4096");
         if (vfx.maxFallbackParticlesPerEmission < 1 || vfx.maxFallbackParticlesPerEmission > 256) throw new IllegalArgumentException("max-fallback-particles-per-emission must be 1..256");
+
+        String provider = pokemonSkills.normalizedProvider();
+        if (!ECONOMY_PROVIDERS.contains(provider)) throw new IllegalArgumentException("pokemon-skills.economy-provider must be one of cobbledollars, beconomy, impactor");
+        if (pokemonSkills.currency == null || pokemonSkills.currency.isBlank()) throw new IllegalArgumentException("pokemon-skills.currency must not be blank");
+        validatePrice("pokemon-skills.default-price", pokemonSkills.defaultPrice);
+        LinkedHashMap<String, Double> normalizedPrices = new LinkedHashMap<>();
+        for (Map.Entry<String, Double> entry : pokemonSkills.prices.entrySet()) {
+            String key = entry.getKey() == null ? "" : entry.getKey().trim();
+            if (key.isBlank()) throw new IllegalArgumentException("pokemon-skills.prices contains a blank skill key");
+            if (entry.getValue() == null) throw new IllegalArgumentException("pokemon-skills.prices." + key + " must not be null");
+            validatePrice("pokemon-skills.prices." + key, entry.getValue());
+            normalizedPrices.put(key, entry.getValue());
+        }
+        pokemonSkills.prices = normalizedPrices;
+        if (provider.equals("cobbledollars")) {
+            validateWholePrice("pokemon-skills.default-price", pokemonSkills.defaultPrice);
+            for (Map.Entry<String, Double> entry : pokemonSkills.prices.entrySet())
+                validateWholePrice("pokemon-skills.prices." + entry.getKey(), entry.getValue());
+        }
+        if (pokemonSkills.title == null || pokemonSkills.title.isBlank()) pokemonSkills.title = "Pokemon Skills";
 
         Set<String> pairs = new HashSet<>();
         for (Map.Entry<FusionTier, PotaraItem> entry : potara.byTier().entrySet()) {
@@ -128,5 +167,13 @@ public final class IntegrationConfig {
 
     private static void validateScale(String name, double value) {
         if (!Double.isFinite(value) || value < 0d) throw new IllegalArgumentException(name + " must be finite and >= 0");
+    }
+
+    private static void validatePrice(String name, double value) {
+        if (!Double.isFinite(value) || value <= 0d) throw new IllegalArgumentException(name + " must be finite and > 0");
+    }
+
+    private static void validateWholePrice(String name, double value) {
+        if (Math.rint(value) != value) throw new IllegalArgumentException(name + " must be a whole number when economy-provider is cobbledollars");
     }
 }

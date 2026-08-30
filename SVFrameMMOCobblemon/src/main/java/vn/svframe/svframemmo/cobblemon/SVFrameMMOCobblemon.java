@@ -31,6 +31,8 @@ import vn.svframe.svframemmo.cobblemon.integration.PlaceholderIntegration;
 import vn.svframe.svframemmo.cobblemon.item.PotaraTierResolver;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkill;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkillAdapter;
+import vn.svframe.svframemmo.cobblemon.move.PokemonSkillCommands;
+import vn.svframe.svframemmo.cobblemon.move.PokemonSkillShopService;
 
 /** Separate native integration mod bridging Cobblemon and Mega Showdown to SVFrameMMO. */
 public final class SVFrameMMOCobblemon implements ModInitializer {
@@ -41,6 +43,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
     private static final FusionService FUSIONS = new FusionService();
     private static final CobblemonMoveVfxService MOVE_VFX = new CobblemonMoveVfxService();
     private static final CosmeticService COSMETICS = new CosmeticService();
+    private static final PokemonSkillShopService POKEMON_SKILLS = new PokemonSkillShopService();
 
     @Override public void onInitialize() {
         FusionMorphNetworking.register();
@@ -78,6 +81,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         SkillCastEvent.EVENT.register(COSMETICS::onSkillSuccess);
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             FusionCommands.register(dispatcher, FUSIONS);
+            PokemonSkillCommands.register(dispatcher, POKEMON_SKILLS);
             CosmeticCommands.register(dispatcher, COSMETICS);
         });
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !FUSIONS.blocksDamage(entity));
@@ -111,11 +115,11 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
                 COSMETICS.onDisconnect(handler.player);
             });
         });
-        LOG.info("Cobblemon Integration online; generatedMoves={}, registeredSkills={}, moveVfxPlans={}, cosmetics={}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
+        LOG.info("Cobblemon Integration online; generatedMoves={}, registeredSkills={}, moveVfxPlans={}, cosmetics={}, PokemonSkillShop={}/{}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
                 CobblemonMoveSkillAdapter.size(),
                 SVFrameMMO.externalSkills().getByOwner(CobblemonMoveSkillAdapter.REGISTRY_OWNER).size(),
-                MOVE_VFX.planCount(), COSMETICS.size(), config.fusion.potaraActionCooldownSeconds,
-                config.fusion.danceDurationSeconds, config.fusion.danceCooldownSeconds);
+                MOVE_VFX.planCount(), COSMETICS.size(), config.pokemonSkills.enabled, config.pokemonSkills.normalizedProvider(),
+                config.fusion.potaraActionCooldownSeconds, config.fusion.danceDurationSeconds, config.fusion.danceCooldownSeconds);
     }
 
     private static void reloadMoveSkillsOrThrow() {
@@ -139,4 +143,5 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
     public static FusionService fusions() { return FUSIONS; }
     public static CobblemonMoveVfxService moveVfx() { return MOVE_VFX; }
     public static CosmeticService cosmetics() { return COSMETICS; }
+    public static PokemonSkillShopService pokemonSkills() { return POKEMON_SKILLS; }
 }
