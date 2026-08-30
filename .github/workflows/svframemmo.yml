@@ -110,6 +110,7 @@ jobs:
         run: |
           set -euo pipefail
           cd SVFrameMMO
+          rm -rf run/config/SVFrameMMO run/svframemmo-userdata
           mkdir -p run
           printf 'eula=true\n' > run/eula.txt
           set +e
