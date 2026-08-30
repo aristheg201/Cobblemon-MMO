@@ -58,8 +58,11 @@ public final class PersistentHudRuntime implements ModInitializer {
         for (PlayerData data : SVFrameMMO.playerData().all()) {
             if (!data.isOnline()) continue;
             var mmo = data.getMMOPlayerData();
-            if (!mmo.isPlaying()) continue;
 
+            // HUD ownership is based on the native SVFrameMMO PlayerData lifecycle, not
+            // SVFrameLib profile readiness. Classless servers legitimately use the
+            // fallback MMO session before/without choosing a profile, and gating this on
+            // MMOPlayerData#isPlaying() silently disabled the entire HUD for those players.
             enforceHealthCap(data, hud.maxVanillaHealth());
 
             if (!live.actionBar().enabled() || data.getPlayer().isDead()) continue;
