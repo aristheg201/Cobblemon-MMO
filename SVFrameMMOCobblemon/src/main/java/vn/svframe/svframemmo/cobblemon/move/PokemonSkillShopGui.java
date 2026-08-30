@@ -77,9 +77,9 @@ public final class PokemonSkillShopGui {
     }
 
     private ItemStack displayOffer(PokemonSkillShopService.Offer offer) {
-        ItemStack stack = new ItemStack(offer.owned() ? Items.LIME_DYE : Items.ENCHANTED_BOOK);
+        ItemStack stack = PokemonSkillIconResolver.stack(offer.moveId());
         String status = offer.owned()
-                ? "Owned | manage/bind in /mmo skills"
+                ? "Owned | manage/bind/upgrade in /mmo skills"
                 : "Buy: " + PokemonSkillShopService.format(offer.price()) + " " + shop.currencyLabel();
         stack.set(DataComponentTypes.CUSTOM_NAME, Text.literal(offer.name() + " | " + status));
         return stack;
@@ -97,7 +97,7 @@ public final class PokemonSkillShopGui {
         PokemonSkillShopService.Offer offer = offerBySlot.get(slot);
         if (offer == null) return;
         if (offer.owned()) {
-            player.sendMessage(Text.literal(offer.name() + " is already owned. Use /mmo skills to manage its binding."), true);
+            player.sendMessage(Text.literal(offer.name() + " is already owned. Use /mmo skills to manage its binding and level."), true);
             return;
         }
         shop.purchase(player, offer.moveId(), actualPage);

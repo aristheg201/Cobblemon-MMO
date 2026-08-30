@@ -17,6 +17,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 import vn.svframe.svframemmo.cobblemon.config.IntegrationConfig;
+import vn.svframe.svframemmo.cobblemon.integration.LuckPermsIntegration;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -34,8 +35,9 @@ public final class PotaraCommands {
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("potara")
-                .requires(source -> source.hasPermissionLevel(2))
+                .executes(context -> usage(context.getSource()))
                 .then(literal("give")
+                        .requires(PotaraCommands::canGive)
                         .then(argument("tier", StringArgumentType.word())
                                 .suggests((context, builder) -> suggestTiers(builder))
                                 .executes(context -> give(context, context.getSource().getPlayerOrThrow(), 1))
@@ -45,6 +47,20 @@ public final class PotaraCommands {
                                                 .executes(context -> give(context,
                                                         EntityArgumentType.getPlayer(context, "player"),
                                                         IntegerArgumentType.getInteger(context, "amount"))))))));
+    }
+
+    private static boolean canGive(ServerCommandSource source) {
+        if (source.hasPermissionLevel(2)) return true;
+        if (source.getEntity() instanceof ServerPlayerEntity player)
+            return LuckPermsIntegration.hasStrict(player, LuckPermsIntegration.POTARA_GIVE);
+        return false;
+    }
+
+    private static int usage(ServerCommandSource source) {
+        source.sendFeedback(() -> Text.literal("Potara: /potara give <basic|level2|advancement|god> [player] [amount]"), false);
+        if (!canGive(source))
+            source.sendFeedback(() -> Text.literal("Admin give requires vanilla permission level 2 or LuckPerms node " + LuckPermsIntegration.POTARA_GIVE), false);
+        return 1;
     }
 
     private static int give(CommandContext<ServerCommandSource> context, ServerPlayerEntity target, int amount) {

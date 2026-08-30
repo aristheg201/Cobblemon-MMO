@@ -68,6 +68,13 @@ public final class IntegrationConfig {
         public Map<String, Double> prices = new LinkedHashMap<>();
         public String title = "Pokemon Skills";
 
+        /** Native SVFrameMMO progression for learned Cobblemon moves. */
+        @SerializedName("max-level") public int maxLevel = 10;
+        @SerializedName("damage-per-level") public double damagePerLevel = 0.05d;
+        @SerializedName("healing-per-level") public double healingPerLevel = 0.05d;
+        @SerializedName("cooldown-reduction-per-level") public double cooldownReductionPerLevel = 0.02d;
+        @SerializedName("minimum-cooldown-multiplier") public double minimumCooldownMultiplier = 0.50d;
+
         public String normalizedProvider() {
             return economyProvider == null ? "" : economyProvider.trim().toLowerCase(Locale.ROOT);
         }
@@ -136,6 +143,11 @@ public final class IntegrationConfig {
         if (!ECONOMY_PROVIDERS.contains(provider)) throw new IllegalArgumentException("pokemon-skills.economy-provider must be one of cobbledollars, beconomy, impactor");
         if (pokemonSkills.currency == null || pokemonSkills.currency.isBlank()) throw new IllegalArgumentException("pokemon-skills.currency must not be blank");
         validatePrice("pokemon-skills.default-price", pokemonSkills.defaultPrice);
+        if (pokemonSkills.maxLevel < 2 || pokemonSkills.maxLevel > 100) throw new IllegalArgumentException("pokemon-skills.max-level must be 2..100");
+        validateFraction("pokemon-skills.damage-per-level", pokemonSkills.damagePerLevel, 0d, 1d);
+        validateFraction("pokemon-skills.healing-per-level", pokemonSkills.healingPerLevel, 0d, 1d);
+        validateFraction("pokemon-skills.cooldown-reduction-per-level", pokemonSkills.cooldownReductionPerLevel, 0d, 0.25d);
+        validateFraction("pokemon-skills.minimum-cooldown-multiplier", pokemonSkills.minimumCooldownMultiplier, 0.05d, 1d);
         LinkedHashMap<String, Double> normalizedPrices = new LinkedHashMap<>();
         for (Map.Entry<String, Double> entry : pokemonSkills.prices.entrySet()) {
             String key = entry.getKey() == null ? "" : entry.getKey().trim();
@@ -167,6 +179,11 @@ public final class IntegrationConfig {
 
     private static void validateScale(String name, double value) {
         if (!Double.isFinite(value) || value < 0d) throw new IllegalArgumentException(name + " must be finite and >= 0");
+    }
+
+    private static void validateFraction(String name, double value, double min, double max) {
+        if (!Double.isFinite(value) || value < min || value > max)
+            throw new IllegalArgumentException(name + " must be within " + min + ".." + max);
     }
 
     private static void validatePrice(String name, double value) {

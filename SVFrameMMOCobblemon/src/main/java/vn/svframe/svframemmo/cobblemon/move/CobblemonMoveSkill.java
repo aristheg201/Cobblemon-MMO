@@ -80,8 +80,9 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
         MoveSemantic semantic = result.semantic;
         switch (profile.executor()) {
             case HEAL -> {
-                double scale = 1d + Math.max(0, SVFrameMMO.playerData().get(player).getLevel() - 1) * 0.035d;
-                player.heal((float) (profile.healBase() * scale));
+                double healing = Math.max(0d, metadata.getParameter("healing"));
+                if (healing <= 0d) healing = Math.max(0d, profile.healBase());
+                player.heal((float) healing);
                 if (profile.cleanse()) cleanse(player);
                 applySelfSemantic(player, semantic, 0d);
             }
@@ -124,8 +125,8 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
         if (target == null || !rollAccuracy(move)) return;
         int hits = semantic.multiHitMin() == semantic.multiHitMax() ? semantic.multiHitMin()
                 : ThreadLocalRandom.current().nextInt(semantic.multiHitMin(), semantic.multiHitMax() + 1);
-        double scale = 1d + Math.max(0, SVFrameMMO.playerData().get(player).getLevel() - 1) * 0.025d;
-        double perHit = Math.max(1d, profile.baseDamage() * scale);
+        double configuredDamage = Math.max(0d, metadata.getParameter("damage"));
+        double perHit = Math.max(1d, configuredDamage > 0d ? configuredDamage : profile.baseDamage());
         double dealt = 0d;
         DamageType category = profile.damageCategory().equals("physical") ? DamageType.PHYSICAL : DamageType.MAGIC;
         for (int i = 0; i < hits && target.isAlive(); i++) {

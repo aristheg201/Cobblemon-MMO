@@ -11,6 +11,7 @@ import vn.svframe.svframelib.skill.handler.SkillHandlerSource;
 import vn.svframe.svframelib.util.configobject.ConfigObject;
 import vn.svframe.svframelib.util.configobject.MapConfigObject;
 import vn.svframe.svframemmo.SVFrameMMO;
+import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionService;
 import vn.svframe.svframemmo.skill.ClassSkill;
 
@@ -57,6 +58,7 @@ public final class CobblemonMoveSkillAdapter {
         CobblemonMoveSkillAdapter adapter = requireActive();
         SkillManager manager = SVFrameLib.inst().getSkills();
         LinkedHashMap<String, ClassSkill> next = new LinkedHashMap<>();
+        int maxLevel = SVFrameMMOCobblemon.config().pokemonSkills.maxLevel;
         for (MoveTemplate move : Moves.all()) {
             String moveId = id(move.getName());
             String canonicalId = canonicalId(moveId);
@@ -66,14 +68,12 @@ public final class CobblemonMoveSkillAdapter {
                 handler = new CobblemonMoveSkill(defaultConfig(canonicalId, move), move.getName(), adapter.semantics, adapter.fusionService);
                 manager.registerSkillHandler(handler);
             } else if (existing instanceof CobblemonMoveSkill) {
-                // Refresh provider-derived parameters (cooldown/categories/etc.) when Cobblemon reloads its move registry.
-                // The manager's identity entry remains stable; the external ClassSkill uses this fresh handler instance.
                 handler = new CobblemonMoveSkill(defaultConfig(canonicalId, move), move.getName(), adapter.semantics, adapter.fusionService);
             } else {
                 throw new IllegalStateException("Cobblemon move skill ID collision: " + canonicalId + " -> " + existing.getClass().getName());
             }
 
-            ClassSkill definition = new ClassSkill(handler, 0, 1, false, true, false);
+            ClassSkill definition = new ClassSkill(handler, 0, maxLevel, false, true, maxLevel > 1);
             if (next.putIfAbsent(moveId, definition) != null)
                 throw new IllegalStateException("Two Cobblemon moves normalize to the same SVFrameMMO skill ID: " + moveId);
         }
@@ -107,7 +107,8 @@ public final class CobblemonMoveSkillAdapter {
                 MoveTemplate template = move.getTemplate();
                 CobblemonMoveSkill handler = new CobblemonMoveSkill(defaultConfig(canonicalId(moveId), template),
                         template.getName(), semantics, fusionService);
-                skill = new ClassSkill(handler, 0, 1, false, true, false);
+                int maxLevel = SVFrameMMOCobblemon.config().pokemonSkills.maxLevel;
+                skill = new ClassSkill(handler, 0, maxLevel, false, true, maxLevel > 1);
                 DEFINITIONS.putIfAbsent(moveId, skill);
             }
             skills.put(slot++, skill);
@@ -126,19 +127,32 @@ public final class CobblemonMoveSkillAdapter {
 
     static MapConfigObject defaultConfig(String key, MoveTemplate move) {
         CobblemonMoveProfile profile = CobblemonMoveProfile.of(move);
+        var progression = SVFrameMMOCobblemon.config().pokemonSkills;
         Map<String, Object> parameters = new LinkedHashMap<>();
-        parameters.put("cooldown", profile.cooldownSeconds());
+        double cooldown = Math.max(0d, profile.cooldownSeconds());
+        parameters.put("cooldown", linear(cooldown, -cooldown * progression.cooldownReductionPerLevel,
+                cooldown * progression.minimumCooldownMultiplier));
+        parameters.put("damage", linear(Math.max(0d, profile.baseDamage()), Math.max(0d, profile.baseDamage()) * progression.damagePerLevel));
+        parameters.put("healing", linear(Math.max(0d, profile.healBase()), Math.max(0d, profile.healBase()) * progression.healingPerLevel));
         parameters.put("mana", 0d);
         parameters.put("stamina", 0d);
         parameters.put("timer", 0d);
         parameters.put("delay", 0d);
+
+        ArrayList<String> lore = new ArrayList<>();
+        String description = move.getDescription().getString();
+        if (!description.isBlank()) lore.add(description);
+        lore.add("&7Type: &f" + move.getElementalType().getName() + " &8/ &f" + move.getDamageCategory().getName());
+        if (profile.baseDamage() > 0d) lore.add("&cDamage: &f{damage}");
+        if (profile.healBase() > 0d) lore.add("&aHealing: &f{healing}");
+        lore.add("&eCooldown: &6{cooldown}s");
+        lore.add("&7Provider: Cobblemon");
+
         LinkedHashMap<String, Object> values = new LinkedHashMap<>();
         values.put("source", SOURCE_KEY + ":" + id(move.getName()));
         values.put("name", move.getDisplayName().getString());
-        values.put("lore", List.of(move.getDescription().getString(),
-                "Cobblemon move: " + move.getName(),
-                "Type: " + move.getElementalType().getName() + " / " + move.getDamageCategory().getName(),
-                "Provider: cobblemon"));
+        values.put("icon", PokemonSkillIconResolver.iconConfig(move));
+        values.put("lore", lore);
         values.put("trigger", "CAST");
         values.put("categories", categories(move, profile));
         values.put("parameters", parameters);
@@ -170,10 +184,13 @@ public final class CobblemonMoveSkillAdapter {
             merged = new LinkedHashMap<>();
             merged.put("source", SOURCE_KEY + ":" + requested);
             merged.put("name", requested);
-            merged.put("lore", List.of("Cobblemon move: " + requested, "Provider: cobblemon"));
+            merged.put("icon", Map.of("item", "cobblemon:normal_gem"));
+            merged.put("lore", List.of("Cobblemon move: " + requested, "&eCooldown: &6{cooldown}s", "Provider: cobblemon"));
             merged.put("trigger", "CAST");
             merged.put("categories", List.of("COBBLEMON_MOVE"));
-            merged.put("parameters", new LinkedHashMap<>(Map.of("cooldown", 1.5d, "mana", 0d, "stamina", 0d, "timer", 0d, "delay", 0d)));
+            merged.put("parameters", new LinkedHashMap<>(Map.of(
+                    "cooldown", 1.5d, "damage", 1d, "healing", 0d,
+                    "mana", 0d, "stamina", 0d, "timer", 0d, "delay", 0d)));
         } else merged = new LinkedHashMap<>(defaultConfig(key, move).asMap());
         if (configured instanceof MapConfigObject map) {
             for (Map.Entry<String, Object> entry : map.asMap().entrySet()) {
@@ -186,6 +203,21 @@ public final class CobblemonMoveSkillAdapter {
             }
         }
         return new MapConfigObject(key, merged);
+    }
+
+    private static Map<String, Object> linear(double base, double perLevel) {
+        LinkedHashMap<String, Object> formula = new LinkedHashMap<>();
+        formula.put("base", base);
+        formula.put("per-level", perLevel);
+        return formula;
+    }
+
+    private static Map<String, Object> linear(double base, double perLevel, double min) {
+        LinkedHashMap<String, Object> formula = new LinkedHashMap<>();
+        formula.put("base", base);
+        formula.put("per-level", perLevel);
+        formula.put("min", Math.max(0d, min));
+        return formula;
     }
 
     private static CobblemonMoveSkillAdapter requireActive() {

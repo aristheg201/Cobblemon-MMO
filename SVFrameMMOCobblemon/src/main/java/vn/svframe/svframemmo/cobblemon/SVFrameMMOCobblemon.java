@@ -34,6 +34,7 @@ import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveConfigGenerator;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkill;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkillAdapter;
 import vn.svframe.svframemmo.cobblemon.move.PokemonSkillCommands;
+import vn.svframe.svframemmo.cobblemon.move.PokemonSkillIconResolver;
 import vn.svframe.svframemmo.cobblemon.move.PokemonSkillShopService;
 
 /** Separate native integration mod bridging Cobblemon and Mega Showdown to SVFrameMMO. */
@@ -68,8 +69,6 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             synchronizeMoveProviderOrThrow();
             if (!SVFrameMMO.reload()) LOG.warn("SVFrameMMO reload after Cobblemon move registry initialization failed");
         });
-        // Cobblemon is the provider. Any registry mutation (including moves added by a newer Cobblemon/add-on)
-        // re-projects skills, presentation data and generated configs from the new live registry automatically.
         Moves.INSTANCE.getObservable().subscribe(ignored -> synchronizeMoveProviderOrThrow());
 
         FusionLockHooks.register(FUSIONS);
@@ -98,6 +97,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             }
         });
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            verifyPotaraCommand(server);
             FUSIONS.cooldowns().start(server);
             COSMETICS.start(server);
         });
@@ -118,9 +118,10 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
                 COSMETICS.onDisconnect(handler.player);
             });
         });
-        LOG.info("Cobblemon Integration online; provider=cobblemon, providerMoves={}, registeredSkills={}, specificMoveVfx={}, genericMoveVfx={}, cosmetics={}, PokemonSkillShop={}/{}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
+        LOG.info("Cobblemon Integration online; provider=cobblemon, providerMoves={}, registeredSkills={}, maxSkillLevel={}, specificMoveVfx={}, genericMoveVfx={}, cosmetics={}, PokemonSkillShop={}/{}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
                 CobblemonMoveSkillAdapter.providerSize(),
                 SVFrameMMO.externalSkills().getByOwner(CobblemonMoveSkillAdapter.REGISTRY_OWNER).size(),
+                config.pokemonSkills.maxLevel,
                 MOVE_VFX.planCount(), MOVE_VFX.genericPlanCount(), COSMETICS.size(),
                 config.pokemonSkills.enabled, config.pokemonSkills.normalizedProvider(),
                 config.fusion.potaraActionCooldownSeconds, config.fusion.danceDurationSeconds, config.fusion.danceCooldownSeconds);
@@ -140,8 +141,20 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         if (generated != provider || registered != provider || configs != provider)
             throw new IllegalStateException("Cobblemon provider synchronization mismatch: provider=" + provider
                     + ", generated=" + generated + ", registered=" + registered + ", configs=" + configs);
+
+        long megaIcons = Moves.all().stream().filter(move -> "mega_showdown".equals(PokemonSkillIconResolver.source(move))).count();
+        long cobblemonIcons = Moves.all().stream().filter(move -> "cobblemon".equals(PokemonSkillIconResolver.source(move))).count();
+        long fallbackIcons = provider - megaIcons - cobblemonIcons;
+        LOG.info("Pokemon skill icons resolved; megaShowdown={}, cobblemon={}, fallback={}", megaIcons, cobblemonIcons, fallbackIcons);
         LOG.info("Cobblemon move provider synchronized; providerMoves={}, registeredSkills={}, generatedConfigs={}, specificMoveVfx={}, genericMoveVfx={}",
                 provider, registered, configs, MOVE_VFX.planCount(), MOVE_VFX.genericPlanCount());
+    }
+
+    private static void verifyPotaraCommand(net.minecraft.server.MinecraftServer server) {
+        var root = server.getCommandManager().getDispatcher().getRoot().getChild("potara");
+        if (root == null || root.getChild("give") == null)
+            throw new IllegalStateException("Potara command registration failed: expected /potara give");
+        LOG.info("Potara admin command registered: /potara give <tier> [player] [amount]; LuckPerms={}", LuckPermsIntegration.POTARA_GIVE);
     }
 
     public static IntegrationConfig config() {
