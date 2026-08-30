@@ -35,7 +35,7 @@ public final class NativeElementRegistry {
         String normalized = normalize(id);
         Element existing = elements.get(normalized);
         if (existing != null) return existing;
-        Element created = new Element(normalized, name, "PAPER", "◆", "&f", "svframelib:none", null);
+        Element created = new Element(normalized, name, "BOOK", "◆", "&f", "svframelib:none", null);
         elements.put(created.id(), created);
         return created;
     }
