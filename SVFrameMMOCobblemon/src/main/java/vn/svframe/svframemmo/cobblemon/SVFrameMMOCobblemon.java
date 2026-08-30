@@ -23,6 +23,7 @@ import vn.svframe.svframemmo.cobblemon.fusion.FusionCommands;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionLockHooks;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionNetworkGuards;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionService;
+import vn.svframe.svframemmo.cobblemon.fusion.PotaraCommands;
 import vn.svframe.svframemmo.cobblemon.fusion.PotaraUseHandler;
 import vn.svframe.svframemmo.cobblemon.fusion.render.FusionMorphNetworking;
 import vn.svframe.svframemmo.cobblemon.integration.CobblemonMoveVfxService;
@@ -82,6 +83,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         SkillCastEvent.EVENT.register(COSMETICS::onSkillSuccess);
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             FusionCommands.register(dispatcher, FUSIONS);
+            PotaraCommands.register(dispatcher);
             PokemonSkillCommands.register(dispatcher, POKEMON_SKILLS);
             CosmeticCommands.register(dispatcher, COSMETICS);
         });
