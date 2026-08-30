@@ -26,6 +26,20 @@ public final class NativeElementRegistry {
         elements.putAll(next);
     }
 
+    /**
+     * Runtime providers such as Cobblemon may introduce elemental namespaces that
+     * are not present in the static SVFrameLib config. Existing configured
+     * elements always win; dynamic registration only fills missing IDs.
+     */
+    public synchronized Element registerIfAbsent(String id, String name) {
+        String normalized = normalize(id);
+        Element existing = elements.get(normalized);
+        if (existing != null) return existing;
+        Element created = new Element(normalized, name, "PAPER", "◆", "&f", "svframelib:none", null);
+        elements.put(created.id(), created);
+        return created;
+    }
+
     public synchronized int size() { return elements.size(); }
     public synchronized List<Element> values() { return List.copyOf(elements.values()); }
     public synchronized Element get(String id) { return elements.get(normalize(id)); }
