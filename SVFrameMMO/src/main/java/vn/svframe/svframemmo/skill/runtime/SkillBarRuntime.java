@@ -42,7 +42,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /** Native implementation of SKILL_BAR, SKILL_SCROLLER, KEY_COMBOS and NONE. */
 public final class SkillBarRuntime {
     private static final int DEFAULT_BAR_PRIORITY = ActionBarPriority.LOWEST;
-    private static final int CASTING_BAR_PRIORITY = ActionBarPriority.LOW;
+    /** Casting owns Minecraft's single action bar while active; the persistent resource HUD defaults to priority 100. */
+    private static final int CASTING_BAR_PRIORITY = 200;
     private static final int PARTICLES_PER_TICK = 2;
 
     private final Map<UUID, Session> sessions = new ConcurrentHashMap<>();
@@ -149,7 +150,11 @@ public final class SkillBarRuntime {
         for (PlayerData data : SVFrameMMO.playerData().all()) {
             if (!data.isOnline()) continue;
             var mmo = data.getMMOPlayerData();
-            if (data.getPlayer().isDead() || !mmo.isPlaying()) {
+            // Native/classless play does not require an SVFrameLib ProfileSession. Gating
+            // the casting runtime on mmo.isPlaying() makes F casting disappear on valid
+            // online classless players, so lifecycle here follows PlayerData.isOnline().
+            if (data.getPlayer().isDead()) {
+                if (sessions.containsKey(data.getUniqueId())) leave(data, true);
                 mmo.getActionBar().reset(DEFAULT_BAR_PRIORITY);
                 continue;
             }
