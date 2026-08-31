@@ -49,7 +49,9 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
     @Override
     public Result getResult(SkillMetadata metadata) {
         ServerPlayerEntity player = metadata.getCaster().getData().getPlayer();
+        var activeFusion = fusions.session(player.getUuid());
         FusionService.MoveCast fusion = fusions.prepareMoveCast(player, moveId);
+        if (activeFusion != null && activeFusion.activated() && fusion == null) return Result.failed();
         MoveTemplate move = fusion == null ? template() : fusion.move().getTemplate();
         CobblemonMoveProfile profile = CobblemonMoveProfile.of(move);
         MoveSemantic semantic = semantics.resolve(move);
