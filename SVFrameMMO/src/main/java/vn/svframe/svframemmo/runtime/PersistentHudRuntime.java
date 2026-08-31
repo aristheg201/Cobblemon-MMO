@@ -127,17 +127,35 @@ public final class PersistentHudRuntime implements ModInitializer {
     }
 
     private static String formatSkills(PlayerData data, SVFrameMMOConfig.SkillCasting casting, int maxNameLength) {
-        Map<Integer, PlayerSkillCatalog.Entry> bindings = PlayerSkillCatalog.bindings(data);
+        var temporary = SVFrameMMO.temporarySkills().slots(data.getUniqueId());
+        Map<Integer, PlayerSkillCatalog.Entry> bindings = temporary.isEmpty() ? PlayerSkillCatalog.bindings(data) : Map.of();
         SVFrameMMOConfig.SkillBarActionBar style = casting.actionBar();
         List<String> parts = new ArrayList<>(GLOBAL_SKILL_SLOTS);
         for (int slot = 1; slot <= GLOBAL_SKILL_SLOTS; slot++) {
-            PlayerSkillCatalog.Entry entry = bindings.get(slot);
-            if (entry == null) {
+            ClassSkill skill = null;
+            int level = 1;
+
+            if (!temporary.isEmpty()) {
+                for (var overlaySlot : temporary) {
+                    if (overlaySlot.slot() != slot) continue;
+                    skill = overlaySlot.skill();
+                    int externalLevel = SVFrameMMO.externalProgression().level(data.getUniqueId(), skill.getSkill().getId());
+                    level = Math.max(1, externalLevel);
+                    break;
+                }
+            } else {
+                PlayerSkillCatalog.Entry entry = bindings.get(slot);
+                if (entry != null) {
+                    skill = entry.skill();
+                    level = Math.max(1, entry.level());
+                }
+            }
+
+            if (skill == null) {
                 parts.add("&8" + slot + "›—");
                 continue;
             }
-            ClassSkill skill = entry.skill();
-            int level = Math.max(1, entry.level());
+
             double cooldown = data.getMMOPlayerData().getCooldownMap().getCooldown(skill.getCooldownPath());
             double mana = parameter(skill, "mana", level, data);
             double stamina = parameter(skill, "stamina", level, data);
