@@ -3,6 +3,7 @@ package vn.svframe.svframemmo.manager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.WorldSavePath;
+import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframemmo.config.DefaultFiles;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.persistence.JsonPlayerDataStore;
@@ -56,6 +57,8 @@ public final class PlayerDataManager {
     }
 
     public PlayerData join(ServerPlayerEntity player) {
+        MMOPlayerData mmo = MMOPlayerData.getOrNull(player.getUuid());
+        if (mmo != null && mmo.isOnline() && mmo.getPlayer() != player) mmo.updatePlayer(null);
         PlayerData value = data.computeIfAbsent(player.getUuid(), PlayerData::blank);
         value.attach(player);
         return value;
