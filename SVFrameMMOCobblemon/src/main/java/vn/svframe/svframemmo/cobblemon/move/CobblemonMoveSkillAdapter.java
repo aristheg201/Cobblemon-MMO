@@ -142,11 +142,11 @@ public final class CobblemonMoveSkillAdapter {
         ArrayList<String> lore = new ArrayList<>();
         String description = move.getDescription().getString();
         if (!description.isBlank()) lore.add(description);
-        lore.add("&7Type: &f" + move.getElementalType().getName() + " &8/ &f" + move.getDamageCategory().getName());
-        if (profile.baseDamage() > 0d) lore.add("&cDamage: &f{damage}");
-        if (profile.healBase() > 0d) lore.add("&aHealing: &f{healing}");
-        lore.add("&eCooldown: &6{cooldown}s");
-        lore.add("&7Provider: Cobblemon");
+        lore.add("&7Hệ: &f" + move.getElementalType().getName() + " &8/ &7Loại: &f" + move.getDamageCategory().getName());
+        if (profile.baseDamage() > 0d) lore.add("&cSát thương: &f{damage}");
+        if (profile.healBase() > 0d) lore.add("&aHồi phục: &f{healing}");
+        lore.add("&eHồi chiêu: &6{cooldown}s");
+        lore.add("&8Nguồn: Cobblemon");
 
         LinkedHashMap<String, Object> values = new LinkedHashMap<>();
         values.put("source", SOURCE_KEY + ":" + id(move.getName()));
@@ -185,7 +185,7 @@ public final class CobblemonMoveSkillAdapter {
             merged.put("source", SOURCE_KEY + ":" + requested);
             merged.put("name", requested);
             merged.put("icon", Map.of("item", "cobblemon:normal_gem"));
-            merged.put("lore", List.of("Cobblemon move: " + requested, "&eCooldown: &6{cooldown}s", "Provider: cobblemon"));
+            merged.put("lore", List.of("Cobblemon move: " + requested, "&eHồi chiêu: &6{cooldown}s", "&8Nguồn: Cobblemon"));
             merged.put("trigger", "CAST");
             merged.put("categories", List.of("COBBLEMON_MOVE"));
             merged.put("parameters", new LinkedHashMap<>(Map.of(
@@ -209,7 +209,7 @@ public final class CobblemonMoveSkillAdapter {
         LinkedHashMap<String, Object> formula = new LinkedHashMap<>();
         formula.put("base", base);
         formula.put("per-level", perLevel);
-        return formula;
+        return Map.of("player", formula);
     }
 
     private static Map<String, Object> linear(double base, double perLevel, double min) {
@@ -217,7 +217,7 @@ public final class CobblemonMoveSkillAdapter {
         formula.put("base", base);
         formula.put("per-level", perLevel);
         formula.put("min", Math.max(0d, min));
-        return formula;
+        return Map.of("player", formula);
     }
 
     private static CobblemonMoveSkillAdapter requireActive() {
