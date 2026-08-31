@@ -156,7 +156,7 @@ public record SVFrameMMOConfig(
                 Math.max(0d, number(defaults.get("stamina"), 100d)),
                 Math.max(0d, number(defaults.get("stellium"), 100d)),
                 bool(first(root, "passive-skill-needs-binding", "passive-skill-need-bound"), true),
-                bool(root.get("can-creative-cast"), false),
+                bool(root.get("can-creative-cast"), true),
                 bool(first(root, "save-default-class-info", "save_default_class_info"), false),
                 bool(first(root, "force-class-selection", "force_class_selection"), true),
                 bool(shared.get("experience"), false),
