@@ -60,18 +60,26 @@ public final class PlayerDataManager {
         MMOPlayerData mmo = MMOPlayerData.getOrNull(player.getUuid());
         if (mmo != null && mmo.isOnline() && mmo.getPlayer() != player) mmo.updatePlayer(null);
         PlayerData value = data.computeIfAbsent(player.getUuid(), PlayerData::blank);
-        value.attach(player);
+        if (!value.isOnline() || value.getPlayer() != player) value.attach(player);
         return value;
     }
 
     public void quit(ServerPlayerEntity player) {
         PlayerData value = data.get(player.getUuid());
-        if (value != null) { value.detach(); save(); }
+        if (value != null) {
+            value.detach();
+            MMOPlayerData mmo = MMOPlayerData.getOrNull(player.getUuid());
+            if (mmo != null && mmo.isOnline()) mmo.updatePlayer(null);
+            save();
+        }
     }
 
     public PlayerData get(UUID id) { return data.computeIfAbsent(id, PlayerData::blank); }
     public PlayerData find(UUID id) { return data.get(id); }
-    public PlayerData get(ServerPlayerEntity player) { return join(player); }
+    public PlayerData get(ServerPlayerEntity player) {
+        PlayerData value = data.get(player.getUuid());
+        return value != null && value.isOnline() && value.getPlayer() == player ? value : join(player);
+    }
     public Collection<PlayerData> all() { return List.copyOf(data.values()); }
     public synchronized String backendName() { return store == null ? "UNINITIALIZED" : store.id(); }
 
