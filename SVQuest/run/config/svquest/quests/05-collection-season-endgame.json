@@ -1,0 +1,147 @@
+{
+  "quests": [
+    {
+      "id": "research_1",
+      "phase": "NGHIÊN CỨU",
+      "title": "Research đầu tiên",
+      "description": "Hoàn thành một Research Task.",
+      "objectives": [
+        { "key": "research_complete", "label": "Hoàn thành Research Task", "target": 1, "featureId": "research" }
+      ],
+      "rewards": ["1 HunterCoin"],
+      "grants": [
+        { "type": "beconomy", "id": "huntercoin", "amount": 1 }
+      ]
+    },
+    {
+      "id": "wonder_trade_1",
+      "phase": "TRAO ĐỔI",
+      "title": "WonderTrade",
+      "description": "Hoàn tất một WonderTrade.",
+      "objectives": [
+        { "key": "wonder_trade", "label": "Hoàn tất WonderTrade", "target": 1, "featureId": "wonder_trade" }
+      ],
+      "rewards": ["1 HunterCoin"],
+      "grants": [
+        { "type": "beconomy", "id": "huntercoin", "amount": 1 }
+      ]
+    },
+    {
+      "id": "sts_1",
+      "phase": "TRAO ĐỔI",
+      "title": "STS",
+      "description": "Hoàn tất một giao dịch STS.",
+      "objectives": [
+        { "key": "sts_trade", "label": "Hoàn tất STS", "target": 1, "featureId": "sts" }
+      ],
+      "rewards": ["1 HunterCoin"],
+      "grants": [
+        { "type": "beconomy", "id": "huntercoin", "amount": 1 }
+      ]
+    },
+    {
+      "id": "expedition_1",
+      "phase": "KHÁM PHÁ",
+      "title": "Expedition",
+      "description": "Hoàn thành tiến trình Expedition thật.",
+      "objectives": [
+        { "key": "expedition_complete", "label": "Hoàn thành Expedition", "target": 1, "featureId": "expeditions" }
+      ],
+      "rewards": ["2 HunterCoin"],
+      "grants": [
+        { "type": "beconomy", "id": "huntercoin", "amount": 2 }
+      ]
+    },
+    {
+      "id": "showcase_1",
+      "phase": "SƯU TẦM",
+      "title": "Showcase",
+      "description": "Tham gia hoặc hoàn tất Showcase bằng hệ thống thật.",
+      "objectives": [
+        { "key": "showcase_complete", "label": "Có tiến trình Showcase mới", "target": 1, "featureId": "showcase" }
+      ],
+      "rewards": ["2 HunterCoin"],
+      "grants": [
+        { "type": "beconomy", "id": "huntercoin", "amount": 2 }
+      ]
+    },
+    {
+      "id": "minigame_1",
+      "phase": "HOẠT ĐỘNG",
+      "title": "Minigame",
+      "description": "Hoàn thành một lượt Minigame có tiến trình thật.",
+      "objectives": [
+        { "key": "minigame_complete", "label": "Hoàn thành Minigame", "target": 1 }
+      ],
+      "rewards": ["2 HunterCoin"],
+      "grants": [
+        { "type": "beconomy", "id": "huntercoin", "amount": 2 }
+      ]
+    },
+    {
+      "id": "daily_1",
+      "phase": "HẰNG NGÀY",
+      "title": "Nhịp chơi hằng ngày",
+      "description": "Nhận Daily Reward từ hệ thống đang chạy trên server.",
+      "objectives": [
+        { "key": "daily_claim", "label": "Nhận Daily Reward", "target": 1, "featureId": "daily" }
+      ],
+      "rewards": ["50 BeastCoin"],
+      "grants": [
+        { "type": "beconomy", "id": "beastcoin", "amount": 50 }
+      ]
+    },
+    {
+      "id": "battlepass_1",
+      "phase": "MÙA",
+      "title": "Battle Pass",
+      "description": "Tạo tiến trình Battle Pass thật.",
+      "objectives": [
+        { "key": "battlepass_progress", "label": "Tăng Battle Pass", "target": 1, "featureId": "battle_pass" }
+      ],
+      "rewards": ["50 BeastCoin"],
+      "grants": [
+        { "type": "beconomy", "id": "beastcoin", "amount": 50 }
+      ]
+    },
+    {
+      "id": "fusion_1",
+      "phase": "ENDGAME",
+      "title": "Hợp thể",
+      "description": "Hoàn tất Fusion/Potara bằng hệ thống thật.",
+      "objectives": [
+        { "key": "fusion_complete", "label": "Hoàn tất Fusion/Potara", "target": 1, "featureId": "fusion" }
+      ],
+      "rewards": ["3 HunterCoin"],
+      "grants": [
+        { "type": "beconomy", "id": "huntercoin", "amount": 3 }
+      ]
+    },
+    {
+      "id": "ranked_high",
+      "phase": "ENDGAME",
+      "title": "Ranked cấp cao",
+      "description": "Đạt mốc Ranked cấp cao do integration xác nhận.",
+      "objectives": [
+        { "key": "ranked_high", "label": "Đạt mốc Ranked cấp cao", "target": 1, "featureId": "ranked" }
+      ],
+      "rewards": ["5 HunterCoin"],
+      "grants": [
+        { "type": "beconomy", "id": "huntercoin", "amount": 5 }
+      ]
+    },
+    {
+      "id": "endgame_raid",
+      "phase": "ENDGAME",
+      "title": "Raid Endgame",
+      "description": "Hoàn thành raid Legendary/Mythical được NovaRaids xác nhận.",
+      "objectives": [
+        { "key": "endgame_raid", "label": "Hoàn thành raid Endgame", "target": 1, "featureId": "raids" }
+      ],
+      "rewards": ["5 HunterCoin", "Hoàn tất lộ trình SVQuest"],
+      "grants": [
+        { "type": "beconomy", "id": "huntercoin", "amount": 5 }
+      ]
+    }
+  ]
+}

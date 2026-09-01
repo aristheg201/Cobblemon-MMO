@@ -1,0 +1,2 @@
+SVQuest beta.10 data-driven build trigger.
+GUI layout must remain byte-for-byte identical to beta.9 QuestScreen.java.
