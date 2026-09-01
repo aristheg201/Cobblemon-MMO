@@ -148,12 +148,13 @@ public final class QuestScreen extends Screen {
     private void questDetail(DrawContext ctx, int x, int y, int w, int h, int current, int mx, int my) {
         var q = QuestCatalog.byIndex(selectedQuest);
         boolean active = selectedQuest == current, done = selectedQuest < current, future = selectedQuest > current;
+        boolean claimable = active && q.objectives().stream().allMatch(o -> SVQuestClient.STATE.progress(o.key()) >= o.target());
         panel(ctx, x, y, x + w, y + h, PANEL, BORDER);
         int badgeW = Math.min(160, textRenderer.getWidth(q.phase()) + 20);
         panel(ctx, x + 16, y + 13, x + 16 + badgeW, y + 34, active ? 0xFF61461D : done ? 0xFF1F4931 : 0xFF273348, active ? GOLD : done ? GREEN : BORDER);
         drawCentered(ctx, q.phase(), x + 16, y + 20, badgeW, active ? GOLD : done ? GREEN : MUTED);
-        String stateText = done ? "HOÀN THÀNH" : active ? "ĐANG THỰC HIỆN" : "CHƯA MỞ KHÓA";
-        int stateColor = done ? GREEN : active ? GOLD : DIM;
+        String stateText = done ? "HOÀN THÀNH" : claimable ? "CHỜ NHẬN THƯỞNG" : active ? "ĐANG THỰC HIỆN" : "CHƯA MỞ KHÓA";
+        int stateColor = done || claimable ? GREEN : active ? GOLD : DIM;
         ctx.drawText(textRenderer, stateText, x + w - 16 - textRenderer.getWidth(stateText), y + 20, stateColor, true);
         ctx.drawText(textRenderer, q.title(), x + 16, y + 46, TEXT, true);
         drawWrapped(ctx, q.description(), x + 16, y + 63, w - 32, MUTED, 2);
@@ -198,7 +199,10 @@ public final class QuestScreen extends Screen {
         }
 
         int bottomY = y + h - 39;
-        if (active && current < QuestCatalog.QUESTS.size() - 1) {
+        if (claimable) {
+            ctx.drawText(textRenderer, "Hoàn tất mục tiêu. Nhận thưởng để mở mốc tiếp theo.", x + 16, bottomY + 10, GREEN, false);
+            actionButton(ctx, x + w - 144, bottomY + 3, 128, 25, "NHẬN THƯỞNG", "claim", mx, my);
+        } else if (active && current < QuestCatalog.QUESTS.size() - 1) {
             ctx.drawText(textRenderer, "Tiếp theo: " + QuestCatalog.byIndex(current + 1).title(), x + 16, bottomY + 10, MUTED, false);
         } else if (done) {
             ctx.drawText(textRenderer, "✓ Mốc này đã hoàn thành.", x + 16, bottomY + 10, GREEN, true);

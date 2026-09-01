@@ -77,7 +77,7 @@ public final class QuestStateStore {
             Path target = dir.resolve(id + ".properties");
             Path temp = dir.resolve(id + ".properties.tmp");
             try (OutputStream out = Files.newOutputStream(temp)) {
-                p.store(out, "SVQuest player state v4 - stable quest ids, split catalog sync");
+                p.store(out, "SVQuest player state v5 - manual reward claim, stable quest ids");
             }
             try {
                 Files.move(temp, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
@@ -99,54 +99,86 @@ public final class QuestStateStore {
         private int questIndex;
         private final Map<String, Integer> progress = new HashMap<>();
         private final Set<String> rewarded = new HashSet<>();
+        private long revision;
 
         public int questIndex() {
             normalize();
             return questIndex;
         }
 
+        public long revision() { return revision; }
         public int progress(String key) { return Math.max(0, progress.getOrDefault(key, 0)); }
         public boolean rewarded(String id) { return rewarded.contains(id); }
-        public boolean markRewarded(String id) { return rewarded.add(id); }
+
+        public boolean markRewarded(String id) {
+            boolean changed = rewarded.add(id);
+            if (changed) revision++;
+            return changed;
+        }
 
         public void signal(String key, int amount) {
             if (amount <= 0 || key == null || key.isBlank()) return;
             normalize();
             if (!QuestCatalog.currentAccepts(questIndex, key)) return;
-            progress.merge(key, amount, Integer::sum);
-            advanceWhileComplete();
+            int before = progress(key);
+            int after = before > Integer.MAX_VALUE - amount ? Integer.MAX_VALUE : before + amount;
+            if (after != before) {
+                progress.put(key, after);
+                revision++;
+            }
         }
 
         public void metric(String key, int value) {
             if (key == null || key.isBlank()) return;
             normalize();
-            progress.merge(key, Math.max(0, value), Math::max);
-            advanceWhileComplete();
+            int safe = Math.max(0, value);
+            int before = progress(key);
+            if (safe > before) {
+                progress.put(key, safe);
+                revision++;
+            }
         }
 
         public void add(String key, int amount) {
             if (amount == 0 || key == null || key.isBlank()) return;
             normalize();
-            progress.merge(key, amount, Integer::sum);
-            if (progress.get(key) < 0) progress.put(key, 0);
-            advanceWhileComplete();
+            int before = progress(key);
+            long candidate = (long) before + amount;
+            int after = (int) Math.max(0L, Math.min(Integer.MAX_VALUE, candidate));
+            if (after != before) {
+                progress.put(key, after);
+                revision++;
+            }
         }
 
         public void set(String key, int value) {
             if (key == null || key.isBlank()) return;
             normalize();
-            progress.put(key, Math.max(0, value));
-            advanceWhileComplete();
+            int safe = Math.max(0, value);
+            int before = progress(key);
+            if (safe != before) {
+                progress.put(key, safe);
+                revision++;
+            }
         }
 
-        private void advanceWhileComplete() {
-            while (questIndex >= 0 && questIndex < QuestCatalog.QUESTS.size()) {
-                var quest = QuestCatalog.QUESTS.get(questIndex);
-                boolean complete = quest.objectives().stream().allMatch(o -> progress(o.key()) >= o.target());
-                if (!complete) break;
-                questIndex++;
-                questId = QuestCatalog.idAt(questIndex);
-            }
+        public boolean currentComplete() {
+            normalize();
+            if (questIndex < 0 || questIndex >= QuestCatalog.QUESTS.size()) return false;
+            var quest = QuestCatalog.QUESTS.get(questIndex);
+            return quest.objectives().stream().allMatch(o -> progress(o.key()) >= o.target());
+        }
+
+        /** Advances exactly one completed quest after the server has successfully processed its claim. */
+        public boolean advanceClaimed(String expectedQuestId) {
+            normalize();
+            if (questIndex < 0 || questIndex >= QuestCatalog.QUESTS.size()) return false;
+            var quest = QuestCatalog.QUESTS.get(questIndex);
+            if (expectedQuestId == null || !quest.id().equals(expectedQuestId) || !currentComplete()) return false;
+            questIndex++;
+            questId = QuestCatalog.idAt(questIndex);
+            revision++;
+            return true;
         }
 
         private void normalize() {
@@ -154,17 +186,20 @@ public final class QuestStateStore {
             if (size <= 0) {
                 questIndex = 0;
                 questId = "";
+                progress.replaceAll((k, v) -> Math.max(0, v));
                 return;
             }
             if (!questId.isBlank()) {
                 int resolved = QuestCatalog.indexOf(questId);
-                if (resolved >= 0) {
-                    questIndex = Math.min(resolved, size);
-                    return;
+                if (resolved >= 0) questIndex = Math.min(resolved, size);
+                else {
+                    questIndex = Math.max(0, Math.min(questIndex, size));
+                    questId = QuestCatalog.idAt(questIndex);
                 }
+            } else {
+                questIndex = Math.max(0, Math.min(questIndex, size));
+                questId = QuestCatalog.idAt(questIndex);
             }
-            questIndex = Math.max(0, Math.min(questIndex, size));
-            questId = QuestCatalog.idAt(questIndex);
             progress.replaceAll((k, v) -> Math.max(0, v));
         }
 
@@ -172,7 +207,7 @@ public final class QuestStateStore {
         public String encode() {
             normalize();
             StringBuilder out = new StringBuilder();
-            out.append("v=4\n");
+            out.append("v=5\n");
             out.append("questIndex=").append(questIndex).append('\n');
             out.append("questId=").append(safe(questId)).append('\n');
             progress.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(e ->

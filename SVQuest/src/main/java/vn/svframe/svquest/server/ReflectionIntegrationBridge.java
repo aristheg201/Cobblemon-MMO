@@ -191,23 +191,61 @@ public final class ReflectionIntegrationBridge {
         }
     }
 
+    /**
+     * /pokeskill ownership is NOT PlayerData#getSkillLevels(). The integration persists those skills
+     * in SVFrameMMO ExternalSkillProgression, so quest progress must read the same source of truth.
+     */
     private void snapshotSkills(ServerPlayerEntity player, boolean signalChanges) {
         if (!loaded("svframemmo")) return;
         try {
             Object data = svFrameData(player);
             if (data == null) return;
-            Object levels = invoke(data, "getSkillLevels");
-            int count = levels instanceof Map<?, ?> map ? map.size() : 0;
-            Integer previous = learnedSkillCounts.put(player.getUuid(), count);
-            if (signalChanges && previous != null && count > previous) engine.signal(player, "skill_purchase", count - previous);
+
+            java.util.Set<String> pokemonSkills = pokemonSkillIds();
+            int learned = 0;
+            if (!pokemonSkills.isEmpty()) {
+                Class<?> root = Class.forName("vn.svframe.svframemmo.SVFrameMMO");
+                Object progression = root.getMethod("externalProgression").invoke(null);
+                Method isLearned = progression.getClass().getMethod("isLearned", UUID.class, String.class);
+                for (String skillId : pokemonSkills) {
+                    if (Boolean.TRUE.equals(isLearned.invoke(progression, player.getUuid(), skillId))) learned++;
+                }
+            }
+            learnedSkillCounts.put(player.getUuid(), learned);
+            // This quest key is a total-owned metric, so old purchases are recovered immediately on join/poll.
+            engine.metric(player, "skill_purchase", learned);
 
             Object bindingsObject = invoke(data, "getSkillBindings");
-            String bindings = bindingsObject instanceof Map<?, ?> map ? map.toString() : "{}";
+            String bindings = pokemonSkillBindings(bindingsObject, pokemonSkills);
             String previousBindings = skillBindings.put(player.getUuid(), bindings);
             if (signalChanges && previousBindings != null && !bindings.equals(previousBindings)) engine.signal(player, "skill_bind");
         } catch (Throwable t) {
-            SVQuest.LOGGER.debug("Skill state snapshot failed safely for {}: {}", player.getName().getString(), t.toString());
+            SVQuest.LOGGER.debug("Pokemon skill state snapshot failed safely for {}: {}", player.getName().getString(), t.toString());
         }
+    }
+
+    private java.util.Set<String> pokemonSkillIds() throws Exception {
+        if (!loaded("svframemmo_cobblemon")) return java.util.Set.of();
+        Class<?> adapter = Class.forName("vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkillAdapter");
+        Object definitions = adapter.getMethod("definitions").invoke(null);
+        if (!(definitions instanceof Map<?, ?> map) || map.isEmpty()) return java.util.Set.of();
+        java.util.Set<String> ids = new java.util.HashSet<>();
+        for (Object definition : map.values()) {
+            Object skill = invoke(definition, "getSkill");
+            Object id = invoke(skill, "getId");
+            if (id != null && !id.toString().isBlank()) ids.add(id.toString());
+        }
+        return ids;
+    }
+
+    private static String pokemonSkillBindings(Object bindingsObject, java.util.Set<String> pokemonSkills) {
+        if (!(bindingsObject instanceof Map<?, ?> map) || pokemonSkills.isEmpty()) return "{}";
+        java.util.TreeMap<String, String> normalized = new java.util.TreeMap<>();
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            String skillId = entry.getValue() == null ? "" : entry.getValue().toString();
+            if (pokemonSkills.contains(skillId)) normalized.put(String.valueOf(entry.getKey()), skillId);
+        }
+        return normalized.toString();
     }
 
     private Object svFrameData(ServerPlayerEntity player) throws Exception {

@@ -12,6 +12,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: svquest-data-driven-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-validate:
     runs-on: ubuntu-latest
@@ -88,12 +92,15 @@ jobs:
           ! grep -R --line-number --include='*.java' 'COMMANDS\.put' SVQuest/src/main/java
           ! grep -R --line-number --include='*.java' 'List\.of( *new Quest' SVQuest/src/main/java
 
-      - name: Verify GUI layout unchanged from beta.9
+      - name: Verify manual Claim flow is wired
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL https://raw.githubusercontent.com/aristheg201/Mod-dev/fix/svquest-quest-engine/SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java -o /tmp/QuestScreen-beta9.java
-          diff -q /tmp/QuestScreen-beta9.java SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
+          grep -q 'CHỜ NHẬN THƯỞNG' SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
+          grep -q 'NHẬN THƯỞNG' SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
+          grep -q 'action.equals("claim")' SVQuest/src/main/java/vn/svframe/svquest/server/ServerRuntime.java
+          grep -q 'externalProgression' SVQuest/src/main/java/vn/svframe/svquest/server/ReflectionIntegrationBridge.java
+          ! grep -q 'advanceWhileComplete' SVQuest/src/main/java/vn/svframe/svquest/server/QuestStateStore.java
 
       - name: Loom remap build
         working-directory: SVQuest
@@ -151,7 +158,7 @@ jobs:
       - name: Upload validated artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SVQuest-beta.11-guided-1195
+          name: SVQuest-beta.12-manual-claim
           path: |
             SVQuest/build/libs/SVQuest-*.jar
             SVQuest/build/libs/SHA256.txt

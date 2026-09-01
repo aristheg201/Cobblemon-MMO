@@ -146,6 +146,10 @@ public final class ServerRuntime {
             sendFullSync(player);
             return;
         }
+        if (action.equals("claim")) {
+            engine.claim(player);
+            return;
+        }
         if (!action.startsWith("feature:")) return;
 
         String id = action.substring("feature:".length());
