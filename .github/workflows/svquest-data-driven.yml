@@ -1,0 +1,154 @@
+name: SVQuest data-driven Fabric 1.21.1
+
+on:
+  push:
+    branches:
+      - svquest-data-driven-1.21.1
+    paths:
+      - 'svquest-overrides/**'
+      - 'SVQuest/**'
+      - '.github/workflows/svquest-data-driven.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout single SVQuest branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Materialize beta.9 source and apply data-driven overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/svquest-base
+          git clone --depth 1 --branch fix/svquest-quest-engine https://github.com/aristheg201/Mod-dev.git /tmp/svquest-base
+          if [ ! -d SVQuest ]; then
+            cp -a /tmp/svquest-base/SVQuest ./SVQuest
+          fi
+          cp -a svquest-overrides/. SVQuest/
+          sed -i 's/^mod_version=.*/mod_version=0.1.0-beta.10/' SVQuest/gradle.properties
+
+      - name: Validate JSON and no hardcoded quest/reward catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, pathlib
+          root = pathlib.Path('SVQuest/src/main/resources/defaults/svquest')
+          files = sorted((root / 'quests').glob('*.json'))
+          assert files, 'No quest data files'
+          ids=[]
+          for p in files:
+              data=json.loads(p.read_text(encoding='utf-8'))
+              for q in data.get('quests', []):
+                  assert q['id'] not in ids, f"duplicate quest id {q['id']}"
+                  ids.append(q['id'])
+                  assert q.get('objectives'), f"quest without objectives: {q['id']}"
+                  for o in q['objectives']:
+                      assert int(o.get('target',0)) > 0, f"invalid target: {q['id']}"
+          json.loads((root/'settings.json').read_text(encoding='utf-8'))
+          json.loads((root/'features.json').read_text(encoding='utf-8'))
+          assert len(ids) >= 35, f'Quest corpus too small: {len(ids)}'
+          print('Validated quest count:', len(ids))
+          PY
+          ! grep -R --line-number --include='*.java' 'switch *(quest\.id())' SVQuest/src/main/java
+          ! grep -R --line-number --include='*.java' 'COMMANDS\.put' SVQuest/src/main/java
+          ! grep -R --line-number --include='*.java' 'List\.of( *new Quest' SVQuest/src/main/java
+          diff -q /tmp/svquest-base/SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java \
+                  SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
+
+      - name: Loom remap build
+        working-directory: SVQuest
+        run: gradle --no-daemon clean remapJar sourcesJar --stacktrace
+
+      - name: Verify remapped artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVQuest
+          JAR="$(find build/libs -maxdepth 1 -type f -name 'SVQuest-*.jar' ! -name '*sources*' ! -name '*dev*' | head -n1)"
+          test -n "$JAR"
+          unzip -p "$JAR" fabric.mod.json | tee build/libs/fabric.mod.built.json
+          unzip -l "$JAR" | grep -q 'vn/svframe/svquest/quest/QuestCatalog.class'
+          unzip -l "$JAR" | grep -q 'defaults/svquest/quests/01-progression.json'
+          unzip -l "$JAR" | grep -q 'defaults/svquest/features.json'
+          sha256sum "$JAR" | tee build/libs/SHA256.txt
+
+      - name: Install virtual display
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb
+
+      - name: Client startup smoke test
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd SVQuest
+          rm -rf run
+          set +e
+          timeout 90s xvfb-run -a gradle --no-daemon runClient > build/client-smoke.log 2>&1
+          code=$?
+          set -e
+          cat build/client-smoke.log
+          if grep -E -q "IncompatibleClassChangeError|Could not execute entrypoint stage 'client'|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Mixin apply failed|Exception in thread \"Render thread\"" build/client-smoke.log; then exit 1; fi
+          if [ "$code" -ne 0 ] && [ "$code" -ne 124 ]; then exit "$code"; fi
+
+      - name: Dedicated server startup smoke test
+        shell: bash
+        run: |
+          set -uo pipefail
+          cd SVQuest
+          rm -rf run
+          mkdir -p run
+          printf 'eula=true\n' > run/eula.txt
+          set +e
+          timeout 75s gradle --no-daemon runServer > build/server-smoke.log 2>&1
+          code=$?
+          set -e
+          cat build/server-smoke.log
+          if grep -E -q "Could not execute entrypoint stage 'server'|Could not execute entrypoint stage 'main'|IncompatibleClassChangeError|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Mixin apply failed|Encountered an unexpected exception" build/server-smoke.log; then exit 1; fi
+          if [ "$code" -ne 0 ] && [ "$code" -ne 124 ]; then exit "$code"; fi
+
+      - name: Commit validated self-contained SVQuest source to this branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'svquest-ci'
+          git config user.email 'svquest-ci@users.noreply.github.com'
+          git add SVQuest
+          if git diff --cached --quiet; then
+            echo 'Source already materialized and unchanged.'
+          else
+            git commit -m 'SVQuest beta.10: materialize validated data-driven source'
+            git push origin HEAD:svquest-data-driven-1.21.1
+          fi
+
+      - name: Upload validated artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SVQuest-beta.10-data-driven
+          path: |
+            SVQuest/build/libs/SVQuest-*.jar
+            SVQuest/build/libs/SHA256.txt
+            SVQuest/build/libs/fabric.mod.built.json
+            SVQuest/build/client-smoke.log
+            SVQuest/build/server-smoke.log
+          if-no-files-found: error
