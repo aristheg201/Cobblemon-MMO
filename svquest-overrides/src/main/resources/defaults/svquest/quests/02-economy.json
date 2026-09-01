@@ -1,0 +1,56 @@
+{
+  "quests": [
+    {
+      "id": "shop_purchase",
+      "phase": "KINH TẾ",
+      "title": "Mua sắm đầu tiên",
+      "description": "Hoàn tất một giao dịch mua thật trong SkiesShop.",
+      "objectives": [
+        { "key": "shop_purchase", "label": "Mua thành công trong SkiesShop", "target": 1, "featureId": "shop" }
+      ],
+      "rewards": ["25.000 CobbleDollars"],
+      "grants": [
+        { "type": "cobbledollars", "amount": 25000 }
+      ]
+    },
+    {
+      "id": "gts_listing",
+      "phase": "KINH TẾ",
+      "title": "Đăng bán trên GTS",
+      "description": "Đăng một Pokémon lên GTS thành công.",
+      "objectives": [
+        { "key": "gts_listing", "label": "Đăng Pokémon lên GTS", "target": 1, "featureId": "gts" }
+      ],
+      "rewards": ["2 Great Ball"],
+      "grants": [
+        { "type": "item", "id": "cobblemon:great_ball", "count": 2 }
+      ]
+    },
+    {
+      "id": "gts_trade",
+      "phase": "KINH TẾ",
+      "title": "Giao dịch GTS",
+      "description": "Mua một Pokémon từ GTS để hoàn tất vòng giao dịch.",
+      "objectives": [
+        { "key": "gts_trade", "label": "Mua Pokémon trên GTS", "target": 1, "featureId": "gts" }
+      ],
+      "rewards": ["1 HunterCoin"],
+      "grants": [
+        { "type": "beconomy", "id": "huntercoin", "amount": 1 }
+      ]
+    },
+    {
+      "id": "earn_currency",
+      "phase": "KINH TẾ",
+      "title": "Tự tạo thu nhập",
+      "description": "Nhận CobbleDollars từ gameplay để làm quen dòng tiền của server.",
+      "objectives": [
+        { "key": "currency_earn", "label": "Có giao dịch nhận CobbleDollars", "target": 1 }
+      ],
+      "rewards": ["30 BeastCoin"],
+      "grants": [
+        { "type": "beconomy", "id": "beastcoin", "amount": 30 }
+      ]
+    }
+  ]
+}
