@@ -2,7 +2,10 @@ package vn.svframe.svframemmo.runtime;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import vn.svframe.svframelib.SVFrameLib;
+import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframelib.api.stat.StatInstance;
 import vn.svframe.svframelib.api.stat.modifier.StatModifier;
 import vn.svframe.svframelib.config.YamlLite;
@@ -39,10 +42,10 @@ public final class PersistentHudRuntime implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        ServerTickEvents.END_SERVER_TICK.register(server -> tick(SVFrameMMO.currentTick()));
+        ServerTickEvents.END_SERVER_TICK.register(server -> tick(server, SVFrameMMO.currentTick()));
     }
 
-    private void tick(long tick) {
+    private void tick(MinecraftServer server, long tick) {
         SVFrameMMOConfig live;
         try {
             live = SVFrameMMO.config();
@@ -56,15 +59,22 @@ public final class PersistentHudRuntime implements ModInitializer {
 
         HudOptions hud = options;
         for (PlayerData data : SVFrameMMO.playerData().all()) {
-            if (!data.isOnline()) continue;
-            var mmo = data.getMMOPlayerData();
+            ServerPlayerEntity player = server.getPlayerManager().getPlayer(data.getUniqueId());
+            if (player == null || !data.isOnline() || data.getPlayer() != player) continue;
+
+            // A disconnect can invalidate SVFrameLib before SVFrameMMO receives its
+            // own disconnect callback. Never call PlayerData#getMMOPlayerData here:
+            // that method may setup() the cached player again and revive a session
+            // which SVFrameLib has already marked offline.
+            MMOPlayerData mmo = MMOPlayerData.getOrNull(data.getUniqueId());
+            if (mmo == null || !mmo.isOnline() || mmo.getPlayer() != player) continue;
 
             // HUD ownership is based on the native SVFrameMMO PlayerData lifecycle, not
             // SVFrameLib profile readiness. Classless servers legitimately use the
             // fallback MMO session before/without choosing a profile.
-            enforceHealthCap(data, hud.maxVanillaHealth());
+            enforceHealthCap(data, mmo, hud.maxVanillaHealth());
 
-            if (!live.actionBar().enabled() || data.getPlayer().isDead()) continue;
+            if (!live.actionBar().enabled() || player.isDead()) continue;
             boolean casting = SVFrameMMO.skillBar().isCasting(data.getUniqueId());
             if (casting && !hud.alwaysVisible()) continue;
 
@@ -73,9 +83,9 @@ public final class PersistentHudRuntime implements ModInitializer {
             // compact layout while the six skill slots are visible. Resources therefore
             // remain permanently visible without turning the action bar into a debug log.
             String resourceFormat = casting ? hud.castingFormat() : live.actionBar().format();
-            String base = formatBase(data, resourceFormat, hud.maxVanillaHealth());
+            String base = formatBase(data, mmo, resourceFormat, hud.maxVanillaHealth());
             String output = casting
-                    ? base + hud.castingSeparator() + formatSkills(data, live.skillCasting(), hud.skillNameMaxLength())
+                    ? base + hud.castingSeparator() + formatSkills(data, mmo, live.skillCasting(), hud.skillNameMaxLength())
                     : base;
             String rendered = SVFrameLib.inst().parseColors(output);
             mmo.getActionBar().show(hud.priority(), Math.max(2L, period + 2L), rendered);
@@ -103,7 +113,7 @@ public final class PersistentHudRuntime implements ModInitializer {
         options = next;
     }
 
-    private static String formatBase(PlayerData data, String raw, double healthCap) {
+    private static String formatBase(PlayerData data, MMOPlayerData mmo, String raw, double healthCap) {
         String format = raw == null || raw.isBlank()
                 ? "&c❤ &f{health}/{max_health} &8| &b✦ &f{mana}/{max_mana} &8| &e⚡ &f{stamina}/{max_stamina} &8| &d✹ &f{stellium}/{max_stellium} &8| &7⛨ &f{armor}"
                 : raw;
@@ -115,18 +125,18 @@ public final class PersistentHudRuntime implements ModInitializer {
                 .replace("{max_health}", trim(maxHealth))
                 .replace("{mana_icon}", "&b✦")
                 .replace("{mana}", trim(data.getMana()))
-                .replace("{max_mana}", trim(data.getMaxResource(PlayerResource.MANA)))
+                .replace("{max_mana}", trim(maxResource(mmo, PlayerResource.MANA)))
                 .replace("{stamina_icon}", "&e⚡")
                 .replace("{stamina}", trim(data.getStamina()))
-                .replace("{max_stamina}", trim(data.getMaxResource(PlayerResource.STAMINA)))
+                .replace("{max_stamina}", trim(maxResource(mmo, PlayerResource.STAMINA)))
                 .replace("{stellium_icon}", "&d✹")
                 .replace("{stellium}", trim(data.getStellium()))
-                .replace("{max_stellium}", trim(data.getMaxResource(PlayerResource.STELLIUM)))
-                .replace("{armor}", trim(data.getMMOPlayerData().getStatMap().getStat("ARMOR")))
+                .replace("{max_stellium}", trim(maxResource(mmo, PlayerResource.STELLIUM)))
+                .replace("{armor}", trim(mmo.getStatMap().getStat("ARMOR")))
                 .replace("{level}", Integer.toString(data.getLevel()));
     }
 
-    private static String formatSkills(PlayerData data, SVFrameMMOConfig.SkillCasting casting, int maxNameLength) {
+    private static String formatSkills(PlayerData data, MMOPlayerData mmo, SVFrameMMOConfig.SkillCasting casting, int maxNameLength) {
         var temporary = SVFrameMMO.temporarySkills().slots(data.getUniqueId());
         Map<Integer, PlayerSkillCatalog.Entry> bindings = temporary.isEmpty() ? PlayerSkillCatalog.bindings(data) : Map.of();
         SVFrameMMOConfig.SkillBarActionBar style = casting.actionBar();
@@ -156,7 +166,7 @@ public final class PersistentHudRuntime implements ModInitializer {
                 continue;
             }
 
-            double cooldown = data.getMMOPlayerData().getCooldownMap().getCooldown(skill.getCooldownPath());
+            double cooldown = mmo.getCooldownMap().getCooldown(skill.getCooldownPath());
             double mana = parameter(skill, "mana", level, data);
             double stamina = parameter(skill, "stamina", level, data);
 
@@ -186,14 +196,18 @@ public final class PersistentHudRuntime implements ModInitializer {
         return skill.getParameters().containsKey(id) ? Math.max(0d, skill.getParameter(id, level, data)) : 0d;
     }
 
+    private static double maxResource(MMOPlayerData mmo, PlayerResource resource) {
+        return Math.max(0d, mmo.getStatMap().getStat(resource.getMaxStat()));
+    }
+
     /**
      * Applies a final flat modifier calculated after every other modifier. This
      * caps the actual SVFrameLib MAX_HEALTH value, so vanilla never renders a
      * third heart row even when equipment/fusion adds more health.
      */
-    private static void enforceHealthCap(PlayerData data, double cap) {
+    private static void enforceHealthCap(PlayerData data, MMOPlayerData mmo, double cap) {
         if (cap <= 0d) return;
-        StatInstance health = data.getMMOPlayerData().getStatMap().getInstance("MAX_HEALTH");
+        StatInstance health = mmo.getStatMap().getInstance("MAX_HEALTH");
 
         double flat = health.getBase();
         double additive = 1d;
