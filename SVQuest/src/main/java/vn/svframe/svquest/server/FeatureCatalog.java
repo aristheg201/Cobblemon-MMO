@@ -1,5 +1,6 @@
 package vn.svframe.svquest.server;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -31,15 +32,8 @@ public final class FeatureCatalog {
         try {
             if (Files.isRegularFile(file)) {
                 try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
-                    JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
-                    JsonObject entries = root.has("features") ? root.getAsJsonObject("features") : root;
-                    for (Map.Entry<String, JsonElement> entry : entries.entrySet()) {
-                        JsonObject value = entry.getValue().getAsJsonObject();
-                        next.put(entry.getKey(), new Feature(
-                                value.has("command") ? value.get("command").getAsString() : "",
-                                value.has("opener") ? value.get("opener").getAsString() : ""
-                        ));
-                    }
+                    JsonElement root = JsonParser.parseReader(reader);
+                    parseRoot(root, next);
                 }
             }
             features = Map.copyOf(next);
@@ -47,6 +41,102 @@ public final class FeatureCatalog {
             return features.size();
         } catch (Exception error) {
             throw new IllegalStateException("Could not load config/svquest/features.json", error);
+        }
+    }
+
+    /**
+     * Production servers may still have the pre-object schema where features.json is a top-level array.
+     * Keep both formats valid so updating the mod never requires deleting/recreating administrator config.
+     */
+    private static void parseRoot(JsonElement root, LinkedHashMap<String, Feature> out) {
+        if (root == null || root.isJsonNull()) return;
+        if (root.isJsonArray()) {
+            parseArray(root.getAsJsonArray(), out, "root");
+            return;
+        }
+        if (!root.isJsonObject()) {
+            throw new IllegalArgumentException("features.json root must be an object or array");
+        }
+
+        JsonObject object = root.getAsJsonObject();
+        if (!object.has("features")) {
+            parseMap(object, out, "root");
+            return;
+        }
+
+        JsonElement entries = object.get("features");
+        if (entries == null || entries.isJsonNull()) return;
+        if (entries.isJsonObject()) {
+            parseMap(entries.getAsJsonObject(), out, "features");
+        } else if (entries.isJsonArray()) {
+            parseArray(entries.getAsJsonArray(), out, "features");
+        } else {
+            throw new IllegalArgumentException("'features' must be an object or array");
+        }
+    }
+
+    private static void parseMap(JsonObject entries, LinkedHashMap<String, Feature> out, String context) {
+        for (Map.Entry<String, JsonElement> entry : entries.entrySet()) {
+            String id = normalizeId(entry.getKey(), context);
+            Feature feature = parseFeature(entry.getValue(), context + "." + id);
+            put(out, id, feature, context);
+        }
+    }
+
+    private static void parseArray(JsonArray entries, LinkedHashMap<String, Feature> out, String context) {
+        for (int i = 0; i < entries.size(); i++) {
+            JsonElement element = entries.get(i);
+            if (element == null || !element.isJsonObject()) {
+                throw new IllegalArgumentException(context + "[" + i + "] must be an object");
+            }
+            JsonObject value = element.getAsJsonObject();
+            String id = firstString(value, "id", "featureId", "feature_id", "key");
+            if (id == null || id.isBlank()) {
+                // Also accept [{"pokemon_skills":{"command":"pokeskill"}}] style legacy entries.
+                if (value.entrySet().size() == 1) {
+                    Map.Entry<String, JsonElement> only = value.entrySet().iterator().next();
+                    String singletonId = normalizeId(only.getKey(), context + "[" + i + "]");
+                    put(out, singletonId, parseFeature(only.getValue(), context + "[" + i + "]." + singletonId), context);
+                    continue;
+                }
+                throw new IllegalArgumentException(context + "[" + i + "] is missing feature id (id/featureId/key)");
+            }
+            id = normalizeId(id, context + "[" + i + "]");
+            put(out, id, parseFeature(value, context + "[" + i + "]"), context);
+        }
+    }
+
+    private static Feature parseFeature(JsonElement element, String context) {
+        if (element == null || element.isJsonNull()) return new Feature("", "");
+        if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+            return new Feature(element.getAsString(), "");
+        }
+        if (!element.isJsonObject()) {
+            throw new IllegalArgumentException(context + " must be an object or command string");
+        }
+        JsonObject value = element.getAsJsonObject();
+        return new Feature(firstString(value, "command"), firstString(value, "opener"));
+    }
+
+    private static String firstString(JsonObject object, String... keys) {
+        for (String key : keys) {
+            JsonElement value = object.get(key);
+            if (value != null && !value.isJsonNull() && value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
+                return value.getAsString();
+            }
+        }
+        return "";
+    }
+
+    private static String normalizeId(String id, String context) {
+        String value = id == null ? "" : id.trim();
+        if (value.isBlank()) throw new IllegalArgumentException(context + " contains a blank feature id");
+        return value;
+    }
+
+    private static void put(LinkedHashMap<String, Feature> out, String id, Feature feature, String context) {
+        if (out.putIfAbsent(id, feature) != null) {
+            throw new IllegalArgumentException(context + " contains duplicate feature id '" + id + "'");
         }
     }
 

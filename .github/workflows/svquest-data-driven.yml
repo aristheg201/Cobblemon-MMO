@@ -102,6 +102,13 @@ jobs:
           grep -q 'externalProgression' SVQuest/src/main/java/vn/svframe/svquest/server/ReflectionIntegrationBridge.java
           ! grep -q 'advanceWhileComplete' SVQuest/src/main/java/vn/svframe/svquest/server/QuestStateStore.java
 
+      - name: Verify legacy feature-array compatibility is wired
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'root.isJsonArray()' SVQuest/src/main/java/vn/svframe/svquest/server/FeatureCatalog.java
+          grep -q 'parseArray' SVQuest/src/main/java/vn/svframe/svquest/server/FeatureCatalog.java
+
       - name: Loom remap build
         working-directory: SVQuest
         run: gradle --no-daemon clean remapJar sourcesJar --stacktrace
@@ -116,6 +123,7 @@ jobs:
           unzip -p "$JAR" fabric.mod.json | tee build/libs/fabric.mod.built.json
           unzip -l "$JAR" | grep -q 'vn/svframe/svquest/quest/QuestCatalog.class'
           unzip -l "$JAR" | grep -q 'vn/svframe/svquest/server/GuidedProgressBridge.class'
+          unzip -l "$JAR" | grep -q 'vn/svframe/svquest/server/FeatureCatalog.class'
           unzip -l "$JAR" | grep -q 'defaults/svquest/quests/00-guided-campaign.json'
           unzip -l "$JAR" | grep -q 'defaults/svquest/features.json'
           sha256sum "$JAR" | tee build/libs/SHA256.txt
@@ -139,26 +147,34 @@ jobs:
           if grep -E -q "IncompatibleClassChangeError|Could not execute entrypoint stage 'client'|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Mixin apply failed|Exception in thread \"Render thread\"" build/client-smoke.log; then exit 1; fi
           if [ "$code" -ne 0 ] && [ "$code" -ne 124 ]; then exit "$code"; fi
 
-      - name: Dedicated server startup smoke test
+      - name: Dedicated server startup smoke test with legacy feature array
         shell: bash
         run: |
           set -uo pipefail
           cd SVQuest
           rm -rf run
-          mkdir -p run
+          mkdir -p run/config/svquest
           printf 'eula=true\n' > run/eula.txt
+          cat > run/config/svquest/features.json <<'JSON'
+          [
+            {"id":"pokemon_skills","command":"pokeskill"},
+            {"id":"claims","command":"claim"},
+            {"featureId":"breeding","opener":"soulbreeding"}
+          ]
+          JSON
           set +e
           timeout 75s gradle --no-daemon runServer > build/server-smoke.log 2>&1
           code=$?
           set -e
           cat build/server-smoke.log
-          if grep -E -q "Could not execute entrypoint stage 'server'|Could not execute entrypoint stage 'main'|IncompatibleClassChangeError|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Mixin apply failed|Encountered an unexpected exception" build/server-smoke.log; then exit 1; fi
+          if grep -E -q "Could not execute entrypoint stage 'server'|Could not execute entrypoint stage 'main'|IncompatibleClassChangeError|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Mixin apply failed|Encountered an unexpected exception|ClassCastException" build/server-smoke.log; then exit 1; fi
+          grep -q 'SVQuest loaded 3 feature actions from config' build/server-smoke.log
           if [ "$code" -ne 0 ] && [ "$code" -ne 124 ]; then exit "$code"; fi
 
       - name: Upload validated artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SVQuest-beta.12-manual-claim
+          name: SVQuest-beta.13-feature-config-compat
           path: |
             SVQuest/build/libs/SVQuest-*.jar
             SVQuest/build/libs/SHA256.txt
