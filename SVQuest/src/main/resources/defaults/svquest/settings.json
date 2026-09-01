@@ -3,5 +3,11 @@
     "capture",
     "pokemon_level",
     "trainer_level"
+  ],
+  "pollIntervalTicks": 40,
+  "rankedHighElo": 3000,
+  "endgameRaidCategoryKeywords": [
+    "legend",
+    "myth"
   ]
 }
