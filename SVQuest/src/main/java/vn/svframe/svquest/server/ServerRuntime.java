@@ -9,6 +9,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import vn.svframe.svquest.SVQuest;
 import vn.svframe.svquest.network.ActionPayload;
+import vn.svframe.svquest.network.CatalogPayload;
 import vn.svframe.svquest.network.StatePayload;
 import vn.svframe.svquest.quest.QuestCatalog;
 
@@ -22,6 +23,8 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public final class ServerRuntime {
+    private static final int CATALOG_CHUNK_CHARS = 12000;
+
     private final QuestStateStore store = new QuestStateStore();
     private final QuestEngine engine = new QuestEngine(store, new RewardDispatcher());
     private volatile ReflectionIntegrationBridge integrations;
@@ -31,6 +34,7 @@ public final class ServerRuntime {
 
     public void register() {
         QuestCatalog.loadServer();
+        ProgressSettings.loadServer();
         FeatureCatalog.loadServer();
         store.rebindCatalog();
         engine.setSync(this::sendState);
@@ -57,7 +61,7 @@ public final class ServerRuntime {
                 guided.onJoin(player);
                 poller.onJoin(player);
                 seasonal.onJoin(player);
-                sendState(player);
+                sendFullSync(player);
             }
             SVQuest.LOGGER.info("SVQuest production integrations installed; quests={}", QuestCatalog.QUESTS.size());
         });
@@ -78,7 +82,7 @@ public final class ServerRuntime {
             if (poller != null) poller.onJoin(handler.player);
             SeasonProgressPoller seasonal = seasonPoller;
             if (seasonal != null) seasonal.onJoin(handler.player);
-            sendState(handler.player);
+            sendFullSync(handler.player);
         });
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
@@ -96,18 +100,19 @@ public final class ServerRuntime {
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
                 literal("svquest")
-                        .executes(ctx -> { sendState(ctx.getSource().getPlayerOrThrow()); return 1; })
-                        .then(literal("sync").executes(ctx -> { sendState(ctx.getSource().getPlayerOrThrow()); return 1; }))
+                        .executes(ctx -> { sendFullSync(ctx.getSource().getPlayerOrThrow()); return 1; })
+                        .then(literal("sync").executes(ctx -> { sendFullSync(ctx.getSource().getPlayerOrThrow()); return 1; }))
                         .then(literal("reload").requires(src -> src.hasPermissionLevel(2)).executes(ctx -> {
                             try {
                                 int quests = QuestCatalog.loadServer();
+                                ProgressSettings.loadServer();
                                 int features = FeatureCatalog.loadServer();
                                 store.rebindCatalog();
-                                for (ServerPlayerEntity player : ctx.getSource().getServer().getPlayerManager().getPlayerList()) sendState(player);
+                                for (ServerPlayerEntity player : ctx.getSource().getServer().getPlayerManager().getPlayerList()) sendFullSync(player);
                                 ctx.getSource().sendFeedback(() -> Text.literal("SVQuest reload OK: " + quests + " quest, " + features + " feature."), true);
                                 return 1;
                             } catch (Throwable error) {
-                                SVQuest.LOGGER.error("SVQuest reload rejected; active registry remains available", error);
+                                SVQuest.LOGGER.error("SVQuest reload rejected", error);
                                 ctx.getSource().sendError(Text.literal("SVQuest reload thất bại: " + error.getMessage()));
                                 return 0;
                             }
@@ -138,7 +143,7 @@ public final class ServerRuntime {
     private void handle(ServerPlayerEntity player, String action) {
         if (action == null || action.length() > 128) return;
         if (action.equals("sync")) {
-            sendState(player);
+            sendFullSync(player);
             return;
         }
         if (!action.startsWith("feature:")) return;
@@ -150,17 +155,41 @@ public final class ServerRuntime {
             return;
         }
         try {
-            engine.signal(player, "feature." + id);
-            if (!feature.opener().isBlank() && FeatureOpeners.handle(player, feature.opener())) return;
+            if (!feature.opener().isBlank() && FeatureOpeners.handle(player, feature.opener())) {
+                engine.signal(player, "feature." + id);
+                return;
+            }
             if (feature.command().isBlank()) {
                 player.sendMessage(Text.literal("§cTính năng này chưa có action hợp lệ."), false);
                 return;
             }
             String command = feature.command().replace("{player}", player.getName().getString()).replace("%player%", player.getName().getString());
             player.getServer().getCommandManager().executeWithPrefix(player.getCommandSource(), command);
+            engine.signal(player, "feature." + id);
         } catch (Throwable t) {
             SVQuest.LOGGER.warn("Feature action '{}' failed safely for {}: {}", id, player.getName().getString(), t.toString());
             player.sendMessage(Text.literal("§cKhông thể mở tính năng này lúc này."), false);
+        }
+    }
+
+    private void sendFullSync(ServerPlayerEntity player) {
+        sendCatalog(player);
+        sendState(player);
+    }
+
+    private void sendCatalog(ServerPlayerEntity player) {
+        try {
+            String token = QuestCatalog.snapshotToken();
+            String sequence = Integer.toHexString(token.hashCode()) + "-" + token.length();
+            int total = Math.max(1, (token.length() + CATALOG_CHUNK_CHARS - 1) / CATALOG_CHUNK_CHARS);
+            for (int index = 0; index < total; index++) {
+                int from = index * CATALOG_CHUNK_CHARS;
+                int to = Math.min(token.length(), from + CATALOG_CHUNK_CHARS);
+                String chunk = sequence + "|" + index + "|" + total + "|" + token.substring(from, to);
+                ServerPlayNetworking.send(player, new CatalogPayload(chunk));
+            }
+        } catch (Throwable t) {
+            SVQuest.LOGGER.warn("Could not send SVQuest catalog to {}: {}", player.getName().getString(), t.toString());
         }
     }
 

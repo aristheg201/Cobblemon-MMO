@@ -40,9 +40,7 @@ public final class QuestStateStore {
         if (state != null) save(id, state);
     }
 
-    public synchronized void rebindCatalog() {
-        cache.values().forEach(PlayerState::normalize);
-    }
+    public synchronized void rebindCatalog() { cache.values().forEach(PlayerState::normalize); }
 
     private PlayerState load(UUID id) {
         PlayerState state = new PlayerState();
@@ -55,7 +53,7 @@ public final class QuestStateStore {
         try (InputStream in = Files.newInputStream(file)) {
             p.load(in);
             state.questId = p.getProperty("questId", "").trim();
-            state.questIndex = parseInt(p.getProperty("questIndex"), 0); // beta.9 migration fallback
+            state.questIndex = parseInt(p.getProperty("questIndex"), 0);
             for (String key : p.stringPropertyNames()) {
                 if (key.startsWith("progress.")) state.progress.put(key.substring(9), parseInt(p.getProperty(key), 0));
                 else if (key.startsWith("rewarded.") && Boolean.parseBoolean(p.getProperty(key))) state.rewarded.add(key.substring(9));
@@ -79,7 +77,7 @@ public final class QuestStateStore {
             Path target = dir.resolve(id + ".properties");
             Path temp = dir.resolve(id + ".properties.tmp");
             try (OutputStream out = Files.newOutputStream(temp)) {
-                p.store(out, "SVQuest player state v3 - stable quest ids");
+                p.store(out, "SVQuest player state v4 - stable quest ids, split catalog sync");
             }
             try {
                 Files.move(temp, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
@@ -170,14 +168,13 @@ public final class QuestStateStore {
             progress.replaceAll((k, v) -> Math.max(0, v));
         }
 
-        /** Existing GUI/network format is retained; only the catalog token is added. */
+        /** Small progress-only payload. The quest catalog is synchronized separately. */
         public String encode() {
             normalize();
             StringBuilder out = new StringBuilder();
-            out.append("v=3\n");
+            out.append("v=4\n");
             out.append("questIndex=").append(questIndex).append('\n');
             out.append("questId=").append(safe(questId)).append('\n');
-            out.append("catalog64=").append(QuestCatalog.snapshotToken()).append('\n');
             progress.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(e ->
                     out.append("p.").append(safe(e.getKey())).append('=').append(e.getValue()).append('\n'));
             return out.toString();

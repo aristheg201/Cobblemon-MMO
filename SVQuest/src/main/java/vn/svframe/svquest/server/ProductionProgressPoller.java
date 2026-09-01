@@ -13,10 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-/**
- * Polls production mod state where those mods do not expose a stable public event API.
- * Every probe is isolated: one broken/updated optional mod cannot crash SVQuest or the server.
- */
+/** Polls production mod state where those mods do not expose a stable public event API. */
 public final class ProductionProgressPoller {
     private final MinecraftServer server;
     private final QuestEngine engine;
@@ -41,7 +38,8 @@ public final class ProductionProgressPoller {
     }
 
     public void tick() {
-        if (++ticks % 40 != 0) return; // two seconds: responsive without hammering DB-backed mods
+        int interval = ProgressSettings.pollIntervalTicks();
+        if (++ticks % interval != 0) return;
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
             Snapshot s = snapshots.computeIfAbsent(player.getUuid(), k -> new Snapshot());
             probe("Ranked", () -> pollRanked(player, s));
@@ -59,7 +57,7 @@ public final class ProductionProgressPoller {
     }
 
     public void onJoin(ServerPlayerEntity player) {
-        snapshots.remove(player.getUuid()); // first poll becomes baseline, never awards old activity by accident
+        snapshots.remove(player.getUuid());
         previousRaids.remove(player.getUuid());
     }
 
@@ -84,7 +82,7 @@ public final class ProductionProgressPoller {
         int elo = intValue(invoke(data, "getElo"));
         if (s.rankedWins != null && wins > s.rankedWins) engine.signal(player, "ranked_win", wins - s.rankedWins);
         s.rankedWins = wins;
-        if (elo >= 3000) engine.metric(player, "ranked_high", 1);
+        if (elo >= ProgressSettings.rankedHighElo()) engine.metric(player, "ranked_high", 1);
     }
 
     private void pollTower(ServerPlayerEntity player, Snapshot s) throws Exception {
@@ -198,7 +196,9 @@ public final class ProductionProgressPoller {
             if (defeated > 0) {
                 engine.signal(player, "raid_complete");
                 String category = String.valueOf(invoke(previous, "raidBossCategory")).toLowerCase(Locale.ROOT);
-                if (category.contains("legend") || category.contains("myth")) engine.signal(player, "endgame_raid");
+                if (ProgressSettings.endgameRaidCategoryKeywords().stream().anyMatch(category::contains)) {
+                    engine.signal(player, "endgame_raid");
+                }
             }
         }
     }

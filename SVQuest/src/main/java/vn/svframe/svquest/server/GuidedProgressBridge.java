@@ -17,10 +17,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-/**
- * Extra generic signals used by the guided campaign. This class contains integration mechanics only;
- * quest ids, targets, text, rewards and ordering remain entirely in config/svquest/quests/*.json.
- */
+/** Generic integration signals for the guided campaign. Quest content remains entirely in JSON. */
 public final class GuidedProgressBridge {
     private final MinecraftServer server;
     private final QuestEngine engine;
@@ -51,7 +48,8 @@ public final class GuidedProgressBridge {
     }
 
     private void tick() {
-        if (++ticks % 40 != 0) return;
+        int interval = ProgressSettings.pollIntervalTicks();
+        if (++ticks % interval != 0) return;
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
             probe("Ranked participation", () -> pollRanked(player));
             probe("NovaRaids join", () -> pollRaidJoin(player));
