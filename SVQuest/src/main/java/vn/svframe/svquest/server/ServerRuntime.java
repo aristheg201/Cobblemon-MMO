@@ -25,6 +25,7 @@ public final class ServerRuntime {
     private final QuestStateStore store = new QuestStateStore();
     private final QuestEngine engine = new QuestEngine(store, new RewardDispatcher());
     private volatile ReflectionIntegrationBridge integrations;
+    private volatile GuidedProgressBridge guidedProgress;
     private volatile ProductionProgressPoller productionPoller;
     private volatile SeasonProgressPoller seasonPoller;
 
@@ -41,12 +42,19 @@ public final class ServerRuntime {
             ReflectionIntegrationBridge bridge = new ReflectionIntegrationBridge(server, engine);
             integrations = bridge;
             bridge.install();
+
+            GuidedProgressBridge guided = new GuidedProgressBridge(server, engine);
+            guidedProgress = guided;
+            guided.install();
+
             ProductionProgressPoller poller = new ProductionProgressPoller(server, engine);
             productionPoller = poller;
             SeasonProgressPoller seasonal = new SeasonProgressPoller(server, engine);
             seasonPoller = seasonal;
+
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                 bridge.onJoin(player);
+                guided.onJoin(player);
                 poller.onJoin(player);
                 seasonal.onJoin(player);
                 sendState(player);
@@ -64,6 +72,8 @@ public final class ServerRuntime {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ReflectionIntegrationBridge bridge = integrations;
             if (bridge != null) bridge.onJoin(handler.player);
+            GuidedProgressBridge guided = guidedProgress;
+            if (guided != null) guided.onJoin(handler.player);
             ProductionProgressPoller poller = productionPoller;
             if (poller != null) poller.onJoin(handler.player);
             SeasonProgressPoller seasonal = seasonPoller;
@@ -74,6 +84,8 @@ public final class ServerRuntime {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ReflectionIntegrationBridge bridge = integrations;
             if (bridge != null) bridge.onQuit(handler.player);
+            GuidedProgressBridge guided = guidedProgress;
+            if (guided != null) guided.onQuit(handler.player);
             ProductionProgressPoller poller = productionPoller;
             if (poller != null) poller.onQuit(handler.player);
             SeasonProgressPoller seasonal = seasonPoller;
@@ -138,6 +150,7 @@ public final class ServerRuntime {
             return;
         }
         try {
+            engine.signal(player, "feature." + id);
             if (!feature.opener().isBlank() && FeatureOpeners.handle(player, feature.opener())) return;
             if (feature.command().isBlank()) {
                 player.sendMessage(Text.literal("§cTính năng này chưa có action hợp lệ."), false);
