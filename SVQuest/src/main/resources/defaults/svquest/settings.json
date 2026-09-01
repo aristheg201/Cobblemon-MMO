@@ -2,12 +2,40 @@
   "carryOver": [
     "capture",
     "pokemon_level",
-    "trainer_level"
+    "trainer_level",
+    "battle_participation",
+    "battle_win",
+    "player_battle_win",
+    "evolve",
+    "skill_purchase",
+    "skill_bind",
+    "shop_purchase",
+    "shop_sell",
+    "gts_listing",
+    "gts_trade",
+    "collect_egg",
+    "hatch",
+    "hunt_complete",
+    "raid_join",
+    "raid_complete",
+    "battle_tower_win",
+    "ranked_participation",
+    "ranked_win",
+    "ranked_elo",
+    "research_complete",
+    "wonder_trade",
+    "sts_trade",
+    "expedition_complete",
+    "showcase_complete",
+    "minigame_complete",
+    "daily_claim",
+    "battlepass_progress",
+    "fusion_complete",
+    "tera_use",
+    "mega_use",
+    "cobbledollars_earned"
   ],
   "pollIntervalTicks": 40,
   "rankedHighElo": 3000,
-  "endgameRaidCategoryKeywords": [
-    "legend",
-    "myth"
-  ]
+  "endgameRaidCategoryKeywords": ["legend", "myth"]
 }

@@ -1,17 +1,16 @@
-name: SVQuest data-driven Fabric 1.21.1
+name: SVQuest guided campaign Fabric 1.21.1
 
 on:
   push:
     branches:
       - svquest-data-driven-1.21.1
     paths:
-      - 'svquest-overrides/**'
       - 'SVQuest/**'
       - '.github/workflows/svquest-data-driven.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-validate:
@@ -20,8 +19,6 @@ jobs:
     steps:
       - name: Checkout single SVQuest branch
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Java 21
         uses: actions/setup-java@v5
@@ -34,19 +31,7 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
-      - name: Materialize beta.9 source and apply data-driven overlay
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf /tmp/svquest-base
-          git clone --depth 1 --branch fix/svquest-quest-engine https://github.com/aristheg201/Mod-dev.git /tmp/svquest-base
-          if [ ! -d SVQuest ]; then
-            cp -a /tmp/svquest-base/SVQuest ./SVQuest
-          fi
-          cp -a svquest-overrides/. SVQuest/
-          sed -i 's/^mod_version=.*/mod_version=0.1.0-beta.10/' SVQuest/gradle.properties
-
-      - name: Validate JSON and no hardcoded quest/reward catalog
+      - name: Validate campaign data and architecture
         shell: bash
         run: |
           set -euo pipefail
@@ -55,25 +40,60 @@ jobs:
           root = pathlib.Path('SVQuest/src/main/resources/defaults/svquest')
           files = sorted((root / 'quests').glob('*.json'))
           assert files, 'No quest data files'
-          ids=[]
+          concrete = 0
+          ids = set()
           for p in files:
-              data=json.loads(p.read_text(encoding='utf-8'))
-              for q in data.get('quests', []):
-                  assert q['id'] not in ids, f"duplicate quest id {q['id']}"
-                  ids.append(q['id'])
-                  assert q.get('objectives'), f"quest without objectives: {q['id']}"
-                  for o in q['objectives']:
-                      assert int(o.get('target',0)) > 0, f"invalid target: {q['id']}"
+              data = json.loads(p.read_text(encoding='utf-8'))
+              entries = data.get('entries')
+              if entries is not None:
+                  for entry in entries:
+                      kind = entry.get('kind', 'quest')
+                      if kind == 'quest':
+                          concrete += 1
+                          qid = entry['id']
+                          assert qid not in ids, f'duplicate quest id {qid}'
+                          ids.add(qid)
+                          assert entry.get('objectives'), f'quest without objectives: {qid}'
+                      elif kind == 'series':
+                          count = int(entry.get('count', 0))
+                          assert 1 <= count <= 10000, f'invalid series count in {p}: {count}'
+                          concrete += count
+                          prefix = entry['idPrefix']
+                          for i in range(1, count + 1):
+                              qid = f'{prefix}_{i:03d}'
+                              assert qid not in ids, f'duplicate generated quest id {qid}'
+                              ids.add(qid)
+                          objs = entry.get('objectives') or ([entry['objective']] if entry.get('objective') else [])
+                          assert objs, f'series without objectives: {prefix}'
+                          for o in objs:
+                              start = int(o.get('targetStart', o.get('target', 1)))
+                              step = int(o.get('targetStep', 0))
+                              assert start > 0 and start + (count - 1) * step > 0, f'invalid target series: {prefix}'
+                      else:
+                          raise AssertionError(f'unknown entry kind: {kind}')
+                  expected = data.get('expectedQuestCount')
+                  if expected is not None:
+                      assert int(expected) == concrete, f'expectedQuestCount={expected}, expanded={concrete}'
+              else:
+                  for q in data.get('quests', []):
+                      concrete += 1
+                      assert q['id'] not in ids
+                      ids.add(q['id'])
           json.loads((root/'settings.json').read_text(encoding='utf-8'))
           json.loads((root/'features.json').read_text(encoding='utf-8'))
-          assert len(ids) >= 35, f'Quest corpus too small: {len(ids)}'
-          print('Validated quest count:', len(ids))
+          assert concrete >= 1000, f'Quest corpus too small after expansion: {concrete}'
+          print('Expanded quest count:', concrete)
           PY
           ! grep -R --line-number --include='*.java' 'switch *(quest\.id())' SVQuest/src/main/java
           ! grep -R --line-number --include='*.java' 'COMMANDS\.put' SVQuest/src/main/java
           ! grep -R --line-number --include='*.java' 'List\.of( *new Quest' SVQuest/src/main/java
-          diff -q /tmp/svquest-base/SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java \
-                  SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
+
+      - name: Verify GUI layout unchanged from beta.9
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/aristheg201/Mod-dev/fix/svquest-quest-engine/SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java -o /tmp/QuestScreen-beta9.java
+          diff -q /tmp/QuestScreen-beta9.java SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
 
       - name: Loom remap build
         working-directory: SVQuest
@@ -88,7 +108,8 @@ jobs:
           test -n "$JAR"
           unzip -p "$JAR" fabric.mod.json | tee build/libs/fabric.mod.built.json
           unzip -l "$JAR" | grep -q 'vn/svframe/svquest/quest/QuestCatalog.class'
-          unzip -l "$JAR" | grep -q 'defaults/svquest/quests/01-progression.json'
+          unzip -l "$JAR" | grep -q 'vn/svframe/svquest/server/GuidedProgressBridge.class'
+          unzip -l "$JAR" | grep -q 'defaults/svquest/quests/00-guided-campaign.json'
           unzip -l "$JAR" | grep -q 'defaults/svquest/features.json'
           sha256sum "$JAR" | tee build/libs/SHA256.txt
 
@@ -130,7 +151,7 @@ jobs:
       - name: Upload validated artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SVQuest-beta.10-data-driven
+          name: SVQuest-beta.11-guided-1195
           path: |
             SVQuest/build/libs/SVQuest-*.jar
             SVQuest/build/libs/SHA256.txt
@@ -138,25 +159,3 @@ jobs:
             SVQuest/build/client-smoke.log
             SVQuest/build/server-smoke.log
           if-no-files-found: error
-
-      - name: Commit validated self-contained SVQuest source to this branch
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'svquest-ci'
-          git config user.email 'svquest-ci@users.noreply.github.com'
-          git add \
-            SVQuest/README.md \
-            SVQuest/SOURCE-BUNDLE.md \
-            SVQuest/build.gradle \
-            SVQuest/gradle.properties \
-            SVQuest/settings.gradle \
-            SVQuest/src
-          if git diff --cached --quiet; then
-            echo 'Source already materialized and unchanged.'
-          else
-            git commit -m 'SVQuest beta.10: materialize validated data-driven source'
-            git fetch origin svquest-data-driven-1.21.1
-            git rebase origin/svquest-data-driven-1.21.1
-            git push origin HEAD:svquest-data-driven-1.21.1
-          fi

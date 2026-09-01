@@ -19,7 +19,7 @@
     "battle_pass": { "command": "battlepass" },
     "fusion": { "command": "fusion" },
     "homes": { "command": "home" },
-    "warps": { "command": "warp" },
+    "warps": { "command": "warps" },
     "waypoints": { "command": "waypoint" },
     "claims": { "command": "claim" }
   }
