@@ -1,4 +1,5 @@
 {
+  "managedVersion": 15,
   "carryOver": [
     "pokemon_level",
     "trainer_level",
