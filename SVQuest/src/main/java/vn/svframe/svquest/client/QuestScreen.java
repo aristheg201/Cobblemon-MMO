@@ -84,6 +84,13 @@ public final class QuestScreen extends Screen {
     }
 
     private void progress(DrawContext ctx, int x, int y, int w, int h, int mx, int my) {
+        // The screen can be opened one render frame before the async server catalog arrives.
+        // Never index the catalog until it is actually present; otherwise byIndex(0) throws on the render thread.
+        if (QuestCatalog.QUESTS.isEmpty()) {
+            renderCatalogLoading(ctx, x, y, w, h, mx, my);
+            return;
+        }
+
         int current = clampCurrent();
         if (selectedQuest < 0 || selectedQuest >= QuestCatalog.QUESTS.size()) {
             selectedQuest = current;
@@ -92,6 +99,17 @@ public final class QuestScreen extends Screen {
         int railW = Math.max(205, Math.min(278, w / 4)), gap = 10;
         journeyRail(ctx, x, y, railW, h, current, mx, my);
         questDetail(ctx, x + railW + gap, y, w - railW - gap, h, current, mx, my);
+    }
+
+    private void renderCatalogLoading(DrawContext ctx, int x, int y, int w, int h, int mx, int my) {
+        panel(ctx, x, y, x + w, y + h, PANEL, BORDER);
+        String title = "ĐANG ĐỒNG BỘ DỮ LIỆU QUEST";
+        String detail = SVQuestClient.STATE.serverAvailable()
+                ? "Đang nhận lộ trình quest từ server..."
+                : "Đang chờ dữ liệu từ server. Có thể thử đồng bộ lại.";
+        ctx.drawText(textRenderer, title, x + 24, y + 26, CYAN, true);
+        ctx.drawText(textRenderer, detail, x + 24, y + 50, MUTED, false);
+        actionButton(ctx, x + 24, y + 78, 128, 24, "ĐỒNG BỘ LẠI", "sync", mx, my);
     }
 
     private void journeyRail(DrawContext ctx, int x, int y, int w, int h, int current, int mx, int my) {
@@ -212,51 +230,50 @@ public final class QuestScreen extends Screen {
     }
 
     private void featureGrid(DrawContext ctx, int x, int y, int w, int h, int mx, int my) {
-        panel(ctx, x, y, x + w, y + h, PANEL, BORDER);
-        String title = switch (tab) { case ACTIVITIES -> "HOẠT ĐỘNG"; case POKEMON -> "POKÉMON"; case SHOPS -> "CỬA HÀNG"; case SERVICES -> "DỊCH VỤ"; default -> ""; };
-        ctx.drawText(textRenderer, title, x + 16, y + 13, TEXT, true);
-        ctx.drawText(textRenderer, "Chọn hệ thống để mở giao diện tương ứng.", x + 16, y + 30, MUTED, false);
-        String[][] cards = cards(tab);
-        int cols = w >= 900 ? 4 : 3, gap = 9, cw = (w - 32 - gap * (cols - 1)) / cols, ch = 78, startY = y + 53;
-        for (int i = 0; i < cards.length; i++) {
-            int col = i % cols, row = i / cols, cx = x + 16 + col * (cw + gap), cy = startY + row * (ch + gap);
-            if (cy + ch > y + h - 12) break;
-            boolean hover = inside(mx, my, cx, cy, cw, ch);
-            panel(ctx, cx, cy, cx + cw, cy + ch, hover ? CARD_HOVER : CARD, hover ? CYAN : BORDER);
-            ctx.fill(cx + 9, cy + 10, cx + 13, cy + ch - 10, categoryColor(tab));
-            ctx.drawText(textRenderer, cards[i][0], cx + 22, cy + 14, TEXT, true);
-            drawWrapped(ctx, cards[i][1], cx + 22, cy + 31, cw - 34, MUTED, 2);
-            ctx.drawText(textRenderer, hover ? "MỞ  ›" : "MỞ", cx + 22, cy + 59, hover ? CYAN : DIM, true);
-            hits.add(new Hit(cx, cy, cw, ch, "feature:" + cards[i][2]));
+        String[][] data = featureData(tab);
+        int cols = w > 950 ? 3 : 2;
+        int gap = 9, cardW = (w - gap * (cols - 1)) / cols, cardH = 77;
+        for (int i = 0; i < data.length; i++) {
+            int col = i % cols, row = i / cols;
+            int cx = x + col * (cardW + gap), cy = y + row * (cardH + gap);
+            if (cy + cardH > y + h) break;
+            boolean hover = inside(mx, my, cx, cy, cardW, cardH);
+            panel(ctx, cx, cy, cx + cardW, cy + cardH, hover ? CARD_HOVER : CARD, BORDER);
+            int accent = categoryColor(tab);
+            ctx.fill(cx + 7, cy + 11, cx + 10, cy + cardH - 11, accent);
+            ctx.drawText(textRenderer, data[i][0], cx + 19, cy + 14, TEXT, true);
+            drawWrapped(ctx, data[i][1], cx + 19, cy + 31, cardW - 132, MUTED, 2);
+            actionButton(ctx, cx + cardW - 101, cy + 24, 82, 25, "MỞ", "feature:" + data[i][2], mx, my);
         }
     }
 
-    private String[][] cards(Tab tab) {
+    private String[][] featureData(Tab tab) {
         return switch (tab) {
             case ACTIVITIES -> new String[][]{
-                    {"NovaRaids","Raid boss, lịch raid và phần thưởng.","raids"},
-                    {"Ranked","PvP xếp hạng Bronze → Master.","ranked"},
-                    {"Battle Tower","Mở qua Holo Battle Tower terminal gần bạn.","battle_tower"},
-                    {"Battle Factory","Battle với đội hình rental.","battle_factory"},
-                    {"Hunts","Săn Pokémon theo mục tiêu.","hunts"},
-                    {"Expeditions","Gửi Pokémon đi expedition.","expeditions"},
-                    {"Showcase","Trưng bày và thi Pokémon.","showcase"},
-                    {"Daily","Nhận phần thưởng hằng ngày.","daily"},
-                    {"Battle Pass","Tiến trình mùa và nhiệm vụ.","battle_pass"}
+                    {"Ranked","Đấu PvP xếp hạng.","ranked"},
+                    {"Battle Tower","Chuỗi battle leo tầng.","battle_tower"},
+                    {"Battle Factory","Đội hình thuê / thử thách.","battle_factory"},
+                    {"Nova Raids","Raid Pokémon theo lịch.","raids"},
+                    {"Hunts","Săn Pokémon theo yêu cầu.","hunts"},
+                    {"Research","Nghiên cứu / Pokédex mastery.","research"},
+                    {"Expeditions","Thám hiểm và tiến trình dài hạn.","expeditions"},
+                    {"Showcase","Trưng bày Pokémon theo tiêu chí.","showcase"},
+                    {"Minigames","Hoạt động giải trí.","minigames"},
+                    {"Daily","Nhận thưởng hằng ngày.","daily"},
+                    {"Battle Pass","Tiến trình mùa.","battle_pass"}
             };
             case POKEMON -> new String[][]{
-                    {"Pokémon Skills","936 skill, mua/bind/build trực tiếp.","pokemon_skills"},
-                    {"SoulBreeding","Daycare, Nest, Egg và hatch.","breeding"},
-                    {"Research","Research Tasks & Pokédex.","research"},
-                    {"WonderTrade","Đổi Pokémon ngẫu nhiên.","wonder_trade"},
-                    {"STS","Hệ trade/storage utility.","sts"},
-                    {"GTS","Marketplace Pokémon giữa player.","gts"},
-                    {"Fusion / Potara","Fusion endgame của server.","fusion"},
-                    {"Skins","Kho và trang phục Pokémon.","skins"}
+                    {"Pokémon Skills","Mua và quản lý Kỹ năng Pokémon.","pokemon_skills"},
+                    {"Sinh sản","Ghép cặp, nhận và ấp trứng.","breeding"},
+                    {"Fusion / Potara","Hợp thể Pokémon với nhân vật.","fusion"},
+                    {"Tera Lab","Tối ưu Tera Type.","tera_lab"},
+                    {"Skin Pokémon","Kho và trang bị skin.","skins"},
+                    {"WonderTrade","Trao đổi Pokémon ngẫu nhiên.","wonder_trade"},
+                    {"STS","Bán Pokémon trực tiếp cho hệ thống.","sts"}
             };
             case SHOPS -> new String[][]{
-                    {"Shop chính","Poké Ball, berry, medicine, resource.","shop"},
-                    {"Skin Shop","Skin bằng BeastCoin/CobbleDollars.","skins"},
+                    {"Shop chính","Vật phẩm phổ thông và tài nguyên.","shop"},
+                    {"Resource Hub","Tài nguyên xây dựng / sinh tồn.","resource_hub"},
                     {"GTS","Mua bán Pokémon giữa player.","gts"},
                     {"Hunter Shop","Nội dung dùng HunterCoin.","hunter_shop"},
                     {"Tera Lab","Tài nguyên Tera và tối ưu.","tera_lab"},
