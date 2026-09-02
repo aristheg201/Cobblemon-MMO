@@ -102,6 +102,14 @@ jobs:
           grep -q 'externalProgression' SVQuest/src/main/java/vn/svframe/svquest/server/ReflectionIntegrationBridge.java
           ! grep -q 'advanceWhileComplete' SVQuest/src/main/java/vn/svframe/svquest/server/QuestStateStore.java
 
+      - name: Verify client empty-catalog render safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'QuestCatalog.QUESTS.isEmpty()' SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
+          grep -q 'renderCatalogLoading' SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
+          grep -q 'ĐANG ĐỒNG BỘ DỮ LIỆU QUEST' SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
+
       - name: Verify legacy feature-array compatibility is wired
         shell: bash
         run: |
@@ -174,7 +182,7 @@ jobs:
       - name: Upload validated artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SVQuest-beta.13-feature-config-compat
+          name: SVQuest-beta.14-client-sync-safety
           path: |
             SVQuest/build/libs/SVQuest-*.jar
             SVQuest/build/libs/SHA256.txt
