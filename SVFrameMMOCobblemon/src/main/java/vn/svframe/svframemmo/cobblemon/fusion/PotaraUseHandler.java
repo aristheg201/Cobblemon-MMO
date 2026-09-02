@@ -2,9 +2,12 @@ package vn.svframe.svframemmo.cobblemon.fusion;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.TypedActionResult;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 import vn.svframe.svframemmo.cobblemon.integration.LuckPermsIntegration;
@@ -14,18 +17,78 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Potara activation/unfusion: configured vanilla item + CMD, interacting with the exact party Pokemon. */
+/** Potara activation/unfusion: right-click deployed party Pokemon to fuse; sneak + use Potara anywhere to unfuse. */
 public final class PotaraUseHandler {
     private static final Set<UUID> PENDING_FUSIONS = ConcurrentHashMap.newKeySet();
 
     private PotaraUseHandler() { }
 
     public static void register(FusionService fusions) {
+        registerUnfuse(fusions);
+        registerFusionStart(fusions);
+    }
+
+    /**
+     * Manual Potara separation is intentionally independent from the fused Pokemon entity.
+     * Fusion recalls the Pokemon before activating the morph, so requiring a right-click on that Pokemon made
+     * manual separation impossible. Sneak + right-click with any valid Potara now ends the active Potara fusion.
+     */
+    private static void registerUnfuse(FusionService fusions) {
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            ItemStack stack = player.getStackInHand(hand);
+            FusionTier heldTier = SVFrameMMOCobblemon.potara().resolve(stack);
+            if (heldTier == null || !player.isSneaking()) return TypedActionResult.pass(stack);
+            if (world.isClient()) return TypedActionResult.success(stack, true);
+            if (!(player instanceof ServerPlayerEntity serverPlayer)) return TypedActionResult.pass(stack);
+
+            UUID playerId = serverPlayer.getUuid();
+            FusionSession active = fusions.session(playerId);
+            if (active == null) return TypedActionResult.pass(stack);
+            if (active.dance()) {
+                serverPlayer.sendMessage(Text.literal("Fusion Dance cannot be manually unfused."), true);
+                return TypedActionResult.fail(stack);
+            }
+            if (!LuckPermsIntegration.has(serverPlayer, LuckPermsIntegration.POTARA)) {
+                serverPlayer.sendMessage(Text.literal("You do not have permission to use Potara."), true);
+                return TypedActionResult.fail(stack);
+            }
+            if (PENDING_FUSIONS.contains(playerId)) {
+                serverPlayer.sendMessage(Text.literal("Potara fusion sequence is still in progress."), true);
+                return TypedActionResult.fail(stack);
+            }
+
+            long cooldown = fusions.cooldowns().potaraRemainingMillis(playerId);
+            if (cooldown > 0L) {
+                serverPlayer.sendMessage(Text.literal("Potara action cooldown: " + FusionCommands.formatSeconds(cooldown) + "."), true);
+                return TypedActionResult.fail(stack);
+            }
+
+            FusionService.EndResult ended = fusions.end(serverPlayer, true);
+            if (!ended.success()) {
+                serverPlayer.sendMessage(Text.literal(ended.rejection()), true);
+                return TypedActionResult.fail(stack);
+            }
+
+            fusions.cooldowns().markPotara(playerId, fusions.potaraCooldownSeconds());
+            serverPlayer.sendMessage(Text.literal("Potara fusion ended."), true);
+            return TypedActionResult.success(stack, false);
+        });
+    }
+
+    private static void registerFusionStart(FusionService fusions) {
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             if (world.isClient() || !(player instanceof ServerPlayerEntity serverPlayer) || !(entity instanceof PokemonEntity pokemonEntity))
                 return ActionResult.PASS;
             FusionTier tier = SVFrameMMOCobblemon.potara().resolve(serverPlayer.getStackInHand(hand));
             if (tier == null) return ActionResult.PASS;
+
+            // Sneak + use is reserved exclusively for manual separation. Do not accidentally begin another
+            // interaction sequence against a Pokemon while the player is using the unfuse gesture.
+            if (serverPlayer.isSneaking()) {
+                FusionSession active = fusions.session(serverPlayer.getUuid());
+                return active != null && !active.dance() ? ActionResult.SUCCESS : ActionResult.PASS;
+            }
+
             if (!LuckPermsIntegration.has(serverPlayer, LuckPermsIntegration.POTARA)
                     || !LuckPermsIntegration.has(serverPlayer, permission(tier))) {
                 serverPlayer.sendMessage(Text.literal("You do not have permission to use this Potara."), true);
@@ -46,22 +109,8 @@ public final class PotaraUseHandler {
 
             FusionSession active = fusions.session(playerId);
             if (active != null) {
-                if (active.dance()) {
-                    serverPlayer.sendMessage(Text.literal("Fusion Dance cannot be manually unfused."), true);
-                    return ActionResult.FAIL;
-                }
-                if (!active.pokemonUuid().equals(pokemonEntity.getPokemon().getUuid())) {
-                    serverPlayer.sendMessage(Text.literal("Right-click the Pokemon you fused with to unfuse."), true);
-                    return ActionResult.FAIL;
-                }
-                FusionService.EndResult ended = fusions.end(serverPlayer, true);
-                if (!ended.success()) {
-                    serverPlayer.sendMessage(Text.literal(ended.rejection()), true);
-                    return ActionResult.FAIL;
-                }
-                fusions.cooldowns().markPotara(playerId, fusions.potaraCooldownSeconds());
-                serverPlayer.sendMessage(Text.literal("Potara fusion ended."), true);
-                return ActionResult.SUCCESS;
+                serverPlayer.sendMessage(Text.literal("Sneak + right-click your Potara to separate the fusion."), true);
+                return ActionResult.FAIL;
             }
 
             DeployedPartyPokemonResolver.Resolution selected = new DeployedPartyPokemonResolver().resolve(serverPlayer, pokemonEntity);
