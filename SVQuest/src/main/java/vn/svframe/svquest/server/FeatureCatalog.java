@@ -37,16 +37,20 @@ public final class FeatureCatalog {
                 }
             }
 
-            // Packaged entries marked managed=true define integrations whose opening mechanism is
-            // dictated by the installed mod itself (for example, a real world block interaction).
-            // They override stale command-based production config without replacing unrelated admin data.
+            // Always use packaged defaults as the complete feature catalog baseline.
+            // Administrator entries keep priority when present, while missing entries are filled so an
+            // old/partial production features.json never turns valid quest buttons into "not configured".
+            // Managed entries are integrations whose opening mechanism is dictated by the installed mod
+            // itself (for example, a real world block interaction), so those intentionally override stale
+            // command-based administrator entries.
             LinkedHashMap<String, Feature> packaged = loadPackagedDefaults();
             packaged.forEach((id, feature) -> {
                 if (feature.managed()) next.put(id, feature);
+                else next.putIfAbsent(id, feature);
             });
 
             features = Map.copyOf(next);
-            SVQuest.LOGGER.info("SVQuest loaded {} feature actions from config.", features.size());
+            SVQuest.LOGGER.info("SVQuest loaded {} feature actions from config/default merge.", features.size());
             return features.size();
         } catch (Exception error) {
             throw new IllegalStateException("Could not load config/svquest/features.json", error);
