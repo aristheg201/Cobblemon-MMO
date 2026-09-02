@@ -2,6 +2,8 @@ package vn.svframe.svframemmo.cobblemon.fusion;
 
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
+import com.cobblemon.mod.common.api.pokemon.PokemonPropertyExtractor;
+import com.cobblemon.mod.common.entity.PoseType;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.net.messages.client.spawn.SpawnPokemonPacket;
 import com.cobblemon.mod.common.pokemon.Pokemon;
@@ -15,14 +17,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
+import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import vn.svframe.svframemmo.cobblemon.fusion.render.FusionRawPacketSender;
 
@@ -37,13 +46,13 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Native server-side packet disguise for Fusion.
+ * Server-only Fusion disguise runtime.
  *
- * The authoritative entity remains ServerPlayerEntity. The PokemonEntity kept here is only a packet/template entity:
- * it is never added to ServerWorld. Other clients receive a real Cobblemon SpawnPokemonPacket under the player's
- * entity id, while the fused player receives a separate packet-only self-view Pokemon entity and a client-only
- * invisibility flag for their real player model. Server gameplay, hit registration, inventory, permissions and
- * skills stay on the player.
+ * The authoritative gameplay entity is always the real ServerPlayerEntity. Other viewers receive a Cobblemon
+ * PokemonEntity under that player's real entity id. The fused player receives a second packet-only PokemonEntity for
+ * third-person self view. That puppet never exists in ServerWorld and has no AI, hitbox, inventory or gameplay state.
+ * The local player representation is hidden only in packets sent to that same client; ServerPlayerEntity invisibility
+ * is never mutated.
  */
 public final class FusionVisualBridge {
     private static final int SELF_VIEW_ENTITY_BASE = 1_000_000_000;
@@ -55,9 +64,10 @@ public final class FusionVisualBridge {
     private static final byte FLAG_INVISIBLE = 1 << 5;
     private static final byte FLAG_GLOWING = 1 << 6;
     private static final byte FLAG_FALL_FLYING = (byte) (1 << 7);
+    private static final int VISUAL_REFRESH_INTERVAL = 20;
+    private static final int SELF_HIDE_REFRESH_INTERVAL = 4;
 
     private static volatile FusionVisualBridge activeBridge;
-
     private final Map<UUID, State> states = new ConcurrentHashMap<>();
 
     public FusionVisualBridge() {
@@ -67,7 +77,7 @@ public final class FusionVisualBridge {
         activeBridge = this;
     }
 
-    /** Called by the common network-handler mixin. Returns true when the original packet was replaced/cancelled. */
+    /** Called by the network-handler mixin. Returns true when the original packet was replaced/cancelled. */
     public static boolean rewriteOutgoing(ServerPlayerEntity viewer, Packet<?> packet) {
         FusionVisualBridge bridge = activeBridge;
         return bridge != null && bridge.rewrite(viewer, packet);
@@ -82,13 +92,15 @@ public final class FusionVisualBridge {
         if (deployed != null && !deployed.isRemoved())
             throw new IllegalStateException("Fusion disguise requires the party Pokemon to be recalled; refusing duplicate Pokemon entity");
 
+        String signature = visualSignature(pokemon);
         PokemonEntity visual = createVisual(player, pokemon);
-        State state = new State(playerId, pokemon.getUuid(), visual, player.getId(), player.getServerWorld().getRegistryKey());
+        Frame frame = syncVisualState(player, visual);
+        State state = new State(playerId, pokemon.getUuid(), visual, player.getId(),
+                player.getServerWorld().getRegistryKey(), signature, frame);
         if (states.putIfAbsent(playerId, state) != null)
             throw new IllegalStateException("Fusion disguise already active for " + playerId);
 
         try {
-            syncVisualState(player, state.visual);
             disguiseCurrentTrackingViewers(player, state);
             spawnSelfView(player, state);
         } catch (RuntimeException error) {
@@ -122,24 +134,35 @@ public final class FusionVisualBridge {
 
             boolean worldChanged = state.playerEntityId != player.getId()
                     || !state.worldKey.equals(player.getServerWorld().getRegistryKey());
-            if (worldChanged) {
-                if (player.networkHandler.isConnectionOpen())
-                    raw(player, new EntitiesDestroyS2CPacket(state.visual.getId()));
-                state.visual = createVisual(player, pokemon);
-                state.playerEntityId = player.getId();
-                state.worldKey = player.getServerWorld().getRegistryKey();
-                if (player.networkHandler.isConnectionOpen()) spawnSelfView(player, state);
+            boolean appearanceChanged = !worldChanged
+                    && player.age % VISUAL_REFRESH_INTERVAL == 0
+                    && !state.visualSignature.equals(visualSignature(pokemon));
+
+            if (worldChanged || appearanceChanged) {
+                respawnVisual(player, pokemon, state);
+                continue;
             }
 
-            syncVisualState(player, state.visual);
+            Frame previous = state.frame;
+            Frame current = syncVisualState(player, state.visual);
+            state.frame = current;
+
             if (player.networkHandler.isConnectionOpen()) {
+                // The self puppet has no server tracker, so its complete transform is driven explicitly.
                 raw(player, new EntityPositionS2CPacket(state.visual));
                 raw(player, new EntitySetHeadYawS2CPacket(state.visual, angle(player.getHeadYaw())));
                 raw(player, new EntityVelocityUpdateS2CPacket(state.visual.getId(), player.getVelocity()));
 
-                if ((player.age & 3) == 0) {
-                    sendVisualMetadata(player, state.visual, state.visual.getId());
+                if (!current.equals(previous)) {
+                    sendCoreVisualMetadata(player, state.visual.getId(), current);
+                    sendCoreVisualMetadataToTracking(player, current);
+                }
+
+                // Vanilla/client inventory state can rewrite the local player's visual flags/equipment. Reassert the
+                // self-only hiding state without ever mutating ServerPlayerEntity itself.
+                if (player.age % SELF_HIDE_REFRESH_INTERVAL == 0) {
                     raw(player, selfFlagsPacket(player, true));
+                    raw(player, new EntityEquipmentUpdateS2CPacket(player.getId(), emptyEquipment()));
                 }
             }
         }
@@ -154,7 +177,6 @@ public final class FusionVisualBridge {
 
     private boolean rewrite(ServerPlayerEntity viewer, Packet<?> packet) {
         if (viewer == null || packet == null || states.isEmpty()) return false;
-
         State self = states.get(viewer.getUuid());
 
         if (packet instanceof EntitiesDestroyS2CPacket destroy && self != null) {
@@ -182,9 +204,10 @@ public final class FusionVisualBridge {
                 State state = states.get(subject.getUuid());
                 if (state != null) {
                     if (subject.getUuid().equals(viewer.getUuid())) return true;
-                    syncVisualState(subject, state.visual);
+                    Frame frame = syncVisualState(subject, state.visual);
+                    state.frame = frame;
                     raw(viewer, pokemonSpawn(subject, state.visual, subject.getId(), subject.getUuid()));
-                    sendVisualMetadata(viewer, state.visual, subject.getId());
+                    sendCoreVisualMetadata(viewer, subject.getId(), frame);
                     raw(viewer, new EntitySetHeadYawS2CPacket(subject, angle(subject.getHeadYaw())));
                     return true;
                 }
@@ -201,40 +224,101 @@ public final class FusionVisualBridge {
             if (original instanceof ServerPlayerEntity subject && !subject.getUuid().equals(viewer.getUuid())) {
                 State state = states.get(subject.getUuid());
                 if (state != null) {
-                    syncVisualState(subject, state.visual);
-                    sendVisualMetadata(viewer, state.visual, subject.getId());
+                    Frame frame = syncVisualState(subject, state.visual);
+                    state.frame = frame;
+                    sendCoreVisualMetadata(viewer, subject.getId(), frame);
                     return true;
                 }
+            }
+        }
+
+        if (packet instanceof EntityEquipmentUpdateS2CPacket equipment) {
+            if (self != null && equipment.getEntityId() == viewer.getId()) {
+                raw(viewer, new EntityEquipmentUpdateS2CPacket(viewer.getId(), emptyEquipment()));
+                return true;
+            }
+            Entity original = viewer.getServerWorld().getEntityById(equipment.getEntityId());
+            if (original instanceof ServerPlayerEntity subject && states.containsKey(subject.getUuid())) {
+                // Never attach player armor/held items to a Pokemon disguise shown to another viewer.
+                return true;
+            }
+        }
+
+        if (packet instanceof EntityAnimationS2CPacket animation && self != null
+                && animation.getEntityId() == viewer.getId()) {
+            raw(viewer, new EntityAnimationS2CPacket(self.visual, animation.getAnimationId()));
+            return false;
+        }
+
+        if (packet instanceof EntityStatusS2CPacket status && self != null) {
+            Entity statusEntity = status.getEntity(viewer.getServerWorld());
+            if (statusEntity == viewer) {
+                raw(viewer, new EntityStatusS2CPacket(self.visual, status.getStatus()));
+                return false;
             }
         }
 
         return false;
     }
 
+    private void respawnVisual(ServerPlayerEntity player, Pokemon pokemon, State state) {
+        if (player.networkHandler.isConnectionOpen()) {
+            raw(player, new EntitiesDestroyS2CPacket(state.visual.getId()));
+            removeSelfTeam(player, state);
+        }
+
+        state.visualSignature = visualSignature(pokemon);
+        state.visual = createVisual(player, pokemon);
+        state.playerEntityId = player.getId();
+        state.worldKey = player.getServerWorld().getRegistryKey();
+        state.frame = syncVisualState(player, state.visual);
+
+        if (player.networkHandler.isConnectionOpen()) spawnSelfView(player, state);
+        disguiseCurrentTrackingViewers(player, state);
+    }
+
     private void disguiseCurrentTrackingViewers(ServerPlayerEntity player, State state) {
+        Frame frame = syncVisualState(player, state.visual);
+        state.frame = frame;
         for (ServerPlayerEntity viewer : PlayerLookup.tracking(player)) {
             if (viewer.getUuid().equals(player.getUuid()) || !viewer.networkHandler.isConnectionOpen()) continue;
             raw(viewer, new EntitiesDestroyS2CPacket(player.getId()));
             raw(viewer, pokemonSpawn(player, state.visual, player.getId(), player.getUuid()));
-            sendVisualMetadata(viewer, state.visual, player.getId());
+            sendCoreVisualMetadata(viewer, player.getId(), frame);
             raw(viewer, new EntitySetHeadYawS2CPacket(player, angle(player.getHeadYaw())));
+            raw(viewer, new EntityVelocityUpdateS2CPacket(player.getId(), player.getVelocity()));
+        }
+    }
+
+    private void sendCoreVisualMetadataToTracking(ServerPlayerEntity player, Frame frame) {
+        for (ServerPlayerEntity viewer : PlayerLookup.tracking(player)) {
+            if (viewer.getUuid().equals(player.getUuid()) || !viewer.networkHandler.isConnectionOpen()) continue;
+            sendCoreVisualMetadata(viewer, player.getId(), frame);
         }
     }
 
     private void spawnSelfView(ServerPlayerEntity player, State state) {
-        syncVisualState(player, state.visual);
+        Frame frame = syncVisualState(player, state.visual);
+        state.frame = frame;
         raw(player, new EntitiesDestroyS2CPacket(state.visual.getId()));
         raw(player, pokemonSpawn(player, state.visual, state.visual.getId(), state.visual.getUuid()));
-        sendVisualMetadata(player, state.visual, state.visual.getId());
+        sendCoreVisualMetadata(player, state.visual.getId(), frame);
         raw(player, new EntitySetHeadYawS2CPacket(state.visual, angle(player.getHeadYaw())));
         raw(player, new EntityVelocityUpdateS2CPacket(state.visual.getId(), player.getVelocity()));
         raw(player, selfFlagsPacket(player, true));
+        raw(player, new EntityEquipmentUpdateS2CPacket(player.getId(), emptyEquipment()));
+        ensureSelfTeam(player, state);
     }
 
     private void restorePlayerView(ServerPlayerEntity player, State state) {
         if (player.networkHandler.isConnectionOpen()) {
             raw(player, new EntitiesDestroyS2CPacket(state.visual.getId()));
+            removeSelfTeam(player, state);
             raw(player, selfFlagsPacket(player, false));
+            raw(player, new EntityEquipmentUpdateS2CPacket(player.getId(), equipment(player)));
+            restoreOriginalTeam(player);
+            player.playerScreenHandler.syncState();
+            if (player.currentScreenHandler != player.playerScreenHandler) player.currentScreenHandler.syncState();
         }
 
         for (ServerPlayerEntity viewer : PlayerLookup.tracking(player)) {
@@ -248,11 +332,7 @@ public final class FusionVisualBridge {
         }
     }
 
-    /**
-     * Cobblemon PokemonEntity has a custom spawn protocol. A vanilla EntitySpawnS2CPacket carrying the pokemon
-     * EntityType is insufficient because the client would never receive species/form/aspects/model data. The vanilla
-     * packet is therefore only the nested base spawn packet inside Cobblemon's SpawnPokemonPacket.
-     */
+    /** Cobblemon's spawn payload supplies species/form/aspects/shiny/scale/pose around the nested vanilla transform. */
     private static CustomPayloadS2CPacket pokemonSpawn(ServerPlayerEntity player, PokemonEntity visual,
                                                        int entityId, UUID entityUuid) {
         EntitySpawnS2CPacket vanilla = new EntitySpawnS2CPacket(
@@ -281,21 +361,29 @@ public final class FusionVisualBridge {
         );
     }
 
-    private static void sendVisualMetadata(ServerPlayerEntity viewer, PokemonEntity visual, int entityId) {
-        List<DataTracker.SerializedEntry<?>> entries = visual.getDataTracker().getChangedEntries();
-        if (entries != null && !entries.isEmpty())
-            raw(viewer, new EntityTrackerUpdateS2CPacket(entityId, List.copyOf(entries)));
+    /** Core Cobblemon locomotion state is sent explicitly; getChangedEntries() is intentionally not used here. */
+    private static void sendCoreVisualMetadata(ServerPlayerEntity viewer, int entityId, Frame frame) {
+        List<DataTracker.SerializedEntry<?>> entries = List.of(
+                DataTracker.SerializedEntry.of(PokemonEntity.getMOVING(), frame.moving),
+                DataTracker.SerializedEntry.of(PokemonEntity.getPOSE_TYPE(), frame.pose),
+                DataTracker.SerializedEntry.of(PokemonEntity.getHIDE_LABEL(), true)
+        );
+        raw(viewer, new EntityTrackerUpdateS2CPacket(entityId, entries));
     }
 
     private static void sendRealPlayerMetadata(ServerPlayerEntity viewer, ServerPlayerEntity player) {
         List<DataTracker.SerializedEntry<?>> entries = player.getDataTracker().getChangedEntries();
         if (entries != null && !entries.isEmpty())
             raw(viewer, new EntityTrackerUpdateS2CPacket(player.getId(), List.copyOf(entries)));
+        else
+            raw(viewer, new EntityTrackerUpdateS2CPacket(player.getId(), List.of(byteEntry(playerFlags(player)))));
     }
 
     private static EntityTrackerUpdateS2CPacket selfFlagsPacket(ServerPlayerEntity player, boolean forceInvisible) {
         byte flags = playerFlags(player);
         if (forceInvisible) flags |= FLAG_INVISIBLE;
+        else flags &= (byte) ~FLAG_INVISIBLE;
+        if (!forceInvisible && player.isInvisible()) flags |= FLAG_INVISIBLE;
         return new EntityTrackerUpdateS2CPacket(player.getId(), List.of(byteEntry(flags)));
     }
 
@@ -337,6 +425,12 @@ public final class FusionVisualBridge {
                 .toList();
     }
 
+    private static List<Pair<EquipmentSlot, ItemStack>> emptyEquipment() {
+        return Arrays.stream(EquipmentSlot.values())
+                .map(slot -> Pair.of(slot, ItemStack.EMPTY))
+                .toList();
+    }
+
     private static byte angle(float degrees) {
         return (byte) ((int) (degrees * 256.0F / 360.0F));
     }
@@ -352,7 +446,7 @@ public final class FusionVisualBridge {
                 .getBytes(StandardCharsets.UTF_8));
     }
 
-    private static void syncVisualState(ServerPlayerEntity player, PokemonEntity visual) {
+    private static Frame syncVisualState(ServerPlayerEntity player, PokemonEntity visual) {
         visual.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
         visual.setVelocity(player.getVelocity());
         visual.setOnGround(player.isOnGround());
@@ -362,25 +456,40 @@ public final class FusionVisualBridge {
         visual.setSneaking(player.isSneaking());
         visual.setSwimming(player.isSwimming());
         visual.setGlowing(player.isGlowing());
-        visual.setInvisible(player.isInvisible());
+        visual.setInvisible(false);
         visual.setOnFire(player.isOnFire());
-        visual.setNoGravity(true);
+
+        Vec3d velocity = player.getVelocity();
+        boolean moving = velocity.horizontalLengthSquared() > 1.0e-4
+                || Math.abs(velocity.y) > 0.04
+                || player.isSprinting();
+        boolean water = player.isTouchingWater() || player.isSubmergedInWater();
+
+        PoseType pose;
+        if (player.isSleeping()) {
+            pose = PoseType.SLEEP;
+            moving = false;
+        } else if (water) {
+            pose = moving ? PoseType.SWIM : PoseType.FLOAT;
+        } else if (player.isFallFlying() && visual.canFly()) {
+            pose = PoseType.GLIDE;
+            moving = true;
+        } else if (!player.isOnGround() && visual.canFly()) {
+            pose = moving ? PoseType.FLY : PoseType.HOVER;
+        } else {
+            pose = moving ? PoseType.WALK : PoseType.STAND;
+        }
+
+        visual.getDataTracker().set(PokemonEntity.getMOVING(), moving);
+        visual.getDataTracker().set(PokemonEntity.getPOSE_TYPE(), pose);
+        visual.getDataTracker().set(PokemonEntity.getHIDE_LABEL(), true);
+        visual.setPokemonWalking(pose == PoseType.WALK);
+        visual.setPokemonFlying(pose == PoseType.FLY || pose == PoseType.HOVER || pose == PoseType.GLIDE);
+        return new Frame(pose, moving);
     }
 
     private static PokemonEntity createVisual(ServerPlayerEntity player, Pokemon pokemon) {
-        PokemonProperties properties = new PokemonProperties();
-        properties.setSpecies(pokemon.getSpecies().getResourceIdentifier().toString());
-        properties.setLevel(pokemon.getLevel());
-        properties.setShiny(pokemon.getShiny());
-        properties.setGender(pokemon.getGender());
-        properties.setScaleModifier(pokemon.getScaleModifier());
-        properties.setAspects(Set.copyOf(pokemon.getAspects()));
-
-        if (pokemon.getForm() != null) {
-            String form = pokemon.getForm().getName();
-            if (form != null && !form.isBlank()) properties.setForm(form);
-        }
-
+        PokemonProperties properties = canonicalVisualProperties(pokemon);
         PokemonEntity visual = properties.createEntity(player.getServerWorld());
         if (visual == null)
             throw new IllegalStateException("Cobblemon could not create fusion disguise entity for "
@@ -388,9 +497,50 @@ public final class FusionVisualBridge {
         visual.setId(selfViewEntityId(player.getId()));
         visual.setUuid(selfViewEntityUuid(player.getUuid()));
         visual.hideNameRendering();
-        visual.setNoGravity(true);
+        visual.setEnablePoseTypeRecalculation(false);
         syncVisualState(player, visual);
         return visual;
+    }
+
+    /** Cobblemon's TRANSFORM extractor preserves formOnlyShowdownId() plus the actual aspect set. */
+    private static PokemonProperties canonicalVisualProperties(Pokemon pokemon) {
+        PokemonProperties properties = pokemon.createPokemonProperties(PokemonPropertyExtractor.TRANSFORM);
+        properties.setShiny(pokemon.getShiny());
+        properties.setLevel(pokemon.getLevel());
+        properties.setScaleModifier(pokemon.getScaleModifier());
+        return properties;
+    }
+
+    private static String visualSignature(Pokemon pokemon) {
+        return canonicalVisualProperties(pokemon).asString(" ");
+    }
+
+    private static void ensureSelfTeam(ServerPlayerEntity player, State state) {
+        if (state.selfTeam != null) return;
+        String teamName = "svfus" + Integer.toUnsignedString(player.getId(), 36);
+        Team team = new Team(new Scoreboard(), teamName);
+        team.setCollisionRule(AbstractTeam.CollisionRule.NEVER);
+        team.setNameTagVisibilityRule(AbstractTeam.VisibilityRule.NEVER);
+        team.setShowFriendlyInvisibles(false);
+        team.getPlayerList().add(player.getNameForScoreboard());
+        team.getPlayerList().add(state.visual.getNameForScoreboard());
+        state.selfTeam = team;
+        raw(player, TeamS2CPacket.updateTeam(team, true));
+    }
+
+    private static void removeSelfTeam(ServerPlayerEntity player, State state) {
+        Team team = state.selfTeam;
+        if (team == null) return;
+        raw(player, TeamS2CPacket.updateRemovedTeam(team));
+        state.selfTeam = null;
+    }
+
+    private static void restoreOriginalTeam(ServerPlayerEntity player) {
+        Team original = player.getScoreboardTeam();
+        if (original != null) {
+            raw(player, TeamS2CPacket.changePlayerTeam(
+                    original, player.getNameForScoreboard(), TeamS2CPacket.Operation.ADD));
+        }
     }
 
     private static void raw(ServerPlayerEntity viewer, Packet<?> packet) {
@@ -399,20 +549,27 @@ public final class FusionVisualBridge {
         sender.svframe$sendRaw(packet);
     }
 
+    private record Frame(PoseType pose, boolean moving) { }
+
     private static final class State {
         private final UUID playerUuid;
         private final UUID pokemonUuid;
         private PokemonEntity visual;
         private int playerEntityId;
         private net.minecraft.registry.RegistryKey<World> worldKey;
+        private String visualSignature;
+        private Frame frame;
+        private Team selfTeam;
 
         private State(UUID playerUuid, UUID pokemonUuid, PokemonEntity visual, int playerEntityId,
-                      net.minecraft.registry.RegistryKey<World> worldKey) {
+                      net.minecraft.registry.RegistryKey<World> worldKey, String visualSignature, Frame frame) {
             this.playerUuid = playerUuid;
             this.pokemonUuid = pokemonUuid;
             this.visual = visual;
             this.playerEntityId = playerEntityId;
             this.worldKey = worldKey;
+            this.visualSignature = visualSignature;
+            this.frame = frame;
         }
     }
 }
