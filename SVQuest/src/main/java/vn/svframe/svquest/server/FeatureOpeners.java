@@ -2,9 +2,7 @@ package vn.svframe.svquest.server;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 import vn.svframe.svquest.SVQuest;
 
 import java.lang.reflect.Constructor;
@@ -14,42 +12,29 @@ import java.lang.reflect.Method;
 public final class FeatureOpeners {
     private FeatureOpeners() {}
 
+    /**
+     * Handles non-command feature actions. Interaction-only entries deliberately do not open the
+     * foreign mod GUI: they only tell the player what real world block must be used.
+     */
     public static boolean handle(ServerPlayerEntity player, String opener) {
         if (opener == null || opener.isBlank()) return false;
         return switch (opener) {
-            case "battle_tower_nearby" -> { openBattleTower(player); yield true; }
+            case "interaction_battle_tower" -> {
+                player.sendMessage(Text.literal("§eBattle Tower không có command. Hãy tới Holo Battle Tower terminal và right-click block để mở."), false);
+                yield true;
+            }
+            case "interaction_expeditions" -> {
+                player.sendMessage(Text.literal("§eExpeditions không có command. Hãy tới Expedition Board và right-click block để mở."), false);
+                yield true;
+            }
             case "soulbreeding" -> { openSoulBreeding(player); yield true; }
             default -> false;
         };
     }
 
-    private static void openBattleTower(ServerPlayerEntity player) {
-        if (!FabricLoader.getInstance().isModLoaded("cobblemon_battle_tower")) {
-            player.sendMessage(Text.literal("§cBattle Tower chưa được nạp trên server."), false);
-            return;
-        }
-        try {
-            ServerWorld world = player.getServerWorld();
-            BlockPos origin = player.getBlockPos();
-            Class<?> towerBlockClass = Class.forName("battle.tower.block.HoloBattleTowerBlock");
-            BlockPos nearest = null;
-            int nearestSq = Integer.MAX_VALUE;
-            for (int dy = -8; dy <= 8; dy++) for (int dx = -16; dx <= 16; dx++) for (int dz = -16; dz <= 16; dz++) {
-                BlockPos pos = origin.add(dx, dy, dz);
-                if (!towerBlockClass.isInstance(world.getBlockState(pos).getBlock())) continue;
-                int d = dx * dx + dy * dy + dz * dz;
-                if (d < nearestSq) { nearestSq = d; nearest = new BlockPos(pos.getX(), pos.getY(), pos.getZ()); }
-            }
-            if (nearest == null) {
-                player.sendMessage(Text.literal("§eHãy đứng gần Holo Battle Tower terminal rồi thử lại."), false);
-                return;
-            }
-            Class<?> helper = Class.forName("battle.tower.platform.NetworkHelper");
-            helper.getMethod("sendBattleTowerOpenScreen", ServerPlayerEntity.class, BlockPos.class).invoke(null, player, nearest);
-        } catch (Throwable t) {
-            SVQuest.LOGGER.warn("Battle Tower opener failed safely for {}: {}", player.getName().getString(), t.toString());
-            player.sendMessage(Text.literal("§cKhông mở được Battle Tower terminal lúc này."), false);
-        }
+    /** Only genuine server-opened features are allowed to satisfy feature.* from the quest button. */
+    public static boolean signalsProgress(String opener) {
+        return opener != null && !opener.isBlank() && !opener.startsWith("interaction_");
     }
 
     private static void openSoulBreeding(ServerPlayerEntity player) {
