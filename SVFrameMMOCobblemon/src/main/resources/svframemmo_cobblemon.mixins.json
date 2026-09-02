@@ -2,8 +2,8 @@
   "required": true,
   "package": "vn.svframe.svframemmo.cobblemon.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [
-    "ServerCommonNetworkHandlerMixin"
+  "client": [
+    "client.PlayerEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
