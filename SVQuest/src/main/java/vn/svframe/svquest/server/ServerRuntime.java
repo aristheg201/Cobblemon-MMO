@@ -160,7 +160,7 @@ public final class ServerRuntime {
         }
         try {
             if (!feature.opener().isBlank() && FeatureOpeners.handle(player, feature.opener())) {
-                engine.signal(player, "feature." + id);
+                if (FeatureOpeners.signalsProgress(feature.opener())) engine.signal(player, "feature." + id);
                 return;
             }
             if (feature.command().isBlank()) {
