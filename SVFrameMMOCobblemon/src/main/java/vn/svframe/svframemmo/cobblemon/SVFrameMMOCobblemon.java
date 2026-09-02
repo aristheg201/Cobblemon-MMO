@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vn.svframe.svframelib.api.event.skill.PlayerCastSkillEvent;
@@ -23,9 +24,9 @@ import vn.svframe.svframemmo.cobblemon.fusion.FusionCommands;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionLockHooks;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionNetworkGuards;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionService;
+import vn.svframe.svframemmo.cobblemon.fusion.FusionVisualBridge;
 import vn.svframe.svframemmo.cobblemon.fusion.PotaraCommands;
 import vn.svframe.svframemmo.cobblemon.fusion.PotaraUseHandler;
-import vn.svframe.svframemmo.cobblemon.fusion.render.FusionMorphNetworking;
 import vn.svframe.svframemmo.cobblemon.integration.CobblemonMoveVfxService;
 import vn.svframe.svframemmo.cobblemon.integration.LuckPermsIntegration;
 import vn.svframe.svframemmo.cobblemon.integration.PlaceholderIntegration;
@@ -49,7 +50,10 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
     private static final PokemonSkillShopService POKEMON_SKILLS = new PokemonSkillShopService();
 
     @Override public void onInitialize() {
-        FusionMorphNetworking.register();
+        if (!FabricLoader.getInstance().isModLoaded("disguiselib"))
+            throw new IllegalStateException("Embedded DisguiseLib did not load; server-side Fusion disguise cannot initialize");
+        FusionVisualBridge.verifyBackend();
+
         try { config = IntegrationConfig.load(); }
         catch (Exception error) { throw new IllegalStateException("Could not load SVFrameMMO Cobblemon integration config", error); }
 
@@ -118,7 +122,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
                 COSMETICS.onDisconnect(handler.player);
             });
         });
-        LOG.info("Cobblemon Integration online; provider=cobblemon, providerMoves={}, registeredSkills={}, maxSkillLevel={}, specificMoveVfx={}, genericMoveVfx={}, cosmetics={}, PokemonSkillShop={}/{}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
+        LOG.info("Cobblemon Integration online; fusionVisual=server-packet-disguise/disguiselib, provider=cobblemon, providerMoves={}, registeredSkills={}, maxSkillLevel={}, specificMoveVfx={}, genericMoveVfx={}, cosmetics={}, PokemonSkillShop={}/{}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
                 CobblemonMoveSkillAdapter.providerSize(),
                 SVFrameMMO.externalSkills().getByOwner(CobblemonMoveSkillAdapter.REGISTRY_OWNER).size(),
                 config.pokemonSkills.maxLevel,
