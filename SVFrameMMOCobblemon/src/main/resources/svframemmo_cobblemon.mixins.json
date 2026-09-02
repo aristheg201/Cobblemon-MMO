@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "vn.svframe.svframemmo.cobblemon.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ServerCommonNetworkHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

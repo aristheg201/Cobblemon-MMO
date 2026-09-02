@@ -42,17 +42,19 @@ jobs:
           set -euo pipefail
           ! grep -RIn --binary-files=without-match -Ei 'svframeitems|fusion_tier' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
           ! grep -RIn --binary-files=without-match -Ei 'pocketmorph|com\.pixelpitstop|j3wTk6KL' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
+          ! grep -RIn --binary-files=without-match -Ei 'xyz\.nucleoid\.disguiselib|disguiselib-fabric' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
           grep -q 'maven.modrinth:SszvX85I:ch7DfnXP' SVFrameMMOCobblemon/build.gradle
-          grep -q 'xyz.nucleoid:disguiselib-fabric:1.3.3' SVFrameMMOCobblemon/build.gradle
-          grep -q 'include "xyz.nucleoid:disguiselib-fabric:1.3.3"' SVFrameMMOCobblemon/build.gradle
           grep -q 'svframemmo-skill-source' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
-          grep -q '"disguiselib"' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
-          ! grep -q '"client"' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
-          ! grep -q '"mixins"' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
-          grep -q 'EntityDisguise' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
-          grep -q 'disguise.disguiseAs(visual)' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
+          grep -q 'svframemmo_cobblemon.mixins.json' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
+          grep -q 'ServerCommonNetworkHandlerMixin' SVFrameMMOCobblemon/src/main/resources/svframemmo_cobblemon.mixins.json
+          grep -q '@Mixin(ServerCommonNetworkHandler.class)' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/ServerCommonNetworkHandlerMixin.java
+          grep -q 'FusionVisualBridge.rewriteOutgoing' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/ServerCommonNetworkHandlerMixin.java
+          grep -q 'connection.send(packet)' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/ServerCommonNetworkHandlerMixin.java
+          grep -q 'PlayerLookup.tracking(player)' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
+          grep -q 'new EntitySpawnS2CPacket' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
+          grep -q 'state.visual.getId()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
+          grep -q 'forceInvisible' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
           grep -q 'properties.createEntity(player.getServerWorld())' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
-          grep -q 'FusionVisualBridge.verifyBackend()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/SVFrameMMOCobblemon.java
           test ! -e SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/client/SVFrameMMOCobblemonClient.java
           test ! -e SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/client/PlayerEntityRendererMixin.java
           test ! -e SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/ClientFusionMorphState.java
@@ -108,9 +110,6 @@ jobs:
           set -euo pipefail
           cd SVFrameMMOCobblemon
           gradle --no-daemon --stacktrace clean test nativeIntegrationSmoke remapJar copyProductionRuntimeDeps
-          integration_jar=$(find build/libs -maxdepth 1 -type f -name 'SVFrameMMO-Cobblemon-Integration-*.jar' ! -name '*sources*' | head -n 1)
-          test -n "$integration_jar"
-          unzip -Z1 "$integration_jar" | grep -Eq '^META-INF/jars/.*disguiselib.*\.jar$'
       - name: Dedicated Integration Fabric production boot
         shell: bash
         run: |
@@ -168,8 +167,7 @@ jobs:
           grep -q 'SVFrameMMO Fabric online;' "$ROOT/build/integration-server.log"
           grep -Eq 'Cobblemon move provider synchronized; providerMoves=[1-9][0-9]*, registeredSkills=[1-9][0-9]*, generatedConfigs=[1-9][0-9]*' "$ROOT/build/integration-server.log"
           grep -q 'provider=cobblemon' "$ROOT/build/integration-server.log"
-          grep -q 'fusionVisual=server-packet-disguise/disguiselib' "$ROOT/build/integration-server.log"
-          grep -qi 'disguiselib' "$ROOT/build/integration-server.log"
+          grep -q 'fusionVisual=server-packet-disguise/native-1.21.1' "$ROOT/build/integration-server.log"
           grep -q 'Fusion storage network guards installed' "$ROOT/build/integration-server.log"
           grep -q 'Staged 4 Snowstorm asset(s) / 3 particle id(s)' "$ROOT/build/integration-server.log"
           grep -q 'Done (' "$ROOT/build/integration-server.log"
@@ -179,6 +177,7 @@ jobs:
           test "$generated_count" -gt 900
           grep -q '"provider": "cobblemon"' "$generated_dir/_manifest.json"
           ! grep -qi 'pocketmorph' "$ROOT/build/integration-server.log"
+          ! grep -qi 'disguiselib' "$ROOT/build/integration-server.log"
           ! grep -q 'Could not execute entrypoint stage' "$ROOT/build/integration-server.log"
           ! grep -Eq 'MixinTargetAlreadyLoadedException|MixinApplyError|InvalidMixinException|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Exception in server tick loop|ProviderMismatchException' "$ROOT/build/integration-server.log"
       - name: Upload validated artifact

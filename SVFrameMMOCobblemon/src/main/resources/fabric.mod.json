@@ -14,6 +14,9 @@
       "vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon"
     ]
   },
+  "mixins": [
+    "svframemmo_cobblemon.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.18.4",
     "minecraft": "1.21.1",
@@ -24,8 +27,7 @@
     "svframemmo": ">=1.13.1-fabric",
     "mega_showdown": ">=1.9.3",
     "polymer-core": ">=0.9.19+1.21.1",
-    "polymer-resource-pack": ">=0.9.19+1.21.1",
-    "disguiselib": ">=1.3.3"
+    "polymer-resource-pack": ">=0.9.19+1.21.1"
   },
   "suggests": {
     "luckperms": "*",
