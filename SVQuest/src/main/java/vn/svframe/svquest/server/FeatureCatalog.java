@@ -14,9 +14,9 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Feature ids and commands are administrator data, not Java constants. */
+/** Feature ids and actions are administrator data, not quest Java constants. */
 public final class FeatureCatalog {
-    public record Feature(String command, String opener) {
+    public record Feature(String command, String opener, boolean managed) {
         public Feature {
             command = command == null ? "" : command.trim();
             opener = opener == null ? "" : opener.trim();
@@ -36,12 +36,36 @@ public final class FeatureCatalog {
                     parseRoot(root, next);
                 }
             }
+
+            // Packaged entries marked managed=true define integrations whose opening mechanism is
+            // dictated by the installed mod itself (for example, a real world block interaction).
+            // They override stale command-based production config without replacing unrelated admin data.
+            LinkedHashMap<String, Feature> packaged = loadPackagedDefaults();
+            packaged.forEach((id, feature) -> {
+                if (feature.managed()) next.put(id, feature);
+            });
+
             features = Map.copyOf(next);
             SVQuest.LOGGER.info("SVQuest loaded {} feature actions from config.", features.size());
             return features.size();
         } catch (Exception error) {
             throw new IllegalStateException("Could not load config/svquest/features.json", error);
         }
+    }
+
+    private static LinkedHashMap<String, Feature> loadPackagedDefaults() throws Exception {
+        LinkedHashMap<String, Feature> result = new LinkedHashMap<>();
+        var container = FabricLoader.getInstance().getModContainer(SVQuest.MOD_ID).orElse(null);
+        if (container == null) return result;
+        for (Path root : container.getRootPaths()) {
+            Path defaults = root.resolve("defaults/svquest/features.json");
+            if (!Files.isRegularFile(defaults)) continue;
+            try (Reader reader = Files.newBufferedReader(defaults, StandardCharsets.UTF_8)) {
+                parseRoot(JsonParser.parseReader(reader), result);
+            }
+            break;
+        }
+        return result;
     }
 
     /**
@@ -107,15 +131,15 @@ public final class FeatureCatalog {
     }
 
     private static Feature parseFeature(JsonElement element, String context) {
-        if (element == null || element.isJsonNull()) return new Feature("", "");
+        if (element == null || element.isJsonNull()) return new Feature("", "", false);
         if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
-            return new Feature(element.getAsString(), "");
+            return new Feature(element.getAsString(), "", false);
         }
         if (!element.isJsonObject()) {
             throw new IllegalArgumentException(context + " must be an object or command string");
         }
         JsonObject value = element.getAsJsonObject();
-        return new Feature(firstString(value, "command"), firstString(value, "opener"));
+        return new Feature(firstString(value, "command"), firstString(value, "opener"), booleanValue(value, "managed"));
     }
 
     private static String firstString(JsonObject object, String... keys) {
@@ -126,6 +150,12 @@ public final class FeatureCatalog {
             }
         }
         return "";
+    }
+
+    private static boolean booleanValue(JsonObject object, String key) {
+        JsonElement value = object.get(key);
+        try { return value != null && !value.isJsonNull() && value.getAsBoolean(); }
+        catch (Exception ignored) { return false; }
     }
 
     private static String normalizeId(String id, String context) {
