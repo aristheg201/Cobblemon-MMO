@@ -17,8 +17,25 @@ public final class FusionMorphNetworking {
         registered = true;
     }
 
+    /**
+     * A real fusion morph replaces the local player renderer. That cannot be represented to the local player through
+     * vanilla entity packets: the client must have the integration's client receiver/mixin loaded. Refuse to commit an
+     * active morph when the fused player's own client does not advertise the payload instead of silently leaving the
+     * player model visible and pretending fusion rendering succeeded.
+     */
     public static void broadcast(MinecraftServer server, FusionMorphPayload payload) {
         if (server == null || payload == null) return;
+
+        if (payload.active()) {
+            ServerPlayerEntity subject = server.getPlayerManager().getPlayer(payload.playerUuid());
+            if (subject != null && !ServerPlayNetworking.canSend(subject, FusionMorphPayload.ID)) {
+                throw new IllegalStateException(
+                        "Fusion morph renderer is unavailable on the fused player's client. " +
+                        "Install the same SVFrameMMO: Cobblemon Integration JAR in the client modpack."
+                );
+            }
+        }
+
         for (ServerPlayerEntity viewer : server.getPlayerManager().getPlayerList()) send(viewer, payload);
     }
 
