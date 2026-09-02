@@ -35,7 +35,7 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
-      - name: Validate campaign data and architecture
+      - name: Validate linked campaign and reward budgets
         shell: bash
         run: |
           set -euo pipefail
@@ -44,63 +44,127 @@ jobs:
           root = pathlib.Path('SVQuest/src/main/resources/defaults/svquest')
           files = sorted((root / 'quests').glob('*.json'))
           assert files, 'No quest data files'
-          concrete = 0
+          absolute = {'pokemon_level', 'trainer_level', 'skill_purchase', 'ranked_elo'}
           ids = set()
+          total_count = 0
+          cobble_total = 0.0
+          beast_total = 0.0
+
+          def check_objectives(objs, context):
+              assert objs, f'quest without objectives: {context}'
+              if all(str(o.get('key','')).startswith('feature.') for o in objs):
+                  raise AssertionError(f'feature-only quest forbidden: {context}')
+              for o in objs:
+                  key = str(o.get('key',''))
+                  assert key, f'missing objective key: {context}'
+                  if key not in absolute:
+                      assert o.get('resetOnClaim') is True, f'fresh objective must reset on claim: {context}/{key}'
+
+          def check_grant(g, context, cycle=1):
+              nonlocal_dummy = None
+              amount = float(g.get('amountStart', g.get('amount', 0))) + (cycle - 1) * float(g.get('amountStep', 0))
+              typ = str(g.get('type','')).lower()
+              gid = str(g.get('id','')).lower()
+              if typ == 'beconomy' and gid == 'huntercoin':
+                  raise AssertionError(f'HunterCoin forbidden: {context}')
+              return typ, gid, amount
+
           for p in files:
-              data = json.loads(p.read_text(encoding='utf-8'))
-              entries = data.get('entries')
-              if entries is not None:
-                  for entry in entries:
-                      kind = entry.get('kind', 'quest')
-                      if kind == 'quest':
-                          concrete += 1
-                          qid = entry['id']
-                          assert qid not in ids, f'duplicate quest id {qid}'
+              raw = p.read_text(encoding='utf-8')
+              assert 'huntercoin' not in raw.lower(), f'HunterCoin text forbidden in {p}'
+              data = json.loads(raw)
+              if data.get('catalogRoot') is not True:
+                  continue
+              file_count = 0
+              assert int(data.get('managedVersion', 0)) >= 15, f'managedVersion missing in {p}'
+              entries = data.get('entries', [])
+              for entry in entries:
+                  kind = entry.get('kind', 'quest')
+                  if kind == 'quest':
+                      file_count += 1
+                      qid = entry['id']
+                      assert qid not in ids, f'duplicate quest id {qid}'
+                      ids.add(qid)
+                      check_objectives(entry.get('objectives', []), qid)
+                      for g in entry.get('grants', []):
+                          typ, gid, amount = check_grant(g, qid)
+                          if typ == 'cobbledollars' and amount > 0:
+                              assert amount >= 500000, f'CobbleDollars below 500k: {qid}'
+                              cobble_total += amount
+                          if typ == 'beconomy' and gid == 'beastcoin' and amount > 0:
+                              assert amount >= 10, f'BeastCoin below 10: {qid}'
+                              beast_total += amount
+                  elif kind == 'series':
+                      count = int(entry.get('count', 0))
+                      assert 1 <= count <= 10000
+                      file_count += count
+                      objs = entry.get('objectives') or ([entry['objective']] if entry.get('objective') else [])
+                      check_objectives(objs, entry['idPrefix'])
+                      for i in range(1, count + 1):
+                          qid = f"{entry['idPrefix']}_{i:03d}"
+                          assert qid not in ids
                           ids.add(qid)
-                          assert entry.get('objectives'), f'quest without objectives: {qid}'
-                      elif kind == 'series':
-                          count = int(entry.get('count', 0))
-                          assert 1 <= count <= 10000, f'invalid series count in {p}: {count}'
-                          concrete += count
-                          prefix = entry['idPrefix']
-                          for i in range(1, count + 1):
-                              qid = f'{prefix}_{i:03d}'
+                          for g in entry.get('grants', []):
+                              typ, gid, amount = check_grant(g, qid, i)
+                              if typ == 'cobbledollars' and amount > 0:
+                                  assert amount >= 500000
+                                  cobble_total += amount
+                              if typ == 'beconomy' and gid == 'beastcoin' and amount > 0:
+                                  assert amount >= 10
+                                  beast_total += amount
+                  elif kind == 'rotation':
+                      cycles = int(entry.get('cycles', 0))
+                      steps = entry.get('steps', [])
+                      assert 1 <= cycles <= 1000 and len(steps) >= 20, 'rotation must be broad and varied'
+                      file_count += cycles * len(steps)
+                      for cycle in range(1, cycles + 1):
+                          for step in steps:
+                              sid = step['id']
+                              qid = f"{entry['idPrefix']}_{cycle:02d}_{sid}"
                               assert qid not in ids, f'duplicate generated quest id {qid}'
                               ids.add(qid)
-                          objs = entry.get('objectives') or ([entry['objective']] if entry.get('objective') else [])
-                          assert objs, f'series without objectives: {prefix}'
-                          for o in objs:
-                              start = int(o.get('targetStart', o.get('target', 1)))
-                              step = int(o.get('targetStep', 0))
-                              assert start > 0 and start + (count - 1) * step > 0, f'invalid target series: {prefix}'
-                      else:
-                          raise AssertionError(f'unknown entry kind: {kind}')
-                  expected = data.get('expectedQuestCount')
-                  if expected is not None:
-                      assert int(expected) == concrete, f'expectedQuestCount={expected}, expanded={concrete}'
-              else:
-                  for q in data.get('quests', []):
-                      concrete += 1
-                      assert q['id'] not in ids
-                      ids.add(q['id'])
+                              check_objectives(step.get('objectives', []), qid)
+                              for g in step.get('grants', []):
+                                  typ, gid, amount = check_grant(g, qid, cycle)
+                                  if typ == 'cobbledollars' and amount > 0:
+                                      assert amount >= 500000, f'CobbleDollars below 500k: {qid}'
+                                      cobble_total += amount
+                                  if typ == 'beconomy' and gid == 'beastcoin' and amount > 0:
+                                      assert amount >= 10, f'BeastCoin below 10: {qid}'
+                                      beast_total += amount
+                  else:
+                      raise AssertionError(f'unknown entry kind: {kind}')
+              expected = data.get('expectedQuestCount')
+              if expected is not None:
+                  assert int(expected) == file_count, f'{p}: expected={expected}, expanded={file_count}'
+              total_count += file_count
+
           json.loads((root/'settings.json').read_text(encoding='utf-8'))
           json.loads((root/'features.json').read_text(encoding='utf-8'))
-          assert concrete >= 1000, f'Quest corpus too small after expansion: {concrete}'
-          print('Expanded quest count:', concrete)
+          assert total_count >= 1000, f'Quest corpus too small: {total_count}'
+          assert cobble_total <= 100_000_000, f'CobbleDollars budget too high: {cobble_total}'
+          assert beast_total <= 500, f'BeastCoin budget too high: {beast_total}'
+          assert round(cobble_total) == 97_500_000, f'Unexpected CobbleDollars budget: {cobble_total}'
+          assert round(beast_total) == 350, f'Unexpected BeastCoin budget: {beast_total}'
+          print('Expanded quest count:', total_count)
+          print('CobbleDollars total:', int(cobble_total))
+          print('BeastCoin total:', int(beast_total))
+          print('HunterCoin total: 0')
           PY
           ! grep -R --line-number --include='*.java' 'switch *(quest\.id())' SVQuest/src/main/java
           ! grep -R --line-number --include='*.java' 'COMMANDS\.put' SVQuest/src/main/java
           ! grep -R --line-number --include='*.java' 'List\.of( *new Quest' SVQuest/src/main/java
 
-      - name: Verify manual Claim flow is wired
+      - name: Verify linked fresh-objective claim flow
         shell: bash
         run: |
           set -euo pipefail
+          grep -q 'resetOnClaim' SVQuest/src/main/java/vn/svframe/svquest/quest/QuestCatalog.java
+          grep -q 'objective.resetOnClaim()' SVQuest/src/main/java/vn/svframe/svquest/server/QuestStateStore.java
           grep -q 'CHỜ NHẬN THƯỞNG' SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
           grep -q 'NHẬN THƯỞNG' SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
           grep -q 'action.equals("claim")' SVQuest/src/main/java/vn/svframe/svquest/server/ServerRuntime.java
           grep -q 'externalProgression' SVQuest/src/main/java/vn/svframe/svquest/server/ReflectionIntegrationBridge.java
-          ! grep -q 'advanceWhileComplete' SVQuest/src/main/java/vn/svframe/svquest/server/QuestStateStore.java
 
       - name: Verify client empty-catalog render safety
         shell: bash
@@ -108,7 +172,6 @@ jobs:
           set -euo pipefail
           grep -q 'QuestCatalog.QUESTS.isEmpty()' SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
           grep -q 'renderCatalogLoading' SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
-          grep -q 'ĐANG ĐỒNG BỘ DỮ LIỆU QUEST' SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
 
       - name: Verify legacy feature-array compatibility is wired
         shell: bash
@@ -131,9 +194,7 @@ jobs:
           unzip -p "$JAR" fabric.mod.json | tee build/libs/fabric.mod.built.json
           unzip -l "$JAR" | grep -q 'vn/svframe/svquest/quest/QuestCatalog.class'
           unzip -l "$JAR" | grep -q 'vn/svframe/svquest/server/GuidedProgressBridge.class'
-          unzip -l "$JAR" | grep -q 'vn/svframe/svquest/server/FeatureCatalog.class'
           unzip -l "$JAR" | grep -q 'defaults/svquest/quests/00-guided-campaign.json'
-          unzip -l "$JAR" | grep -q 'defaults/svquest/features.json'
           sha256sum "$JAR" | tee build/libs/SHA256.txt
 
       - name: Install virtual display
@@ -155,20 +216,22 @@ jobs:
           if grep -E -q "IncompatibleClassChangeError|Could not execute entrypoint stage 'client'|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Mixin apply failed|Exception in thread \"Render thread\"" build/client-smoke.log; then exit 1; fi
           if [ "$code" -ne 0 ] && [ "$code" -ne 124 ]; then exit "$code"; fi
 
-      - name: Dedicated server startup smoke test with legacy feature array
+      - name: Dedicated server smoke test with legacy config migration
         shell: bash
         run: |
           set -uo pipefail
           cd SVQuest
           rm -rf run
-          mkdir -p run/config/svquest
+          mkdir -p run/config/svquest/quests
           printf 'eula=true\n' > run/eula.txt
           cat > run/config/svquest/features.json <<'JSON'
           [
             {"id":"pokemon_skills","command":"pokeskill"},
-            {"id":"claims","command":"claim"},
             {"featureId":"breeding","opener":"soulbreeding"}
           ]
+          JSON
+          cat > run/config/svquest/quests/00-guided-campaign.json <<'JSON'
+          {"managedVersion":14,"catalogRoot":true,"entries":[{"kind":"quest","id":"legacy","title":"legacy","objectives":[{"key":"capture","label":"legacy","target":1}],"rewards":["1 HunterCoin"],"grants":[{"type":"beconomy","id":"huntercoin","amount":1}]}]}
           JSON
           set +e
           timeout 75s gradle --no-daemon runServer > build/server-smoke.log 2>&1
@@ -176,13 +239,16 @@ jobs:
           set -e
           cat build/server-smoke.log
           if grep -E -q "Could not execute entrypoint stage 'server'|Could not execute entrypoint stage 'main'|IncompatibleClassChangeError|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Mixin apply failed|Encountered an unexpected exception|ClassCastException" build/server-smoke.log; then exit 1; fi
-          grep -q 'SVQuest loaded 3 feature actions from config' build/server-smoke.log
+          grep -q 'SVQuest loaded 1030 quests' build/server-smoke.log
+          grep -q 'HunterCoin=0' build/server-smoke.log
+          grep -q '"managedVersion": 15' run/config/svquest/quests/00-guided-campaign.json
+          ! grep -qi 'huntercoin' run/config/svquest/quests/00-guided-campaign.json
           if [ "$code" -ne 0 ] && [ "$code" -ne 124 ]; then exit "$code"; fi
 
       - name: Upload validated artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SVQuest-beta.14-client-sync-safety
+          name: SVQuest-beta.15-linked-campaign
           path: |
             SVQuest/build/libs/SVQuest-*.jar
             SVQuest/build/libs/SHA256.txt
