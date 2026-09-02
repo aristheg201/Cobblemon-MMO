@@ -27,20 +27,18 @@ import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-/**
- * Runtime quest registry. Quest content is data, never Java source.
- *
- * Server source of truth: config/svquest/quests/*.json and settings.json.
- * Files may contain explicit quests and/or generic series entries. A series is expanded at load time,
- * so a large campaign remains editable without hardcoding thousands of Java objects.
- */
+/** Data-driven runtime quest registry. Quest content never lives in Java source. */
 public final class QuestCatalog {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
     private static final String COMPLETE_ID = "__complete__";
+    private static final double MAX_COBBLEDOLLARS = 100_000_000D;
+    private static final double MIN_COBBLEDOLLARS_GRANT = 500_000D;
+    private static final double MAX_BEASTCOIN = 500D;
+    private static final double MIN_BEASTCOIN_GRANT = 10D;
 
     private QuestCatalog() {}
 
-    public record Objective(String key, String label, int target, String featureId) {
+    public record Objective(String key, String label, int target, String featureId, boolean resetOnClaim) {
         public Objective {
             key = clean(key);
             label = label == null ? "" : label.trim();
@@ -79,7 +77,6 @@ public final class QuestCatalog {
         }
     }
 
-    /** Existing GUI reads this list directly. Layout is intentionally untouched. */
     public static volatile List<Quest> QUESTS = List.of();
     public static volatile Set<String> CARRY_OVER = Set.of();
 
@@ -91,18 +88,21 @@ public final class QuestCatalog {
             Path questsDir = root.resolve("quests");
             Files.createDirectories(questsDir);
 
-            ArrayList<Quest> loaded = new ArrayList<>();
+            List<Path> allFiles;
             try (var files = Files.list(questsDir)) {
-                for (Path file : files.filter(Files::isRegularFile)
+                allFiles = files.filter(Files::isRegularFile)
                         .filter(p -> p.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".json"))
-                        .sorted().toList()) {
-                    loaded.addAll(readQuestFile(file));
-                }
+                        .sorted().toList();
             }
+            List<Path> selected = selectCatalogFiles(allFiles);
+            ArrayList<Quest> loaded = new ArrayList<>();
+            for (Path file : selected) loaded.addAll(readQuestFile(file));
+
             validate(loaded);
             QUESTS = List.copyOf(loaded);
             CARRY_OVER = Set.copyOf(carry);
-            SVQuest.LOGGER.info("SVQuest loaded {} quests and {} carry-over metrics from config.", QUESTS.size(), CARRY_OVER.size());
+            SVQuest.LOGGER.info("SVQuest loaded {} quests from {} catalog file(s), carry-over metrics={}",
+                    QUESTS.size(), selected.size(), CARRY_OVER.size());
             return QUESTS.size();
         } catch (Exception error) {
             throw new IllegalStateException("SVQuest quest configuration failed validation; previous registry kept", error);
@@ -170,13 +170,25 @@ public final class QuestCatalog {
         return QUESTS.get(questIndex).objectives().stream().anyMatch(o -> o.key().equals(normalized));
     }
 
+    private static List<Path> selectCatalogFiles(List<Path> files) {
+        ArrayList<Path> roots = new ArrayList<>();
+        for (Path file : files) if (isCatalogRoot(file)) roots.add(file);
+        return roots.isEmpty() ? files : List.copyOf(roots);
+    }
+
+    private static boolean isCatalogRoot(Path file) {
+        try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
+            JsonElement parsed = JsonParser.parseReader(reader);
+            return parsed.isJsonObject() && booleanValue(parsed.getAsJsonObject(), "catalogRoot", false);
+        } catch (Exception ignored) { return false; }
+    }
+
     private static List<Quest> readQuestFile(Path file) throws IOException {
         try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
             JsonElement parsed = JsonParser.parseReader(reader);
             if (parsed.isJsonArray()) return parseQuestArray(parsed.getAsJsonArray(), file.toString());
             JsonObject object = parsed.getAsJsonObject();
             ArrayList<Quest> result = new ArrayList<>();
-
             JsonArray entries = object.getAsJsonArray("entries");
             if (entries != null) {
                 for (JsonElement element : entries) {
@@ -184,11 +196,11 @@ public final class QuestCatalog {
                     String kind = optionalString(entry, "kind").toLowerCase(Locale.ROOT);
                     if (kind.isBlank() || kind.equals("quest")) result.add(parseQuest(entry, file.toString()));
                     else if (kind.equals("series")) result.addAll(expandSeries(entry, file.toString()));
+                    else if (kind.equals("rotation")) result.addAll(expandRotation(entry, file.toString()));
                     else throw new IllegalArgumentException("Unknown quest entry kind '" + kind + "' in " + file);
                 }
                 return result;
             }
-
             if (object.has("quests")) result.addAll(parseQuestArray(object.getAsJsonArray("quests"), file.toString()));
             JsonArray series = object.getAsJsonArray("series");
             if (series != null) for (JsonElement element : series) result.addAll(expandSeries(element.getAsJsonObject(), file.toString()));
@@ -204,187 +216,183 @@ public final class QuestCatalog {
         String descriptionTemplate = optionalString(series, "description");
         int count = intValue(series, "count", 0);
         if (count <= 0 || count > 10000) throw new IllegalArgumentException("Series count must be 1..10000: " + prefix);
-
         JsonArray objectiveTemplates = series.getAsJsonArray("objectives");
         if (objectiveTemplates == null || objectiveTemplates.isEmpty()) {
             JsonObject single = series.getAsJsonObject("objective");
             if (single == null) throw new IllegalArgumentException("Series has no objective(s): " + prefix);
-            objectiveTemplates = new JsonArray();
-            objectiveTemplates.add(single);
+            objectiveTemplates = new JsonArray(); objectiveTemplates.add(single);
         }
-
-        ArrayList<String> rewardTemplates = new ArrayList<>();
-        JsonArray rewardDisplay = series.getAsJsonArray("rewards");
-        if (rewardDisplay != null) for (JsonElement e : rewardDisplay) rewardTemplates.add(e.getAsString());
+        ArrayList<String> rewardTemplates = strings(series.getAsJsonArray("rewards"));
         JsonArray grantTemplates = series.getAsJsonArray("grants");
-
         ArrayList<Quest> result = new ArrayList<>(count);
         for (int i = 1; i <= count; i++) {
             ArrayList<Objective> objectives = new ArrayList<>();
             int primaryTarget = 1;
             for (int oi = 0; oi < objectiveTemplates.size(); oi++) {
                 JsonObject template = objectiveTemplates.get(oi).getAsJsonObject();
-                int start = intValue(template, "targetStart", intValue(template, "target", 1));
-                int step = intValue(template, "targetStep", 0);
-                int target = Math.max(1, start + (i - 1) * step);
+                int target = Math.max(1, intValue(template, "targetStart", intValue(template, "target", 1)) + (i - 1) * intValue(template, "targetStep", 0));
                 if (oi == 0) primaryTarget = target;
-                objectives.add(new Objective(
-                        requiredString(template, "key", source + ":" + prefix),
-                        render(requiredString(template, "label", source + ":" + prefix), i, target),
-                        target,
-                        optionalString(template, "featureId")
-                ));
+                objectives.add(new Objective(requiredString(template, "key", source + ":" + prefix),
+                        render(requiredString(template, "label", source + ":" + prefix), i, target), target,
+                        optionalString(template, "featureId"), booleanValue(template, "resetOnClaim", false)));
             }
-
-            ArrayList<String> displayRewards = new ArrayList<>();
-            for (String reward : rewardTemplates) displayRewards.add(render(reward, i, primaryTarget));
-
-            ArrayList<Reward> grants = new ArrayList<>();
-            if (grantTemplates != null) for (JsonElement element : grantTemplates) {
-                JsonObject grant = element.getAsJsonObject();
-                double amountStart = doubleValue(grant, "amountStart", doubleValue(grant, "amount", 0));
-                double amountStep = doubleValue(grant, "amountStep", 0);
-                int countStart = intValue(grant, "countStart", intValue(grant, "count", 0));
-                int countStep = intValue(grant, "countStep", 0);
-                grants.add(new Reward(
-                        requiredString(grant, "type", source + ":" + prefix),
-                        optionalString(grant, "id"),
-                        Math.max(0, amountStart + (i - 1) * amountStep),
-                        Math.max(0, countStart + (i - 1) * countStep),
-                        render(optionalString(grant, "command"), i, primaryTarget),
-                        optionalString(grant, "point")
-                ));
-            }
-
-            result.add(new Quest(
-                    prefix + "_" + String.format(Locale.ROOT, "%03d", i),
-                    phase,
-                    render(titleTemplate, i, primaryTarget),
-                    render(descriptionTemplate, i, primaryTarget),
-                    objectives,
-                    displayRewards,
-                    grants
-            ));
+            result.add(new Quest(prefix + "_" + String.format(Locale.ROOT, "%03d", i), phase,
+                    render(titleTemplate, i, primaryTarget), render(descriptionTemplate, i, primaryTarget), objectives,
+                    renderRewards(rewardTemplates, i, primaryTarget), expandGrants(grantTemplates, i, primaryTarget)));
         }
         return result;
     }
 
+    /** Distinct steps repeat only after a complete cycle, avoiding hundreds of consecutive copy-paste milestones. */
+    private static ArrayList<Quest> expandRotation(JsonObject rotation, String source) {
+        String prefix = requiredString(rotation, "idPrefix", source);
+        int cycles = intValue(rotation, "cycles", 0);
+        if (cycles <= 0 || cycles > 1000) throw new IllegalArgumentException("Rotation cycles must be 1..1000: " + prefix);
+        JsonArray steps = rotation.getAsJsonArray("steps");
+        if (steps == null || steps.isEmpty()) throw new IllegalArgumentException("Rotation has no steps: " + prefix);
+        String defaultPhase = optionalString(rotation, "phase");
+        ArrayList<Quest> result = new ArrayList<>(cycles * steps.size());
+        for (int cycle = 1; cycle <= cycles; cycle++) {
+            for (int si = 0; si < steps.size(); si++) {
+                int stepNumber = si + 1;
+                JsonObject step = steps.get(si).getAsJsonObject();
+                String stepId = clean(requiredString(step, "id", source + ":" + prefix));
+                String phase = optionalString(step, "phase"); if (phase.isBlank()) phase = defaultPhase;
+                JsonArray objectiveTemplates = step.getAsJsonArray("objectives");
+                if (objectiveTemplates == null || objectiveTemplates.isEmpty()) throw new IllegalArgumentException("Rotation step has no objectives: " + stepId);
+                ArrayList<Objective> objectives = new ArrayList<>();
+                int primaryTarget = 1;
+                for (int oi = 0; oi < objectiveTemplates.size(); oi++) {
+                    JsonObject template = objectiveTemplates.get(oi).getAsJsonObject();
+                    int target = Math.max(1, intValue(template, "targetStart", intValue(template, "target", 1)) + (cycle - 1) * intValue(template, "targetStep", 0));
+                    if (oi == 0) primaryTarget = target;
+                    objectives.add(new Objective(requiredString(template, "key", source + ":" + prefix + ":" + stepId),
+                            renderRotation(requiredString(template, "label", source + ":" + prefix + ":" + stepId), cycle, stepNumber, target), target,
+                            optionalString(template, "featureId"), booleanValue(template, "resetOnClaim", false)));
+                }
+                ArrayList<String> displayRewards = new ArrayList<>();
+                for (String reward : strings(step.getAsJsonArray("rewards"))) displayRewards.add(renderRotation(reward, cycle, stepNumber, primaryTarget));
+                result.add(new Quest(prefix + "_" + String.format(Locale.ROOT, "%02d", cycle) + "_" + stepId, phase,
+                        renderRotation(requiredString(step, "title", source + ":" + prefix + ":" + stepId), cycle, stepNumber, primaryTarget),
+                        renderRotation(optionalString(step, "description"), cycle, stepNumber, primaryTarget), objectives, displayRewards,
+                        expandRotationGrants(step.getAsJsonArray("grants"), cycle, stepNumber, primaryTarget)));
+            }
+        }
+        return result;
+    }
+
+    private static ArrayList<String> renderRewards(List<String> templates, int index, int target) {
+        ArrayList<String> out = new ArrayList<>(); for (String template : templates) out.add(render(template, index, target)); return out;
+    }
+
+    private static ArrayList<Reward> expandGrants(JsonArray templates, int index, int target) {
+        ArrayList<Reward> out = new ArrayList<>(); if (templates == null) return out;
+        for (JsonElement element : templates) {
+            JsonObject g = element.getAsJsonObject();
+            out.add(new Reward(requiredString(g, "type", "series grant"), optionalString(g, "id"),
+                    Math.max(0, doubleValue(g, "amountStart", doubleValue(g, "amount", 0)) + (index - 1) * doubleValue(g, "amountStep", 0)),
+                    Math.max(0, intValue(g, "countStart", intValue(g, "count", 0)) + (index - 1) * intValue(g, "countStep", 0)),
+                    render(optionalString(g, "command"), index, target), optionalString(g, "point")));
+        }
+        return out;
+    }
+
+    private static ArrayList<Reward> expandRotationGrants(JsonArray templates, int cycle, int step, int target) {
+        ArrayList<Reward> out = new ArrayList<>(); if (templates == null) return out;
+        for (JsonElement element : templates) {
+            JsonObject g = element.getAsJsonObject();
+            out.add(new Reward(requiredString(g, "type", "rotation grant"), optionalString(g, "id"),
+                    Math.max(0, doubleValue(g, "amountStart", doubleValue(g, "amount", 0)) + (cycle - 1) * doubleValue(g, "amountStep", 0)),
+                    Math.max(0, intValue(g, "countStart", intValue(g, "count", 0)) + (cycle - 1) * intValue(g, "countStep", 0)),
+                    renderRotation(optionalString(g, "command"), cycle, step, target), optionalString(g, "point")));
+        }
+        return out;
+    }
+
     private static ArrayList<Quest> parseQuestArray(JsonArray array, String source) {
-        ArrayList<Quest> quests = new ArrayList<>();
-        if (array == null) return quests;
-        for (JsonElement element : array) quests.add(parseQuest(element.getAsJsonObject(), source));
-        return quests;
+        ArrayList<Quest> quests = new ArrayList<>(); if (array != null) for (JsonElement element : array) quests.add(parseQuest(element.getAsJsonObject(), source)); return quests;
     }
 
     private static Quest parseQuest(JsonObject object, String source) {
-        String id = requiredString(object, "id", source);
-        String phase = optionalString(object, "phase");
-        String title = requiredString(object, "title", source + ":" + id);
-        String description = optionalString(object, "description");
-
+        String id = requiredString(object, "id", source), phase = optionalString(object, "phase"), title = requiredString(object, "title", source + ":" + id), description = optionalString(object, "description");
         ArrayList<Objective> objectives = new ArrayList<>();
         JsonArray objectiveArray = object.getAsJsonArray("objectives");
         if (objectiveArray != null) for (JsonElement element : objectiveArray) {
-            JsonObject objective = element.getAsJsonObject();
-            objectives.add(new Objective(
-                    requiredString(objective, "key", source + ":" + id),
-                    requiredString(objective, "label", source + ":" + id),
-                    objective.has("target") ? objective.get("target").getAsInt() : 1,
-                    optionalString(objective, "featureId")
-            ));
+            JsonObject o = element.getAsJsonObject();
+            objectives.add(new Objective(requiredString(o, "key", source + ":" + id), requiredString(o, "label", source + ":" + id),
+                    intValue(o, "target", 1), optionalString(o, "featureId"), booleanValue(o, "resetOnClaim", false)));
         }
-
-        ArrayList<String> displayRewards = new ArrayList<>();
-        JsonArray rewardDisplay = object.getAsJsonArray("rewards");
-        if (rewardDisplay != null) for (JsonElement element : rewardDisplay) displayRewards.add(element.getAsString());
-
         ArrayList<Reward> grants = new ArrayList<>();
         JsonArray grantArray = object.getAsJsonArray("grants");
         if (grantArray != null) for (JsonElement element : grantArray) {
-            JsonObject grant = element.getAsJsonObject();
-            grants.add(new Reward(
-                    requiredString(grant, "type", source + ":" + id),
-                    optionalString(grant, "id"),
-                    grant.has("amount") ? grant.get("amount").getAsDouble() : 0,
-                    grant.has("count") ? grant.get("count").getAsInt() : 0,
-                    optionalString(grant, "command"),
-                    optionalString(grant, "point")
-            ));
+            JsonObject g = element.getAsJsonObject();
+            grants.add(new Reward(requiredString(g, "type", source + ":" + id), optionalString(g, "id"), doubleValue(g, "amount", 0),
+                    intValue(g, "count", 0), optionalString(g, "command"), optionalString(g, "point")));
         }
-        return new Quest(id, phase, title, description, objectives, displayRewards, grants);
+        return new Quest(id, phase, title, description, objectives, strings(object.getAsJsonArray("rewards")), grants);
     }
 
     private static Set<String> readCarryOver(Path settings) throws IOException {
-        LinkedHashSet<String> result = new LinkedHashSet<>();
-        if (!Files.isRegularFile(settings)) return result;
+        LinkedHashSet<String> result = new LinkedHashSet<>(); if (!Files.isRegularFile(settings)) return result;
         try (Reader reader = Files.newBufferedReader(settings, StandardCharsets.UTF_8)) {
-            JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
-            JsonArray values = root.getAsJsonArray("carryOver");
-            if (values != null) for (JsonElement e : values) {
-                String key = clean(e.getAsString());
-                if (!key.isBlank()) result.add(key);
-            }
+            JsonObject root = JsonParser.parseReader(reader).getAsJsonObject(); JsonArray values = root.getAsJsonArray("carryOver");
+            if (values != null) for (JsonElement e : values) { String key = clean(e.getAsString()); if (!key.isBlank()) result.add(key); }
         }
         return result;
     }
 
     private static void validate(List<Quest> quests) {
         if (quests.isEmpty()) throw new IllegalArgumentException("No quests were loaded");
-        HashSet<String> ids = new HashSet<>();
+        HashSet<String> ids = new HashSet<>(); double cobbleTotal = 0D, beastTotal = 0D;
         for (Quest quest : quests) {
             if (!ids.add(quest.id())) throw new IllegalArgumentException("Duplicate quest id: " + quest.id());
+            for (String display : quest.rewards()) if (display.toLowerCase(Locale.ROOT).contains("huntercoin")) throw new IllegalArgumentException("HunterCoin reward is forbidden: " + quest.id());
+            for (Reward reward : quest.grants()) {
+                String type = clean(reward.type()), id = clean(reward.id());
+                if (type.equals("beconomy") && id.equals("huntercoin")) throw new IllegalArgumentException("HunterCoin reward is forbidden: " + quest.id());
+                if (type.equals("cobbledollars") && reward.amount() > 0) {
+                    if (reward.amount() < MIN_COBBLEDOLLARS_GRANT) throw new IllegalArgumentException("CobbleDollars reward below 500000: " + quest.id());
+                    cobbleTotal += reward.amount();
+                }
+                if (type.equals("beconomy") && id.equals("beastcoin") && reward.amount() > 0) {
+                    if (reward.amount() < MIN_BEASTCOIN_GRANT) throw new IllegalArgumentException("BeastCoin reward below 10: " + quest.id());
+                    beastTotal += reward.amount();
+                }
+            }
         }
+        if (cobbleTotal > MAX_COBBLEDOLLARS) throw new IllegalArgumentException("CobbleDollars campaign budget exceeds 100000000: " + cobbleTotal);
+        if (beastTotal > MAX_BEASTCOIN) throw new IllegalArgumentException("BeastCoin campaign budget exceeds 500: " + beastTotal);
+        SVQuest.LOGGER.info("SVQuest reward budget validated: CobbleDollars={}, BeastCoin={}, HunterCoin=0", cobbleTotal, beastTotal);
     }
 
     private static void copyPackagedDefaults(Path configRoot) throws IOException {
         Files.createDirectories(configRoot);
-        var container = FabricLoader.getInstance().getModContainer(SVQuest.MOD_ID)
-                .orElseThrow(() -> new IllegalStateException("SVQuest mod container unavailable"));
+        var container = FabricLoader.getInstance().getModContainer(SVQuest.MOD_ID).orElseThrow(() -> new IllegalStateException("SVQuest mod container unavailable"));
         for (Path root : container.getRootPaths()) {
-            Path defaults = root.resolve("defaults/svquest");
-            if (!Files.exists(defaults)) continue;
+            Path defaults = root.resolve("defaults/svquest"); if (!Files.exists(defaults)) continue;
             try (var stream = Files.walk(defaults)) {
                 for (Path source : stream.filter(Files::isRegularFile).toList()) {
-                    Path relative = defaults.relativize(source);
-                    Path target = configRoot.resolve(relative.toString());
-                    if (Files.exists(target)) continue;
-                    Files.createDirectories(target.getParent());
-                    Files.copy(source, target, StandardCopyOption.COPY_ATTRIBUTES);
+                    Path target = configRoot.resolve(defaults.relativize(source).toString()); Files.createDirectories(target.getParent());
+                    if (!Files.exists(target) || shouldReplaceManagedDefault(source, target)) Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
                 }
             }
         }
     }
 
-    private static String render(String template, int index, int target) {
-        if (template == null) return "";
-        return template.replace("{index}", Integer.toString(index)).replace("{target}", Integer.toString(target));
+    private static boolean shouldReplaceManagedDefault(Path source, Path target) { int sourceVersion = managedVersion(source); return sourceVersion >= 0 && sourceVersion > managedVersion(target); }
+    private static int managedVersion(Path file) {
+        if (file == null || !Files.isRegularFile(file) || !file.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".json")) return -1;
+        try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) { JsonElement parsed = JsonParser.parseReader(reader); return parsed.isJsonObject() ? intValue(parsed.getAsJsonObject(), "managedVersion", -1) : -1; }
+        catch (Exception ignored) { return -1; }
     }
 
-    private static int intValue(JsonObject object, String key, int fallback) {
-        JsonElement value = object.get(key);
-        try { return value == null || value.isJsonNull() ? fallback : value.getAsInt(); }
-        catch (Exception ignored) { return fallback; }
-    }
-
-    private static double doubleValue(JsonObject object, String key, double fallback) {
-        JsonElement value = object.get(key);
-        try { return value == null || value.isJsonNull() ? fallback : value.getAsDouble(); }
-        catch (Exception ignored) { return fallback; }
-    }
-
-    private static String requiredString(JsonObject object, String key, String source) {
-        String value = optionalString(object, key);
-        if (value.isBlank()) throw new IllegalArgumentException("Missing '" + key + "' in " + source);
-        return value;
-    }
-
-    private static String optionalString(JsonObject object, String key) {
-        JsonElement value = object.get(key);
-        return value == null || value.isJsonNull() ? "" : value.getAsString().trim();
-    }
-
-    private static String clean(String value) {
-        if (value == null) return "";
-        return value.trim().toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_.:-]+", "_");
-    }
+    private static ArrayList<String> strings(JsonArray array) { ArrayList<String> out = new ArrayList<>(); if (array != null) for (JsonElement e : array) out.add(e.getAsString()); return out; }
+    private static String render(String template, int index, int target) { return template == null ? "" : template.replace("{index}", Integer.toString(index)).replace("{target}", Integer.toString(target)); }
+    private static String renderRotation(String template, int cycle, int step, int target) { return template == null ? "" : template.replace("{cycle}", Integer.toString(cycle)).replace("{step}", Integer.toString(step)).replace("{target}", Integer.toString(target)); }
+    private static int intValue(JsonObject object, String key, int fallback) { JsonElement value = object.get(key); try { return value == null || value.isJsonNull() ? fallback : value.getAsInt(); } catch (Exception ignored) { return fallback; } }
+    private static double doubleValue(JsonObject object, String key, double fallback) { JsonElement value = object.get(key); try { return value == null || value.isJsonNull() ? fallback : value.getAsDouble(); } catch (Exception ignored) { return fallback; } }
+    private static boolean booleanValue(JsonObject object, String key, boolean fallback) { JsonElement value = object.get(key); try { return value == null || value.isJsonNull() ? fallback : value.getAsBoolean(); } catch (Exception ignored) { return fallback; } }
+    private static String requiredString(JsonObject object, String key, String source) { String value = optionalString(object, key); if (value.isBlank()) throw new IllegalArgumentException("Missing '" + key + "' in " + source); return value; }
+    private static String optionalString(JsonObject object, String key) { JsonElement value = object.get(key); return value == null || value.isJsonNull() ? "" : value.getAsString().trim(); }
+    private static String clean(String value) { return value == null ? "" : value.trim().toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_.:-]+", "_"); }
 }
