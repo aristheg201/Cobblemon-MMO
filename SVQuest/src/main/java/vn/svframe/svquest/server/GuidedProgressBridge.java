@@ -1,6 +1,7 @@
 package vn.svframe.svquest.server;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -34,6 +35,7 @@ public final class GuidedProgressBridge {
         safeInstall("Cobblemon guided battle signals", "cobblemon", this::installCobblemonBattleSignals);
         safeInstall("CobbleDollars amount signals", "cobbledollars", this::installCobbleDollarsAmount);
         safeInstall("SkiesShop sell signals", "skiesshop", this::installSkiesShopSell);
+        installBlockInteractionSignals();
         ServerTickEvents.END_SERVER_TICK.register(s -> tick());
     }
 
@@ -54,6 +56,31 @@ public final class GuidedProgressBridge {
             probe("Ranked participation", () -> pollRanked(player));
             probe("NovaRaids join", () -> pollRaidJoin(player));
         }
+    }
+
+    /**
+     * Battle Tower 1.10.22 and Cobblemon Expeditions 1.5.5 are world-block driven on this server.
+     * Do not fake their quest progression through commands or direct GUI packets. The callback runs
+     * before the target block's normal use handler and always returns PASS so the original mod still
+     * opens its own GUI.
+     */
+    private void installBlockInteractionSignals() {
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            if (!(player instanceof ServerPlayerEntity serverPlayer)) return ActionResult.PASS;
+            try {
+                Object block = world.getBlockState(hitResult.getBlockPos()).getBlock();
+                String className = block.getClass().getName();
+                if (className.equals("battle.tower.block.HoloBattleTowerBlock")) {
+                    engine.signal(serverPlayer, "feature.battle_tower");
+                } else if (className.equals("com.cobblemonexpeditions.block.ExpeditionBoardBlock")
+                        || className.equals("com.cobblemonexpeditions.block.ExpeditionBoardPartBlock")) {
+                    engine.signal(serverPlayer, "feature.expeditions");
+                }
+            } catch (Throwable t) {
+                SVQuest.LOGGER.debug("Block-interaction quest probe failed safely: {}", t.toString());
+            }
+            return ActionResult.PASS;
+        });
     }
 
     private void installCobblemonBattleSignals() throws Exception {
