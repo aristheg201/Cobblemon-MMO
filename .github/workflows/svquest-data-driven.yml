@@ -210,8 +210,8 @@ jobs:
           if grep -E -q "Could not execute entrypoint stage 'server'|Could not execute entrypoint stage 'main'|IncompatibleClassChangeError|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Mixin apply failed|Encountered an unexpected exception|ClassCastException" build/server-smoke.log; then exit 1; fi
           grep -q 'SVQuest loaded 1030 quests' build/server-smoke.log
           grep -q 'HunterCoin=0' build/server-smoke.log
-          grep -q '"managedVersion": 16' run/config/svquest/quests/00-guided-campaign.json
-          grep -q '"key": "skill_bound"' run/config/svquest/quests/00-guided-campaign.json
+          grep -Eq '"managedVersion"[[:space:]]*:[[:space:]]*16' run/config/svquest/quests/00-guided-campaign.json
+          grep -Eq '"key"[[:space:]]*:[[:space:]]*"skill_bound"' run/config/svquest/quests/00-guided-campaign.json
           if [ "$code" -ne 0 ] && [ "$code" -ne 124 ]; then exit "$code"; fi
 
       - name: Upload validated artifact
