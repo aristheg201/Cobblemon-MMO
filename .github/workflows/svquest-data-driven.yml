@@ -43,7 +43,7 @@ jobs:
           root = pathlib.Path('SVQuest/src/main/resources/defaults/svquest')
           files = sorted((root / 'quests').glob('*.json'))
           assert files, 'No quest data files'
-          absolute = {'pokemon_level', 'trainer_level', 'skill_purchase', 'ranked_elo'}
+          absolute = {'pokemon_level', 'trainer_level', 'skill_purchase', 'skill_bound', 'ranked_elo'}
           ids=set(); total=0; cobble=0.0; beast=0.0
 
           def objectives(objs, ctx):
@@ -73,7 +73,7 @@ jobs:
           assert roots, 'No catalogRoot quest file'
 
           for p,data in roots:
-              assert int(data.get('managedVersion',0))>=15, f'managedVersion missing: {p}'
+              assert int(data.get('managedVersion',0))>=16, f'managedVersion missing: {p}'
               count=0
               for e in data.get('entries',[]):
                   kind=e.get('kind','quest')
@@ -132,7 +132,25 @@ jobs:
           grep -q 'objective.resetOnClaim()' SVQuest/src/main/java/vn/svframe/svquest/server/QuestStateStore.java
           grep -q 'NHẬN THƯỞNG' SVQuest/src/main/java/vn/svframe/svquest/client/QuestScreen.java
           grep -q 'action.equals("claim")' SVQuest/src/main/java/vn/svframe/svquest/server/ServerRuntime.java
-          grep -q 'externalProgression' SVQuest/src/main/java/vn/svframe/svquest/server/ReflectionIntegrationBridge.java
+          BRIDGE=SVQuest/src/main/java/vn/svframe/svquest/server/ReflectionIntegrationBridge.java
+          grep -q 'getMethod("learned", UUID.class)' "$BRIDGE"
+          grep -q 'getMethod("bindings", UUID.class)' "$BRIDGE"
+          grep -q 'engine.metric(player, "skill_purchase", learned)' "$BRIDGE"
+          grep -q 'engine.metric(player, "skill_bound", bindings.size())' "$BRIDGE"
+          grep -q 'engine.signal(player, "skill_bind")' "$BRIDGE"
+          ! grep -q 'getSkillBindings' "$BRIDGE"
+
+      - name: Verify canonical SVFrameMMO Pokemon-skill API contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframemmo-fabric-1.21.1:refs/remotes/origin/svframemmo-fabric-1.21.1
+          git fetch --no-tags --depth=1 origin svframemmo-cobblemon-integration-1.21.1:refs/remotes/origin/svframemmo-cobblemon-integration-1.21.1
+          git show origin/svframemmo-fabric-1.21.1:SVFrameMMO/src/main/java/vn/svframe/svframemmo/skill/ExternalSkillProgression.java > /tmp/ExternalSkillProgression.java
+          grep -q 'Map<String, Integer> learned(UUID playerId)' /tmp/ExternalSkillProgression.java
+          grep -q 'Map<Integer, String> bindings(UUID playerId)' /tmp/ExternalSkillProgression.java
+          git show origin/svframemmo-cobblemon-integration-1.21.1:SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java > /tmp/CobblemonMoveSkillAdapter.java
+          grep -q 'Map<String, ClassSkill> definitions()' /tmp/CobblemonMoveSkillAdapter.java
 
       - name: Verify client and config compatibility guards
         shell: bash
@@ -184,7 +202,7 @@ jobs:
           [{"id":"pokemon_skills","command":"pokeskill"},{"featureId":"breeding","opener":"soulbreeding"}]
           JSON
           cat > run/config/svquest/quests/00-guided-campaign.json <<'JSON'
-          {"managedVersion":14,"catalogRoot":true,"entries":[{"kind":"quest","id":"legacy","title":"legacy","objectives":[{"key":"capture","label":"legacy","target":1}],"rewards":["1 HunterCoin"],"grants":[{"type":"beconomy","id":"huntercoin","amount":1}]}]}
+          {"managedVersion":15,"catalogRoot":true,"entries":[{"kind":"quest","id":"legacy","title":"legacy","objectives":[{"key":"capture","label":"legacy","target":1}],"rewards":["1 HunterCoin"],"grants":[{"type":"beconomy","id":"huntercoin","amount":1}]}]}
           JSON
           set +e
           timeout 75s gradle --no-daemon runServer > build/server-smoke.log 2>&1
@@ -192,13 +210,14 @@ jobs:
           if grep -E -q "Could not execute entrypoint stage 'server'|Could not execute entrypoint stage 'main'|IncompatibleClassChangeError|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Mixin apply failed|Encountered an unexpected exception|ClassCastException" build/server-smoke.log; then exit 1; fi
           grep -q 'SVQuest loaded 1030 quests' build/server-smoke.log
           grep -q 'HunterCoin=0' build/server-smoke.log
-          grep -q '"managedVersion": 15' run/config/svquest/quests/00-guided-campaign.json
+          grep -q '"managedVersion": 16' run/config/svquest/quests/00-guided-campaign.json
+          grep -q '"key": "skill_bound"' run/config/svquest/quests/00-guided-campaign.json
           if [ "$code" -ne 0 ] && [ "$code" -ne 124 ]; then exit "$code"; fi
 
       - name: Upload validated artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SVQuest-beta.15-linked-campaign
+          name: SVQuest-beta.17-skill-progress
           path: |
             SVQuest/build/libs/SVQuest-*.jar
             SVQuest/build/libs/SHA256.txt
