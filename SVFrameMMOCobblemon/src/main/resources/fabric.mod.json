@@ -3,7 +3,7 @@
   "id": "svframemmo_cobblemon",
   "version": "${version}",
   "name": "SVFrameMMO: Cobblemon Integration",
-  "description": "Native Cobblemon/Mega Showdown bridge for SVFrameMMO with server-side packet fusion disguises and move skills.",
+  "description": "Native Cobblemon/Mega Showdown bridge for SVFrameMMO with direct Cobblemon player-render fusion morphs and move skills.",
   "authors": ["SVFrame"],
   "environment": "*",
   "entrypoints": {
@@ -12,6 +12,9 @@
     ],
     "main": [
       "vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon"
+    ],
+    "client": [
+      "vn.svframe.svframemmo.cobblemon.client.SVFrameMMOCobblemonClient"
     ]
   },
   "mixins": [
