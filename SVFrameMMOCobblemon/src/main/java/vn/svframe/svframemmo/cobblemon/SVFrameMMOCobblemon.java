@@ -25,7 +25,6 @@ import vn.svframe.svframemmo.cobblemon.fusion.FusionNetworkGuards;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionService;
 import vn.svframe.svframemmo.cobblemon.fusion.PotaraCommands;
 import vn.svframe.svframemmo.cobblemon.fusion.PotaraUseHandler;
-import vn.svframe.svframemmo.cobblemon.fusion.render.FusionMorphNetworking;
 import vn.svframe.svframemmo.cobblemon.integration.CobblemonMoveVfxService;
 import vn.svframe.svframemmo.cobblemon.integration.LuckPermsIntegration;
 import vn.svframe.svframemmo.cobblemon.integration.PlaceholderIntegration;
@@ -49,7 +48,6 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
     private static final PokemonSkillShopService POKEMON_SKILLS = new PokemonSkillShopService();
 
     @Override public void onInitialize() {
-        FusionMorphNetworking.register();
         try { config = IntegrationConfig.load(); }
         catch (Exception error) { throw new IllegalStateException("Could not load SVFrameMMO Cobblemon integration config", error); }
 
@@ -118,7 +116,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
                 COSMETICS.onDisconnect(handler.player);
             });
         });
-        LOG.info("Cobblemon Integration online; fusionVisual=client-renderer-replacement/native-1.21.1, provider=cobblemon, providerMoves={}, registeredSkills={}, maxSkillLevel={}, specificMoveVfx={}, genericMoveVfx={}, cosmetics={}, PokemonSkillShop={}/{}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
+        LOG.info("Cobblemon Integration online; fusionVisual=server-packet-disguise/native-1.21.1, provider=cobblemon, providerMoves={}, registeredSkills={}, maxSkillLevel={}, specificMoveVfx={}, genericMoveVfx={}, cosmetics={}, PokemonSkillShop={}/{}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
                 CobblemonMoveSkillAdapter.providerSize(),
                 SVFrameMMO.externalSkills().getByOwner(CobblemonMoveSkillAdapter.REGISTRY_OWNER).size(),
                 config.pokemonSkills.maxLevel,

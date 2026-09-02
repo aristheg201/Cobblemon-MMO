@@ -40,32 +40,64 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ROOT=SVFrameMMOCobblemon
-          ! grep -RIn --binary-files=without-match -Ei 'svframeitems|fusion_tier' "$ROOT/src" "$ROOT/build.gradle"
-          ! grep -RIn --binary-files=without-match -Ei 'pocketmorph|com\.pixelpitstop|j3wTk6KL' "$ROOT/src" "$ROOT/build.gradle"
-          ! grep -RIn --binary-files=without-match -Ei 'xyz\.nucleoid\.disguiselib|disguiselib-fabric' "$ROOT/src" "$ROOT/build.gradle"
-          grep -q '"client"' "$ROOT/src/main/resources/fabric.mod.json"
-          grep -q 'SVFrameMMOCobblemonClient' "$ROOT/src/main/resources/fabric.mod.json"
-          grep -q 'client.PlayerEntityRendererMixin' "$ROOT/src/main/resources/svframemmo_cobblemon.mixins.json"
-          grep -q '@Mixin(PlayerEntityRenderer.class)' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/client/PlayerEntityRendererMixin.java"
-          grep -q 'ClientFusionMorphState.renderable' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/client/PlayerEntityRendererMixin.java"
-          grep -q 'PokemonPropertyExtractor.TRANSFORM' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java"
-          grep -q 'FusionMorphNetworking.broadcast' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java"
-          grep -q 'ServerPlayNetworking.canSend(subject, FusionMorphPayload.ID)' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/FusionMorphNetworking.java"
-          grep -q 'PokemonEntity.getMOVING()' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/ClientFusionMorphState.java"
-          grep -q 'PokemonEntity.getPOSE_TYPE()' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/ClientFusionMorphState.java"
-          grep -q 'setEnablePoseTypeRecalculation(false)' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/ClientFusionMorphState.java"
-          grep -q 'PoseType.WALK' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/ClientFusionMorphState.java"
-          grep -q 'PoseType.SWIM' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/ClientFusionMorphState.java"
-          grep -q 'PoseType.FLY' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/ClientFusionMorphState.java"
-          grep -q 'PoseType.GLIDE' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/ClientFusionMorphState.java"
-          test ! -e "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/ServerCommonNetworkHandlerMixin.java"
-          test ! -e "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/FusionRawPacketSender.java"
-          ! grep -RIn --binary-files=without-match -E 'SELF_VIEW_ENTITY_BASE|selfFlagsPacket|FLAG_INVISIBLE|SpawnPokemonPacket|forceInvisible' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion"
-          grep -q 'FusionNetworkGuards.register(FUSIONS)' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/SVFrameMMOCobblemon.java"
-          grep -q 'CobblemonMoveConfigGenerator.regenerate' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/SVFrameMMOCobblemon.java"
-          grep -q 'source: cobblemon:<move>' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/integration/CobblemonSkillSourceEntrypoint.java"
-          grep -q 'MegaShowdownEffects.playPotaraFusionStart' "$ROOT/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/PotaraUseHandler.java"
+          ! grep -RIn --binary-files=without-match -Ei 'svframeitems|fusion_tier' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
+          ! grep -RIn --binary-files=without-match -Ei 'pocketmorph|com\.pixelpitstop|j3wTk6KL' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
+          ! grep -RIn --binary-files=without-match -Ei 'xyz\.nucleoid\.disguiselib|disguiselib-fabric' SVFrameMMOCobblemon/src SVFrameMMOCobblemon/build.gradle
+          grep -q 'maven.modrinth:SszvX85I:ch7DfnXP' SVFrameMMOCobblemon/build.gradle
+          grep -q 'svframemmo-skill-source' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
+          grep -q 'svframemmo_cobblemon.mixins.json' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
+          grep -q 'ServerCommonNetworkHandlerMixin' SVFrameMMOCobblemon/src/main/resources/svframemmo_cobblemon.mixins.json
+          grep -q '@Mixin(ServerCommonNetworkHandler.class)' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/ServerCommonNetworkHandlerMixin.java
+          grep -q 'FusionVisualBridge.rewriteOutgoing' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/ServerCommonNetworkHandlerMixin.java
+          grep -q 'connection.send(packet)' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/ServerCommonNetworkHandlerMixin.java
+          grep -q 'PlayerLookup.tracking(player)' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
+          grep -q 'new EntitySpawnS2CPacket' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
+          grep -q 'state.visual.getId()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
+          grep -q 'forceInvisible' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
+          grep -q 'properties.createEntity(player.getServerWorld())' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
+          test ! -e SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/client/SVFrameMMOCobblemonClient.java
+          test ! -e SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/mixin/client/PlayerEntityRendererMixin.java
+          test ! -e SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/ClientFusionMorphState.java
+          test ! -e SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/FusionMorphNetworking.java
+          test ! -e SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/render/FusionMorphPayload.java
+          test ! -e SVFrameMMOCobblemon/src/main/resources/svframemmo_cobblemon.client.mixins.json
+          ! grep -RIn --binary-files=without-match -E 'FusionMorphPayload|FusionMorphNetworking|ClientFusionMorphState|PlayerEntityRendererMixin' SVFrameMMOCobblemon/src
+          grep -q 'FusionNetworkGuards.register(FUSIONS)' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/SVFrameMMOCobblemon.java
+          grep -q 'unregisterGlobalReceiver' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionNetworkGuards.java
+          grep -q 'move_party_pokemon_to_pc' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionNetworkGuards.java
+          grep -q 'swap_pc_party_pokemon' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionNetworkGuards.java
+          grep -q 'pasture_pokemon' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionNetworkGuards.java
+          grep -q 'SkillHandlerSource' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
+          grep -q 'SOURCE_KEY = "cobblemon"' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
+          grep -q 'Moves.all()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
+          grep -q 'Moves.INSTANCE.getObservable()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/SVFrameMMOCobblemon.java
+          grep -q 'CobblemonMoveConfigGenerator.regenerate' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/SVFrameMMOCobblemon.java
+          grep -q 'generated-moves' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveConfigGenerator.java
+          grep -q 'COBBLEMON_CATEGORY_' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
+          grep -q 'COBBLEMON_EXECUTOR_' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
+          grep -q 'MOLANG_SOUND' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/CobblemonActionEffectParser.java
+          grep -q 'MOLANG_PARTICLE' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/CobblemonActionEffectParser.java
+          grep -q 'genericProfiles' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/CobblemonMoveVfxService.java
+          grep -q 'cobblemon:hit' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/CobblemonMoveVfxService.java
+          grep -q 'SVFrameMMO.externalSkills().replace' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
+          grep -q 'PlayerSkillCatalog.bindings' SVFrameMMO/src/main/java/vn/svframe/svframemmo/skill/runtime/SkillBarRuntime.java
+          grep -q 'class SkillListGui' SVFrameMMO/src/main/java/vn/svframe/svframemmo/skill/gui/SkillListGui.java
+          test ! -e SVFrameMMO/src/main/java/vn/svframe/svframemmo/skill/gui/ExternalSkillGui.java
+          grep -q 'source: cobblemon:<move>' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/CobblemonSkillSourceEntrypoint.java
+          grep -q 'SVFrameMMO.reload()' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/SVFrameMMOCobblemon.java
+          grep -q 'custom-model-data' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
+          grep -q 'DataComponentTypes.CUSTOM_MODEL_DATA' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/item/PotaraTierResolver.java
+          grep -q 'slot > 4' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/move/CobblemonMoveSkillAdapter.java
+          grep -q 'MegaShowdownEffects.playPotaraFusionStart' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/PotaraUseHandler.java
+          grep -q 'PENDING_FUSIONS' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/PotaraUseHandler.java
+          grep -q 'delayedActions().schedule' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/PotaraUseHandler.java
+          grep -q 'Effect.getEffect' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
+          grep -q 'effect.applyEffects' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
+          grep -q 'apply_after' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
+          grep -q 'animation.applyDelay' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/MegaShowdownEffects.java
+          grep -q 'UnvalidatedPlaySoundS2CPacket' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/CobblemonMoveVfxService.java
+          grep -q 'kyurem_black' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
+          grep -q 'kyurem_white' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
       - name: Build SVFrameLib
         run: cd SVFrameLib && gradle --no-daemon clean test remapJar
       - name: Build SVFrameMMO
@@ -87,43 +119,66 @@ jobs:
           SERVER="$ROOT/build/production-server"
           rm -rf "$SERVER"
           mkdir -p "$SERVER/mods" "$SERVER/extra-libs"
+
           for jar in "$ROOT"/build/production-runtime-deps/*.jar; do
-            if unzip -Z1 "$jar" | grep -qx 'fabric.mod.json'; then cp "$jar" "$SERVER/mods/"; else cp "$jar" "$SERVER/extra-libs/"; fi
+            if unzip -Z1 "$jar" | grep -qx 'fabric.mod.json'; then
+              cp "$jar" "$SERVER/mods/"
+            else
+              cp "$jar" "$SERVER/extra-libs/"
+            fi
           done
+
           cp "$ROOT/../SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar" "$SERVER/mods/"
           cp "$ROOT/../SVFrameMMO/build/libs/SVFrameMMO-1.13.1-fabric.jar" "$SERVER/mods/"
           integration_jar=$(find "$ROOT/build/libs" -maxdepth 1 -type f -name 'SVFrameMMO-Cobblemon-Integration-*.jar' ! -name '*sources*' | head -n 1)
           test -n "$integration_jar"
           cp "$integration_jar" "$SERVER/mods/"
+
           curl -fsSL 'https://maven.fabricmc.net/net/fabricmc/fabric-installer/1.0.3/fabric-installer-1.0.3.jar' -o "$SERVER/fabric-installer.jar"
           cd "$SERVER"
           java -jar fabric-installer.jar server -mcversion 1.21.1 -loader 0.18.4 -downloadMinecraft
           printf 'eula=true\n' > eula.txt
           printf 'online-mode=false\nserver-port=25565\n' > server.properties
+
           java -Xms512M -Xmx2G -cp 'extra-libs/*:fabric-server-launch.jar' net.fabricmc.loader.impl.launch.server.FabricServerLauncher nogui > "$ROOT/build/integration-server.log" 2>&1 &
           server_pid=$!
           ready=0
           for _ in $(seq 1 150); do
-            if grep -q 'Done (' "$ROOT/build/integration-server.log"; then ready=1; break; fi
-            if ! kill -0 "$server_pid" 2>/dev/null; then break; fi
+            if grep -q 'Done (' "$ROOT/build/integration-server.log"; then
+              ready=1
+              break
+            fi
+            if ! kill -0 "$server_pid" 2>/dev/null; then
+              break
+            fi
             sleep 1
           done
           kill -TERM "$server_pid" 2>/dev/null || true
-          set +e; wait "$server_pid"; status=$?; set -e
+          set +e
+          wait "$server_pid"
+          status=$?
+          set -e
           cat "$ROOT/build/integration-server.log"
-          if [ "$ready" -ne 1 ]; then echo "Production server did not reach Done (exit=$status)" >&2; exit 1; fi
+          if [ "$ready" -ne 1 ]; then
+            echo "Production server did not reach the Done state (exit=$status)" >&2
+            exit 1
+          fi
           grep -q 'Loading Minecraft 1.21.1 with Fabric Loader' "$ROOT/build/integration-server.log"
           grep -q 'SVFrameMMO Fabric online;' "$ROOT/build/integration-server.log"
           grep -Eq 'Cobblemon move provider synchronized; providerMoves=[1-9][0-9]*, registeredSkills=[1-9][0-9]*, generatedConfigs=[1-9][0-9]*' "$ROOT/build/integration-server.log"
-          grep -q 'fusionVisual=client-renderer-replacement/native-1.21.1' "$ROOT/build/integration-server.log"
+          grep -q 'provider=cobblemon' "$ROOT/build/integration-server.log"
+          grep -q 'fusionVisual=server-packet-disguise/native-1.21.1' "$ROOT/build/integration-server.log"
           grep -q 'Fusion storage network guards installed' "$ROOT/build/integration-server.log"
+          grep -q 'Staged 4 Snowstorm asset(s) / 3 particle id(s)' "$ROOT/build/integration-server.log"
           grep -q 'Done (' "$ROOT/build/integration-server.log"
           generated_dir="$SERVER/config/SVFrameMMOCobblemon/generated-moves"
           test -f "$generated_dir/_manifest.json"
           generated_count=$(find "$generated_dir" -maxdepth 1 -type f -name '*.json' ! -name '_manifest.json' | wc -l)
           test "$generated_count" -gt 900
+          grep -q '"provider": "cobblemon"' "$generated_dir/_manifest.json"
           ! grep -qi 'pocketmorph' "$ROOT/build/integration-server.log"
           ! grep -qi 'disguiselib' "$ROOT/build/integration-server.log"
+          ! grep -q 'Could not execute entrypoint stage' "$ROOT/build/integration-server.log"
           ! grep -Eq 'MixinTargetAlreadyLoadedException|MixinApplyError|InvalidMixinException|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError|Exception in server tick loop|ProviderMismatchException' "$ROOT/build/integration-server.log"
       - name: Upload validated artifact
         uses: actions/upload-artifact@v4
