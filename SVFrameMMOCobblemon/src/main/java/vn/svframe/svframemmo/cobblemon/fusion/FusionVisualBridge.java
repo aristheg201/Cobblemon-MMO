@@ -3,6 +3,7 @@ package vn.svframe.svframemmo.cobblemon.fusion;
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import com.cobblemon.mod.common.net.messages.client.spawn.SpawnPokemonPacket;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
@@ -12,6 +13,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -24,6 +26,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 import vn.svframe.svframemmo.cobblemon.fusion.render.FusionRawPacketSender;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -37,11 +40,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * Native server-side packet disguise for Fusion.
  *
  * The authoritative entity remains ServerPlayerEntity. The PokemonEntity kept here is only a packet/template entity:
- * it is never added to ServerWorld. Other clients receive the Pokemon type under the real player's entity id, while
- * the fused player receives a separate packet-only self-view Pokemon entity and a client-only invisibility flag for
- * their real player model. Server gameplay, hit registration, inventory, permissions and skills stay on the player.
+ * it is never added to ServerWorld. Other clients receive a real Cobblemon SpawnPokemonPacket under the player's
+ * entity id, while the fused player receives a separate packet-only self-view Pokemon entity and a client-only
+ * invisibility flag for their real player model. Server gameplay, hit registration, inventory, permissions and
+ * skills stay on the player.
  */
 public final class FusionVisualBridge {
+    private static final int SELF_VIEW_ENTITY_BASE = 1_000_000_000;
     private static final int ENTITY_FLAGS_TRACKER_ID = 0;
     private static final byte FLAG_ON_FIRE = 1 << 0;
     private static final byte FLAG_SNEAKING = 1 << 1;
@@ -132,8 +137,6 @@ public final class FusionVisualBridge {
                 raw(player, new EntitySetHeadYawS2CPacket(state.visual, angle(player.getHeadYaw())));
                 raw(player, new EntityVelocityUpdateS2CPacket(state.visual.getId(), player.getVelocity()));
 
-                // Keep the local real player hidden without mutating ServerPlayerEntity invisibility state, and keep
-                // the packet-only Pokemon's changing base flags/pose data current for F5/self-view.
                 if ((player.age & 3) == 0) {
                     sendVisualMetadata(player, state.visual, state.visual.getId());
                     raw(player, selfFlagsPacket(player, true));
@@ -180,7 +183,7 @@ public final class FusionVisualBridge {
                 if (state != null) {
                     if (subject.getUuid().equals(viewer.getUuid())) return true;
                     syncVisualState(subject, state.visual);
-                    raw(viewer, disguiseSpawn(subject, state.visual, subject.getId(), subject.getUuid()));
+                    raw(viewer, pokemonSpawn(subject, state.visual, subject.getId(), subject.getUuid()));
                     sendVisualMetadata(viewer, state.visual, subject.getId());
                     raw(viewer, new EntitySetHeadYawS2CPacket(subject, angle(subject.getHeadYaw())));
                     return true;
@@ -212,7 +215,7 @@ public final class FusionVisualBridge {
         for (ServerPlayerEntity viewer : PlayerLookup.tracking(player)) {
             if (viewer.getUuid().equals(player.getUuid()) || !viewer.networkHandler.isConnectionOpen()) continue;
             raw(viewer, new EntitiesDestroyS2CPacket(player.getId()));
-            raw(viewer, disguiseSpawn(player, state.visual, player.getId(), player.getUuid()));
+            raw(viewer, pokemonSpawn(player, state.visual, player.getId(), player.getUuid()));
             sendVisualMetadata(viewer, state.visual, player.getId());
             raw(viewer, new EntitySetHeadYawS2CPacket(player, angle(player.getHeadYaw())));
         }
@@ -221,7 +224,7 @@ public final class FusionVisualBridge {
     private void spawnSelfView(ServerPlayerEntity player, State state) {
         syncVisualState(player, state.visual);
         raw(player, new EntitiesDestroyS2CPacket(state.visual.getId()));
-        raw(player, disguiseSpawn(player, state.visual, state.visual.getId(), state.visual.getUuid()));
+        raw(player, pokemonSpawn(player, state.visual, state.visual.getId(), state.visual.getUuid()));
         sendVisualMetadata(player, state.visual, state.visual.getId());
         raw(player, new EntitySetHeadYawS2CPacket(state.visual, angle(player.getHeadYaw())));
         raw(player, new EntityVelocityUpdateS2CPacket(state.visual.getId(), player.getVelocity()));
@@ -245,10 +248,16 @@ public final class FusionVisualBridge {
         }
     }
 
-    private static EntitySpawnS2CPacket disguiseSpawn(ServerPlayerEntity player, PokemonEntity visual, int entityId, UUID uuid) {
-        return new EntitySpawnS2CPacket(
+    /**
+     * Cobblemon PokemonEntity has a custom spawn protocol. A vanilla EntitySpawnS2CPacket carrying the pokemon
+     * EntityType is insufficient because the client would never receive species/form/aspects/model data. The vanilla
+     * packet is therefore only the nested base spawn packet inside Cobblemon's SpawnPokemonPacket.
+     */
+    private static CustomPayloadS2CPacket pokemonSpawn(ServerPlayerEntity player, PokemonEntity visual,
+                                                       int entityId, UUID entityUuid) {
+        EntitySpawnS2CPacket vanilla = new EntitySpawnS2CPacket(
                 entityId,
-                uuid,
+                entityUuid,
                 player.getX(), player.getY(), player.getZ(),
                 player.getPitch(), player.getYaw(),
                 visual.getType(),
@@ -256,6 +265,7 @@ public final class FusionVisualBridge {
                 player.getVelocity(),
                 player.getHeadYaw()
         );
+        return new CustomPayloadS2CPacket(new SpawnPokemonPacket(visual, vanilla));
     }
 
     private static EntitySpawnS2CPacket realPlayerSpawn(ServerPlayerEntity player) {
@@ -331,6 +341,17 @@ public final class FusionVisualBridge {
         return (byte) ((int) (degrees * 256.0F / 360.0F));
     }
 
+    private static int selfViewEntityId(int playerEntityId) {
+        if (playerEntityId < 0 || playerEntityId > Integer.MAX_VALUE - SELF_VIEW_ENTITY_BASE)
+            throw new IllegalStateException("Player entity id cannot be mapped to a Fusion self-view id: " + playerEntityId);
+        return SELF_VIEW_ENTITY_BASE + playerEntityId;
+    }
+
+    private static UUID selfViewEntityUuid(UUID playerUuid) {
+        return UUID.nameUUIDFromBytes(("svframemmo_cobblemon:fusion-self:" + playerUuid)
+                .getBytes(StandardCharsets.UTF_8));
+    }
+
     private static void syncVisualState(ServerPlayerEntity player, PokemonEntity visual) {
         visual.refreshPositionAndAngles(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
         visual.setVelocity(player.getVelocity());
@@ -364,6 +385,8 @@ public final class FusionVisualBridge {
         if (visual == null)
             throw new IllegalStateException("Cobblemon could not create fusion disguise entity for "
                     + pokemon.getSpecies().getResourceIdentifier());
+        visual.setId(selfViewEntityId(player.getId()));
+        visual.setUuid(selfViewEntityUuid(player.getUuid()));
         visual.hideNameRendering();
         visual.setNoGravity(true);
         syncVisualState(player, visual);
