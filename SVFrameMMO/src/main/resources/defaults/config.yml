@@ -35,8 +35,9 @@ can-creative-cast: false
 # ---------------------------------------------------------------------------
 # Always-visible HUD
 # ---------------------------------------------------------------------------
-# max-vanilla-health is the REAL MAX_HEALTH cap, not only display text.
-# 40 HP = 20 hearts = at most two vanilla heart rows.
+# max-vanilla-health is a VISUAL-ONLY cap for vanilla heart rendering.
+# Authoritative MAX_HEALTH/current health remain uncapped; the numeric HUD shows real values.
+# 40 visible HP = 20 hearts = at most two vanilla heart rows.
 action-bar:
   enabled: true
   always-visible: true

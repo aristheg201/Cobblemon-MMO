@@ -48,6 +48,7 @@ public final class DefaultFiles {
             }
         }
         migrateLegacyHealthCap();
+        migrateLegacyHealthHudComment();
     }
 
     /** Removes only the exact 20/0/40 MAX_HEALTH block shipped by the broken Fabric port. */
@@ -58,10 +59,28 @@ public final class DefaultFiles {
         String legacy = "    MAX_HEALTH:\n        base: 20\n        per-level: 0\n        max: 40\n";
         if (!text.contains(legacy)) return;
         String migrated = text.replace(legacy, "    MAX_HEALTH:\n        base: 20\n        per-level: 0\n");
-        Path temporary = Files.createTempFile(stats.getParent(), "stats.yml", ".migration.tmp");
+        writeReplacing(stats, migrated, "stats.yml");
+    }
+
+    /** Rewrites only the obsolete comment which incorrectly described the HUD cap as authoritative. */
+    private static void migrateLegacyHealthHudComment() throws IOException {
+        Path config = ROOT.resolve("config.yml");
+        if (!Files.isRegularFile(config)) return;
+        String text = Files.readString(config, StandardCharsets.UTF_8);
+        String legacy = "# max-vanilla-health is the REAL MAX_HEALTH cap, not only display text.\n"
+                + "# 40 HP = 20 hearts = at most two vanilla heart rows.\n";
+        if (!text.contains(legacy)) return;
+        String replacement = "# max-vanilla-health is a VISUAL-ONLY cap for vanilla heart rendering.\n"
+                + "# Authoritative MAX_HEALTH/current health remain uncapped; the numeric HUD shows real values.\n"
+                + "# 40 visible HP = 20 hearts = at most two vanilla heart rows.\n";
+        writeReplacing(config, text.replace(legacy, replacement), "config.yml");
+    }
+
+    private static void writeReplacing(Path target, String content, String prefix) throws IOException {
+        Path temporary = Files.createTempFile(target.getParent(), prefix, ".migration.tmp");
         try {
-            Files.writeString(temporary, migrated, StandardCharsets.UTF_8);
-            moveReplacing(temporary, stats);
+            Files.writeString(temporary, content, StandardCharsets.UTF_8);
+            moveReplacing(temporary, target);
         } finally { Files.deleteIfExists(temporary); }
     }
 
