@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vn.svframe.svframelib.api.event.skill.PlayerCastSkillEvent;
@@ -23,6 +24,7 @@ import vn.svframe.svframemmo.cobblemon.fusion.FusionCommands;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionLockHooks;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionNetworkGuards;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionService;
+import vn.svframe.svframemmo.cobblemon.fusion.FusionVisualBridge;
 import vn.svframe.svframemmo.cobblemon.fusion.PotaraCommands;
 import vn.svframe.svframemmo.cobblemon.fusion.PotaraUseHandler;
 import vn.svframe.svframemmo.cobblemon.integration.CobblemonMoveVfxService;
@@ -74,8 +76,10 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         PlayerCastSkillEvent.EVENT.register(event -> {
             COSMETICS.onSkillStart(event);
             if (!event.isCancelled() && event.getResult() != null && event.getResult().isSuccessful(event.getMetadata())
-                    && event.getCast().getHandler() instanceof CobblemonMoveSkill move)
+                    && event.getCast().getHandler() instanceof CobblemonMoveSkill move) {
                 MOVE_VFX.renderActor(event.getPlayer(), move.template());
+                FusionVisualBridge.playMoveAnimation(event.getPlayer(), move.template());
+            }
         });
         SkillCastEvent.EVENT.register(COSMETICS::onSkillSuccess);
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
@@ -85,6 +89,15 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             CosmeticCommands.register(dispatcher, COSMETICS);
         });
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !FUSIONS.blocksDamage(entity));
+        ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
+            if (blocked || damageTaken <= 0.0F) return;
+            if (source.getAttacker() instanceof ServerPlayerEntity attacker && source.getSource() == attacker)
+                FusionVisualBridge.playSuccessfulBasicAttack(attacker);
+        });
+        ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
+            if (source.getAttacker() instanceof ServerPlayerEntity attacker && source.getSource() == attacker)
+                FusionVisualBridge.playSuccessfulBasicAttack(attacker);
+        });
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             FusionNetworkGuards.register(FUSIONS);
             try {
@@ -116,7 +129,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
                 COSMETICS.onDisconnect(handler.player);
             });
         });
-        LOG.info("Cobblemon Integration online; fusionVisual=server-packet-disguise/native-1.21.1, provider=cobblemon, providerMoves={}, registeredSkills={}, maxSkillLevel={}, specificMoveVfx={}, genericMoveVfx={}, cosmetics={}, PokemonSkillShop={}/{}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
+        LOG.info("Cobblemon Integration online; fusionVisual=server-packet-stand/native-1.21.1, provider=cobblemon, providerMoves={}, registeredSkills={}, maxSkillLevel={}, specificMoveVfx={}, genericMoveVfx={}, cosmetics={}, PokemonSkillShop={}/{}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
                 CobblemonMoveSkillAdapter.providerSize(),
                 SVFrameMMO.externalSkills().getByOwner(CobblemonMoveSkillAdapter.REGISTRY_OWNER).size(),
                 config.pokemonSkills.maxLevel,
