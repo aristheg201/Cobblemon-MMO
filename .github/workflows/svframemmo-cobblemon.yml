@@ -102,6 +102,10 @@ jobs:
           grep -q 'UnvalidatedPlaySoundS2CPacket' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/integration/CobblemonMoveVfxService.java
           grep -q 'kyurem_black' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
           grep -q 'kyurem_white' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/config/IntegrationConfig.java
+          test "$(find SVFrameMMOCobblemon/examples/cosmetics/starter-pack-v1 -maxdepth 1 -type f -name '*.yml' | wc -l)" -eq 12
+          ! grep -RIn --binary-files=without-match -E '^skill:' SVFrameMMOCobblemon/examples/cosmetics/starter-pack-v1
+          grep -q '^slot: BACK$' SVFrameMMOCobblemon/examples/cosmetics/starter-pack-v1/back_anh_trao.yml
+          grep -q '^    - repetitions:' SVFrameMMOCobblemon/examples/cosmetics/starter-pack-v1/back_anh_trao.yml
       - name: Build SVFrameLib
         run: cd SVFrameLib && gradle --no-daemon clean test remapJar
       - name: Build SVFrameMMO
@@ -137,6 +141,10 @@ jobs:
           integration_jar=$(find "$ROOT/build/libs" -maxdepth 1 -type f -name 'SVFrameMMO-Cobblemon-Integration-*.jar' ! -name '*sources*' | head -n 1)
           test -n "$integration_jar"
           cp "$integration_jar" "$SERVER/mods/"
+
+          mkdir -p "$SERVER/config/SVFrameMMOCobblemon/cosmetics"
+          cp "$ROOT/examples/cosmetics/starter-pack-v1/"*.yml "$SERVER/config/SVFrameMMOCobblemon/cosmetics/"
+          test "$(find "$SERVER/config/SVFrameMMOCobblemon/cosmetics" -maxdepth 1 -type f -name '*.yml' | wc -l)" -eq 12
 
           curl -fsSL 'https://maven.fabricmc.net/net/fabricmc/fabric-installer/1.0.3/fabric-installer-1.0.3.jar' -o "$SERVER/fabric-installer.jar"
           cd "$SERVER"
@@ -175,6 +183,7 @@ jobs:
           grep -q 'fusionVisual=server-packet-stand/native-1.21.1' "$ROOT/build/integration-server.log"
           grep -q 'Fusion storage network guards installed' "$ROOT/build/integration-server.log"
           grep -q 'Staged 4 Snowstorm asset(s) / 3 particle id(s)' "$ROOT/build/integration-server.log"
+          grep -q 'Loaded 12 player cosmetic definition(s)' "$ROOT/build/integration-server.log"
           grep -q 'Done (' "$ROOT/build/integration-server.log"
           generated_dir="$SERVER/config/SVFrameMMOCobblemon/generated-moves"
           test -f "$generated_dir/_manifest.json"
@@ -193,5 +202,6 @@ jobs:
             SVFrameMMOCobblemon/build/libs/SVFrameMMO-Cobblemon-Integration-*.jar
             !SVFrameMMOCobblemon/build/libs/*sources*.jar
             SVFrameMMOCobblemon/build/integration-server.log
+            SVFrameMMOCobblemon/examples/cosmetics/starter-pack-v1/**
           if-no-files-found: error
           retention-days: 14

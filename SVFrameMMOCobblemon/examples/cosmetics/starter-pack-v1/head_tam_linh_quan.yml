@@ -1,0 +1,45 @@
+id: head_tam_linh_quan
+slot: HEAD
+name: "Tâm Linh Quan"
+particle: cobblemon:confusion_actorglint
+permission: svframemmo.cobblemon.cosmetic
+phases:
+  PREVIEW:
+    - repetitions: 5
+      interval-ticks: 4
+      anchor: HEAD
+      offset-x: -0.28
+      offset-y: 0.16
+      broadcast-radius: 24
+      max-viewers: 32
+    - repetitions: 5
+      interval-ticks: 4
+      anchor: HEAD
+      offset-y: 0.24
+      broadcast-radius: 24
+      max-viewers: 32
+    - repetitions: 5
+      interval-ticks: 4
+      anchor: HEAD
+      offset-x: 0.28
+      offset-y: 0.16
+      broadcast-radius: 24
+      max-viewers: 32
+  WHILE_EQUIPPED:
+    - interval-ticks: 12
+      anchor: HEAD
+      offset-x: -0.28
+      offset-y: 0.16
+      broadcast-radius: 24
+      max-viewers: 32
+    - interval-ticks: 12
+      anchor: HEAD
+      offset-y: 0.24
+      broadcast-radius: 24
+      max-viewers: 32
+    - interval-ticks: 12
+      anchor: HEAD
+      offset-x: 0.28
+      offset-y: 0.16
+      broadcast-radius: 24
+      max-viewers: 32

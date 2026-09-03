@@ -1,0 +1,18 @@
+id: trail_bang_tich
+slot: TRAIL
+name: "Băng Tích"
+particle: cobblemon:impact_ice
+permission: svframemmo.cobblemon.cosmetic
+phases:
+  PREVIEW:
+    repetitions: 4
+    interval-ticks: 5
+    anchor: FEET
+    broadcast-radius: 20
+    max-viewers: 24
+  WHILE_EQUIPPED:
+    interval-ticks: 4
+    anchor: FEET
+    movement-threshold: 0.90
+    broadcast-radius: 20
+    max-viewers: 24

@@ -1,0 +1,38 @@
+id: back_anh_trao
+slot: BACK
+name: "Ảnh Trảo"
+particle: cobblemon:shadowclaw_target
+permission: svframemmo.cobblemon.cosmetic
+phases:
+  PREVIEW:
+    - repetitions: 4
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: -0.48
+      offset-y: 0.08
+      offset-z: -0.30
+      broadcast-radius: 24
+      max-viewers: 32
+    - repetitions: 4
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.48
+      offset-y: 0.08
+      offset-z: -0.30
+      broadcast-radius: 24
+      max-viewers: 32
+  WHILE_EQUIPPED:
+    - interval-ticks: 12
+      anchor: BACK
+      offset-x: -0.48
+      offset-y: 0.08
+      offset-z: -0.30
+      broadcast-radius: 24
+      max-viewers: 32
+    - interval-ticks: 12
+      anchor: BACK
+      offset-x: 0.48
+      offset-y: 0.08
+      offset-z: -0.30
+      broadcast-radius: 24
+      max-viewers: 32

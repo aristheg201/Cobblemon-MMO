@@ -1,0 +1,23 @@
+id: aura_tinh_quang_ho_the
+slot: AURA
+name: "Tinh Quang Hộ Thể"
+particle: cobblemon:swordsdance_sparkle
+permission: svframemmo.cobblemon.cosmetic
+phases:
+  PREVIEW:
+    repetitions: 8
+    interval-ticks: 3
+    anchor: BODY
+    broadcast-radius: 24
+    max-viewers: 32
+  EQUIP_BURST:
+    repetitions: 4
+    interval-ticks: 2
+    anchor: BODY
+    broadcast-radius: 24
+    max-viewers: 32
+  WHILE_EQUIPPED:
+    interval-ticks: 6
+    anchor: BODY
+    broadcast-radius: 24
+    max-viewers: 32

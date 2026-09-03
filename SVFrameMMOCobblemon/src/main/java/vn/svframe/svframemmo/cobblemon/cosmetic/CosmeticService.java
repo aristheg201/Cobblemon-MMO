@@ -63,6 +63,33 @@ public final class CosmeticService {
         }
     }
 
+    /** Reloads YAML definitions and rebuilds all online ambient renderers without restarting the server. */
+    public int reloadAndRefresh() throws java.io.IOException {
+        reloadDefinitions();
+
+        boolean changed = false;
+        for (PlayerState state : states.values()) {
+            var iterator = state.equipped().entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<CosmeticDefinition.Slot, String> entry = iterator.next();
+                CosmeticDefinition definition = definition(entry.getValue());
+                if (definition == null || definition.slot() != entry.getKey()
+                        || !state.owned().contains(definition.id())) {
+                    iterator.remove();
+                    changed = true;
+                }
+            }
+        }
+        if (changed) dirty = true;
+
+        renderer.clear();
+        MinecraftServer current = server;
+        if (current != null) {
+            for (ServerPlayerEntity player : current.getPlayerManager().getPlayerList()) onJoin(player);
+        }
+        return size();
+    }
+
     public void start(MinecraftServer server) {
         this.server = server;
         this.saveFile = server.getSavePath(WorldSavePath.ROOT).resolve("svframemmo-cobblemon-cosmetics.json");
@@ -123,6 +150,16 @@ public final class CosmeticService {
         boolean changed = state(player).owned().add(definition.id());
         if (changed) dirty = true;
         return changed;
+    }
+
+    /** Admin/design helper: grants every currently loaded cosmetic definition. */
+    public int grantAll(UUID player) {
+        PlayerState state = state(player);
+        int before = state.owned().size();
+        for (CosmeticDefinition definition : definitions.values()) state.owned().add(definition.id());
+        int granted = state.owned().size() - before;
+        if (granted > 0) dirty = true;
+        return granted;
     }
 
     public boolean revoke(UUID player, String cosmeticId) {
@@ -294,41 +331,42 @@ public final class CosmeticService {
                 continue;
             }
 
-            Map<String, Object> phase = safeMap(entry.getValue());
-            int interval = Math.max(1, integer(phase.get("interval-ticks"), 20));
-            int repetitions = integer(phase.get("repetitions"), -1);
-            if (repetitions < 1) {
-                int duration = integer(phase.get("duration-ticks"), 0);
-                repetitions = duration > 0
-                        ? Math.max(1, Math.min(32, (duration + interval - 1) / interval))
-                        : 1;
-            }
-
-            CosmeticDefinition.Anchor anchor = slot.defaultAnchor();
-            String rawAnchor = string(phase, "anchor", "");
-            if (!rawAnchor.isBlank()) {
-                try {
-                    anchor = CosmeticDefinition.Anchor.valueOf(
-                            rawAnchor.toUpperCase(Locale.ROOT).replace('-', '_').replace(' ', '_'));
-                } catch (IllegalArgumentException error) {
-                    throw new java.io.IOException("Invalid cosmetic anchor '" + rawAnchor + "' in " + file, error);
+            for (Map<String, Object> phase : phaseLayers(entry.getValue())) {
+                int interval = Math.max(1, integer(phase.get("interval-ticks"), 20));
+                int repetitions = integer(phase.get("repetitions"), -1);
+                if (repetitions < 1) {
+                    int duration = integer(phase.get("duration-ticks"), 0);
+                    repetitions = duration > 0
+                            ? Math.max(1, Math.min(32, (duration + interval - 1) / interval))
+                            : 1;
                 }
-            }
 
-            phases.add(new CosmeticDefinition.Phase(
-                    trigger,
-                    anchor,
-                    integer(phase.get("delay-ticks"), 0),
-                    Math.min(32, repetitions),
-                    interval,
-                    decimal(phase.get("offset-x"), 0d),
-                    decimal(phase.get("offset-y"), 0d),
-                    decimal(phase.get("offset-z"), 0d),
-                    Math.min(64d, decimal(phase.get("broadcast-radius"), 32d)),
-                    Math.min(128, integer(phase.get("max-viewers"), 48)),
-                    decimal(phase.get("movement-threshold"), 0.35d),
-                    decimal(phase.get("orbit-radius"), 0.80d),
-                    integer(phase.get("orbit-period-ticks"), 40)));
+                CosmeticDefinition.Anchor anchor = slot.defaultAnchor();
+                String rawAnchor = string(phase, "anchor", "");
+                if (!rawAnchor.isBlank()) {
+                    try {
+                        anchor = CosmeticDefinition.Anchor.valueOf(
+                                rawAnchor.toUpperCase(Locale.ROOT).replace('-', '_').replace(' ', '_'));
+                    } catch (IllegalArgumentException error) {
+                        throw new java.io.IOException("Invalid cosmetic anchor '" + rawAnchor + "' in " + file, error);
+                    }
+                }
+
+                phases.add(new CosmeticDefinition.Phase(
+                        trigger,
+                        anchor,
+                        integer(phase.get("delay-ticks"), 0),
+                        Math.min(32, repetitions),
+                        interval,
+                        decimal(phase.get("offset-x"), 0d),
+                        decimal(phase.get("offset-y"), 0d),
+                        decimal(phase.get("offset-z"), 0d),
+                        Math.min(64d, decimal(phase.get("broadcast-radius"), 32d)),
+                        Math.min(128, integer(phase.get("max-viewers"), 48)),
+                        decimal(phase.get("movement-threshold"), 0.35d),
+                        decimal(phase.get("orbit-radius"), 0.80d),
+                        integer(phase.get("orbit-period-ticks"), 40)));
+            }
         }
 
         return new CosmeticDefinition(id, slot, name, particle, phases, fallback, hide, permission);
@@ -346,6 +384,20 @@ public final class CosmeticService {
             if (!particle.isBlank()) result.put(entry.getKey(), particle);
         }
         return Map.copyOf(result);
+    }
+
+    /** A trigger accepts either one phase map or a YAML list of phase maps. */
+    private static List<Map<String, Object>> phaseLayers(Object value) {
+        if (value == null) return List.of();
+        if (value instanceof List<?> list) {
+            ArrayList<Map<String, Object>> result = new ArrayList<>();
+            for (Object layer : list) {
+                if (layer instanceof Map<?, ?>) result.add(safeMap(layer));
+            }
+            return result;
+        }
+        if (value instanceof Map<?, ?>) return List.of(safeMap(value));
+        return List.of();
     }
 
     private static Map<String, Object> safeMap(Object value) {

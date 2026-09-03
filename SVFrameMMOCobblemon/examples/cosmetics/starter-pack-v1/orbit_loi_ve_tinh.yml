@@ -1,0 +1,23 @@
+id: orbit_loi_ve_tinh
+slot: ORBIT
+name: "Lôi Vệ Tinh"
+particle: cobblemon:thundershock_targetbolts
+permission: svframemmo.cobblemon.cosmetic
+phases:
+  PREVIEW:
+    repetitions: 12
+    interval-ticks: 2
+    anchor: ORBIT
+    offset-y: 0.10
+    orbit-radius: 0.90
+    orbit-period-ticks: 36
+    broadcast-radius: 24
+    max-viewers: 32
+  WHILE_EQUIPPED:
+    interval-ticks: 3
+    anchor: ORBIT
+    offset-y: 0.10
+    orbit-radius: 0.90
+    orbit-period-ticks: 36
+    broadcast-radius: 24
+    max-viewers: 32

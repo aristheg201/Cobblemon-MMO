@@ -1,0 +1,18 @@
+id: footstep_thiet_bo
+slot: FOOTSTEP
+name: "Thiết Bộ"
+particle: cobblemon:metal_sparks
+permission: svframemmo.cobblemon.cosmetic
+phases:
+  PREVIEW:
+    repetitions: 6
+    interval-ticks: 3
+    anchor: FEET
+    broadcast-radius: 20
+    max-viewers: 24
+  WHILE_EQUIPPED:
+    interval-ticks: 2
+    anchor: FEET
+    movement-threshold: 0.60
+    broadcast-radius: 20
+    max-viewers: 24

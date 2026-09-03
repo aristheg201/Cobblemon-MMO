@@ -1,0 +1,21 @@
+id: trail_tan_hoa
+slot: TRAIL
+name: "Tàn Hỏa"
+particle: cobblemon:fireblast_targetcinder
+permission: svframemmo.cobblemon.cosmetic
+phases:
+  PREVIEW:
+    repetitions: 6
+    interval-ticks: 3
+    anchor: FEET
+    offset-y: 0.05
+    broadcast-radius: 20
+    max-viewers: 24
+  WHILE_EQUIPPED:
+    interval-ticks: 2
+    anchor: FEET
+    offset-y: 0.05
+    offset-z: -0.10
+    movement-threshold: 0.45
+    broadcast-radius: 20
+    max-viewers: 24

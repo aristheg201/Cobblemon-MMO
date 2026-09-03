@@ -78,6 +78,28 @@ public final class CosmeticCommands {
                                                     .map(CosmeticDefinition.Slot::id).toList())), false);
                             return 1;
                         }))
+                .then(CommandManager.literal("reload").requires(source -> source.hasPermissionLevel(2))
+                        .executes(ctx -> {
+                            try {
+                                int loaded = cosmetics.reloadAndRefresh();
+                                ctx.getSource().sendFeedback(() -> Text.literal(
+                                        "Reloaded " + loaded + " cosmetic definition(s) and refreshed online players."), false);
+                                return Math.max(1, loaded);
+                            } catch (Exception error) {
+                                ctx.getSource().sendError(Text.literal(
+                                        "Cosmetic reload failed: " + String.valueOf(error.getMessage())));
+                                return 0;
+                            }
+                        }))
+                .then(CommandManager.literal("grantall").requires(source -> source.hasPermissionLevel(2))
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(ctx -> {
+                                    ServerPlayerEntity target = EntityArgumentType.getPlayer(ctx, "player");
+                                    int granted = cosmetics.grantAll(target.getUuid());
+                                    ctx.getSource().sendFeedback(() -> Text.literal(
+                                            "Granted " + granted + " new cosmetic(s) to " + target.getName().getString() + "."), false);
+                                    return Math.max(1, granted);
+                                })))
                 .then(CommandManager.literal("grant").requires(source -> source.hasPermissionLevel(2))
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .then(CommandManager.argument("id", StringArgumentType.word())

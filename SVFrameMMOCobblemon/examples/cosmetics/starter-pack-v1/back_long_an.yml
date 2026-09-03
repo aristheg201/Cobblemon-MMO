@@ -1,0 +1,38 @@
+id: back_long_an
+slot: BACK
+name: "Long Ấn"
+particle: cobblemon:dragonclaw_target
+permission: svframemmo.cobblemon.cosmetic
+phases:
+  PREVIEW:
+    - repetitions: 4
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: -0.42
+      offset-y: 0.10
+      offset-z: -0.28
+      broadcast-radius: 24
+      max-viewers: 32
+    - repetitions: 4
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.42
+      offset-y: 0.10
+      offset-z: -0.28
+      broadcast-radius: 24
+      max-viewers: 32
+  WHILE_EQUIPPED:
+    - interval-ticks: 14
+      anchor: BACK
+      offset-x: -0.42
+      offset-y: 0.10
+      offset-z: -0.28
+      broadcast-radius: 24
+      max-viewers: 32
+    - interval-ticks: 14
+      anchor: BACK
+      offset-x: 0.42
+      offset-y: 0.10
+      offset-z: -0.28
+      broadcast-radius: 24
+      max-viewers: 32

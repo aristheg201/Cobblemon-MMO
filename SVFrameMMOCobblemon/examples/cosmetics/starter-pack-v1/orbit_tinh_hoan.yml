@@ -1,0 +1,23 @@
+id: orbit_tinh_hoan
+slot: ORBIT
+name: "Tinh Hoàn"
+particle: cobblemon:swordsdance_sparkle
+permission: svframemmo.cobblemon.cosmetic
+phases:
+  PREVIEW:
+    repetitions: 10
+    interval-ticks: 3
+    anchor: ORBIT
+    offset-y: 0.22
+    orbit-radius: 1.05
+    orbit-period-ticks: 50
+    broadcast-radius: 24
+    max-viewers: 32
+  WHILE_EQUIPPED:
+    interval-ticks: 5
+    anchor: ORBIT
+    offset-y: 0.22
+    orbit-radius: 1.05
+    orbit-period-ticks: 50
+    broadcast-radius: 24
+    max-viewers: 32

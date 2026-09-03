@@ -1,0 +1,19 @@
+id: head_kim_nhan
+slot: HEAD
+name: "Kim Nhãn"
+particle: cobblemon:leer_gleam
+permission: svframemmo.cobblemon.cosmetic
+phases:
+  PREVIEW:
+    repetitions: 6
+    interval-ticks: 4
+    anchor: HEAD
+    offset-y: 0.03
+    broadcast-radius: 24
+    max-viewers: 32
+  WHILE_EQUIPPED:
+    interval-ticks: 10
+    anchor: HEAD
+    offset-y: 0.03
+    broadcast-radius: 24
+    max-viewers: 32
