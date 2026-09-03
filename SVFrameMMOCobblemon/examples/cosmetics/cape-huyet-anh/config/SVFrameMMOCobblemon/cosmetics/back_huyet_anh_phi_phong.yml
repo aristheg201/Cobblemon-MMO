@@ -1,0 +1,145 @@
+id: back_huyet_anh_phi_phong
+slot: BACK
+name: "Huyết Ảnh Phi Phong"
+particle: cobblemon_mmo:crimson_cloth
+permission: svframemmo.cobblemon.cosmetic
+hide-without-resource-pack: true
+
+phases:
+  PREVIEW:
+    - repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: -0.36
+      offset-y: 0.32
+      offset-z: -0.28
+      broadcast-radius: 24
+      max-viewers: 24
+    - repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: 0.32
+      offset-z: -0.30
+      broadcast-radius: 24
+      max-viewers: 24
+    - repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.36
+      offset-y: 0.32
+      offset-z: -0.28
+      broadcast-radius: 24
+      max-viewers: 24
+    - repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: -0.28
+      offset-y: -0.02
+      offset-z: -0.36
+      broadcast-radius: 24
+      max-viewers: 24
+    - repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.02
+      offset-z: -0.40
+      broadcast-radius: 24
+      max-viewers: 24
+    - repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.28
+      offset-y: -0.02
+      offset-z: -0.36
+      broadcast-radius: 24
+      max-viewers: 24
+    - repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: -0.18
+      offset-y: -0.34
+      offset-z: -0.46
+      broadcast-radius: 24
+      max-viewers: 24
+    - repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.18
+      offset-y: -0.34
+      offset-z: -0.46
+      broadcast-radius: 24
+      max-viewers: 24
+    - repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.62
+      offset-z: -0.56
+      broadcast-radius: 24
+      max-viewers: 24
+  WHILE_EQUIPPED:
+    - interval-ticks: 5
+      anchor: BACK
+      offset-x: -0.36
+      offset-y: 0.32
+      offset-z: -0.28
+      broadcast-radius: 24
+      max-viewers: 24
+    - interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: 0.32
+      offset-z: -0.30
+      broadcast-radius: 24
+      max-viewers: 24
+    - interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.36
+      offset-y: 0.32
+      offset-z: -0.28
+      broadcast-radius: 24
+      max-viewers: 24
+    - interval-ticks: 5
+      anchor: BACK
+      offset-x: -0.28
+      offset-y: -0.02
+      offset-z: -0.36
+      broadcast-radius: 24
+      max-viewers: 24
+    - interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.02
+      offset-z: -0.40
+      broadcast-radius: 24
+      max-viewers: 24
+    - interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.28
+      offset-y: -0.02
+      offset-z: -0.36
+      broadcast-radius: 24
+      max-viewers: 24
+    - interval-ticks: 5
+      anchor: BACK
+      offset-x: -0.18
+      offset-y: -0.34
+      offset-z: -0.46
+      broadcast-radius: 24
+      max-viewers: 24
+    - interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.18
+      offset-y: -0.34
+      offset-z: -0.46
+      broadcast-radius: 24
+      max-viewers: 24
+    - interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.62
+      offset-z: -0.56
+      broadcast-radius: 24
+      max-viewers: 24
