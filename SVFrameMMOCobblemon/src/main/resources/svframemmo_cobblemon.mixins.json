@@ -3,7 +3,8 @@
   "package": "vn.svframe.svframemmo.cobblemon.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ServerCommonNetworkHandlerMixin"
+    "ServerCommonNetworkHandlerMixin",
+    "SpawnPokemonPacketMixin"
   ],
   "injectors": {
     "defaultRequire": 1
