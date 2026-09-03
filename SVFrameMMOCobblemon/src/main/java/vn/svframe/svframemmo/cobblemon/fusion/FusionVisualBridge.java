@@ -21,6 +21,8 @@ import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
@@ -40,12 +42,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * Server-only Fusion Stand runtime.
  *
  * The authoritative ServerPlayerEntity is never replaced, hidden or modified. Fusion manifests the selected party
- * Pokemon as a second packet-only PokemonEntity hovering behind the player. The stand has no server-world presence,
- * AI, collision, hitbox, inventory or targetability; it is purely a Cobblemon client visual driven by server packets.
+ * Pokemon as a second packet-only PokemonEntity hovering behind the player. The Stand is not inserted into the
+ * authoritative world. A vanilla scoreboard team with collision rule NEVER is synchronized by the server so even
+ * unmodified clients exclude the packet-only Pokemon from their entity-push predicate.
  */
 public final class FusionVisualBridge {
     private static final int STAND_ENTITY_BASE = 1_000_000_000;
     private static final int VISUAL_REFRESH_INTERVAL = 20;
+    private static final String STAND_COLLISION_TEAM = "svfusionstand";
     private static final double BACK_OFFSET = 1.20D;
     private static final double SIDE_OFFSET = 0.65D;
     private static final double HEIGHT_OFFSET = 0.55D;
@@ -104,10 +108,12 @@ public final class FusionVisualBridge {
             throw new IllegalStateException("Fusion Stand already active for " + playerId);
 
         try {
+            registerCollisionlessStand(player.getServer(), visual);
             syncViewers(player, state, true);
         } catch (RuntimeException error) {
             states.remove(playerId, state);
             destroyForKnownViewers(player.getServer(), state);
+            unregisterCollisionlessStand(player.getServer(), visual);
             throw error;
         }
     }
@@ -152,8 +158,9 @@ public final class FusionVisualBridge {
     public void stop(ServerPlayerEntity player, UUID playerId) {
         State removed = states.remove(playerId);
         if (removed == null) return;
-        MinecraftServer server = player == null ? null : player.getServer();
+        MinecraftServer server = player == null ? removed.visual.getServer() : player.getServer();
         destroyForKnownViewers(server, removed);
+        unregisterCollisionlessStand(server, removed.visual);
     }
 
     private boolean observeOutgoing(ServerPlayerEntity viewer, Packet<?> packet) {
@@ -231,6 +238,7 @@ public final class FusionVisualBridge {
         state.worldKey = player.getServerWorld().getRegistryKey();
         state.frame = syncStandState(player, state.visual);
         state.viewers.clear();
+        registerCollisionlessStand(player.getServer(), state.visual);
         syncViewers(player, state, true);
     }
 
@@ -286,6 +294,29 @@ public final class FusionVisualBridge {
                 raw(viewer, new EntitiesDestroyS2CPacket(state.visual.getId()));
         }
         state.viewers.clear();
+    }
+
+    /**
+     * Vanilla client entity collision checks consult scoreboard collision rules for both participants. ServerScoreboard
+     * broadcasts team creation/rule/member changes as TeamS2CPacket, so this removes client-side push without requiring
+     * the Integration mod on the client. The holder key is the fake entity UUID, exactly what Entity uses for teams.
+     */
+    private static void registerCollisionlessStand(MinecraftServer server, PokemonEntity visual) {
+        if (server == null || visual == null) return;
+        var scoreboard = server.getScoreboard();
+        Team team = scoreboard.getTeam(STAND_COLLISION_TEAM);
+        if (team == null) team = scoreboard.addTeam(STAND_COLLISION_TEAM);
+        if (team.getCollisionRule() != AbstractTeam.CollisionRule.NEVER)
+            team.setCollisionRule(AbstractTeam.CollisionRule.NEVER);
+        scoreboard.addScoreHolderToTeam(visual.getNameForScoreboard(), team);
+    }
+
+    private static void unregisterCollisionlessStand(MinecraftServer server, PokemonEntity visual) {
+        if (server == null || visual == null) return;
+        var scoreboard = server.getScoreboard();
+        Team team = scoreboard.getTeam(STAND_COLLISION_TEAM);
+        if (team != null && team.getPlayerList().contains(visual.getNameForScoreboard()))
+            scoreboard.removeScoreHolderFromTeam(visual.getNameForScoreboard(), team);
     }
 
     /** Cobblemon's spawn payload supplies species/form/aspects/shiny/scale/pose around the nested vanilla transform. */
