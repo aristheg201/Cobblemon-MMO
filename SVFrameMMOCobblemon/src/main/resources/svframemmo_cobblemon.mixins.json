@@ -4,7 +4,9 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ServerCommonNetworkHandlerMixin",
-    "SpawnPokemonPacketMixin"
+    "SpawnPokemonPacketMixin",
+    "FusionStandPokemonEntityMixin",
+    "FusionStandEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
