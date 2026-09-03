@@ -124,7 +124,7 @@ public final class SVFrameMMO implements ModInitializer {
             PLAYER_DATA.start(server);
             CLASS_SELECTION.start(server, PLAYER_DATA.all());
             EXTERNAL_PROGRESSION.start(server);
-            for (var data : PLAYER_DATA.all()) if (data.isOnline()) { CLASS_TRIGGERS.onJoin(data); CLASS_SELECTION.onJoin(data); }
+            for (var data : PLAYER_DATA.online()) { CLASS_TRIGGERS.onJoin(data); CLASS_SELECTION.onJoin(data); }
             LOG.info("SVFrameMMO Fabric online; " + definitionSummary() + ",players=" + PLAYER_DATA.all().size());
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
@@ -133,9 +133,9 @@ public final class SVFrameMMO implements ModInitializer {
             NATIVE_EXPERIENCE.clear();
             CLASS_TRIGGERS.clear();
             CLASS_SELECTION.save();
-            PLAYER_DATA.save();
-            EXTERNAL_PROGRESSION.save();
-            for (var data : PLAYER_DATA.all()) SKILL_RUNTIME.detach(data);
+            for (var data : PLAYER_DATA.online()) SKILL_RUNTIME.detach(data);
+            PLAYER_DATA.close();
+            EXTERNAL_PROGRESSION.close();
             try { if (profileRegistration != null) profileRegistration.close(); }
             catch (Exception ignored) { }
         });
@@ -161,7 +161,7 @@ public final class SVFrameMMO implements ModInitializer {
             NATIVE_EXPERIENCE.tick(server, tick);
             SVFrameMMOConfig live = config;
             if (live.autosaveSeconds() > 0 && tick % (live.autosaveSeconds() * 20L) == 0) {
-                PLAYER_DATA.save();
+                PLAYER_DATA.saveOnline();
                 EXTERNAL_PROGRESSION.save();
             }
         });

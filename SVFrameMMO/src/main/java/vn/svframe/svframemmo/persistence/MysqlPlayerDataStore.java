@@ -57,6 +57,17 @@ public final class MysqlPlayerDataStore implements PlayerDataStore {
 
     @Override
     public void saveAll(Map<UUID, PlayerDataSnapshot> snapshots) throws Exception {
+        upsert(snapshots);
+    }
+
+    @Override
+    public void saveSome(Map<UUID, PlayerDataSnapshot> snapshots) throws Exception {
+        if (snapshots == null || snapshots.isEmpty()) return;
+        upsert(snapshots);
+    }
+
+    private void upsert(Map<UUID, PlayerDataSnapshot> snapshots) throws Exception {
+        if (snapshots == null || snapshots.isEmpty()) return;
         try (Connection connection = dataSource.getConnection()) {
             boolean auto = connection.getAutoCommit();
             connection.setAutoCommit(false);

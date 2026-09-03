@@ -17,37 +17,49 @@ import java.util.Set;
 
 /** Compiled runtime index for class and profession gameplay EXP sources. */
 public final class ExperienceSourceRuntime {
-    private volatile Map<String, List<ExperienceSourceDefinition>> classSources = Map.of();
-    private volatile Map<String, List<ExperienceSourceDefinition>> professionSources = Map.of();
+    /** class id -> signal type -> matching definitions */
+    private volatile Map<String, Map<String, List<ExperienceSourceDefinition>>> classSources = Map.of();
+    /** profession id -> signal type -> matching definitions */
+    private volatile Map<String, Map<String, List<ExperienceSourceDefinition>>> professionSources = Map.of();
+    /** signal type -> only professions which actually listen for that signal */
+    private volatile Map<String, List<ProfessionBucket>> professionsBySignal = Map.of();
 
     public synchronized void reload(ClassManager classes, ProfessionManager professions, Map<String, List<String>> shared) {
-        LinkedHashMap<String, List<ExperienceSourceDefinition>> nextClasses = new LinkedHashMap<>();
+        LinkedHashMap<String, Map<String, List<ExperienceSourceDefinition>>> nextClasses = new LinkedHashMap<>();
         for (PlayerClass playerClass : classes.getAll())
-            nextClasses.put(playerClass.getId(), compile(playerClass.getMainExperienceSources(), shared));
+            nextClasses.put(playerClass.getId(), compileIndexed(playerClass.getMainExperienceSources(), shared));
 
-        LinkedHashMap<String, List<ExperienceSourceDefinition>> nextProfessions = new LinkedHashMap<>();
-        for (Profession profession : professions.getAll())
-            nextProfessions.put(profession.getId(), compile(profession.getExperienceSources(), shared));
+        LinkedHashMap<String, Map<String, List<ExperienceSourceDefinition>>> nextProfessions = new LinkedHashMap<>();
+        LinkedHashMap<String, List<ProfessionBucket>> nextBySignal = new LinkedHashMap<>();
+        for (Profession profession : professions.getAll()) {
+            Map<String, List<ExperienceSourceDefinition>> indexed = compileIndexed(profession.getExperienceSources(), shared);
+            nextProfessions.put(profession.getId(), indexed);
+            indexed.forEach((type, definitions) -> nextBySignal.computeIfAbsent(type, ignored -> new ArrayList<>())
+                    .add(new ProfessionBucket(profession, definitions)));
+        }
 
-        classSources = immutable(nextClasses);
-        professionSources = immutable(nextProfessions);
+        classSources = immutableNested(nextClasses);
+        professionSources = immutableNested(nextProfessions);
+        professionsBySignal = immutableBuckets(nextBySignal);
     }
 
     public void accept(PlayerData data, ExperienceSignal signal) { accept(data, signal, null); }
 
     public void accept(PlayerData data, ExperienceSignal signal, ExperienceHologramRuntime.HologramLocation hologramLocation) {
         acceptClass(data, signal, hologramLocation);
-        if (data == null || signal == null || !data.isOnline() || signal.units() <= 0d) return;
-        for (Profession profession : SVFrameMMO.professions().getAll()) acceptProfession(data, profession, signal, hologramLocation);
+        if (!valid(data, signal)) return;
+        for (ProfessionBucket bucket : professionsBySignal.getOrDefault(signal.type(), List.of()))
+            applyProfession(data, bucket.profession(), bucket.definitions(), signal, hologramLocation);
     }
 
     /** Dispenses a gameplay signal only to the player's active class. */
     public void acceptClass(PlayerData data, ExperienceSignal signal) { acceptClass(data, signal, null); }
 
     public void acceptClass(PlayerData data, ExperienceSignal signal, ExperienceHologramRuntime.HologramLocation hologramLocation) {
-        if (data == null || signal == null || !data.isOnline() || signal.units() <= 0d) return;
-        List<ExperienceSourceDefinition> main = classSources.getOrDefault(data.getProfess().getId(), List.of());
-        for (ExperienceSourceDefinition source : main) {
+        if (!valid(data, signal)) return;
+        Map<String, List<ExperienceSourceDefinition>> byType = classSources.get(data.getProfess().getId());
+        if (byType == null) return;
+        for (ExperienceSourceDefinition source : byType.getOrDefault(signal.type(), List.of())) {
             if (!source.matches(signal)) continue;
             double value = source.experience(signal);
             if (value <= 0d) continue;
@@ -61,9 +73,18 @@ public final class ExperienceSourceRuntime {
 
     public void acceptProfession(PlayerData data, Profession profession, ExperienceSignal signal,
                                  ExperienceHologramRuntime.HologramLocation hologramLocation) {
-        if (data == null || profession == null || signal == null || !data.isOnline() || signal.units() <= 0d) return;
-        List<ExperienceSourceDefinition> sources = professionSources.getOrDefault(profession.getId(), List.of());
-        for (ExperienceSourceDefinition source : sources) {
+        if (!valid(data, signal) || profession == null) return;
+        Map<String, List<ExperienceSourceDefinition>> byType = professionSources.get(profession.getId());
+        if (byType == null) return;
+        applyProfession(data, profession, byType.getOrDefault(signal.type(), List.of()), signal, hologramLocation);
+    }
+
+    public int classSourceCount() { return count(classSources); }
+    public int professionSourceCount() { return count(professionSources); }
+
+    private static void applyProfession(PlayerData data, Profession profession, List<ExperienceSourceDefinition> definitions,
+                                        ExperienceSignal signal, ExperienceHologramRuntime.HologramLocation hologramLocation) {
+        for (ExperienceSourceDefinition source : definitions) {
             if (!source.matches(signal)) continue;
             double value = source.experience(signal);
             if (value <= 0d) continue;
@@ -72,13 +93,21 @@ public final class ExperienceSourceRuntime {
         }
     }
 
-    public int classSourceCount() { return classSources.values().stream().mapToInt(List::size).sum(); }
-    public int professionSourceCount() { return professionSources.values().stream().mapToInt(List::size).sum(); }
+    private static boolean valid(PlayerData data, ExperienceSignal signal) {
+        return data != null && signal != null && data.isOnline() && signal.units() > 0d;
+    }
 
-    private static List<ExperienceSourceDefinition> compile(List<String> lines, Map<String, List<String>> shared) {
-        ArrayList<ExperienceSourceDefinition> result = new ArrayList<>();
-        for (String line : lines) expand(ExperienceSourceDefinition.parse(line), shared, result, new LinkedHashSet<>());
-        return List.copyOf(result);
+    private static Map<String, List<ExperienceSourceDefinition>> compileIndexed(List<String> lines, Map<String, List<String>> shared) {
+        ArrayList<ExperienceSourceDefinition> expanded = new ArrayList<>();
+        for (String line : lines) expand(ExperienceSourceDefinition.parse(line), shared, expanded, new LinkedHashSet<>());
+
+        LinkedHashMap<String, List<ExperienceSourceDefinition>> indexed = new LinkedHashMap<>();
+        for (ExperienceSourceDefinition source : expanded)
+            indexed.computeIfAbsent(source.type(), ignored -> new ArrayList<>()).add(source);
+
+        LinkedHashMap<String, List<ExperienceSourceDefinition>> immutable = new LinkedHashMap<>();
+        indexed.forEach((type, definitions) -> immutable.put(type, List.copyOf(definitions)));
+        return Map.copyOf(immutable);
     }
 
     private static void expand(ExperienceSourceDefinition source, Map<String, List<String>> shared,
@@ -96,9 +125,25 @@ public final class ExperienceSourceRuntime {
         stack.remove(id);
     }
 
-    private static Map<String, List<ExperienceSourceDefinition>> immutable(Map<String, List<ExperienceSourceDefinition>> input) {
-        LinkedHashMap<String, List<ExperienceSourceDefinition>> copy = new LinkedHashMap<>();
+    private static Map<String, Map<String, List<ExperienceSourceDefinition>>> immutableNested(
+            Map<String, Map<String, List<ExperienceSourceDefinition>>> input) {
+        LinkedHashMap<String, Map<String, List<ExperienceSourceDefinition>>> copy = new LinkedHashMap<>();
+        input.forEach((key, value) -> copy.put(key, Map.copyOf(value)));
+        return Map.copyOf(copy);
+    }
+
+    private static Map<String, List<ProfessionBucket>> immutableBuckets(Map<String, List<ProfessionBucket>> input) {
+        LinkedHashMap<String, List<ProfessionBucket>> copy = new LinkedHashMap<>();
         input.forEach((key, value) -> copy.put(key, List.copyOf(value)));
         return Map.copyOf(copy);
     }
+
+    private static int count(Map<String, Map<String, List<ExperienceSourceDefinition>>> indexed) {
+        int total = 0;
+        for (Map<String, List<ExperienceSourceDefinition>> byType : indexed.values())
+            for (List<ExperienceSourceDefinition> definitions : byType.values()) total += definitions.size();
+        return total;
+    }
+
+    private record ProfessionBucket(Profession profession, List<ExperienceSourceDefinition> definitions) { }
 }

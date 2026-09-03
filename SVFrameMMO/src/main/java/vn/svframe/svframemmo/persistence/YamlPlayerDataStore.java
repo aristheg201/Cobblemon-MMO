@@ -37,16 +37,26 @@ public final class YamlPlayerDataStore implements PlayerDataStore {
     @Override
     public void saveAll(Map<UUID, PlayerDataSnapshot> snapshots) throws Exception {
         Files.createDirectories(directory);
+        for (Map.Entry<UUID, PlayerDataSnapshot> entry : snapshots.entrySet()) write(entry.getKey(), entry.getValue());
+
         Set<String> expected = snapshots.keySet().stream().map(id -> id + ".yml").collect(Collectors.toSet());
-        for (Map.Entry<UUID, PlayerDataSnapshot> entry : snapshots.entrySet()) {
-            Path target = directory.resolve(entry.getKey() + ".yml");
-            Path tmp = target.resolveSibling(target.getFileName() + ".tmp");
-            Files.writeString(tmp, codec.encode(entry.getValue()));
-            JsonPlayerDataStore.atomicReplace(tmp, target);
-        }
         try (var stream = Files.list(directory)) {
             for (Path file : stream.filter(Files::isRegularFile).filter(path -> path.getFileName().toString().endsWith(".yml")).toList())
                 if (!expected.contains(file.getFileName().toString())) Files.deleteIfExists(file);
         }
+    }
+
+    @Override
+    public void saveSome(Map<UUID, PlayerDataSnapshot> snapshots) throws Exception {
+        if (snapshots == null || snapshots.isEmpty()) return;
+        Files.createDirectories(directory);
+        for (Map.Entry<UUID, PlayerDataSnapshot> entry : snapshots.entrySet()) write(entry.getKey(), entry.getValue());
+    }
+
+    private void write(UUID id, PlayerDataSnapshot snapshot) throws Exception {
+        Path target = directory.resolve(id + ".yml");
+        Path tmp = target.resolveSibling(target.getFileName() + ".tmp");
+        Files.writeString(tmp, codec.encode(snapshot));
+        JsonPlayerDataStore.atomicReplace(tmp, target);
     }
 }

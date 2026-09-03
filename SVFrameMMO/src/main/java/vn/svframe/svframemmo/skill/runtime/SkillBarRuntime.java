@@ -147,7 +147,7 @@ public final class SkillBarRuntime {
 
     public void tick(long tick) {
         SVFrameMMOConfig live = SVFrameMMO.config();
-        for (PlayerData data : SVFrameMMO.playerData().all()) {
+        for (PlayerData data : SVFrameMMO.playerData().online()) {
             if (!data.isOnline()) continue;
             var mmo = data.getMMOPlayerData();
             // Native/classless play does not require an SVFrameLib ProfileSession. Gating

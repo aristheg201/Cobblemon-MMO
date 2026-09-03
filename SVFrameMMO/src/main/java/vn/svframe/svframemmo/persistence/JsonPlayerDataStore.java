@@ -25,7 +25,7 @@ public final class JsonPlayerDataStore implements PlayerDataStore {
     public boolean exists() { return Files.isRegularFile(file); }
 
     @Override
-    public Map<UUID, PlayerDataSnapshot> loadAll() throws Exception {
+    public synchronized Map<UUID, PlayerDataSnapshot> loadAll() throws Exception {
         LinkedHashMap<UUID, PlayerDataSnapshot> result = new LinkedHashMap<>();
         if (!exists()) return result;
         try (Reader reader = Files.newBufferedReader(file)) {
@@ -39,13 +39,21 @@ public final class JsonPlayerDataStore implements PlayerDataStore {
     }
 
     @Override
-    public void saveAll(Map<UUID, PlayerDataSnapshot> snapshots) throws Exception {
+    public synchronized void saveAll(Map<UUID, PlayerDataSnapshot> snapshots) throws Exception {
         Files.createDirectories(file.getParent());
         TreeMap<String, PlayerDataSnapshot> ordered = new TreeMap<>();
         snapshots.forEach((id, snapshot) -> ordered.put(id.toString(), snapshot));
         Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
         Files.writeString(tmp, gson.toJson(ordered));
         atomicReplace(tmp, file);
+    }
+
+    @Override
+    public synchronized void saveSome(Map<UUID, PlayerDataSnapshot> snapshots) throws Exception {
+        if (snapshots == null || snapshots.isEmpty()) return;
+        Map<UUID, PlayerDataSnapshot> merged = loadAll();
+        merged.putAll(snapshots);
+        saveAll(merged);
     }
 
     static void atomicReplace(Path tmp, Path target) throws Exception {

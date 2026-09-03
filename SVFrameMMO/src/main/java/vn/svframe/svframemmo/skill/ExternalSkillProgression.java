@@ -17,6 +17,12 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Persistent progression for skills contributed by integration mods.
@@ -27,29 +33,78 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ExternalSkillProgression {
     public static final int LOADOUT_SIZE = 6;
+    private static final Logger LOG = Logger.getLogger("SVFrameMMO-ExternalSkills");
 
     private final Map<UUID, Profile> profiles = new ConcurrentHashMap<>();
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private Path file;
+    private volatile Path file;
+    private volatile ExecutorService writer;
+    private volatile boolean closing;
 
     public synchronized void start(MinecraftServer server) {
+        closeWriterNow();
         file = server.getSavePath(WorldSavePath.ROOT).resolve("svframemmo-external-skills.json");
         load();
+        closing = false;
+        writer = Executors.newSingleThreadExecutor(task -> {
+            Thread thread = new Thread(task, "SVFrameMMO-ExternalSkills-IO");
+            thread.setDaemon(true);
+            thread.setUncaughtExceptionHandler((ignored, failure) -> LOG.log(Level.SEVERE, "Uncaught external-skill writer failure", failure));
+            return thread;
+        });
     }
 
-    public synchronized void save() {
-        if (file == null) return;
+    /** Captures the immutable state on the server thread, then performs JSON/disk work off-thread. */
+    public void save() {
+        Path target = file;
+        ExecutorService current = writer;
+        if (target == null || current == null || closing) return;
+        Map<String, SavedProfile> snapshot = snapshot();
         try {
-            Files.createDirectories(file.getParent());
-            Map<String, SavedProfile> out = new TreeMap<>();
-            profiles.forEach((uuid, profile) -> out.put(uuid.toString(),
-                    new SavedProfile(new TreeMap<>(profile.learned), new TreeMap<>(profile.bindings))));
-            Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
-            Files.writeString(tmp, gson.toJson(out));
-            try { Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE); }
-            catch (java.nio.file.AtomicMoveNotSupportedException ignored) { Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING); }
-        } catch (Exception exception) {
-            throw new IllegalStateException("Could not save SVFrameMMO external skill progression", exception);
+            current.execute(() -> {
+                try { write(target, snapshot); }
+                catch (Exception exception) { LOG.log(Level.SEVERE, "Could not asynchronously save SVFrameMMO external skill progression", exception); }
+            });
+        } catch (RejectedExecutionException rejected) {
+            if (!closing) LOG.log(Level.SEVERE, "External-skill writer rejected a save", rejected);
+        }
+    }
+
+    /** Drains queued writes and performs one final synchronous save during server shutdown. */
+    public void close() {
+        final ExecutorService current;
+        final Path target;
+        final Map<String, SavedProfile> finalSnapshot;
+        synchronized (this) {
+            if (file == null) return;
+            closing = true;
+            current = writer;
+            writer = null;
+            target = file;
+            finalSnapshot = snapshot();
+        }
+
+        if (current != null) {
+            current.shutdown();
+            try {
+                if (!current.awaitTermination(30L, TimeUnit.SECONDS)) {
+                    LOG.warning("Timed out draining external-skill writer; interrupting pending saves before final flush.");
+                    current.shutdownNow();
+                    current.awaitTermination(5L, TimeUnit.SECONDS);
+                }
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                current.shutdownNow();
+            }
+        }
+
+        try { write(target, finalSnapshot); }
+        catch (Exception exception) { throw new IllegalStateException("Could not perform final SVFrameMMO external skill save", exception); }
+        finally {
+            synchronized (this) {
+                file = null;
+                closing = false;
+            }
         }
     }
 
@@ -129,8 +184,9 @@ public final class ExternalSkillProgression {
 
     private synchronized void load() {
         profiles.clear();
-        if (file == null || !Files.exists(file)) return;
-        try (Reader reader = Files.newBufferedReader(file)) {
+        Path target = file;
+        if (target == null || !Files.exists(target)) return;
+        try (Reader reader = Files.newBufferedReader(target)) {
             Type type = new TypeToken<Map<String, SavedProfile>>() { }.getType();
             Map<String, SavedProfile> loaded = gson.fromJson(reader, type);
             if (loaded == null) return;
@@ -152,6 +208,27 @@ public final class ExternalSkillProgression {
         } catch (Exception exception) {
             throw new IllegalStateException("Could not load SVFrameMMO external skill progression", exception);
         }
+    }
+
+    private Map<String, SavedProfile> snapshot() {
+        TreeMap<String, SavedProfile> out = new TreeMap<>();
+        profiles.forEach((uuid, profile) -> out.put(uuid.toString(),
+                new SavedProfile(Map.copyOf(new TreeMap<>(profile.learned)), Map.copyOf(new TreeMap<>(profile.bindings)))));
+        return Map.copyOf(out);
+    }
+
+    private void write(Path target, Map<String, SavedProfile> snapshot) throws Exception {
+        Files.createDirectories(target.getParent());
+        Path tmp = target.resolveSibling(target.getFileName() + ".tmp");
+        Files.writeString(tmp, gson.toJson(snapshot));
+        try { Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE); }
+        catch (java.nio.file.AtomicMoveNotSupportedException ignored) { Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING); }
+    }
+
+    private synchronized void closeWriterNow() {
+        ExecutorService current = writer;
+        writer = null;
+        if (current != null) current.shutdownNow();
     }
 
     private Profile profile(UUID playerId) {
