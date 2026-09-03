@@ -91,11 +91,13 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !FUSIONS.blocksDamage(entity));
         ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
             if (blocked || damageTaken <= 0.0F) return;
-            if (source.getAttacker() instanceof ServerPlayerEntity attacker && source.getSource() == attacker)
+            if (source.getAttacker() instanceof ServerPlayerEntity attacker && source.getSource() == attacker
+                    && !FUSIONS.isExecutingMoveDamage(attacker))
                 FusionVisualBridge.playSuccessfulBasicAttack(attacker);
         });
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
-            if (source.getAttacker() instanceof ServerPlayerEntity attacker && source.getSource() == attacker)
+            if (source.getAttacker() instanceof ServerPlayerEntity attacker && source.getSource() == attacker
+                    && !FUSIONS.isExecutingMoveDamage(attacker))
                 FusionVisualBridge.playSuccessfulBasicAttack(attacker);
         });
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {

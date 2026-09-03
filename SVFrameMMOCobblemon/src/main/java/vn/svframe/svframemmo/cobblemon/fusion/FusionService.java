@@ -47,6 +47,7 @@ public final class FusionService {
     private final FusionStatBridge stats = new FusionStatBridge();
     private final java.util.Map<UUID, FusionSession> byPlayer = new ConcurrentHashMap<>();
     private final java.util.Map<UUID, UUID> lockedPokemon = new ConcurrentHashMap<>();
+    private final ThreadLocal<UUID> executingMoveDamage = new ThreadLocal<>();
 
     public FusionSession session(UUID player) { return player == null ? null : byPlayer.get(player); }
     public boolean isPokemonLocked(UUID pokemon) { return pokemon != null && lockedPokemon.containsKey(pokemon); }
@@ -89,10 +90,6 @@ public final class FusionService {
         TemporarySkillOverlayRuntime.Handle overlay = null;
         try {
             CobblemonMoveSkillAdapter.Overlay snapshot = moves.snapshot(pokemon);
-
-            // The clicked/deployed Pokemon is only the Potara selection target. Fusion itself is the player.
-            // Recall MUST happen before lockedPokemon is populated because FusionLockHooks intentionally cancels
-            // recalls for already-fused Pokemon. Keeping the entity deployed would recreate the old proxy design.
             recallForFusionOrThrow(pokemon);
 
             if (lockedPokemon.putIfAbsent(pokemonId, playerId) != null)
@@ -217,8 +214,7 @@ public final class FusionService {
                     : ThreadLocalRandom.current().nextInt(semantic.multiHitMin(), semantic.multiHitMax() + 1);
             double perHit = damage(cast, target, move, tick);
             for (int i = 0; i < hits; i++) {
-                metadata.attack(target, perHit, DamageType.SKILL,
-                        move.getDamageCategory() == DamageCategories.INSTANCE.getPHYSICAL() ? DamageType.PHYSICAL : DamageType.MAGIC);
+                applyMoveAttack(player, metadata, target, perHit, move);
                 dealt += perHit;
             }
         }
@@ -229,6 +225,24 @@ public final class FusionService {
         if (dealt > 0d && semantic.drainFraction() > 0d) player.heal((float) (dealt * semantic.drainFraction()));
         if (dealt > 0d && semantic.recoilFraction() > 0d)
             player.setHealth(Math.max(0f, player.getHealth() - (float) (dealt * semantic.recoilFraction())));
+    }
+
+    private void applyMoveAttack(ServerPlayerEntity player, SkillMetadata metadata, LivingEntity target,
+                                 double amount, MoveTemplate move) {
+        UUID previous = executingMoveDamage.get();
+        executingMoveDamage.set(player.getUuid());
+        try {
+            metadata.attack(target, amount, DamageType.SKILL,
+                    move.getDamageCategory() == DamageCategories.INSTANCE.getPHYSICAL() ? DamageType.PHYSICAL : DamageType.MAGIC);
+        } finally {
+            if (previous == null) executingMoveDamage.remove();
+            else executingMoveDamage.set(previous);
+        }
+    }
+
+    /** True only while this server thread is synchronously applying /pokeskill damage for that caster. */
+    public boolean isExecutingMoveDamage(ServerPlayerEntity player) {
+        return player != null && player.getUuid().equals(executingMoveDamage.get());
     }
 
     public boolean blocksDamage(LivingEntity entity) {
