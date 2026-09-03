@@ -12,11 +12,11 @@ import vn.svframe.svframemmo.skill.runtime.SkillBarRuntime;
 import java.util.Map;
 
 /** Avoids scanning every online player on idle ticks when no casting session needs 20 Hz processing. */
-@Mixin(SkillBarRuntime.class)
+@Mixin(value = SkillBarRuntime.class, remap = false)
 public abstract class SkillBarRuntimeTickMixin {
-    @Shadow @Final private Map<?, ?> sessions;
+    @Shadow(remap = false) @Final private Map<?, ?> sessions;
 
-    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "tick", at = @At("HEAD"), cancellable = true, remap = false)
     private void svframemmo$skipIdleSkillBarTicks(long tick, CallbackInfo ci) {
         if (!sessions.isEmpty()) return;
         var actionBar = SVFrameMMO.config().actionBar();
