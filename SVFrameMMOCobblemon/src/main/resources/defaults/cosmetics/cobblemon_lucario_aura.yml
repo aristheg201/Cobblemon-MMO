@@ -1,0 +1,27 @@
+id: cobblemon_lucario_aura
+name: "Lucario Aura"
+skill: COBBLEMON_MOVE_PSYCHIC
+particle: cobblemon:lucario_aura
+permission: svframemmo.cobblemon.cosmetic.use.cobblemon_lucario_aura
+hide-without-resource-pack: true
+phases:
+  PREVIEW:
+    interval-ticks: 6
+    duration-ticks: 96
+    anchor: CASTER
+    offset-y: 0.9
+    broadcast-radius: 24
+    max-viewers: 32
+  EQUIP_BURST:
+    repetitions: 2
+    interval-ticks: 3
+    anchor: CASTER
+    offset-y: 0.9
+    broadcast-radius: 24
+    max-viewers: 32
+  WHILE_EQUIPPED:
+    interval-ticks: 10
+    anchor: CASTER
+    offset-y: 0.9
+    broadcast-radius: 24
+    max-viewers: 32

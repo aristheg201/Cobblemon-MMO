@@ -42,6 +42,7 @@ import vn.svframe.svframemmo.cobblemon.move.PokemonSkillShopService;
 public final class SVFrameMMOCobblemon implements ModInitializer {
     public static final String ID = "svframemmo_cobblemon";
     public static final Logger LOG = LoggerFactory.getLogger("SVFrameMMO: Cobblemon Integration");
+    private static final long FUSION_RUNTIME_INTERVAL_TICKS = 2L;
     private static volatile IntegrationConfig config;
     private static final PotaraTierResolver POTARA = new PotaraTierResolver();
     private static final FusionService FUSIONS = new FusionService();
@@ -120,7 +121,9 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             long tick = SVFrameMMO.currentTick();
-            FUSIONS.tick(tick, server);
+            // Fusion's packet-only Stand interpolation does not need a 20 Hz server-side refresh. Vanilla/Cobblemon
+            // entity interpolation smooths the 10 Hz transform stream while halving tracker scans and Stand packets.
+            if (tick % FUSION_RUNTIME_INTERVAL_TICKS == 0L) FUSIONS.tick(tick, server);
             FUSIONS.cooldowns().tick(tick);
             COSMETICS.tick(tick, server);
         });

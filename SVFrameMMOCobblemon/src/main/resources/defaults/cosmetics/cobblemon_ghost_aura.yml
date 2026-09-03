@@ -1,0 +1,27 @@
+id: cobblemon_ghost_aura
+name: "Ghostly Smoke Aura"
+skill: COBBLEMON_MOVE_SHADOWBALL
+particle: cobblemon:ghostly_smoke
+permission: svframemmo.cobblemon.cosmetic.use.cobblemon_ghost_aura
+hide-without-resource-pack: true
+phases:
+  PREVIEW:
+    interval-ticks: 6
+    duration-ticks: 96
+    anchor: CASTER
+    offset-y: 0.25
+    broadcast-radius: 24
+    max-viewers: 32
+  EQUIP_BURST:
+    repetitions: 2
+    interval-ticks: 3
+    anchor: CASTER
+    offset-y: 0.25
+    broadcast-radius: 24
+    max-viewers: 32
+  WHILE_EQUIPPED:
+    interval-ticks: 12
+    anchor: CASTER
+    offset-y: 0.25
+    broadcast-radius: 24
+    max-viewers: 32

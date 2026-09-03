@@ -2,6 +2,7 @@ package vn.svframe.svframemmo.cobblemon.cosmetic;
 
 import com.cobblemon.mod.common.net.messages.client.effect.SpawnSnowstormParticlePacket;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
@@ -12,7 +13,6 @@ import net.minecraft.util.math.Vec3d;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 
-import java.util.Comparator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,7 +52,9 @@ final class CosmeticRenderer {
 
     void tick(long tick, MinecraftServer server, CosmeticService service) {
         if (ambient.isEmpty()) return;
-        for (Map.Entry<AmbientKey, Ambient> entry : Map.copyOf(ambient).entrySet()) {
+        // ConcurrentHashMap iterators are weakly consistent, so there is no need to allocate Map.copyOf(ambient)
+        // every server tick. Invalid entries are removed conditionally as they are observed.
+        for (Map.Entry<AmbientKey, Ambient> entry : ambient.entrySet()) {
             Ambient value = entry.getValue();
             ServerPlayerEntity player = server.getPlayerManager().getPlayer(value.player());
             CosmeticDefinition definition = service.definition(value.cosmetic());
@@ -72,15 +74,20 @@ final class CosmeticRenderer {
             case CAST_POSITION, CASTER -> caster.getPos();
         };
         final Vec3d origin = anchor.add(phase.offsetX(), phase.offsetY(), phase.offsetZ());
-        double radiusSq = phase.broadcastRadius() * phase.broadcastRadius();
-        var viewers = caster.getServerWorld().getPlayers().stream()
-                .filter(viewer -> !viewer.isDisconnected() && viewer.squaredDistanceTo(origin) <= radiusSq)
-                .sorted(Comparator.comparingDouble(viewer -> viewer.squaredDistanceTo(origin)))
-                .limit(phase.maxViewers()).toList();
-        Identifier custom = Identifier.tryParse(cosmetic.particleId());
-        for (ServerPlayerEntity viewer : viewers) {
-            boolean customReady = custom != null && SnowstormPackService.ready() && PolymerResourcePackUtils.hasMainPack(viewer);
-            if (customReady && claimPacket()) new SpawnSnowstormParticlePacket(custom, origin).sendToPlayer(viewer);
+        Identifier particle = Identifier.tryParse(cosmetic.particleId());
+        if (particle == null) return;
+
+        int viewerLimit = phase.maxViewers();
+        int emitted = 0;
+        for (ServerPlayerEntity viewer : PlayerLookup.around(caster.getServerWorld(), origin, phase.broadcastRadius())) {
+            if (viewer.isDisconnected()) continue;
+            if (emitted++ >= viewerLimit) break;
+
+            // Native Cobblemon/Mega Showdown Snowstorm definitions are already present in those client mods and do
+            // not depend on the generated Polymer pack. Only integration-owned custom definitions require that pack.
+            boolean nativeSnowstorm = "cobblemon".equals(particle.getNamespace()) || "mega_showdown".equals(particle.getNamespace());
+            boolean snowstormReady = nativeSnowstorm || (SnowstormPackService.ready() && PolymerResourcePackUtils.hasMainPack(viewer));
+            if (snowstormReady && claimPacket()) new SpawnSnowstormParticlePacket(particle, origin).sendToPlayer(viewer);
             else if (!cosmetic.hideWithoutResourcePack()) sendFallback(viewer, cosmetic.fallback(), origin);
         }
     }
