@@ -263,8 +263,9 @@ public final class CosmeticService {
         String particle = particleAliases.getOrDefault(particleRef, particleRef);
         String permission = string(root, "permission", "svframemmo.cobblemon.cosmetic.use." + id);
         boolean hide = bool(root.get("hide-without-resource-pack"), false);
-        Map<String, Object> fallbackMap = YamlLite.map(root.get("fallback"));
-        CosmeticDefinition.Fallback fallback = fallbackMap.isEmpty() ? CosmeticDefinition.Fallback.none()
+        Object rawFallback = root.get("fallback");
+        Map<String, Object> fallbackMap = rawFallback == null ? Map.of() : YamlLite.map(rawFallback);
+        CosmeticDefinition.Fallback fallback = fallbackMap == null || fallbackMap.isEmpty() ? CosmeticDefinition.Fallback.none()
                 : new CosmeticDefinition.Fallback(string(fallbackMap, "particle", ""), integer(fallbackMap.get("count"), 0),
                 decimal(fallbackMap.get("spread"), 0.25d), decimal(fallbackMap.get("speed"), 0.01d));
         List<CosmeticDefinition.Phase> phases = new ArrayList<>();
