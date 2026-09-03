@@ -8,7 +8,6 @@ default:
     MAX_HEALTH:
         base: 20
         per-level: 0
-        max: 40
     MAX_ABSORPTION:
         base: 0.0
         per-level: 0

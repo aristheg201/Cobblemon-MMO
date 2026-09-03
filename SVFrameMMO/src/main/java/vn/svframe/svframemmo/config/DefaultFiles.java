@@ -4,13 +4,14 @@ import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
-/** Installs immutable bundled defaults on first boot without overwriting server edits. */
+/** Installs bundled defaults without overwriting server edits, plus narrowly-scoped legacy migrations. */
 public final class DefaultFiles {
     public static final Path ROOT = FabricLoader.getInstance().getConfigDir().resolve("SVFrameMMO").toAbsolutePath().normalize();
     private static final List<String> FILES = List.of(
@@ -42,12 +43,30 @@ public final class DefaultFiles {
                 Path temporary = Files.createTempFile(output.getParent(), output.getFileName().toString(), ".tmp");
                 try {
                     Files.copy(input, temporary, StandardCopyOption.REPLACE_EXISTING);
-                    try { Files.move(temporary, output, StandardCopyOption.ATOMIC_MOVE); }
-                    catch (AtomicMoveNotSupportedException ignored) { Files.move(temporary, output, StandardCopyOption.REPLACE_EXISTING); }
-                } finally {
-                    Files.deleteIfExists(temporary);
-                }
+                    moveReplacing(temporary, output);
+                } finally { Files.deleteIfExists(temporary); }
             }
         }
+        migrateLegacyHealthCap();
+    }
+
+    /** Removes only the exact 20/0/40 MAX_HEALTH block shipped by the broken Fabric port. */
+    private static void migrateLegacyHealthCap() throws IOException {
+        Path stats = ROOT.resolve("stats.yml");
+        if (!Files.isRegularFile(stats)) return;
+        String text = Files.readString(stats, StandardCharsets.UTF_8);
+        String legacy = "    MAX_HEALTH:\n        base: 20\n        per-level: 0\n        max: 40\n";
+        if (!text.contains(legacy)) return;
+        String migrated = text.replace(legacy, "    MAX_HEALTH:\n        base: 20\n        per-level: 0\n");
+        Path temporary = Files.createTempFile(stats.getParent(), "stats.yml", ".migration.tmp");
+        try {
+            Files.writeString(temporary, migrated, StandardCharsets.UTF_8);
+            moveReplacing(temporary, stats);
+        } finally { Files.deleteIfExists(temporary); }
+    }
+
+    private static void moveReplacing(Path from, Path to) throws IOException {
+        try { Files.move(from, to, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING); }
+        catch (AtomicMoveNotSupportedException ignored) { Files.move(from, to, StandardCopyOption.REPLACE_EXISTING); }
     }
 }
