@@ -12,7 +12,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import vn.svframe.svframelib.api.event.skill.PlayerCastSkillEvent;
-import vn.svframe.svframelib.api.event.skill.SkillCastEvent;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.cobblemon.config.IntegrationConfig;
 import vn.svframe.svframemmo.cobblemon.cosmetic.CosmeticCommands;
@@ -50,9 +49,13 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
     private static final CosmeticService COSMETICS = new CosmeticService();
     private static final PokemonSkillShopService POKEMON_SKILLS = new PokemonSkillShopService();
 
-    @Override public void onInitialize() {
-        try { config = IntegrationConfig.load(); }
-        catch (Exception error) { throw new IllegalStateException("Could not load SVFrameMMO Cobblemon integration config", error); }
+    @Override
+    public void onInitialize() {
+        try {
+            config = IntegrationConfig.load();
+        } catch (Exception error) {
+            throw new IllegalStateException("Could not load SVFrameMMO Cobblemon integration config", error);
+        }
 
         try {
             CosmeticDefaults.ensure();
@@ -66,29 +69,34 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         LuckPermsIntegration.initialize();
         PlaceholderIntegration.registerIfPresent();
         if (Moves.count() > 0) synchronizeMoveProviderOrThrow();
+
         CobblemonEvents.COBBLEMON_INITIALISED.subscribe(ignored -> {
             synchronizeMoveProviderOrThrow();
-            if (!SVFrameMMO.reload()) LOG.warn("SVFrameMMO reload after Cobblemon move registry initialization failed");
+            if (!SVFrameMMO.reload())
+                LOG.warn("SVFrameMMO reload after Cobblemon move registry initialization failed");
         });
         Moves.INSTANCE.getObservable().subscribe(ignored -> synchronizeMoveProviderOrThrow());
 
         FusionLockHooks.register(FUSIONS);
         PotaraUseHandler.register(FUSIONS);
+
+        // Player cosmetics are deliberately independent from skills. This event is only for real move VFX/Fusion.
         PlayerCastSkillEvent.EVENT.register(event -> {
-            COSMETICS.onSkillStart(event);
-            if (!event.isCancelled() && event.getResult() != null && event.getResult().isSuccessful(event.getMetadata())
+            if (!event.isCancelled() && event.getResult() != null
+                    && event.getResult().isSuccessful(event.getMetadata())
                     && event.getCast().getHandler() instanceof CobblemonMoveSkill move) {
                 MOVE_VFX.renderActor(event.getPlayer(), move.template());
                 FusionVisualBridge.playMoveAnimation(event.getPlayer(), move.template());
             }
         });
-        SkillCastEvent.EVENT.register(COSMETICS::onSkillSuccess);
+
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             FusionCommands.register(dispatcher, FUSIONS);
             PotaraCommands.register(dispatcher);
             PokemonSkillCommands.register(dispatcher, POKEMON_SKILLS);
             CosmeticCommands.register(dispatcher, COSMETICS);
         });
+
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !FUSIONS.blocksDamage(entity));
         ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
             if (blocked || damageTaken <= 0.0F) return;
@@ -101,6 +109,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
                     && !FUSIONS.isExecutingMoveDamage(attacker))
                 FusionVisualBridge.playSuccessfulBasicAttack(attacker);
         });
+
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             FusionNetworkGuards.register(FUSIONS);
             try {
@@ -119,28 +128,29 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             FUSIONS.cooldowns().stop();
             COSMETICS.stop();
         });
+
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             long tick = SVFrameMMO.currentTick();
-            // Fusion's packet-only Stand interpolation does not need a 20 Hz server-side refresh. Vanilla/Cobblemon
-            // entity interpolation smooths the 10 Hz transform stream while halving tracker scans and Stand packets.
             if (tick % FUSION_RUNTIME_INTERVAL_TICKS == 0L) FUSIONS.tick(tick, server);
             FUSIONS.cooldowns().tick(tick);
             COSMETICS.tick(tick, server);
         });
+
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> COSMETICS.onJoin(handler.player));
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            server.execute(() -> {
-                FUSIONS.onDisconnect(handler.player);
-                COSMETICS.onDisconnect(handler.player);
-            });
-        });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> server.execute(() -> {
+            FUSIONS.onDisconnect(handler.player);
+            COSMETICS.onDisconnect(handler.player);
+        }));
+
         LOG.info("Cobblemon Integration online; fusionVisual=server-packet-stand/native-1.21.1, provider=cobblemon, providerMoves={}, registeredSkills={}, maxSkillLevel={}, specificMoveVfx={}, genericMoveVfx={}, cosmetics={}, PokemonSkillShop={}/{}, Potara cooldown={}s, Fusion Dance={}s/{}s cooldown",
                 CobblemonMoveSkillAdapter.providerSize(),
                 SVFrameMMO.externalSkills().getByOwner(CobblemonMoveSkillAdapter.REGISTRY_OWNER).size(),
                 config.pokemonSkills.maxLevel,
                 MOVE_VFX.planCount(), MOVE_VFX.genericPlanCount(), COSMETICS.size(),
                 config.pokemonSkills.enabled, config.pokemonSkills.normalizedProvider(),
-                config.fusion.potaraActionCooldownSeconds, config.fusion.danceDurationSeconds, config.fusion.danceCooldownSeconds);
+                config.fusion.potaraActionCooldownSeconds,
+                config.fusion.danceDurationSeconds,
+                config.fusion.danceCooldownSeconds);
     }
 
     private static synchronized void synchronizeMoveProviderOrThrow() {
@@ -148,20 +158,27 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         CobblemonMoveSkillAdapter.reload();
         int provider = CobblemonMoveSkillAdapter.providerSize();
         int generated = CobblemonMoveSkillAdapter.size();
-        int registered = SVFrameMMO.externalSkills().getByOwner(CobblemonMoveSkillAdapter.REGISTRY_OWNER).size();
+        int registered = SVFrameMMO.externalSkills()
+                .getByOwner(CobblemonMoveSkillAdapter.REGISTRY_OWNER).size();
         int configs;
-        try { configs = CobblemonMoveConfigGenerator.regenerate(MOVE_VFX); }
-        catch (Exception error) { throw new IllegalStateException("Could not generate Cobblemon provider move configs", error); }
+        try {
+            configs = CobblemonMoveConfigGenerator.regenerate(MOVE_VFX);
+        } catch (Exception error) {
+            throw new IllegalStateException("Could not generate Cobblemon provider move configs", error);
+        }
         if (provider <= 0)
             throw new IllegalStateException("Cobblemon move provider is loaded but exposes zero moves");
         if (generated != provider || registered != provider || configs != provider)
             throw new IllegalStateException("Cobblemon provider synchronization mismatch: provider=" + provider
                     + ", generated=" + generated + ", registered=" + registered + ", configs=" + configs);
 
-        long megaIcons = Moves.all().stream().filter(move -> "mega_showdown".equals(PokemonSkillIconResolver.source(move))).count();
-        long cobblemonIcons = Moves.all().stream().filter(move -> "cobblemon".equals(PokemonSkillIconResolver.source(move))).count();
+        long megaIcons = Moves.all().stream()
+                .filter(move -> "mega_showdown".equals(PokemonSkillIconResolver.source(move))).count();
+        long cobblemonIcons = Moves.all().stream()
+                .filter(move -> "cobblemon".equals(PokemonSkillIconResolver.source(move))).count();
         long fallbackIcons = provider - megaIcons - cobblemonIcons;
-        LOG.info("Pokemon skill icons resolved; megaShowdown={}, cobblemon={}, fallback={}", megaIcons, cobblemonIcons, fallbackIcons);
+        LOG.info("Pokemon skill icons resolved; megaShowdown={}, cobblemon={}, fallback={}",
+                megaIcons, cobblemonIcons, fallbackIcons);
         LOG.info("Cobblemon move provider synchronized; providerMoves={}, registeredSkills={}, generatedConfigs={}, specificMoveVfx={}, genericMoveVfx={}",
                 provider, registered, configs, MOVE_VFX.planCount(), MOVE_VFX.genericPlanCount());
     }
@@ -170,12 +187,14 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         var root = server.getCommandManager().getDispatcher().getRoot().getChild("potara");
         if (root == null || root.getChild("give") == null)
             throw new IllegalStateException("Potara command registration failed: expected /potara give");
-        LOG.info("Potara admin command registered: /potara give <tier> [player] [amount]; LuckPerms={}", LuckPermsIntegration.POTARA_GIVE);
+        LOG.info("Potara admin command registered: /potara give <tier> [player] [amount]; LuckPerms={}",
+                LuckPermsIntegration.POTARA_GIVE);
     }
 
     public static IntegrationConfig config() {
         IntegrationConfig value = config;
-        if (value == null) throw new IllegalStateException("SVFrameMMO: Cobblemon Integration is not initialized");
+        if (value == null)
+            throw new IllegalStateException("SVFrameMMO: Cobblemon Integration is not initialized");
         return value;
     }
 

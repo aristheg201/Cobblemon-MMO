@@ -5,29 +5,34 @@ import net.fabricmc.loader.api.FabricLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/** Installs editable cosmetic/VFX defaults using the assets retained from CobblemonMMO 2.1.0. */
+/**
+ * Creates the editable cosmetic/VFX directories.
+ *
+ * Player cosmetic definitions are intentionally not bundled or copied. The engine is data-driven: administrators
+ * define cosmetics under config/SVFrameMMOCobblemon/cosmetics. Bundled VFX assets remain available as primitives.
+ */
 public final class CosmeticDefaults {
     public static final Path ROOT = FabricLoader.getInstance().getConfigDir().resolve("SVFrameMMOCobblemon");
     public static final Path COSMETICS = ROOT.resolve("cosmetics");
     public static final Path VFX = ROOT.resolve("vfx");
+
     private CosmeticDefaults() { }
 
     public static void ensure() throws java.io.IOException {
         Files.createDirectories(COSMETICS);
         Files.createDirectories(VFX);
-        migrateLegacy();
-        copyBundledTree("defaults/cosmetics", COSMETICS);
+        migrateLegacyVfx();
         copyBundledTree("defaults/vfx", VFX);
     }
 
-    private static void migrateLegacy() throws java.io.IOException {
+    private static void migrateLegacyVfx() throws java.io.IOException {
         Path legacy = FabricLoader.getInstance().getConfigDir().resolve("cobblemon-mmo");
-        copyMissingTree(legacy.resolve("cosmetics"), COSMETICS);
         copyMissingTree(legacy.resolve("vfx"), VFX);
     }
 
     private static void copyBundledTree(String resource, Path target) throws java.io.IOException {
-        var source = FabricLoader.getInstance().getModContainer("svframemmo_cobblemon").flatMap(container -> container.findPath(resource));
+        var source = FabricLoader.getInstance().getModContainer("svframemmo_cobblemon")
+                .flatMap(container -> container.findPath(resource));
         if (source.isEmpty() || !Files.isDirectory(source.get())) return;
         copyMissingTree(source.get(), target);
     }
@@ -38,10 +43,12 @@ public final class CosmeticDefaults {
         try (var stream = Files.walk(source)) {
             for (Path file : stream.filter(Files::isRegularFile).toList()) {
                 String relative = source.relativize(file).toString().replace('\\', '/');
-                if (relative.isBlank() || relative.startsWith("/") || relative.contains("../") || relative.equals(".."))
+                if (relative.isBlank() || relative.startsWith("/")
+                        || relative.contains("../") || relative.equals(".."))
                     throw new java.io.IOException("Unsafe cosmetic resource path " + relative);
                 Path out = normalizedTarget.resolve(relative).normalize();
-                if (!out.startsWith(normalizedTarget)) throw new java.io.IOException("Unsafe cosmetic resource path " + relative);
+                if (!out.startsWith(normalizedTarget))
+                    throw new java.io.IOException("Unsafe cosmetic resource path " + relative);
                 if (Files.exists(out)) continue;
                 Files.createDirectories(out.getParent());
                 Files.copy(file, out);
