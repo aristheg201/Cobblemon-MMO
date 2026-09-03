@@ -148,7 +148,8 @@ jobs:
           server_pid=$!
           ready=0
           for _ in $(seq 1 150); do
-            if grep -q 'Done (' "$ROOT/build/integration-server.log"; then
+            if grep -q 'Done (' "$ROOT/build/integration-server.log" \
+                && grep -q 'SVFrameMMO Fabric online;' "$ROOT/build/integration-server.log"; then
               ready=1
               break
             fi
@@ -164,7 +165,7 @@ jobs:
           set -e
           cat "$ROOT/build/integration-server.log"
           if [ "$ready" -ne 1 ]; then
-            echo "Production server did not reach the Done state (exit=$status)" >&2
+            echo "Production server did not reach the fully-started state (exit=$status)" >&2
             exit 1
           fi
           grep -q 'Loading Minecraft 1.21.1 with Fabric Loader' "$ROOT/build/integration-server.log"
