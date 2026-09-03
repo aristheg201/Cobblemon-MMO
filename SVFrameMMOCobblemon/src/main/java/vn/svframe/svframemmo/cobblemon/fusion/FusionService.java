@@ -15,8 +15,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import vn.svframe.svframelib.damage.DamageType;
+import vn.svframe.svframelib.player.resource.ResourceUpdateReason;
 import vn.svframe.svframelib.skill.SkillMetadata;
 import vn.svframe.svframemmo.SVFrameMMO;
+import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
 import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 import vn.svframe.svframemmo.cobblemon.move.BattleStat;
 import vn.svframe.svframemmo.cobblemon.move.CobblemonMoveSkillAdapter;
@@ -103,12 +105,14 @@ public final class FusionService {
                     snapshot.moveIds(), overlay);
 
             stats.apply(player, pokemon, tier);
+            refillFusionResources(player);
             if (byPlayer.putIfAbsent(playerId, session) != null) throw new IllegalStateException("Fusion session already exists");
             visuals.start(player, pokemon);
             return new StartResult(session, null);
         } catch (RuntimeException error) {
             if (overlay != null) overlay.close();
             stats.remove(player);
+            refillFusionResources(player);
             byPlayer.remove(playerId);
             visuals.stop(player, playerId);
             pokemon.setTradeable(originalTradeable);
@@ -140,12 +144,23 @@ public final class FusionService {
         lockedPokemon.remove(session.pokemonUuid(), session.playerUuid());
         if (session.overlay() != null) session.overlay().close();
         realtime.clear(session.playerUuid());
-        if (player != null) stats.remove(player);
+        if (player != null) {
+            stats.remove(player);
+            refillFusionResources(player);
+        }
         Pokemon pokemon = player == null ? null : Cobblemon.INSTANCE.getStorage().getParty(player).get(session.pokemonUuid());
         if (pokemon != null) pokemon.setTradeable(session.originalTradeable());
         visuals.stop(player, session.playerUuid());
         if (session.dance()) cooldowns.markDance(session.playerUuid(), SVFrameMMOCobblemon.config().fusion.danceCooldownSeconds);
         return new EndResult(session, null);
+    }
+
+    private static void refillFusionResources(ServerPlayerEntity player) {
+        if (player == null) return;
+        var data = SVFrameMMO.playerData().get(player);
+        for (PlayerResource resource : PlayerResource.values()) {
+            data.setResource(resource, data.getMaxResource(resource), ResourceUpdateReason.CHOOSE_CLASS);
+        }
     }
 
     public void onDisconnect(ServerPlayerEntity player) {
