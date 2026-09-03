@@ -19,14 +19,15 @@ import java.util.Set;
 
 /**
  * Preserves the authoritative party Pokemon appearance at the final Cobblemon spawn-packet boundary while applying
- * the Fusion-only Stand render scale. The selected Pokemon itself is never resized or mutated.
+ * a compact Fusion-only Stand render scale. The selected Pokemon itself is never resized or mutated.
  */
 @Mixin(SpawnPokemonPacket.class)
 public abstract class SpawnPokemonPacketMixin {
     private static final int STAND_ENTITY_BASE = 1_000_000_000;
-    private static final float STAND_SCALE_MULTIPLIER = 0.60F;
-    private static final float MIN_STAND_SCALE = 0.10F;
-    private static final double MAX_STAND_DIMENSION = 2.20D;
+    private static final float BASE_STAND_SCALE_MULTIPLIER = 0.35F;
+    private static final float MIN_STAND_SCALE = 0.045F;
+    private static final double TARGET_POKEDEX_HEIGHT_METERS = 1.20D;
+    private static final double MAX_STAND_ENTITY_DIMENSION = 1.25D;
 
     @Inject(
             method = "<init>(Lcom/cobblemon/mod/common/entity/pokemon/PokemonEntity;Lnet/minecraft/network/packet/s2c/play/EntitySpawnS2CPacket;)V",
@@ -50,8 +51,6 @@ public abstract class SpawnPokemonPacketMixin {
 
         Set<String> exactAspects = Set.copyOf(pokemon.getAspects());
 
-        // Keep the packet-only template coherent for species/form/aspect rendering. Do not write the canonical party
-        // scale back into the packet: Fusion Stand scale is deliberately smaller than the real Pokemon.
         entity.getPokemon().setForcedAspects(exactAspects);
         entity.getDataTracker().set(PokemonEntity.getASPECTS(), exactAspects);
 
@@ -64,15 +63,27 @@ public abstract class SpawnPokemonPacketMixin {
         packet.setScaleModifier(standScale(entity, pokemon));
     }
 
+    /**
+     * Scale against both the species/form Pokédex height and the already-created entity dimensions. The Pokédex-height
+     * cap is important for very long/large species whose model can visually dwarf the player even when their hitbox is
+     * relatively compact. Entity dimensions remain a second safety cap for custom forms/aspects with larger hitboxes.
+     */
     private static float standScale(PokemonEntity entity, Pokemon pokemon) {
         float originalScale = pokemon.getScaleModifier();
         if (!Float.isFinite(originalScale) || originalScale <= 0F) originalScale = 1F;
 
-        float factor = STAND_SCALE_MULTIPLIER;
+        float standScale = originalScale * BASE_STAND_SCALE_MULTIPLIER;
+
+        double pokedexHeightMeters = pokemon.getForm().getHeight() / 10.0D;
+        if (Double.isFinite(pokedexHeightMeters) && pokedexHeightMeters > 1.0e-4D)
+            standScale = Math.min(standScale, (float) (TARGET_POKEDEX_HEIGHT_METERS / pokedexHeightMeters));
+
         double largestDimension = Math.max(entity.getWidth(), entity.getHeight());
         if (Double.isFinite(largestDimension) && largestDimension > 1.0e-4D) {
-            factor = Math.min(factor, (float) (MAX_STAND_DIMENSION / largestDimension));
+            float dimensionCappedScale = originalScale * (float) (MAX_STAND_ENTITY_DIMENSION / largestDimension);
+            standScale = Math.min(standScale, dimensionCappedScale);
         }
-        return Math.max(MIN_STAND_SCALE, originalScale * Math.max(0.01F, factor));
+
+        return Math.max(MIN_STAND_SCALE, standScale);
     }
 }
