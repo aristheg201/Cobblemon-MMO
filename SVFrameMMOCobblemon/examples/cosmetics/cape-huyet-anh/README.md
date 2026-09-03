@@ -1,20 +1,31 @@
 # Huyết Ảnh Phi Phong
 
-Particle `BACK` cosmetic for SVFrameMMO Cobblemon Integration 0.1.13+.
+Particle cape thuần server-side, không cần resource pack.
 
-## Install
+- Slot: `BACK`
+- Particle: `svframe_dust:7a0019/0.9`
+- Renderer xoay toàn bộ local offsets theo hướng nhìn của player, nên áo choàng luôn nằm sau lưng.
+- Không có Snowstorm JSON/PNG, không Polymer asset, không merge/generate resource pack.
 
-1. Copy the `config/` directory from this example pack into the server root.
-2. Restart the server once. This pack adds a Snowstorm particle asset, so Polymer must rebuild the resource pack.
-3. `/cosmetics grant <player> back_huyet_anh_phi_phong`
-4. `/cosmetics equip back_huyet_anh_phi_phong`
+## Cài đặt
 
-After the first restart, edits to the cosmetic YAML offsets/cadence can be applied with `/cosmetics reload`.
-Changes to the Snowstorm `.particle.json` or PNG texture require another restart/resource-pack rebuild.
+Copy:
 
-## Shape
+`config/SVFrameMMOCobblemon/cosmetics/back_huyet_anh_phi_phong.yml`
 
-- 9 short-lived particle anchors.
-- 3 wide shoulder points, 3 torso points, 2 lower points, 1 tail point.
-- Every point uses player-local `BACK` coordinates, so the cloak rotates with player yaw.
-- 5-tick refresh and ~0.32 s particle lifetime keep the silhouette attached to the player instead of turning into a movement trail.
+vào cùng đường dẫn trên server rồi chạy:
+
+`/cosmetics reload`
+
+Sau đó:
+
+`/cosmetics grant <player> back_huyet_anh_phi_phong`
+`/cosmetics equip back_huyet_anh_phi_phong`
+
+## Vanilla dust pseudo-id
+
+Format:
+
+`svframe_dust:RRGGBB/scale`
+
+Ví dụ `svframe_dust:7a0019/0.9` là đỏ huyết, scale 0.9. Renderer chuyển trực tiếp thành `DustParticleEffect`; không có asset client-side nào cần thêm.

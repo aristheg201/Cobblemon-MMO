@@ -4,12 +4,14 @@ import com.cobblemon.mod.common.net.messages.client.effect.SpawnSnowstormParticl
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Vector3f;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 
@@ -22,8 +24,14 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * AURA/HEAD/BACK/ORBIT are live player anchors. TRAIL and FOOTSTEP are movement emitters and are deliberately
  * the only slots that leave emissions behind the player. Particle ids are entirely definition-driven.
+ *
+ * The pseudo namespace svframe_dust renders vanilla DustParticleEffect directly and therefore never requires
+ * a resource pack. Format: svframe_dust:RRGGBB/scale, for example svframe_dust:7a0019/0.9.
  */
 final class CosmeticRenderer {
+    private static final String DUST_NAMESPACE = "svframe_dust";
+    private static final Map<String, DustParticleEffect> DUST_CACHE = new ConcurrentHashMap<>();
+
     private final Map<AmbientKey, Ambient> ambient = new ConcurrentHashMap<>();
     private long packetTick = Long.MIN_VALUE;
     private int packetsThisTick;
@@ -155,11 +163,20 @@ final class CosmeticRenderer {
         Identifier particle = Identifier.tryParse(cosmetic.particleId());
         if (particle == null) return;
 
+        DustParticleEffect dust = DUST_NAMESPACE.equals(particle.getNamespace())
+                ? dustEffect(particle.getPath()) : null;
+        if (DUST_NAMESPACE.equals(particle.getNamespace()) && dust == null) return;
+
         int viewerLimit = phase.maxViewers();
         int emitted = 0;
         for (ServerPlayerEntity viewer : PlayerLookup.around(caster.getServerWorld(), origin, phase.broadcastRadius())) {
             if (viewer.isDisconnected()) continue;
             if (emitted++ >= viewerLimit) break;
+
+            if (dust != null) {
+                if (claimPacket()) sendDust(viewer, dust, origin);
+                continue;
+            }
 
             boolean nativeSnowstorm = "cobblemon".equals(particle.getNamespace())
                     || "mega_showdown".equals(particle.getNamespace());
@@ -170,6 +187,33 @@ final class CosmeticRenderer {
             else if (!cosmetic.hideWithoutResourcePack())
                 sendFallback(viewer, cosmetic.fallback(), origin);
         }
+    }
+
+    private static DustParticleEffect dustEffect(String path) {
+        return DUST_CACHE.computeIfAbsent(path, CosmeticRenderer::parseDustEffect);
+    }
+
+    private static DustParticleEffect parseDustEffect(String path) {
+        try {
+            String[] parts = path.split("/", 2);
+            if (!parts[0].matches("[0-9a-fA-F]{6}")) return null;
+            int rgb = Integer.parseInt(parts[0], 16);
+            float red = ((rgb >> 16) & 0xFF) / 255f;
+            float green = ((rgb >> 8) & 0xFF) / 255f;
+            float blue = (rgb & 0xFF) / 255f;
+            float scale = parts.length > 1 ? Float.parseFloat(parts[1]) : 1.0f;
+            if (!Float.isFinite(scale)) return null;
+            scale = Math.max(0.01f, Math.min(4.0f, scale));
+            return new DustParticleEffect(new Vector3f(red, green, blue), scale);
+        } catch (RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    private static void sendDust(ServerPlayerEntity viewer, DustParticleEffect effect, Vec3d origin) {
+        viewer.networkHandler.sendPacket(new ParticleS2CPacket(effect, false,
+                origin.x, origin.y, origin.z,
+                0f, 0f, 0f, 0f, 1));
     }
 
     private void sendFallback(ServerPlayerEntity viewer, CosmeticDefinition.Fallback fallback, Vec3d origin) {

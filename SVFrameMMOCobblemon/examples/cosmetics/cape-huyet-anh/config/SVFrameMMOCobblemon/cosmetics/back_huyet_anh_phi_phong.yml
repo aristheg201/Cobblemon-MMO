@@ -1,9 +1,9 @@
 id: back_huyet_anh_phi_phong
 slot: BACK
 name: "Huyết Ảnh Phi Phong"
-particle: cobblemon_mmo:crimson_cloth
+particle: svframe_dust:7a0019/0.9
 permission: svframemmo.cobblemon.cosmetic
-hide-without-resource-pack: true
+hide-without-resource-pack: false
 
 phases:
   PREVIEW:
