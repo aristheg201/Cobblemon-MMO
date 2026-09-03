@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,7 +31,7 @@ public final class SVFrameLibFabricMod implements ModInitializer {
     private static final Path ROOT = FabricLoader.getInstance().getConfigDir().resolve("SVFrameLib");
     private static final Map<String, LegacySkillDefinition> SKILLS = new ConcurrentHashMap<>();
     private static final Map<String, String> SCRIPT_IDS = new ConcurrentHashMap<>();
-    private static final ConcurrentLinkedQueue<Scheduled> SCHEDULED = new ConcurrentLinkedQueue<>();
+    private static final PriorityBlockingQueue<Scheduled> SCHEDULED = new PriorityBlockingQueue<>();
     private static volatile ScriptEngine scripts = new ScriptEngine(new FabricScriptPlatform());
     private static volatile SVFrameLibGeneralSettings settings;
     private static volatile int customTriggers;
@@ -91,6 +91,6 @@ public final class SVFrameLibFabricMod implements ModInitializer {
     private static boolean bool(Object value,boolean fallback){if(value instanceof Boolean flag)return flag;return value==null?fallback:Boolean.parseBoolean(String.valueOf(value));}
     private static double number(Object value,double fallback){try{return value instanceof Number n?n.doubleValue():value==null?fallback:Double.parseDouble(String.valueOf(value));}catch(NumberFormatException ignored){return fallback;}}
     private static String norm(String value){return value==null?"":value.trim().toLowerCase(Locale.ROOT);} private static String normScriptId(String value){String normalized=norm(value);return normalized.startsWith("svframelib:")?normalized.substring("svframelib:".length()):normalized;}
-    private static void runScheduled(){int size=SCHEDULED.size();for(int i=0;i<size;i++){Scheduled scheduled=SCHEDULED.poll();if(scheduled==null)break;if(scheduled.tick<=tick){try{scheduled.task.run();}catch(Throwable throwable){LOG.log(Level.SEVERE,"Scheduled SVFrameLib task failed",throwable);}}else SCHEDULED.add(scheduled);}}
-    private record Scheduled(long tick,Runnable task){}
+    private static void runScheduled(){while(true){Scheduled scheduled=SCHEDULED.peek();if(scheduled==null||scheduled.tick>tick)return;scheduled=SCHEDULED.poll();if(scheduled==null)continue;try{scheduled.task.run();}catch(Throwable throwable){LOG.log(Level.SEVERE,"Scheduled SVFrameLib task failed",throwable);}}}
+    private record Scheduled(long tick,Runnable task) implements Comparable<Scheduled>{@Override public int compareTo(Scheduled other){return Long.compare(tick,other.tick);}}
 }

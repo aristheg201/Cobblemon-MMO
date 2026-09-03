@@ -27,7 +27,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /** Native Fabric/TextDisplay port of SVFrameLib 1.7.1 damage indicators. */
@@ -44,7 +43,7 @@ public final class SVFrameLibIndicatorManager {
                           boolean move, int period, long expiresAt) { }
 
     private static final Path CONFIG = SVFrameLibFabricMod.configRoot().resolve("indicators.yml");
-    private static final List<Active> ACTIVE = new CopyOnWriteArrayList<>();
+    private static final List<Active> ACTIVE = new ArrayList<>();
     private static final Map<DamageType, Icon> ICONS = new EnumMap<>(DamageType.class);
     private static volatile boolean enabled = true;
     private static volatile double minDamage = 0.1d;
@@ -133,11 +132,12 @@ public final class SVFrameLibIndicatorManager {
     }
 
     public static void tick(long tick) {
-        for (Active active : ACTIVE) {
+        for (int i = ACTIVE.size() - 1; i >= 0; i--) {
+            Active active = ACTIVE.get(i);
             DisplayEntity.TextDisplayEntity entity = active.entity();
             if (entity.isRemoved() || tick >= active.expiresAt()) {
                 entity.discard();
-                ACTIVE.remove(active);
+                ACTIVE.remove(i);
                 continue;
             }
             if (!active.move() || tick % active.period() != 0L) continue;
@@ -147,7 +147,7 @@ public final class SVFrameLibIndicatorManager {
                     entity.getY() + velocity.y * dt,
                     entity.getZ() + velocity.z * dt);
             Vec3d next = velocity.add(0.0d, -active.gravity() * dt, 0.0d);
-            ACTIVE.set(ACTIVE.indexOf(active), new Active(entity, next, active.gravity(), true, active.period(), active.expiresAt()));
+            ACTIVE.set(i, new Active(entity, next, active.gravity(), true, active.period(), active.expiresAt()));
         }
     }
 
