@@ -5,9 +5,9 @@ import com.cobblemon.mod.common.net.messages.client.effect.SpawnSnowstormParticl
 import com.cobblemon.mod.common.net.messages.client.sound.UnvalidatedPlaySoundS2CPacket;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -22,7 +22,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -175,14 +174,12 @@ public final class CobblemonMoveVfxService {
     }
 
     private static List<ServerPlayerEntity> viewers(ServerPlayerEntity caster, Vec3d position) {
-        ServerWorld world = caster.getServerWorld();
         var cfg = SVFrameMMOCobblemon.config().vfx;
         double radius = Math.max(1d, Math.min(64d, cfg.moveBroadcastRadius));
-        double radiusSq = radius * radius;
-        return world.getPlayers().stream()
-                .filter(viewer -> !viewer.isDisconnected() && viewer.squaredDistanceTo(position) <= radiusSq)
-                .sorted(Comparator.comparingDouble(viewer -> viewer.squaredDistanceTo(position)))
-                .limit(Math.max(1, Math.min(128, cfg.maxViewersPerEmission)))
+        int limit = Math.max(1, Math.min(128, cfg.maxViewersPerEmission));
+        return PlayerLookup.around(caster.getServerWorld(), position, radius).stream()
+                .filter(viewer -> !viewer.isDisconnected())
+                .limit(limit)
                 .toList();
     }
 
