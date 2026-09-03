@@ -6,7 +6,9 @@
     "ServerCommonNetworkHandlerMixin",
     "SpawnPokemonPacketMixin",
     "FusionStandPokemonEntityMixin",
-    "FusionStandEntityMixin"
+    "FusionStandEntityMixin",
+    "CosmeticServiceEmitterMixin",
+    "CosmeticRendererBackendMixin"
   ],
   "injectors": {
     "defaultRequire": 1

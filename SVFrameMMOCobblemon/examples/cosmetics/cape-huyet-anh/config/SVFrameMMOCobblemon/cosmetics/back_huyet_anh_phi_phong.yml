@@ -1,145 +1,217 @@
 id: back_huyet_anh_phi_phong
 slot: BACK
 name: "Huyết Ảnh Phi Phong"
-particle: svframe_dust:7a0019/0.9
 permission: svframemmo.cobblemon.cosmetic
+
+# Defaults inherited by every layer unless that layer overrides them.
+backend: MINECRAFT
+particle: minecraft:dust
+color: "#7A0019"
+scale: 0.90
+count: 2
+spread: 0.025
+speed: 0.0
 hide-without-resource-pack: false
 
 phases:
   PREVIEW:
-    - repetitions: 8
-      interval-ticks: 5
+    # Dust cloth: shoulder row.
+    - repetitions: 6
+      interval-ticks: 6
       anchor: BACK
-      offset-x: -0.36
+      offset-x: -0.38
       offset-y: 0.32
       offset-z: -0.28
       broadcast-radius: 24
       max-viewers: 24
-    - repetitions: 8
-      interval-ticks: 5
+    - repetitions: 6
+      interval-ticks: 6
       anchor: BACK
       offset-x: 0.00
       offset-y: 0.32
       offset-z: -0.30
       broadcast-radius: 24
       max-viewers: 24
-    - repetitions: 8
-      interval-ticks: 5
+    - repetitions: 6
+      interval-ticks: 6
       anchor: BACK
-      offset-x: 0.36
+      offset-x: 0.38
       offset-y: 0.32
       offset-z: -0.28
       broadcast-radius: 24
       max-viewers: 24
-    - repetitions: 8
-      interval-ticks: 5
+
+    # Dust cloth: middle row.
+    - repetitions: 6
+      interval-ticks: 6
       anchor: BACK
-      offset-x: -0.28
-      offset-y: -0.02
+      offset-x: -0.30
+      offset-y: 0.04
       offset-z: -0.36
       broadcast-radius: 24
       max-viewers: 24
-    - repetitions: 8
-      interval-ticks: 5
+    - repetitions: 6
+      interval-ticks: 6
       anchor: BACK
       offset-x: 0.00
-      offset-y: -0.02
-      offset-z: -0.40
+      offset-y: 0.04
+      offset-z: -0.39
       broadcast-radius: 24
       max-viewers: 24
-    - repetitions: 8
-      interval-ticks: 5
+    - repetitions: 6
+      interval-ticks: 6
       anchor: BACK
-      offset-x: 0.28
-      offset-y: -0.02
+      offset-x: 0.30
+      offset-y: 0.04
       offset-z: -0.36
       broadcast-radius: 24
       max-viewers: 24
-    - repetitions: 8
-      interval-ticks: 5
+
+    # Dust cloth: lower taper + tail.
+    - repetitions: 6
+      interval-ticks: 6
       anchor: BACK
-      offset-x: -0.18
-      offset-y: -0.34
-      offset-z: -0.46
+      offset-x: -0.20
+      offset-y: -0.26
+      offset-z: -0.44
       broadcast-radius: 24
       max-viewers: 24
-    - repetitions: 8
-      interval-ticks: 5
-      anchor: BACK
-      offset-x: 0.18
-      offset-y: -0.34
-      offset-z: -0.46
-      broadcast-radius: 24
-      max-viewers: 24
-    - repetitions: 8
-      interval-ticks: 5
+    - repetitions: 6
+      interval-ticks: 6
       anchor: BACK
       offset-x: 0.00
-      offset-y: -0.62
-      offset-z: -0.56
+      offset-y: -0.26
+      offset-z: -0.47
       broadcast-radius: 24
       max-viewers: 24
+    - repetitions: 6
+      interval-ticks: 6
+      anchor: BACK
+      offset-x: 0.20
+      offset-y: -0.26
+      offset-z: -0.44
+      broadcast-radius: 24
+      max-viewers: 24
+    - repetitions: 6
+      interval-ticks: 6
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.56
+      offset-z: -0.54
+      broadcast-radius: 24
+      max-viewers: 24
+
+    # Cobblemon Snowstorm accents on the cape clasps/shoulders.
+    - backend: COBBLEMON
+      particle: cobblemon:shadowclaw_target
+      repetitions: 3
+      interval-ticks: 10
+      anchor: BACK
+      offset-x: -0.44
+      offset-y: 0.31
+      offset-z: -0.30
+      broadcast-radius: 24
+      max-viewers: 24
+    - backend: COBBLEMON
+      particle: cobblemon:shadowclaw_target
+      repetitions: 3
+      interval-ticks: 10
+      anchor: BACK
+      offset-x: 0.44
+      offset-y: 0.31
+      offset-z: -0.30
+      broadcast-radius: 24
+      max-viewers: 24
+
   WHILE_EQUIPPED:
-    - interval-ticks: 5
+    # Minecraft dust builds the cloth silhouette. It follows player yaw through BACK local offsets.
+    - interval-ticks: 6
       anchor: BACK
-      offset-x: -0.36
+      offset-x: -0.38
       offset-y: 0.32
       offset-z: -0.28
       broadcast-radius: 24
       max-viewers: 24
-    - interval-ticks: 5
+    - interval-ticks: 6
       anchor: BACK
       offset-x: 0.00
       offset-y: 0.32
       offset-z: -0.30
       broadcast-radius: 24
       max-viewers: 24
-    - interval-ticks: 5
+    - interval-ticks: 6
       anchor: BACK
-      offset-x: 0.36
+      offset-x: 0.38
       offset-y: 0.32
       offset-z: -0.28
       broadcast-radius: 24
       max-viewers: 24
-    - interval-ticks: 5
+    - interval-ticks: 6
       anchor: BACK
-      offset-x: -0.28
-      offset-y: -0.02
+      offset-x: -0.30
+      offset-y: 0.04
       offset-z: -0.36
       broadcast-radius: 24
       max-viewers: 24
-    - interval-ticks: 5
+    - interval-ticks: 6
       anchor: BACK
       offset-x: 0.00
-      offset-y: -0.02
-      offset-z: -0.40
+      offset-y: 0.04
+      offset-z: -0.39
       broadcast-radius: 24
       max-viewers: 24
-    - interval-ticks: 5
+    - interval-ticks: 6
       anchor: BACK
-      offset-x: 0.28
-      offset-y: -0.02
+      offset-x: 0.30
+      offset-y: 0.04
       offset-z: -0.36
       broadcast-radius: 24
       max-viewers: 24
-    - interval-ticks: 5
+    - interval-ticks: 6
       anchor: BACK
-      offset-x: -0.18
-      offset-y: -0.34
-      offset-z: -0.46
+      offset-x: -0.20
+      offset-y: -0.26
+      offset-z: -0.44
       broadcast-radius: 24
       max-viewers: 24
-    - interval-ticks: 5
-      anchor: BACK
-      offset-x: 0.18
-      offset-y: -0.34
-      offset-z: -0.46
-      broadcast-radius: 24
-      max-viewers: 24
-    - interval-ticks: 5
+    - interval-ticks: 6
       anchor: BACK
       offset-x: 0.00
-      offset-y: -0.62
-      offset-z: -0.56
+      offset-y: -0.26
+      offset-z: -0.47
+      broadcast-radius: 24
+      max-viewers: 24
+    - interval-ticks: 6
+      anchor: BACK
+      offset-x: 0.20
+      offset-y: -0.26
+      offset-z: -0.44
+      broadcast-radius: 24
+      max-viewers: 24
+    - interval-ticks: 6
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.56
+      offset-z: -0.54
+      broadcast-radius: 24
+      max-viewers: 24
+
+    # Cobblemon native Snowstorm accents. No custom resource-pack asset is used.
+    - backend: COBBLEMON
+      particle: cobblemon:shadowclaw_target
+      interval-ticks: 18
+      anchor: BACK
+      offset-x: -0.44
+      offset-y: 0.31
+      offset-z: -0.30
+      broadcast-radius: 24
+      max-viewers: 24
+    - backend: COBBLEMON
+      particle: cobblemon:shadowclaw_target
+      interval-ticks: 18
+      anchor: BACK
+      offset-x: 0.44
+      offset-y: 0.31
+      offset-z: -0.30
       broadcast-radius: 24
       max-viewers: 24

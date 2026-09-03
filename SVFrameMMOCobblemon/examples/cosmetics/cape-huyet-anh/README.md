@@ -1,11 +1,11 @@
 # Huyết Ảnh Phi Phong
 
-Particle cape thuần server-side, không cần resource pack.
+Particle cape dùng **hai backend trong cùng một cosmetic**, không có custom resource-pack asset:
 
-- Slot: `BACK`
-- Particle: `svframe_dust:7a0019/0.9`
-- Renderer xoay toàn bộ local offsets theo hướng nhìn của player, nên áo choàng luôn nằm sau lưng.
-- Không có Snowstorm JSON/PNG, không Polymer asset, không merge/generate resource pack.
+- `MINECRAFT`: `minecraft:dust` màu đỏ huyết dựng thân áo.
+- `COBBLEMON`: `cobblemon:shadowclaw_target` làm điểm nhấn ở hai vai.
+- `BACK` local offsets được xoay theo hướng nhìn của player, nên toàn bộ silhouette luôn nằm sau lưng.
+- Không có Snowstorm JSON/PNG riêng, không cần merge/generate resource pack.
 
 ## Cài đặt
 
@@ -22,10 +22,28 @@ Sau đó:
 `/cosmetics grant <player> back_huyet_anh_phi_phong`
 `/cosmetics equip back_huyet_anh_phi_phong`
 
-## Vanilla dust pseudo-id
+## Backend theo layer
 
-Format:
+Root của YAML là default. Mỗi layer có thể override riêng:
 
-`svframe_dust:RRGGBB/scale`
+```yaml
+backend: MINECRAFT
+particle: minecraft:dust
+color: "#7A0019"
+scale: 0.90
 
-Ví dụ `svframe_dust:7a0019/0.9` là đỏ huyết, scale 0.9. Renderer chuyển trực tiếp thành `DustParticleEffect`; không có asset client-side nào cần thêm.
+phases:
+  WHILE_EQUIPPED:
+    - anchor: BACK
+      offset-x: 0.0
+      offset-y: 0.2
+      offset-z: -0.3
+    - backend: COBBLEMON
+      particle: cobblemon:shadowclaw_target
+      anchor: BACK
+      offset-x: 0.4
+      offset-y: 0.3
+      offset-z: -0.3
+```
+
+`AUTO` vẫn là mặc định để YAML cũ chạy: `minecraft:*` đi native Minecraft; namespace khác đi Snowstorm. Legacy `svframe_dust:RRGGBB/scale` vẫn được đọc để không làm hỏng config 0.1.14, nhưng config mới nên dùng `minecraft:dust` + `color` + `scale`.
