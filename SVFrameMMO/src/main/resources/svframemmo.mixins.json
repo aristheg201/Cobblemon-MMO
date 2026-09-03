@@ -25,6 +25,7 @@
     "PlayerVanillaExperienceMixin",
     "PlayerDataUnlockEventMixin",
     "CommandManagerMixin",
+    "SkillBarRuntimeTickMixin",
     "DisplayEntityAccessor",
     "TextDisplayEntityAccessor",
     "CraftingScreenHandlerAccessor",
