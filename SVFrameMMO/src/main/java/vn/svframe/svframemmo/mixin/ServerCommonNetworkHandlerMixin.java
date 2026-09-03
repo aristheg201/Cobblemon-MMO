@@ -11,22 +11,20 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import vn.svframe.svframemmo.SVFrameMMO;
+import vn.svframe.svframemmo.player.ResourceRegenRuntime;
 import vn.svframe.svframemmo.runtime.PersistentHudRuntime;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Keeps the vanilla heart renderer at the configured visual size without ever
- * modifying authoritative health. Only packets sent to the owning player are
- * rewritten; server MAX_HEALTH/current health and packets seen by other clients
- * retain their real values.
+ * Keeps the vanilla heart renderer at the configured visual size without ever modifying authoritative health.
  *
- * ClientPlayerEntity interprets a lower HealthUpdateS2CPacket value as damage.
- * MAX_HEALTH/stat refreshes can change the proportional visual value even when
- * authoritative health stayed equal or increased, which used to create a false
- * hurt response while regenerating. Keep the visual value monotonic whenever the
- * authoritative health did not decrease; real damage still produces a decrease.
+ * Minecraft 1.21.1 ClientPlayerEntity.updateHealth() treats any lower HealthUpdateS2CPacket value as damage and sets
+ * hurtTime/maxHurtTime even when the server never damaged the player. SVFrameMMO therefore keeps the visual value
+ * monotonic across positive regeneration and across the short sync window immediately following that regeneration.
+ * A genuine server-side hit still has hurtTime set on ServerPlayerEntity and is allowed through normally.
  */
 @Mixin(ServerCommonNetworkHandler.class)
 public abstract class ServerCommonNetworkHandlerMixin {
@@ -40,40 +38,37 @@ public abstract class ServerCommonNetworkHandlerMixin {
         if (player == null) return original;
 
         double cap = PersistentHudRuntime.visualHealthCap();
-        if (!Double.isFinite(cap) || cap <= 0d) return original;
         double actualMax = player.getMaxHealth();
-        if (!Double.isFinite(actualMax) || actualMax <= 0d) return original;
+        boolean scaleHealth = Double.isFinite(cap) && cap > 0d
+                && Double.isFinite(actualMax) && actualMax > cap + 1.0e-4d;
 
         if (original instanceof HealthUpdateS2CPacket health) {
             float actual = health.getHealth();
+            float visible = actual;
+            if (scaleHealth && actual > 0f)
+                visible = (float) Math.max(0d, Math.min(cap, cap * actual / actualMax));
 
-            // Below the visual cap no masking is required. Still remember the
-            // authoritative/visible pair so crossing the cap cannot be mistaken
-            // for damage by the client on the next packet.
-            if (actualMax <= cap + 1.0e-4d) {
-                svframe$lastActualHealth = actual;
-                svframe$lastVisibleHealth = actual;
-                return original;
-            }
-
-            float visible = actual <= 0f
-                    ? actual
-                    : (float) Math.max(0d, Math.min(cap, cap * actual / actualMax));
-
-            boolean authoritativeDidNotDecrease = Float.isFinite(svframe$lastActualHealth)
+            boolean actualDidNotDecrease = Float.isFinite(svframe$lastActualHealth)
                     && actual + 1.0e-4f >= svframe$lastActualHealth;
-            if (authoritativeDidNotDecrease
-                    && Float.isFinite(svframe$lastVisibleHealth)
-                    && visible < svframe$lastVisibleHealth) {
-                visible = (float) Math.min(cap, svframe$lastVisibleHealth);
+            boolean visualWouldDecrease = Float.isFinite(svframe$lastVisibleHealth)
+                    && visible + 1.0e-4f < svframe$lastVisibleHealth;
+            boolean regenSync = ResourceRegenRuntime.recentlyRegeneratedHealth(player.getUuid(), SVFrameMMO.currentTick());
+            boolean genuineDamageActive = player.hurtTime > 0;
+
+            // Never turn an increase/no-change into client-side hurt. Also suppress a transient lower packet belonging
+            // to the immediate post-regeneration sync unless the server is actually processing a real hurt state.
+            if (actual > 0f && visualWouldDecrease
+                    && (actualDidNotDecrease || (regenSync && !genuineDamageActive))) {
+                visible = svframe$lastVisibleHealth;
             }
 
             svframe$lastActualHealth = actual;
             svframe$lastVisibleHealth = visible;
+            if (Float.compare(visible, actual) == 0) return original;
             return new HealthUpdateS2CPacket(visible, health.getFood(), health.getSaturation());
         }
 
-        if (actualMax <= cap + 1.0e-4d) return original;
+        if (!scaleHealth) return original;
         if (original instanceof EntityAttributesS2CPacket attributes && attributes.getEntityId() == player.getId()) {
             List<EntityAttributesS2CPacket.Entry> entries = new ArrayList<>(attributes.getEntries());
             boolean changed = false;
