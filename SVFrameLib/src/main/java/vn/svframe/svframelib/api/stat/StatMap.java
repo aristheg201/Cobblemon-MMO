@@ -5,6 +5,7 @@ import vn.svframe.svframelib.api.player.EquipmentSlot;
 import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframelib.api.stat.handler.StatHandler;
 import vn.svframe.svframelib.api.stat.provider.PlayerStatProvider;
+import vn.svframe.svframelib.fabric.SVFrameLibStatMod;
 import vn.svframe.svframelib.player.PlayerDataMap;
 import vn.svframe.svframelib.player.PlayerMetadata;
 
@@ -71,10 +72,16 @@ public class StatMap extends PlayerDataMap implements PlayerStatProvider {
         return updatesBuffered.get() > 0 || !sessionOpen;
     }
 
+    /**
+     * Coalesces both the public 1.7.1 update contract and the native Fabric
+     * attribute bridge. Without the native batch, each modifier mutation can
+     * push an intermediate vanilla attribute value even though callers are
+     * explicitly buffering a group of stat changes.
+     */
     public void bufferUpdates(Runnable runnable) {
         updatesBuffered.incrementAndGet();
         try {
-            runnable.run();
+            SVFrameLibStatMod.engine().bufferUpdates(data.getUniqueId(), runnable);
         } finally {
             int left = updatesBuffered.decrementAndGet();
             if (left == 0 && sessionOpen) stats.values().forEach(StatInstance::releaseUpdates);
