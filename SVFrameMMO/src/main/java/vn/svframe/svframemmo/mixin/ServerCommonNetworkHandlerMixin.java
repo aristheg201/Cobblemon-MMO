@@ -45,7 +45,7 @@ public abstract class ServerCommonNetworkHandlerMixin {
             boolean changed = false;
             for (int i = 0; i < entries.size(); i++) {
                 EntityAttributesS2CPacket.Entry entry = entries.get(i);
-                if (!entry.attribute().equals(EntityAttributes.MAX_HEALTH)) continue;
+                if (!entry.attribute().equals(EntityAttributes.GENERIC_MAX_HEALTH)) continue;
                 entries.set(i, new EntityAttributesS2CPacket.Entry(entry.attribute(), cap, List.of()));
                 changed = true;
             }
