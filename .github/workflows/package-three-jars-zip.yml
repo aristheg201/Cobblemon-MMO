@@ -1,0 +1,82 @@
+name: Package Latest Three JARs ZIP
+
+on:
+  push:
+    branches: [svframemmo-cobblemon-integration-1.21.1]
+    paths: ['.github/workflows/package-three-jars-zip.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: svframemmo-cobblemon-integration-1.21.1
+          fetch-depth: 1
+
+      - name: Sync dedicated SVFrameLib
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframelib-fabric-1.21.1
+          rm -rf SVFrameLib
+          git checkout FETCH_HEAD -- SVFrameLib
+          echo "SVFRAMELIB_SHA=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_ENV"
+
+      - name: Sync dedicated SVFrameMMO
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframemmo-fabric-1.21.1
+          rm -rf SVFrameMMO
+          git checkout FETCH_HEAD -- SVFrameMMO
+          echo "SVFRAMEMMO_SHA=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
+      - name: Build SVFrameLib
+        run: cd SVFrameLib && gradle --no-daemon clean test remapJar
+
+      - name: Build SVFrameMMO
+        run: cd SVFrameMMO && gradle --no-daemon clean test remapJar
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.2.0'
+
+      - name: Build Cobblemon integration
+        run: cd SVFrameMMOCobblemon && gradle --no-daemon --stacktrace clean test nativeIntegrationSmoke remapJar
+
+      - name: Assemble single ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p package
+          cp SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar package/
+          cp SVFrameMMO/build/libs/SVFrameMMO-1.13.1-fabric.jar package/
+          integration_jar=$(find SVFrameMMOCobblemon/build/libs -maxdepth 1 -type f -name 'SVFrameMMO-Cobblemon-Integration-*.jar' ! -name '*sources*' | head -n 1)
+          test -n "$integration_jar"
+          cp "$integration_jar" package/
+          (cd package && sha256sum *.jar > SHA256.txt)
+          zip -j -9 SVFrame-3-JARs-latest.zip package/*.jar package/SHA256.txt
+          unzip -l SVFrame-3-JARs-latest.zip
+
+      - name: Upload single ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: SVFrame-3-JARs-latest
+          path: SVFrame-3-JARs-latest.zip
+          if-no-files-found: error
+          retention-days: 14
