@@ -26,8 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * the only slots that leave emissions behind the player. Each phase may independently select a Minecraft or
  * Cobblemon Snowstorm backend through CosmeticEmitterMetadata.
  *
- * BACK layers may opt into motion-drag / motion-lift / sway metadata. Those effects only move the emission origin;
- * they do not schedule extra emissions or packets, so a flowing cape costs the same packet count as a static one.
+ * Any live-anchor layer may opt into motion-drag / motion-lift / sway metadata from YAML. The renderer contains
+ * no cosmetic-specific motion rules: absent YAML metadata means a static anchor. Motion only changes the origin
+ * of an emission that would already have happened, so it does not schedule extra emissions or packets.
  *
  * The pseudo namespace svframe_dust renders vanilla DustParticleEffect directly and therefore never requires
  * a resource pack. Format: svframe_dust:RRGGBB/scale, for example svframe_dust:7a0019/0.9.
@@ -154,12 +155,11 @@ final class CosmeticRenderer {
 
         Vec3d origin = localOffset(player, base,
                 phase.offsetX() + extraLocalX, phase.offsetY(), phase.offsetZ());
-        if (slot != CosmeticDefinition.Slot.BACK) return origin;
-        return applyBackMotion(player, origin, CosmeticEmitterMetadata.emitter(definition, phase), tick);
+        return applyConfiguredMotion(player, origin, CosmeticEmitterMetadata.emitter(definition, phase), tick);
     }
 
-    private static Vec3d applyBackMotion(ServerPlayerEntity player, Vec3d origin,
-                                         CosmeticEmitterMetadata.Emitter emitter, long tick) {
+    private static Vec3d applyConfiguredMotion(ServerPlayerEntity player, Vec3d origin,
+                                               CosmeticEmitterMetadata.Emitter emitter, long tick) {
         if (emitter == null) return origin;
 
         Vec3d velocity = player.getVelocity();
