@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-/** Timestamp cooldown storage. No per-player scheduler; cooldowns persist across server restarts. */
+/** Timestamp cooldown storage with serialized async disk IO; cooldowns persist across server restarts. */
 public final class FusionCooldowns {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private final Map<UUID, Long> potaraUntil = new ConcurrentHashMap<>();
