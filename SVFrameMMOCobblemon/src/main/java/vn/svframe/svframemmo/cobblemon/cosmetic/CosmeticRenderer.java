@@ -26,6 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * the only slots that leave emissions behind the player. Each phase may independently select a Minecraft or
  * Cobblemon Snowstorm backend through CosmeticEmitterMetadata.
  *
+ * BACK layers may opt into motion-drag / motion-lift / sway metadata. Those effects only move the emission origin;
+ * they do not schedule extra emissions or packets, so a flowing cape costs the same packet count as a static one.
+ *
  * The pseudo namespace svframe_dust renders vanilla DustParticleEffect directly and therefore never requires
  * a resource pack. Format: svframe_dust:RRGGBB/scale, for example svframe_dust:7a0019/0.9.
  */
@@ -127,12 +130,13 @@ final class CosmeticRenderer {
     private void emitAtCurrentAnchor(ServerPlayerEntity player, CosmeticDefinition definition,
                                      CosmeticDefinition.Phase phase, long tick, int emissionIndex, double extraLocalX) {
         if (player.isDisconnected() || !player.isAlive()) return;
-        Vec3d origin = resolveAnchor(player, definition.slot(), phase, tick, emissionIndex, extraLocalX);
+        Vec3d origin = resolveAnchor(player, definition, phase, tick, emissionIndex, extraLocalX);
         emitAt(player, definition, phase, origin);
     }
 
-    private Vec3d resolveAnchor(ServerPlayerEntity player, CosmeticDefinition.Slot slot,
+    private Vec3d resolveAnchor(ServerPlayerEntity player, CosmeticDefinition definition,
                                 CosmeticDefinition.Phase phase, long tick, int emissionIndex, double extraLocalX) {
+        CosmeticDefinition.Slot slot = definition.slot();
         CosmeticDefinition.Anchor anchor = phase.anchor();
         Vec3d base = switch (anchor) {
             case FEET -> player.getPos().add(0d, 0.08d, 0d);
@@ -148,15 +152,46 @@ final class CosmeticRenderer {
             base = base.add(Math.cos(angle) * phase.orbitRadius(), 0d, Math.sin(angle) * phase.orbitRadius());
         }
 
-        return localOffset(player, base, phase.offsetX() + extraLocalX, phase.offsetY(), phase.offsetZ());
+        Vec3d origin = localOffset(player, base,
+                phase.offsetX() + extraLocalX, phase.offsetY(), phase.offsetZ());
+        if (slot != CosmeticDefinition.Slot.BACK) return origin;
+        return applyBackMotion(player, origin, CosmeticEmitterMetadata.emitter(definition, phase), tick);
     }
 
-    private static Vec3d localOffset(ServerPlayerEntity player, Vec3d base, double localX, double localY, double localZ) {
+    private static Vec3d applyBackMotion(ServerPlayerEntity player, Vec3d origin,
+                                         CosmeticEmitterMetadata.Emitter emitter, long tick) {
+        if (emitter == null) return origin;
+
+        Vec3d velocity = player.getVelocity();
+        double horizontalSq = velocity.x * velocity.x + velocity.z * velocity.z;
+        if (emitter.motionDrag() > 0d && horizontalSq > 1.0e-8d) {
+            origin = origin.subtract(velocity.x * emitter.motionDrag(), 0d,
+                    velocity.z * emitter.motionDrag());
+        }
+        if (emitter.motionLift() > 0d && horizontalSq > 1.0e-8d) {
+            double lift = Math.min(0.70d, Math.sqrt(horizontalSq) * emitter.motionLift());
+            origin = origin.add(0d, lift, 0d);
+        }
+        if (emitter.swayAmplitude() > 0d) {
+            int period = Math.max(4, emitter.swayPeriodTicks());
+            long phaseTick = Math.floorMod(tick + emitter.swayOffsetTicks(), period);
+            double angle = Math.PI * 2d * phaseTick / period;
+            origin = origin.add(horizontalRight(player).multiply(Math.sin(angle) * emitter.swayAmplitude()));
+        }
+        return origin;
+    }
+
+    private static Vec3d horizontalRight(ServerPlayerEntity player) {
         Vec3d look = player.getRotationVec(1f);
         Vec3d forward = new Vec3d(look.x, 0d, look.z);
         if (forward.lengthSquared() < 1.0e-8d) forward = new Vec3d(0d, 0d, 1d);
         else forward = forward.normalize();
-        Vec3d right = new Vec3d(-forward.z, 0d, forward.x);
+        return new Vec3d(-forward.z, 0d, forward.x);
+    }
+
+    private static Vec3d localOffset(ServerPlayerEntity player, Vec3d base, double localX, double localY, double localZ) {
+        Vec3d right = horizontalRight(player);
+        Vec3d forward = new Vec3d(right.z, 0d, -right.x);
         return base.add(right.multiply(localX)).add(0d, localY, 0d).add(forward.multiply(localZ));
     }
 
