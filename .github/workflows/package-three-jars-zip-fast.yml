@@ -1,0 +1,56 @@
+name: Package Latest Validated Three JARs ZIP Fast
+
+on:
+  push:
+    branches: [svframemmo-cobblemon-integration-1.21.1]
+    paths: ['.github/workflows/package-three-jars-zip-fast.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: svframemmo-cobblemon-integration-1.21.1
+          fetch-depth: 1
+
+      - name: Fetch latest validated Lib and MMO jars
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframelib-fabric-1.21.1
+          LIB_SHA=$(git rev-parse FETCH_HEAD)
+          git checkout FETCH_HEAD -- SVFrameLib/dist/SVFrameLib-1.7.1-fabric.jar SVFrameLib/dist/SVFrameLib-1.7.1-fabric.sha256
+
+          git fetch --no-tags --depth=1 origin svframemmo-fabric-1.21.1
+          MMO_SHA=$(git rev-parse FETCH_HEAD)
+          git checkout FETCH_HEAD -- SVFrameMMO/validated/SVFrameMMO-1.13.1-fabric.jar SVFrameMMO/validated/SVFrameMMO-1.13.1-fabric.sha256
+
+          echo "LIB_SHA=$LIB_SHA" >> "$GITHUB_ENV"
+          echo "MMO_SHA=$MMO_SHA" >> "$GITHUB_ENV"
+
+      - name: Assemble ZIP from validated jars
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p package
+          cp SVFrameLib/dist/SVFrameLib-1.7.1-fabric.jar package/
+          cp SVFrameMMO/validated/SVFrameMMO-1.13.1-fabric.jar package/
+          cp SVFrameMMOCobblemon/validated/SVFrameMMO-Cobblemon-Integration-0.1.15.jar package/
+          (cd package && sha256sum *.jar > SHA256.txt)
+          printf 'SVFrameLib branch: %s\nSVFrameMMO branch: %s\nIntegration branch: %s\n' "$LIB_SHA" "$MMO_SHA" "$GITHUB_SHA" > package/COMMITS.txt
+          zip -j -9 SVFrame-3-JARs-latest.zip package/*.jar package/SHA256.txt package/COMMITS.txt
+          unzip -l SVFrame-3-JARs-latest.zip
+
+      - name: Upload single ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: SVFrame-3-JARs-latest-fast
+          path: SVFrame-3-JARs-latest.zip
+          if-no-files-found: error
+          retention-days: 14
