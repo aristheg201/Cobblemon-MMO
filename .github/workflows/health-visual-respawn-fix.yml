@@ -1,0 +1,160 @@
+name: SVFrameMMO Two Row Health Visual Respawn Fix
+
+on:
+  push:
+    branches: [svframemmo-fabric-1.21.1]
+    paths:
+      - '.github/workflows/health-visual-respawn-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: svframemmo-fabric-1.21.1
+          fetch-depth: 1
+
+      - name: Apply two-row visual and respawn fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def patch(path, old, new, count=1):
+              p = Path(path)
+              text = p.read_text()
+              found = text.count(old)
+              if found != count:
+                  raise SystemExit(f"{path}: expected {count} occurrences, found {found}")
+              p.write_text(text.replace(old, new, count))
+
+          # Packet transform: only touch health/attribute packets, and map real HP ratio onto
+          # a 40-HP client presentation (20 hearts / 2 rows). Server-side HP is never changed here.
+          path = 'SVFrameMMO/src/main/java/vn/svframe/svframemmo/mixin/ServerCommonNetworkHandlerMixin.java'
+          patch(path,
+              '''    private Packet<?> svframe$maskLocalHealth(Packet<?> original) {\n        if (!((Object) this instanceof ServerPlayNetworkHandler play)) return original;\n''',
+              '''    private Packet<?> svframe$maskLocalHealth(Packet<?> original) {\n        // send() is a very hot path. Ignore every unrelated packet before resolving player/attributes.\n        if (!(original instanceof HealthUpdateS2CPacket)\n                && !(original instanceof EntityAttributesS2CPacket)) return original;\n        if (!((Object) this instanceof ServerPlayNetworkHandler play)) return original;\n''')
+          patch(path,
+              '''        if (original instanceof HealthUpdateS2CPacket health) {\n            float actual = health.getHealth();\n            if (actual <= 0f) return original;\n            float visible = (float) Math.min(cap, actual);\n            if (Float.compare(visible, actual) == 0) return original;\n            return new HealthUpdateS2CPacket(visible, health.getFood(), health.getSaturation());\n        }\n''',
+              '''        if (original instanceof HealthUpdateS2CPacket health) {\n            float actual = health.getHealth();\n            if (!Float.isFinite(actual)) return original;\n            float visible = (float) Math.max(0.0d, Math.min(cap, actual / actualMax * cap));\n            if (Float.compare(visible, actual) == 0) return original;\n            return new HealthUpdateS2CPacket(visible, health.getFood(), health.getSaturation());\n        }\n''')
+          patch(path,
+              ''' * Do not proportionally remap current health against MAX_HEALTH here. Minecraft 1.21.1 treats any lower\n * HealthUpdateS2CPacket value as damage, so a MAX_HEALTH increase could otherwise make a healing player appear hurt.\n * Instead the presentation is a direct clamp: current visual health is min(real health, visual cap), and visual\n * MAX_HEALTH is capped to the same value. Exact real health/max-health remain available through SVFrameMMO's HUD.\n''',
+              ''' * The owning client receives a proportional health presentation capped to the configured vanilla-heart budget.\n * With the default cap of 40 HP, the client renders at most 20 hearts / two rows while server-side current/max health\n * remain authoritative and uncapped. Exact real health/max-health remain available through SVFrameMMO's numeric HUD.\n''')
+
+          # Dedicated respawn runtime. Rebind persistent MMO state to the replacement ServerPlayerEntity.
+          # Death respawns refill to the real max after attributes have rebound; alive clones preserve health.
+          respawn = Path('SVFrameMMO/src/main/java/vn/svframe/svframemmo/runtime/PlayerRespawnRuntime.java')
+          respawn.write_text('''package vn.svframe.svframemmo.runtime;\n\nimport net.fabricmc.api.ModInitializer;\nimport net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;\nimport net.minecraft.server.network.ServerPlayerEntity;\nimport vn.svframe.svframelib.player.resource.ResourceUpdateReason;\nimport vn.svframe.svframemmo.SVFrameMMO;\nimport vn.svframe.svframemmo.api.player.PlayerData;\nimport vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;\n\n/** Rebinds persistent MMO state when Minecraft replaces the player entity during respawn/clone. */\npublic final class PlayerRespawnRuntime implements ModInitializer {\n    @Override\n    public void onInitialize() {\n        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {\n            float previousHealth = oldPlayer.getHealth();\n            SVFrameMMO.playerData().join(newPlayer);\n\n            // Try immediately in case SVFrameLib already rebound its attribute handlers.\n            restoreHealth(newPlayer, alive, previousHealth);\n\n            // Also queue once after every AFTER_RESPAWN listener has run. This makes the result independent\n            // of mod listener registration order and guarantees MAX_HEALTH is the real rebound value.\n            var server = newPlayer.getServer();\n            if (server != null) server.execute(() -> restoreHealth(newPlayer, alive, previousHealth));\n        });\n    }\n\n    private static void restoreHealth(ServerPlayerEntity player, boolean alive, float previousHealth) {\n        if (player == null || player.isDisconnected()) return;\n        PlayerData data = SVFrameMMO.playerData().get(player);\n        double max = data.getMaxResource(PlayerResource.HEALTH);\n        double target = alive ? Math.min(Math.max(0.0d, previousHealth), max) : max;\n        data.setResource(PlayerResource.HEALTH, target, ResourceUpdateReason.CHOOSE_CLASS);\n    }\n}\n''')
+
+          path = 'SVFrameMMO/src/main/resources/fabric.mod.json'
+          patch(path,
+              '''      "vn.svframe.svframemmo.runtime.PersistentHudRuntime",\n''',
+              '''      "vn.svframe.svframemmo.runtime.PersistentHudRuntime",\n      "vn.svframe.svframemmo.runtime.PlayerRespawnRuntime",\n''')
+
+          print('Applied SVFrameMMO two-row health visual + respawn fixes')
+          PY
+
+      - name: Sync validated SVFrameLib branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframelib-fabric-1.21.1
+          LIB_SHA="$(git rev-parse FETCH_HEAD)"
+          rm -rf SVFrameLib
+          git checkout FETCH_HEAD -- SVFrameLib
+          echo "Using SVFrameLib $LIB_SHA"
+          test "$LIB_SHA" != "2cf888f866a08d383f6ebbe098560afc1d907897"
+          grep -q 'ServerPlayerEvents.AFTER_RESPAWN' SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/SVFrameLibStatMod.java
+          grep -q 'EXTERNAL_HEALTH_PRESENTATION' SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/SVFrameLibHealthScale.java
+
+      - name: Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Gradle 8.8
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
+      - name: Build dedicated SVFrameLib
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameLib
+          gradle --no-daemon --stacktrace clean test remapJar
+
+      - name: Build and test SVFrameMMO
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameMMO
+          gradle --no-daemon --stacktrace clean test remapJar
+          gradle --no-daemon nativeCoreSmoke
+
+      - name: Verify health invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          MIXIN=SVFrameMMO/src/main/java/vn/svframe/svframemmo/mixin/ServerCommonNetworkHandlerMixin.java
+          RESP=SVFrameMMO/src/main/java/vn/svframe/svframemmo/runtime/PlayerRespawnRuntime.java
+          CFG=SVFrameMMO/src/main/resources/defaults/config.yml
+          grep -q 'max-vanilla-health: 40' "$CFG"
+          grep -q 'actual / actualMax \* cap' "$MIXIN"
+          grep -q 'original instanceof HealthUpdateS2CPacket' "$MIXIN"
+          grep -q 'original instanceof EntityAttributesS2CPacket' "$MIXIN"
+          grep -q 'ServerPlayerEvents.AFTER_RESPAWN' "$RESP"
+          grep -q 'data.getMaxResource(PlayerResource.HEALTH)' "$RESP"
+          grep -q 'PlayerRespawnRuntime' SVFrameMMO/src/main/resources/fabric.mod.json
+          ! grep -q 'player.setHealth(40' "$MIXIN"
+
+      - name: Combined Fabric server boot
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameMMO
+          rm -rf run/config/SVFrameMMO run/svframemmo-userdata
+          mkdir -p run
+          printf 'eula=true\n' > run/eula.txt
+          set +e
+          timeout 90s gradle --no-daemon --stacktrace runServer > build/health-visual-server.log 2>&1
+          status=$?
+          set -e
+          cat build/health-visual-server.log
+          if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
+          grep -q 'SVFrameLib online' build/health-visual-server.log
+          grep -Eq 'SVFrameMMO Fabric online;' build/health-visual-server.log
+          grep -q 'Done (' build/health-visual-server.log
+          ! grep -Eq 'Mixin apply failed|Could not execute entrypoint stage|Exception in server tick loop|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError' build/health-visual-server.log
+
+      - name: Stage validated JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p SVFrameMMO/validated
+          JAR="$(find SVFrameMMO/build/libs -maxdepth 1 -type f -name 'SVFrameMMO-*.jar' ! -name '*sources*' | head -1)"
+          test -s "$JAR"
+          cp "$JAR" SVFrameMMO/validated/SVFrameMMO-1.13.1-fabric.jar
+          sha256sum "$JAR" > SVFrameMMO/validated/SVFrameMMO-1.13.1-fabric.sha256
+          cp SVFrameMMO/build/health-visual-server.log SVFrameMMO/validated/server-boot.log
+
+      - name: Commit validated fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SVFrame Health Fix'
+          git config user.email 'actions@users.noreply.github.com'
+          git add SVFrameMMO/src SVFrameMMO/validated
+          if ! git diff --cached --quiet; then
+            git commit -m 'Keep two-row hearts visual-only and fix respawn health [skip ci]'
+            git push origin HEAD:svframemmo-fabric-1.21.1
+          fi
