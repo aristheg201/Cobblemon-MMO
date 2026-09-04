@@ -30,7 +30,9 @@ import net.minecraft.world.World;
 import vn.svframe.svframemmo.cobblemon.fusion.render.FusionRawPacketSender;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -237,38 +239,52 @@ public final class FusionVisualBridge {
         state.playerEntityId = player.getId();
         state.worldKey = player.getServerWorld().getRegistryKey();
         state.frame = syncStandState(player, state.visual);
+        state.lastTransform = null;
         state.viewers.clear();
         registerCollisionlessStand(player.getServer(), state.visual);
         syncViewers(player, state, true);
     }
 
     private void syncViewers(ServerPlayerEntity player, State state, boolean sendMetadata) {
-        Set<UUID> current = new HashSet<>();
-        current.add(player.getUuid());
-        for (ServerPlayerEntity viewer : PlayerLookup.tracking(player)) current.add(viewer.getUuid());
+        Collection<ServerPlayerEntity> tracking = PlayerLookup.tracking(player);
+        UUID ownerId = player.getUuid();
 
-        for (UUID viewerId : current) {
+        Iterator<UUID> iterator = state.viewers.iterator();
+        while (iterator.hasNext()) {
+            UUID viewerId = iterator.next();
             ServerPlayerEntity viewer = player.getServer().getPlayerManager().getPlayer(viewerId);
-            if (viewer == null || !viewer.networkHandler.isConnectionOpen()) continue;
-            if (state.viewers.add(viewerId)) {
-                spawnForViewer(viewer, state);
-            } else {
-                sendTransform(viewer, state.visual);
-                if (sendMetadata) sendCoreVisualMetadata(viewer, state.visual.getId(), state.frame);
-            }
-        }
-
-        for (UUID stale : Set.copyOf(state.viewers)) {
-            if (current.contains(stale)) continue;
-            state.viewers.remove(stale);
-            ServerPlayerEntity viewer = player.getServer().getPlayerManager().getPlayer(stale);
+            boolean current = viewer != null
+                    && viewer.networkHandler.isConnectionOpen()
+                    && (viewerId.equals(ownerId) || tracking.contains(viewer));
+            if (current) continue;
+            iterator.remove();
             if (viewer != null && viewer.networkHandler.isConnectionOpen())
                 raw(viewer, new EntitiesDestroyS2CPacket(state.visual.getId()));
         }
+
+        Transform currentTransform = Transform.capture(state.visual);
+        boolean transformChanged = !currentTransform.equals(state.lastTransform);
+
+        syncViewer(player, state, sendMetadata, transformChanged);
+        for (ServerPlayerEntity viewer : tracking) {
+            syncViewer(viewer, state, sendMetadata, transformChanged);
+        }
+        state.lastTransform = currentTransform;
+    }
+
+    private static void syncViewer(ServerPlayerEntity viewer, State state, boolean sendMetadata, boolean transformChanged) {
+        if (viewer == null || !viewer.networkHandler.isConnectionOpen()) return;
+        UUID viewerId = viewer.getUuid();
+        if (state.viewers.add(viewerId)) {
+            spawnForViewer(viewer, state);
+            return;
+        }
+        if (transformChanged) sendTransform(viewer, state.visual);
+        if (sendMetadata) sendCoreVisualMetadata(viewer, state.visual.getId(), state.frame);
     }
 
     private static void sendToCurrentViewers(ServerPlayerEntity player, State state, Packet<?> packet) {
-        for (UUID viewerId : Set.copyOf(state.viewers)) {
+        for (UUID viewerId : state.viewers) {
             ServerPlayerEntity viewer = player.getServer().getPlayerManager().getPlayer(viewerId);
             if (viewer != null && viewer.networkHandler.isConnectionOpen()) raw(viewer, packet);
         }
@@ -288,7 +304,7 @@ public final class FusionVisualBridge {
             state.viewers.clear();
             return;
         }
-        for (UUID viewerId : Set.copyOf(state.viewers)) {
+        for (UUID viewerId : state.viewers) {
             ServerPlayerEntity viewer = server.getPlayerManager().getPlayer(viewerId);
             if (viewer != null && viewer.networkHandler.isConnectionOpen())
                 raw(viewer, new EntitiesDestroyS2CPacket(state.visual.getId()));
@@ -438,6 +454,17 @@ public final class FusionVisualBridge {
     private enum AnimationKind { PHYSICAL, SPECIAL, STATUS }
     private record Frame(PoseType pose, boolean moving) { }
 
+    private record Transform(double x, double y, double z, float yaw, float pitch, byte headYaw,
+                             double velocityX, double velocityY, double velocityZ, boolean onGround) {
+        private static Transform capture(PokemonEntity visual) {
+            Vec3d velocity = visual.getVelocity();
+            return new Transform(
+                    visual.getX(), visual.getY(), visual.getZ(), visual.getYaw(), visual.getPitch(),
+                    angle(visual.getHeadYaw()), velocity.x, velocity.y, velocity.z, visual.isOnGround()
+            );
+        }
+    }
+
     private static final class State {
         private final UUID playerUuid;
         private final UUID pokemonUuid;
@@ -447,6 +474,7 @@ public final class FusionVisualBridge {
         private net.minecraft.registry.RegistryKey<World> worldKey;
         private String visualSignature;
         private Frame frame;
+        private Transform lastTransform;
         private int suppressBasicUntilAge = Integer.MIN_VALUE;
         private int physicalPulseUntilAge = Integer.MIN_VALUE;
 
