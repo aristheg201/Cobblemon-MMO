@@ -28,14 +28,25 @@ public final class PersistentHudRuntime implements ModInitializer {
     private static final Logger LOG = Logger.getLogger("SVFrameMMO-HUD");
     private static final int GLOBAL_SKILL_SLOTS = 6;
     private static volatile double visualHealthCap = 40d;
+    private static volatile boolean initialized;
 
     private volatile SVFrameMMOConfig observedConfig;
     private volatile HudOptions options = HudOptions.defaults();
 
     public static double visualHealthCap() { return visualHealthCap; }
 
+    /** True only when this runtime is guaranteed to submit the higher-priority idle HUD this same tick. */
+    public static boolean willOverrideIdle(PlayerData data, MMOPlayerData mmo, SVFrameMMOConfig live, long tick) {
+        if (!initialized || data == null || mmo == null || live == null || !live.actionBar().enabled()) return false;
+        int period = Math.max(1, live.actionBar().updateTicks());
+        if (tick % period != 0L || !data.isOnline()) return false;
+        ServerPlayerEntity player = data.getPlayer();
+        return player != null && !player.isDead() && mmo.isOnline() && mmo.getPlayer() == player;
+    }
+
     @Override
     public void onInitialize() {
+        initialized = true;
         ServerTickEvents.END_SERVER_TICK.register(server -> tick(server, SVFrameMMO.currentTick()));
     }
 
