@@ -1,0 +1,267 @@
+id: back_dai_thanh_hoa_bao
+slot: BACK
+name: "Đại Thánh Hỏa Bào"
+permission: svframemmo.cobblemon.cosmetic.use.back_dai_thanh_hoa_bao
+
+# Sun Wukong / Đại Thánh Trở Về-inspired flame mantle.
+# Vanilla flame draws the cape silhouette; the finite Snowstorm ember burst is the Cobblemon fire core.
+backend: MINECRAFT
+particle: minecraft:flame
+count: 2
+spread: 0.025
+speed: 0.004
+hide-without-resource-pack: false
+
+fallback:
+  particle: minecraft:flame
+  count: 2
+  spread: 0.04
+  speed: 0.006
+
+phases:
+  EQUIP_BURST:
+    # A short ignition wave down the spine. The custom Cobblemon Snowstorm emitter is finite (~1.1s).
+    - backend: COBBLEMON
+      particle: ember_burst
+      delay-ticks: 0
+      repetitions: 1
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: 0.31
+      offset-z: -0.30
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: COBBLEMON
+      particle: ember_burst
+      delay-ticks: 3
+      repetitions: 1
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: 0.02
+      offset-z: -0.41
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: COBBLEMON
+      particle: ember_burst
+      delay-ticks: 6
+      repetitions: 1
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.33
+      offset-z: -0.53
+      broadcast-radius: 28
+      max-viewers: 32
+
+  PREVIEW:
+    # Shoulder flames.
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: -0.39
+      offset-y: 0.30
+      offset-z: -0.25
+      count: 2
+      spread: 0.03
+      speed: 0.005
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      delay-ticks: 1
+      repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.39
+      offset-y: 0.30
+      offset-z: -0.25
+      count: 2
+      spread: 0.03
+      speed: 0.005
+      broadcast-radius: 28
+      max-viewers: 32
+
+    # Spine and taper.
+    - backend: MINECRAFT
+      particle: minecraft:small_flame
+      delay-ticks: 2
+      repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: -0.24
+      offset-y: 0.05
+      offset-z: -0.35
+      count: 2
+      spread: 0.025
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      delay-ticks: 3
+      repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: 0.07
+      offset-z: -0.39
+      count: 2
+      spread: 0.025
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:small_flame
+      delay-ticks: 4
+      repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.24
+      offset-y: 0.05
+      offset-z: -0.35
+      count: 2
+      spread: 0.025
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: -0.13
+      offset-y: -0.25
+      offset-z: -0.47
+      count: 2
+      spread: 0.025
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      delay-ticks: 2
+      repetitions: 8
+      interval-ticks: 5
+      anchor: BACK
+      offset-x: 0.13
+      offset-y: -0.25
+      offset-z: -0.47
+      count: 2
+      spread: 0.025
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: COBBLEMON
+      particle: ember_burst
+      delay-ticks: 5
+      repetitions: 2
+      interval-ticks: 18
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.42
+      offset-z: -0.57
+      broadcast-radius: 28
+      max-viewers: 32
+
+  WHILE_EQUIPPED:
+    # Seven staggered vanilla anchors form a tapered, flaming cloth silhouette behind the player.
+    # Staggering spreads work over time instead of bursting every layer on the same tick.
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      delay-ticks: 0
+      interval-ticks: 10
+      anchor: BACK
+      offset-x: -0.39
+      offset-y: 0.30
+      offset-z: -0.25
+      count: 2
+      spread: 0.025
+      speed: 0.004
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      delay-ticks: 5
+      interval-ticks: 10
+      anchor: BACK
+      offset-x: 0.39
+      offset-y: 0.30
+      offset-z: -0.25
+      count: 2
+      spread: 0.025
+      speed: 0.004
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:small_flame
+      delay-ticks: 2
+      interval-ticks: 10
+      anchor: BACK
+      offset-x: -0.24
+      offset-y: 0.05
+      offset-z: -0.35
+      count: 2
+      spread: 0.020
+      speed: 0.003
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      delay-ticks: 7
+      interval-ticks: 10
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: 0.07
+      offset-z: -0.39
+      count: 2
+      spread: 0.020
+      speed: 0.003
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:small_flame
+      delay-ticks: 4
+      interval-ticks: 10
+      anchor: BACK
+      offset-x: 0.24
+      offset-y: 0.05
+      offset-z: -0.35
+      count: 2
+      spread: 0.020
+      speed: 0.003
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      delay-ticks: 1
+      interval-ticks: 10
+      anchor: BACK
+      offset-x: -0.13
+      offset-y: -0.25
+      offset-z: -0.47
+      count: 2
+      spread: 0.020
+      speed: 0.003
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      delay-ticks: 6
+      interval-ticks: 10
+      anchor: BACK
+      offset-x: 0.13
+      offset-y: -0.25
+      offset-z: -0.47
+      count: 2
+      spread: 0.020
+      speed: 0.003
+      broadcast-radius: 28
+      max-viewers: 32
+
+    # Sparse finite Cobblemon/Snowstorm embers at the tail make the mantle feel supernatural without emitter buildup.
+    - backend: COBBLEMON
+      particle: ember_burst
+      delay-ticks: 9
+      interval-ticks: 36
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.43
+      offset-z: -0.58
+      broadcast-radius: 28
+      max-viewers: 32
