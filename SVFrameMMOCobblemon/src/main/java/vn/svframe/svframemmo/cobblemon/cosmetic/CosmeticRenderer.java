@@ -23,7 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Bounded player-cosmetic renderer.
  *
  * AURA/HEAD/BACK/ORBIT are live player anchors. TRAIL and FOOTSTEP are movement emitters and are deliberately
- * the only slots that leave emissions behind the player. Particle ids are entirely definition-driven.
+ * the only slots that leave emissions behind the player. Each phase may independently select a Minecraft or
+ * Cobblemon Snowstorm backend through CosmeticEmitterMetadata.
  *
  * The pseudo namespace svframe_dust renders vanilla DustParticleEffect directly and therefore never requires
  * a resource pack. Format: svframe_dust:RRGGBB/scale, for example svframe_dust:7a0019/0.9.
@@ -52,9 +53,10 @@ final class CosmeticRenderer {
         trigger(player, definition, CosmeticDefinition.Trigger.EQUIP);
         trigger(player, definition, CosmeticDefinition.Trigger.EQUIP_BURST);
         int index = 0;
+        long now = SVFrameMMO.currentTick();
         for (CosmeticDefinition.Phase phase : definition.phases(CosmeticDefinition.Trigger.WHILE_EQUIPPED)) {
             AmbientKey key = new AmbientKey(player.getUuid(), definition.id(), index++);
-            ambient.put(key, new Ambient(player.getUuid(), definition.id(), phase));
+            ambient.put(key, new Ambient(player.getUuid(), definition.id(), phase, now + phase.delayTicks()));
         }
     }
 
@@ -84,13 +86,14 @@ final class CosmeticRenderer {
             }
 
             int interval = Math.max(1, value.phase.intervalTicks());
-            if (tick % interval != 0L) continue;
+            if (tick < value.firstEmissionTick || (tick - value.firstEmissionTick) % interval != 0L) continue;
 
             CosmeticDefinition.Slot slot = definition.slot();
             if (slot == CosmeticDefinition.Slot.TRAIL || slot == CosmeticDefinition.Slot.FOOTSTEP) {
                 tickMovementEmitter(tick, player, definition, value);
             } else {
-                emitAtCurrentAnchor(player, definition, value.phase, tick, (int) (tick / interval), 0d);
+                emitAtCurrentAnchor(player, definition, value.phase, tick,
+                        (int) ((tick - value.firstEmissionTick) / interval), 0d);
             }
         }
     }
@@ -160,12 +163,23 @@ final class CosmeticRenderer {
     private void emitAt(ServerPlayerEntity caster, CosmeticDefinition cosmetic,
                         CosmeticDefinition.Phase phase, Vec3d origin) {
         if (caster.isDisconnected() || !caster.isAlive()) return;
-        Identifier particle = Identifier.tryParse(cosmetic.particleId());
+
+        CosmeticEmitterMetadata.Emitter emitter = CosmeticEmitterMetadata.emitter(cosmetic, phase);
+        String particleId = emitter == null ? cosmetic.particleId() : emitter.particleId();
+        Identifier particle = Identifier.tryParse(particleId);
         if (particle == null) return;
 
-        DustParticleEffect dust = DUST_NAMESPACE.equals(particle.getNamespace())
-                ? dustEffect(particle.getPath()) : null;
-        if (DUST_NAMESPACE.equals(particle.getNamespace()) && dust == null) return;
+        CosmeticEmitterMetadata.Backend backend = emitter == null
+                ? CosmeticEmitterMetadata.Backend.AUTO : emitter.backend();
+        DustParticleEffect dust = resolveDust(particle, emitter);
+        boolean dustNamespace = DUST_NAMESPACE.equals(particle.getNamespace());
+        if (dustNamespace && dust == null) return;
+
+        boolean vanilla = backend == CosmeticEmitterMetadata.Backend.MINECRAFT
+                || (backend == CosmeticEmitterMetadata.Backend.AUTO
+                && (dustNamespace || "minecraft".equals(particle.getNamespace())));
+        boolean nativeSnowstorm = "cobblemon".equals(particle.getNamespace())
+                || "mega_showdown".equals(particle.getNamespace());
 
         int viewerLimit = phase.maxViewers();
         int emitted = 0;
@@ -173,20 +187,53 @@ final class CosmeticRenderer {
             if (viewer.isDisconnected()) continue;
             if (emitted++ >= viewerLimit) break;
 
-            if (dust != null) {
-                if (claimPacket()) sendDust(viewer, dust, origin);
+            if (vanilla) {
+                if (!claimPacket()) continue;
+                if (!sendVanilla(viewer, particle, dust, emitter, origin)
+                        && !cosmetic.hideWithoutResourcePack())
+                    sendFallback(viewer, cosmetic.fallback(), origin);
                 continue;
             }
 
-            boolean nativeSnowstorm = "cobblemon".equals(particle.getNamespace())
-                    || "mega_showdown".equals(particle.getNamespace());
             boolean snowstormReady = nativeSnowstorm
                     || (SnowstormPackService.ready() && PolymerResourcePackUtils.hasMainPack(viewer));
-            if (snowstormReady && claimPacket())
-                new SpawnSnowstormParticlePacket(particle, origin).sendToPlayer(viewer);
-            else if (!cosmetic.hideWithoutResourcePack())
+            if (snowstormReady) {
+                if (claimPacket()) new SpawnSnowstormParticlePacket(particle, origin).sendToPlayer(viewer);
+            } else if (!cosmetic.hideWithoutResourcePack()) {
                 sendFallback(viewer, cosmetic.fallback(), origin);
+            }
         }
+    }
+
+    private static DustParticleEffect resolveDust(Identifier particle, CosmeticEmitterMetadata.Emitter emitter) {
+        if (DUST_NAMESPACE.equals(particle.getNamespace())) return dustEffect(particle.getPath());
+        if (!"minecraft".equals(particle.getNamespace()) || !"dust".equals(particle.getPath()) || emitter == null)
+            return null;
+        int rgb = emitter.colorRgb();
+        return new DustParticleEffect(new Vector3f(
+                ((rgb >> 16) & 0xFF) / 255f,
+                ((rgb >> 8) & 0xFF) / 255f,
+                (rgb & 0xFF) / 255f), emitter.scale());
+    }
+
+    private static boolean sendVanilla(ServerPlayerEntity viewer, Identifier particle, DustParticleEffect dust,
+                                       CosmeticEmitterMetadata.Emitter emitter, Vec3d origin) {
+        int count = emitter == null ? 1 : emitter.count();
+        double spread = emitter == null ? 0d : emitter.spread();
+        double speed = emitter == null ? 0d : emitter.speed();
+        if (dust != null) {
+            viewer.networkHandler.sendPacket(new ParticleS2CPacket(dust, false,
+                    origin.x, origin.y, origin.z,
+                    (float) spread, (float) spread, (float) spread, (float) speed, count));
+            return true;
+        }
+
+        var type = Registries.PARTICLE_TYPE.get(particle);
+        if (!(type instanceof SimpleParticleType effect)) return false;
+        viewer.networkHandler.sendPacket(new ParticleS2CPacket(effect, false,
+                origin.x, origin.y, origin.z,
+                (float) spread, (float) spread, (float) spread, (float) speed, count));
+        return true;
     }
 
     private static DustParticleEffect dustEffect(String path) {
@@ -210,14 +257,8 @@ final class CosmeticRenderer {
         }
     }
 
-    private static void sendDust(ServerPlayerEntity viewer, DustParticleEffect effect, Vec3d origin) {
-        viewer.networkHandler.sendPacket(new ParticleS2CPacket(effect, false,
-                origin.x, origin.y, origin.z,
-                0f, 0f, 0f, 0f, 1));
-    }
-
     private void sendFallback(ServerPlayerEntity viewer, CosmeticDefinition.Fallback fallback, Vec3d origin) {
-        if (!fallback.enabled()) return;
+        if (!fallback.enabled() || !claimPacket()) return;
         Identifier id = Identifier.tryParse(fallback.particleId());
         if (id == null) return;
         var type = Registries.PARTICLE_TYPE.get(id);
@@ -248,13 +289,15 @@ final class CosmeticRenderer {
         private final UUID player;
         private final String cosmetic;
         private final CosmeticDefinition.Phase phase;
+        private final long firstEmissionTick;
         private Vec3d lastPosition;
         private boolean footstepRight;
 
-        private Ambient(UUID player, String cosmetic, CosmeticDefinition.Phase phase) {
+        private Ambient(UUID player, String cosmetic, CosmeticDefinition.Phase phase, long firstEmissionTick) {
             this.player = player;
             this.cosmetic = cosmetic;
             this.phase = phase;
+            this.firstEmissionTick = firstEmissionTick;
         }
     }
 }
