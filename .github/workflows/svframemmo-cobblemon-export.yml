@@ -1,4 +1,5 @@
 name: Export SVFrameMMO Cobblemon Integration
+# Exports the latest YAML-driven cosmetic renderer build.
 on:
   push:
     branches: [svframemmo-cobblemon-integration-1.21.1]
