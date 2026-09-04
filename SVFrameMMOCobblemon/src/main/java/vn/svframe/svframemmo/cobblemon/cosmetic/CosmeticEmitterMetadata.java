@@ -13,14 +13,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Per-layer particle backend metadata for player cosmetics.
- * Geometry/timing remains owned by CosmeticDefinition.Phase; this registry only enriches how each phase emits.
+ * Per-layer particle/render metadata for player cosmetics.
+ * Geometry/timing remains owned by CosmeticDefinition.Phase; this registry enriches how a phase emits and how
+ * its live anchor reacts to movement. Motion metadata is intentionally deterministic and packet-free: it only
+ * changes the origin of an emission that would already have happened.
  */
 public final class CosmeticEmitterMetadata {
     private static final List<String> ROOT_EMITTER_KEYS = List.of(
-            "backend", "color", "scale", "count", "spread", "speed");
+            "backend", "color", "scale", "count", "spread", "speed",
+            "motion-drag", "motion-lift", "sway-amplitude", "sway-period-ticks", "sway-offset-ticks");
     private static final List<String> LAYER_EMITTER_KEYS = List.of(
-            "backend", "particle", "color", "scale", "count", "spread", "speed");
+            "backend", "particle", "color", "scale", "count", "spread", "speed",
+            "motion-drag", "motion-lift", "sway-amplitude", "sway-period-ticks", "sway-offset-ticks");
     private static final Map<String, Map<CosmeticDefinition.Phase, Emitter>> BY_COSMETIC = new ConcurrentHashMap<>();
 
     private CosmeticEmitterMetadata() { }
@@ -64,6 +68,11 @@ public final class CosmeticEmitterMetadata {
             int rootCount = boundedInt(root.get("count"), 1, 1, 128);
             double rootSpread = boundedDouble(root.get("spread"), 0d, 0d, 8d);
             double rootSpeed = boundedDouble(root.get("speed"), 0d, 0d, 8d);
+            double rootMotionDrag = boundedDouble(root.get("motion-drag"), 0d, 0d, 8d);
+            double rootMotionLift = boundedDouble(root.get("motion-lift"), 0d, 0d, 4d);
+            double rootSwayAmplitude = boundedDouble(root.get("sway-amplitude"), 0d, 0d, 1.5d);
+            int rootSwayPeriod = boundedInt(root.get("sway-period-ticks"), 32, 4, 1200);
+            int rootSwayOffset = boundedInt(root.get("sway-offset-ticks"), 0, -1200, 1200);
 
             IdentityHashMap<CosmeticDefinition.Phase, Emitter> emitters = new IdentityHashMap<>();
             for (int i = 0; i < definition.phases().size(); i++) {
@@ -82,7 +91,12 @@ public final class CosmeticEmitterMetadata {
                         finiteScale(decimal(layer.get("scale"), rootScale), file),
                         boundedInt(layer.get("count"), rootCount, 1, 128),
                         boundedDouble(layer.get("spread"), rootSpread, 0d, 8d),
-                        boundedDouble(layer.get("speed"), rootSpeed, 0d, 8d)));
+                        boundedDouble(layer.get("speed"), rootSpeed, 0d, 8d),
+                        boundedDouble(layer.get("motion-drag"), rootMotionDrag, 0d, 8d),
+                        boundedDouble(layer.get("motion-lift"), rootMotionLift, 0d, 4d),
+                        boundedDouble(layer.get("sway-amplitude"), rootSwayAmplitude, 0d, 1.5d),
+                        boundedInt(layer.get("sway-period-ticks"), rootSwayPeriod, 4, 1200),
+                        boundedInt(layer.get("sway-offset-ticks"), rootSwayOffset, -1200, 1200)));
             }
             BY_COSMETIC.put(definition.id(), emitters);
         } catch (RuntimeException | java.io.IOException error) {
@@ -204,5 +218,7 @@ public final class CosmeticEmitterMetadata {
     }
 
     public record Emitter(Backend backend, String particleId, int colorRgb, float scale,
-                          int count, double spread, double speed) { }
+                          int count, double spread, double speed,
+                          double motionDrag, double motionLift, double swayAmplitude,
+                          int swayPeriodTicks, int swayOffsetTicks) { }
 }
