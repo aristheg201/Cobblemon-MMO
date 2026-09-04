@@ -12,7 +12,7 @@ import java.util.Map;
 
 /** Fabric-native passive skill map with SVFrameLib 1.7.1 timer/login semantics. */
 public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
-    private final Map<String, Long> lastCast = new HashMap<>();
+    private final Map<String, Long> nextFireAt = new HashMap<>();
 
     public PassiveSkillMap(MMOPlayerData playerData) {
         super(playerData);
@@ -36,15 +36,19 @@ public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
         var metadata = SkillMetadata.lazyOf(getPlayerData());
         for (PassiveSkill passive : getModifiers()) {
             if (!TriggerType.TIMER.equals(passive.getTrigger())) continue;
-            if (getPlayerData().getPlayer().interactionManager.getGameMode() == GameMode.SPECTATOR) continue;
 
             String handlerId = passive.getTriggeredSkill().getHandler().getId();
-            Long last = lastCast.get(handlerId);
-            long lastTimestamp = last == null ? 0L : last;
-            if (lastTimestamp + passive.getTimerPeriod() > System.currentTimeMillis()) continue;
+            long now = System.currentTimeMillis();
+            Long deadline = nextFireAt.get(handlerId);
+            if (deadline != null && now < deadline) continue;
 
-            lastCast.put(handlerId, System.currentTimeMillis());
+            // Revalidate runtime conditions at the exact point the passive is due.
+            // Leaving the deadline unchanged while blocked preserves the old behavior:
+            // the skill fires on the first eligible tick instead of skipping an interval.
+            if (getPlayerData().getPlayer().interactionManager.getGameMode() == GameMode.SPECTATOR) continue;
+
             passive.getTriggeredSkill().cast(metadata.get());
+            nextFireAt.put(handlerId, now + passive.getTimerPeriod());
         }
     }
 }
