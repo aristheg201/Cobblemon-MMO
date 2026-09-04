@@ -1,4 +1,14 @@
+# SVFrameMMO - Fabric 1.21.1
+# Production-oriented defaults for the classless, skill-first server setup.
 config-version: 11
+
+# ---------------------------------------------------------------------------
+# Player data
+# ---------------------------------------------------------------------------
+storage:
+  backend: YAML
+  yaml-directory: svframemmo-userdata
+  auto-migrate-json: true
 
 auto-save:
   enabled: true
@@ -12,19 +22,82 @@ default-playerdata:
   reallocation-points: 0
   health: 20
   mana: 100
-  stellium: 100
   stamina: 100
+  stellium: 100
 
+# This server uses skills as the player build, not mandatory classes.
+force-class-selection: false
 passive-skill-needs-binding: true
 save-default-class-info: false
 player-resource-tick-period: 20
+can-creative-cast: false
 
+# ---------------------------------------------------------------------------
+# Always-visible HUD
+# ---------------------------------------------------------------------------
+# max-vanilla-health is a VISUAL-ONLY cap for vanilla heart rendering.
+# Authoritative MAX_HEALTH/current health remain uncapped; the numeric HUD shows real values.
+# 40 visible HP = 20 hearts = at most two vanilla heart rows.
+action-bar:
+  enabled: true
+  always-visible: true
+  priority: 100
+  ticks-to-update: 5
+  max-vanilla-health: 40
+  casting-separator: ' &8||&r '
+  format: '&c❤ &f{health}/{max_health} &8│ &b✦ &f{mana}/{max_mana} &8│ &e⚡ &f{stamina}/{max_stamina} &8│ &d✹ &f{stellium}/{max_stellium} &8│ &7⛨ &f{armor}'
+
+# ---------------------------------------------------------------------------
+# Skill casting
+# ---------------------------------------------------------------------------
+# Press F (SWAP_HANDS) to enter/leave the six-slot skill bar.
+# Resource HUD remains visible while this mode is open.
+global-skill-cooldown: 10
+
+skill-casting:
+  mode: SKILL_BAR
+  open: SWAP_HANDS
+  ignore-sneak: false
+  use-lowest-keybinds: true
+
+  message:
+    enter:
+      message: '&aSkill casting enabled'
+      action-bar: false
+      duration: 20
+      priority: 31
+      sound: BLOCK_END_PORTAL_FRAME_FILL,1,2
+    quit:
+      message: '&cSkill casting disabled'
+      action-bar: false
+      duration: 20
+      priority: 31
+      sound: BLOCK_FIRE_EXTINGUISH,1,2
+
+  action-bar:
+    split: '&8 · '
+    ready: '&6[{index}] &a{skill}'
+    on-cooldown: '&6[{index}] &c{skill}&7 {cooldown}s'
+    no-mana: '&6[{index}] &b{skill}'
+    no-stamina: '&6[{index}] &e{skill}'
+
+# ---------------------------------------------------------------------------
+# Combat / progression
+# ---------------------------------------------------------------------------
 combat-log:
   timer: 10
 
-# Progress that can be carried from the class the player leaves into the class
-# they select. Class-specific skills, attributes, trees and unlocks always remain
-# isolated in per-class snapshots.
+prevent-spawner-xp: true
+should-cobblestone-generators-give-exp: false
+display-main-class-exp-holograms: true
+
+enable-global-skill-tree-gui: true
+enable-specific-skill-tree-gui: true
+skill-tree-scroll-step-x: 1
+skill-tree-scroll-step-y: 1
+shift-click-player-profile-check: false
+
+# Retained for compatibility with the native MMOCore parity layer.
 share-across-classes:
   experience: false
   skill-points: false
@@ -32,26 +105,67 @@ share-across-classes:
   skill-reallocation-points: false
   attribute-reallocation-points: false
 
-# Native SVFrameMMO skill bar. The F key is Minecraft's vanilla SWAP_HANDS action;
-# SVFrameMMO consumes that packet while this casting mode is active. No client keybind mod is required.
-skill-casting:
-  open: SWAP_HANDS
-  ignore-sneak: false
-  use-lowest-keybinds: true
-  message:
-    enter:
-      message: '&e&l☄ &a&lSKILL CASTING &e&l☄'
-    quit:
-      message: '&e&l☄ &c&lSKILL CASTING &e&l☄'
-  action-bar:
-    split: '&7 - &7'
-    ready: '&6[{index}] &a&l{skill}'
-    on-cooldown: '&6[{index}] &c&l{skill} &6(&c{cooldown}&6)'
-    no-mana: '&6[{index}] &9&l{skill}'
-    no-stamina: '&6[{index}] &9&l{skill}'
+# ---------------------------------------------------------------------------
+# World / profession systems
+# ---------------------------------------------------------------------------
+custom-mining:
+  enable: true
+  enable-tool-restrictions: false
+  protect-vanilla-blocks: false
 
-# Default persistent action bar. Individual classes may override this with their own action-bar value.
-action-bar:
-  enabled: true
-  ticks-to-update: 5
-  format: '&c❤ {health}/{max_health} &f| {mana_icon} {mana}/{max_mana} &f| &7⛨ {armor}'
+vanilla-exp-redirection:
+  enabled: false
+  ratio: 0.8
+
+override-vanilla-exp: true
+
+death-exp-loss:
+  enabled: false
+  percent: 30
+
+# ---------------------------------------------------------------------------
+# PvP
+# ---------------------------------------------------------------------------
+pvp_mode:
+  enabled: false
+  min_level: 0
+  max_level_difference: 10
+  combat_timeout: 30
+  invulnerability:
+    time:
+      region_change: 60
+      command: 30
+    can_damage: false
+    apply_to_pvp_flag: true
+  cooldown:
+    region_enter: 20
+    region_leave: 20
+    combat: 45
+    toggle_on: 5
+    toggle_off: 3
+
+# ---------------------------------------------------------------------------
+# Economy
+# ---------------------------------------------------------------------------
+economy:
+  currency: beconomy:primary
+
+# ---------------------------------------------------------------------------
+# Optional MySQL backend
+# ---------------------------------------------------------------------------
+mysql:
+  enabled: false
+  host: localhost
+  port: 3306
+  database: minecraft
+  user: mmolover
+  pass: change-me
+  maxPoolSize: 10
+  maxLifeTime: 300000
+  connectionTimeOut: 10000
+  leakDetectionThreshold: 150000
+  properties:
+    cachePrepStmts: true
+    prepStmtCacheSize: 250
+    prepStmtCacheSqlLimit: 2048
+  userdata-table-name: svframemmo_playerdata

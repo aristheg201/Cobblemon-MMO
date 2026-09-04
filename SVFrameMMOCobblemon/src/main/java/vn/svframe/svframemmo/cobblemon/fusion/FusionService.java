@@ -177,7 +177,7 @@ public final class FusionService {
             ServerPlayerEntity player = server.getPlayerManager().getPlayer(invalid);
             if (player != null) finish(player, session);
         }
-        for (FusionSession session : List.copyOf(byPlayer.values())) {
+        for (FusionSession session : byPlayer.values()) {
             if (!session.expired(tick)) continue;
             ServerPlayerEntity player = server.getPlayerManager().getPlayer(session.playerUuid());
             if (player != null) finish(player, session);

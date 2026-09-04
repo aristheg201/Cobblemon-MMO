@@ -127,6 +127,9 @@ skills:
   CLS_ARCANE_MAGE_POWER_MARK:
     level: 3
     max-level: 30
+  FIREBALL:
+    level: 5
+    max-level: 30
   CLS_ARCANE_MAGE_MINOR_HEALINGS:
     level: 6
     max-level: 30

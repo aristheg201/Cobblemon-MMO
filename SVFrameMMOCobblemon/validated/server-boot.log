@@ -1,0 +1,293 @@
+Unpacking 1.21.1/server-1.21.1.jar (versions:1.21.1) to versions/1.21.1/server-1.21.1.jar
+Unpacking com/github/oshi/oshi-core/6.4.10/oshi-core-6.4.10.jar (libraries:com.github.oshi:oshi-core:6.4.10) to libraries/com/github/oshi/oshi-core/6.4.10/oshi-core-6.4.10.jar
+Unpacking com/google/code/gson/gson/2.10.1/gson-2.10.1.jar (libraries:com.google.code.gson:gson:2.10.1) to libraries/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar
+Unpacking com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar (libraries:com.google.guava:failureaccess:1.0.1) to libraries/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar
+Unpacking com/google/guava/guava/32.1.2-jre/guava-32.1.2-jre.jar (libraries:com.google.guava:guava:32.1.2-jre) to libraries/com/google/guava/guava/32.1.2-jre/guava-32.1.2-jre.jar
+Unpacking com/mojang/authlib/6.0.54/authlib-6.0.54.jar (libraries:com.mojang:authlib:6.0.54) to libraries/com/mojang/authlib/6.0.54/authlib-6.0.54.jar
+Unpacking com/mojang/brigadier/1.3.10/brigadier-1.3.10.jar (libraries:com.mojang:brigadier:1.3.10) to libraries/com/mojang/brigadier/1.3.10/brigadier-1.3.10.jar
+Unpacking com/mojang/datafixerupper/8.0.16/datafixerupper-8.0.16.jar (libraries:com.mojang:datafixerupper:8.0.16) to libraries/com/mojang/datafixerupper/8.0.16/datafixerupper-8.0.16.jar
+Unpacking com/mojang/logging/1.2.7/logging-1.2.7.jar (libraries:com.mojang:logging:1.2.7) to libraries/com/mojang/logging/1.2.7/logging-1.2.7.jar
+Unpacking commons-io/commons-io/2.15.1/commons-io-2.15.1.jar (libraries:commons-io:commons-io:2.15.1) to libraries/commons-io/commons-io/2.15.1/commons-io-2.15.1.jar
+Unpacking io/netty/netty-buffer/4.1.97.Final/netty-buffer-4.1.97.Final.jar (libraries:io.netty:netty-buffer:4.1.97.Final) to libraries/io/netty/netty-buffer/4.1.97.Final/netty-buffer-4.1.97.Final.jar
+Unpacking io/netty/netty-codec/4.1.97.Final/netty-codec-4.1.97.Final.jar (libraries:io.netty:netty-codec:4.1.97.Final) to libraries/io/netty/netty-codec/4.1.97.Final/netty-codec-4.1.97.Final.jar
+Unpacking io/netty/netty-common/4.1.97.Final/netty-common-4.1.97.Final.jar (libraries:io.netty:netty-common:4.1.97.Final) to libraries/io/netty/netty-common/4.1.97.Final/netty-common-4.1.97.Final.jar
+Unpacking io/netty/netty-handler/4.1.97.Final/netty-handler-4.1.97.Final.jar (libraries:io.netty:netty-handler:4.1.97.Final) to libraries/io/netty/netty-handler/4.1.97.Final/netty-handler-4.1.97.Final.jar
+Unpacking io/netty/netty-resolver/4.1.97.Final/netty-resolver-4.1.97.Final.jar (libraries:io.netty:netty-resolver:4.1.97.Final) to libraries/io/netty/netty-resolver/4.1.97.Final/netty-resolver-4.1.97.Final.jar
+Unpacking io/netty/netty-transport/4.1.97.Final/netty-transport-4.1.97.Final.jar (libraries:io.netty:netty-transport:4.1.97.Final) to libraries/io/netty/netty-transport/4.1.97.Final/netty-transport-4.1.97.Final.jar
+Unpacking io/netty/netty-transport-classes-epoll/4.1.97.Final/netty-transport-classes-epoll-4.1.97.Final.jar (libraries:io.netty:netty-transport-classes-epoll:4.1.97.Final) to libraries/io/netty/netty-transport-classes-epoll/4.1.97.Final/netty-transport-classes-epoll-4.1.97.Final.jar
+Unpacking io/netty/netty-transport-native-epoll/4.1.97.Final/netty-transport-native-epoll-4.1.97.Final-linux-x86_64.jar (libraries:io.netty:netty-transport-native-epoll:4.1.97.Final:linux-x86_64) to libraries/io/netty/netty-transport-native-epoll/4.1.97.Final/netty-transport-native-epoll-4.1.97.Final-linux-x86_64.jar
+Unpacking io/netty/netty-transport-native-epoll/4.1.97.Final/netty-transport-native-epoll-4.1.97.Final-linux-aarch_64.jar (libraries:io.netty:netty-transport-native-epoll:4.1.97.Final:linux-aarch_64) to libraries/io/netty/netty-transport-native-epoll/4.1.97.Final/netty-transport-native-epoll-4.1.97.Final-linux-aarch_64.jar
+Unpacking io/netty/netty-transport-native-unix-common/4.1.97.Final/netty-transport-native-unix-common-4.1.97.Final.jar (libraries:io.netty:netty-transport-native-unix-common:4.1.97.Final) to libraries/io/netty/netty-transport-native-unix-common/4.1.97.Final/netty-transport-native-unix-common-4.1.97.Final.jar
+Unpacking it/unimi/dsi/fastutil/8.5.12/fastutil-8.5.12.jar (libraries:it.unimi.dsi:fastutil:8.5.12) to libraries/it/unimi/dsi/fastutil/8.5.12/fastutil-8.5.12.jar
+Unpacking net/java/dev/jna/jna/5.14.0/jna-5.14.0.jar (libraries:net.java.dev.jna:jna:5.14.0) to libraries/net/java/dev/jna/jna/5.14.0/jna-5.14.0.jar
+Unpacking net/java/dev/jna/jna-platform/5.14.0/jna-platform-5.14.0.jar (libraries:net.java.dev.jna:jna-platform:5.14.0) to libraries/net/java/dev/jna/jna-platform/5.14.0/jna-platform-5.14.0.jar
+Unpacking net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar (libraries:net.sf.jopt-simple:jopt-simple:5.0.4) to libraries/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar
+Unpacking org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar (libraries:org.apache.commons:commons-lang3:3.14.0) to libraries/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar
+Unpacking org/apache/logging/log4j/log4j-api/2.22.1/log4j-api-2.22.1.jar (libraries:org.apache.logging.log4j:log4j-api:2.22.1) to libraries/org/apache/logging/log4j/log4j-api/2.22.1/log4j-api-2.22.1.jar
+Unpacking org/apache/logging/log4j/log4j-core/2.22.1/log4j-core-2.22.1.jar (libraries:org.apache.logging.log4j:log4j-core:2.22.1) to libraries/org/apache/logging/log4j/log4j-core/2.22.1/log4j-core-2.22.1.jar
+Unpacking org/apache/logging/log4j/log4j-slf4j2-impl/2.22.1/log4j-slf4j2-impl-2.22.1.jar (libraries:org.apache.logging.log4j:log4j-slf4j2-impl:2.22.1) to libraries/org/apache/logging/log4j/log4j-slf4j2-impl/2.22.1/log4j-slf4j2-impl-2.22.1.jar
+Unpacking org/joml/joml/1.10.5/joml-1.10.5.jar (libraries:org.joml:joml:1.10.5) to libraries/org/joml/joml/1.10.5/joml-1.10.5.jar
+Unpacking org/lz4/lz4-java/1.8.0/lz4-java-1.8.0.jar (libraries:org.lz4:lz4-java:1.8.0) to libraries/org/lz4/lz4-java/1.8.0/lz4-java-1.8.0.jar
+Unpacking org/slf4j/slf4j-api/2.0.9/slf4j-api-2.0.9.jar (libraries:org.slf4j:slf4j-api:2.0.9) to libraries/org/slf4j/slf4j-api/2.0.9/slf4j-api-2.0.9.jar
+Starting net.fabricmc.loader.impl.game.minecraft.BundlerClassPathCapture
+[16:33:08] [main/WARN]: Knot does not support wildcard class path entries: extra-libs/* - the game may not load properly!
+[16:33:08] [main/INFO]: Loading Minecraft 1.21.1 with Fabric Loader 0.18.4
+[16:33:08] [main/INFO]: Fabric is preparing JARs on first launch, this may take a few seconds...
+[16:33:08] [main/INFO]: Loading 78 mods:
+	- accessories 1.1.0-beta.52+1.21.1
+	- architectury 13.0.8
+	- cobblemon 1.7.3+1.21.1
+	   \-- fabric-language-kotlin 1.13.6+kotlin.2.2.20
+	        |-- org_jetbrains_kotlin_kotlin-reflect 2.2.20
+	        |-- org_jetbrains_kotlin_kotlin-stdlib 2.2.20
+	        |-- org_jetbrains_kotlin_kotlin-stdlib-jdk7 2.2.20
+	        |-- org_jetbrains_kotlin_kotlin-stdlib-jdk8 2.2.20
+	        |-- org_jetbrains_kotlinx_atomicfu-jvm 0.29.0
+	        |-- org_jetbrains_kotlinx_kotlinx-coroutines-core-jvm 1.10.2
+	        |-- org_jetbrains_kotlinx_kotlinx-coroutines-jdk8 1.10.2
+	        |-- org_jetbrains_kotlinx_kotlinx-datetime-jvm 0.7.1
+	        |-- org_jetbrains_kotlinx_kotlinx-io-bytestring-jvm 0.8.0
+	        |-- org_jetbrains_kotlinx_kotlinx-io-core-jvm 0.8.0
+	        |-- org_jetbrains_kotlinx_kotlinx-serialization-cbor-jvm 1.9.0
+	        |-- org_jetbrains_kotlinx_kotlinx-serialization-core-jvm 1.9.0
+	        \-- org_jetbrains_kotlinx_kotlinx-serialization-json-jvm 1.9.0
+	- fabric-api 0.116.9+1.21.1
+	   |-- fabric-blockrenderlayer-v1 1.1.52+0af3f5a719
+	   |-- fabric-client-tags-api-v1 1.1.15+6573ed8c19
+	   |-- fabric-key-binding-api-v1 1.0.47+0af3f5a719
+	   |-- fabric-keybindings-v0 0.2.45+df3654b319
+	   |-- fabric-model-loading-api-v1 2.1.0+b4d813fc19
+	   |-- fabric-renderer-api-v1 3.4.1+b4d813fc19
+	   |-- fabric-renderer-indigo 1.7.1+c705a49c19
+	   |-- fabric-renderer-registries-v1 3.2.69+df3654b319
+	   |-- fabric-rendering-v0 1.1.72+df3654b319
+	   |-- fabric-rendering-v1 5.1.0+ab4c25a019
+	   |-- fabric-screen-api-v1 2.0.25+8b68f1c719
+	   \-- fabric-sound-api-v1 1.0.23+6573ed8c19
+	- fabric-api-base 0.4.42+6573ed8c19
+	- fabric-api-lookup-api-v1 1.6.72+7b3d111d19
+	- fabric-biome-api-v1 13.0.31+d527f9fd19
+	- fabric-block-api-v1 1.1.0+0bc3503219
+	- fabric-block-view-api-v2 1.0.11+ebb2264e19
+	- fabric-command-api-v1 1.2.49+f71b366f19
+	- fabric-command-api-v2 2.2.28+6ced4dd919
+	- fabric-commands-v0 0.2.66+df3654b319
+	- fabric-content-registries-v0 8.0.19+b559734419
+	- fabric-convention-tags-v1 2.1.6+7f945d5b19
+	- fabric-convention-tags-v2 2.11.2+fa89716719
+	- fabric-crash-report-info-v1 0.2.29+0af3f5a719
+	- fabric-data-attachment-api-v1 1.4.6+5b36e0f719
+	- fabric-data-generation-api-v1 20.2.35+37516cd619
+	- fabric-dimensions-v1 4.0.1+65213ef819
+	- fabric-entity-events-v1 1.8.0+2b27e0a419
+	- fabric-events-interaction-v0 0.7.13+ba9dae0619
+	- fabric-game-rule-api-v1 1.0.53+6ced4dd919
+	- fabric-gametest-api-v1 2.0.5+6fc22b9919
+	- fabric-item-api-v1 11.2.0+3b3cb2e819
+	- fabric-item-group-api-v1 4.1.7+def88e3a19
+	- fabric-lifecycle-events-v1 2.6.0+0865547519
+	- fabric-loot-api-v2 3.0.15+3f89f5a519
+	- fabric-loot-api-v3 1.0.3+3f89f5a519
+	- fabric-message-api-v1 6.0.14+8aaf3aca19
+	- fabric-networking-api-v1 4.3.0+c7469b2119
+	- fabric-object-builder-api-v1 15.2.1+40875a9319
+	- fabric-particles-v1 4.0.2+6573ed8c19
+	- fabric-recipe-api-v1 5.0.15+2475392c19
+	- fabric-registry-sync-v0 5.3.1+e3eddc2119
+	- fabric-rendering-data-attachment-v1 0.3.49+73761d2e19
+	- fabric-rendering-fluids-v1 3.1.6+1daea21519
+	- fabric-resource-conditions-api-v1 4.3.0+8dc279b119
+	- fabric-resource-loader-v0 1.3.1+5b5275af19
+	- fabric-screen-handler-api-v1 1.3.90+b559734419
+	- fabric-transfer-api-v1 5.4.4+7b3d111d19
+	- fabric-transitive-access-wideners-v1 6.2.0+45b9699719
+	- fabricloader 0.18.4
+	   \-- mixinextras 0.5.0
+	- java 21
+	- mega_showdown 1.9.3+1.7.3+1.21.1
+	- minecraft 1.21.1
+	- owo 0.12.15.4+1.21
+	   |-- blue_endless_jankson 1.2.2
+	   |-- io_wispforest_endec 0.1.5.1
+	   |-- io_wispforest_endec_gson 0.1.3.1
+	   |-- io_wispforest_endec_jankson 0.1.3.1
+	   \-- io_wispforest_endec_netty 0.1.2
+	- packet_tweaker 0.5.6+1.21
+	- polymer-common 0.9.19+1.21.1
+	- polymer-core 0.9.19+1.21.1
+	- polymer-networking 0.9.19+1.21.1
+	- polymer-registry-sync-manipulator 0.9.19+1.21.1
+	- polymer-resource-pack 0.9.19+1.21.1
+	- svframelib 1.7.1-fabric
+	- svframemmo 1.13.1-fabric
+	   |-- com_google_protobuf_protobuf-java 4.31.1
+	   |-- com_mysql_mysql-connector-j 9.7.0
+	   \-- com_zaxxer_hikaricp 6.1.0
+	- svframemmo_cobblemon 0.1.15
+[16:33:08] [main/INFO]: SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/home/runner/work/Cobblemon-MMO/Cobblemon-MMO/SVFrameMMOCobblemon/build/production-server/libraries/net/fabricmc/sponge-mixin/0.17.0+mixin.0.8.7/sponge-mixin-0.17.0+mixin.0.8.7.jar Service=Knot/Fabric Env=SERVER
+[16:33:08] [main/INFO]: Compatibility level set to JAVA_17
+[16:33:08] [main/INFO]: Compatibility level set to JAVA_21
+[16:33:09] [main/WARN]: Error loading class: net/minecraft/class_4224 (java.lang.ClassNotFoundException: net/minecraft/class_4224)
+[16:33:09] [main/WARN]: @Mixin target net.minecraft.class_4224 was not found mixins.cobblemon-common.json:ChannelMixin from mod cobblemon
+[16:33:09] [main/WARN]: Error loading class: juuxel/adorn/block/variant/BlockVariantSets (java.lang.ClassNotFoundException: juuxel/adorn/block/variant/BlockVariantSets)
+[16:33:09] [main/WARN]: @Mixin target juuxel.adorn.block.variant.BlockVariantSets was not found mixins.cobblemon-common.json:invoker.AdornRegisterInvoker from mod cobblemon
+[16:33:09] [main/WARN]: Error loading class: net/minecraft/class_1140 (java.lang.ClassNotFoundException: net/minecraft/class_1140)
+[16:33:09] [main/WARN]: @Mixin target net.minecraft.class_1140 was not found mixins.cobblemon-fabric.json:FabricSoundEngineMixin from mod cobblemon
+[16:33:09] [main/WARN]: Error loading class: net/minecraft/class_287 (java.lang.ClassNotFoundException: net/minecraft/class_287)
+[16:33:09] [main/WARN]: @Mixin target net.minecraft.class_287 was not found owo.mixins.json:BufferBuilderAccessor from mod owo
+[16:33:09] [main/WARN]: Error loading class: net/minecraft/class_437 (java.lang.ClassNotFoundException: net/minecraft/class_437)
+[16:33:09] [main/WARN]: @Mixin target net.minecraft.class_437 was not found owo.mixins.json:ScreenAccessor from mod owo
+[16:33:09] [main/WARN]: Error loading class: xyz/nucleoid/server/translations/impl/language/SystemDelegatedLanguage (java.lang.ClassNotFoundException: xyz/nucleoid/server/translations/impl/language/SystemDelegatedLanguage)
+[16:33:09] [main/INFO]: Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.0).
+[16:33:16] [main/INFO]: Registering Listeners!
+[16:33:16] [main/WARN]: Error loading class: net/minecraft/class_1132 (java.lang.ClassNotFoundException: net/minecraft/class_1132)
+[16:33:16] [main/INFO]: Booting LaxPermissionValidator, permissions will be checked using Minecrafts permission level system, see https://minecraft.fandom.com/wiki/Permission_level
+[16:33:16] [main/INFO]: Launching Cobblemon 1.7.3 
+[16:33:17] [main/ERROR]: No data fixer registered for cobblemon:pokemon
+[16:33:17] [main/ERROR]: No data fixer registered for cobblemon:empty_pokeball
+[16:33:17] [main/ERROR]: No data fixer registered for cobblemon:boat
+[16:33:17] [main/ERROR]: No data fixer registered for cobblemon:chest_boat
+[16:33:17] [main/ERROR]: No data fixer registered for cobblemon:poke_bobber
+[16:33:17] [main/ERROR]: No data fixer registered for cobblemon:generic_bedrock
+[16:33:17] [main/ERROR]: No data fixer registered for cobblemon:npc
+[16:33:18] [main/INFO]: Starting the Best Spawner...
+[16:33:18] [main/INFO]: Loaded 7 spawning condition types.
+[16:33:18] [main/INFO]: Loaded 6 spawnable position types.
+[16:33:18] [main/INFO]: Loaded 3 spawn detail types.
+[16:33:18] [Cobblemon Showdown/INFO]: Starting showdown service...
+[16:33:18] [Cobblemon Showdown/INFO]: MegaShowdown config not found, creating default.
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/data/moves.js
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/sim/battle-actions.js
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/sim/battle.js
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/sim/pokemon.js
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/data/abilities.js
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/sim/side.js
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/data/conditions.js
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/index.js
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/data/mods/cobblemon/items.js
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/data/mods/cobblemon/conditions.js
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/data/mods/cobblemon/typechart.js
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/data/mods/cobblemon/moves.js
+[16:33:18] [Cobblemon Showdown/INFO]: Loaded fallback file: ./showdown/data/mods/cobblemon/abilities.js
+[16:33:18] [Cobblemon Showdown/INFO]: All files are ready!
+[16:33:20] [Cobblemon Showdown/INFO]: Showdown has been started!
+[16:33:20] [main/INFO]: Note: Cobblemon data registries are only loaded once per server instance as Pokémon species are not safe to reload.
+[16:33:20] [main/INFO]: Registered the mega_showdown:mega_showdown/custom_status registry
+[16:33:20] [main/INFO]: Registered the mega_showdown:mega_showdown/showdown/moves registry
+[16:33:20] [main/INFO]: Registered the mega_showdown:mega_showdown/showdown/ability registry
+[16:33:20] [main/INFO]: Registered the mega_showdown:mega_showdown/showdown/conditions registry
+[16:33:20] [main/INFO]: Registered the mega_showdown:mega_showdown/showdown/held_items registry
+[16:33:20] [main/INFO]: Registered the mega_showdown:mega_showdown/showdown/typecharts registry
+[16:33:20] [main/INFO]: Registered the mega_showdown:mega_showdown/showdown/scripts registry
+[16:33:20] [main/INFO]: Registered the cobblemon:molang registry
+[16:33:20] [main/INFO]: Registered the cobblemon:species_features registry
+[16:33:20] [main/INFO]: Registered the cobblemon:global_species_features registry
+[16:33:20] [main/INFO]: Registered the cobblemon:species_feature_assignments registry
+[16:33:20] [main/INFO]: Registered the cobblemon:action_effects registry
+[16:33:20] [main/INFO]: Registered the cobblemon:moves registry
+[16:33:20] [main/INFO]: Registered the cobblemon:abilities registry
+[16:33:20] [main/INFO]: Registered the cobblemon:behaviours registry
+[16:33:20] [main/INFO]: Registered the cobblemon:species registry
+[16:33:20] [main/INFO]: Registered the cobblemon:species_additions registry
+[16:33:20] [main/INFO]: Registered the cobblemon:pokeballs registry
+[16:33:20] [main/INFO]: Registered the cobblemon:properties_tab_completion registry
+[16:33:20] [main/INFO]: Registered the cobblemon:spawn_detail_presets registry
+[16:33:20] [main/INFO]: Registered the cobblemon:spawn_rules registry
+[16:33:20] [main/INFO]: Registered the cobblemon:mechanics registry
+[16:33:20] [main/INFO]: Registered the cobblemon:bag_items registry
+[16:33:20] [main/INFO]: Registered the cobblemon:held_items registry
+[16:33:20] [main/INFO]: Registered the cobblemon:dialogues registry
+[16:33:20] [main/INFO]: Registered the cobblemon:natural_materials registry
+[16:33:20] [main/INFO]: Registered the cobblemon:fossils registry
+[16:33:20] [main/INFO]: Registered the cobblemon:npc_preset registry
+[16:33:20] [main/INFO]: Registered the cobblemon:npc registry
+[16:33:20] [main/INFO]: Registered the cobblemon:dex_entries registry
+[16:33:20] [main/INFO]: Registered the cobblemon:dex_entry_additions registry
+[16:33:20] [main/INFO]: Registered the cobblemon:dexes registry
+[16:33:20] [main/INFO]: Registered the cobblemon:dex_additions registry
+[16:33:20] [main/INFO]: Registered the cobblemon:cosmetic_items registry
+[16:33:20] [main/INFO]: Registered the cobblemon:callbacks registry
+[16:33:20] [main/INFO]: Registered the cobblemon:unlockable_pc_box_wallpapers registry
+[16:33:20] [main/INFO]: Registered the cobblemon:marks registry
+[16:33:20] [main/INFO]: Registered the cobblemon:starters registry
+[16:33:20] [main/INFO]: Registered the cobblemon:spawn_pool_world registry
+[16:33:20] [main/INFO]: Registered the cobblemon:pokerods registry
+[16:33:20] [main/INFO]: Registered the cobblemon:berries registry
+[16:33:20] [main/INFO]: Registered the cobblemon:seasonings registry
+[16:33:20] [main/INFO]: Registered the cobblemon:pokemon_interactions registry
+[16:33:20] [main/INFO]: Registered the cobblemon:spawn_bait_effects registry
+[16:33:20] [main/INFO]: Registered the cobblemon:ride_settings registry
+[16:33:20] [main/INFO]: Registering C2S receiver with id mega_showdown:mega_evo
+[16:33:20] [main/INFO]: Registering C2S receiver with id mega_showdown:ultra_burst
+[16:33:20] [main/INFO]: Registering C2S receiver with id mega_showdown:secret_sword_move_swap
+[16:33:21] [main/INFO]: i ate moss and i died
+Sep 04, 2026 4:33:21 PM vn.svframe.svframemmo.api.player.profess.PlayerClass <init>
+WARNING: Could not load cast particle from class 'ARCANE_MAGE': Particle config must be a ConfigObject
+Sep 04, 2026 4:33:21 PM vn.svframe.svframemmo.api.player.profess.PlayerClass <init>
+WARNING: Could not load cast particle from class 'MAGE': Particle config must be a ConfigObject
+Sep 04, 2026 4:33:21 PM vn.svframe.svframemmo.api.player.profess.PlayerClass <init>
+WARNING: Could not load cast particle from class 'MARKSMAN': Particle config must be a ConfigObject
+Sep 04, 2026 4:33:21 PM vn.svframe.svframemmo.api.player.profess.PlayerClass <init>
+WARNING: Could not load cast particle from class 'PALADIN': Particle config must be a ConfigObject
+Sep 04, 2026 4:33:21 PM vn.svframe.svframemmo.api.player.profess.PlayerClass <init>
+WARNING: Could not load cast particle from class 'ROGUE': Particle config must be a ConfigObject
+Sep 04, 2026 4:33:21 PM vn.svframe.svframemmo.api.player.profess.PlayerClass <init>
+WARNING: Could not load cast particle from class 'WARRIOR': Particle config must be a ConfigObject
+[16:33:21] [main/INFO]: LuckPerms not present; fusion permissions use default-allowed policy and admin grants require vanilla operator level 2
+[16:33:21] [main/INFO]: Cobblemon Integration online; fusionVisual=server-packet-stand/native-1.21.1, provider=cobblemon, providerMoves=0, registeredSkills=0, maxSkillLevel=10, specificMoveVfx=0, genericMoveVfx=0, cosmetics=0, PokemonSkillShop=true/cobbledollars, Potara cooldown=10s, Fusion Dance=600s/900s cooldown
+[16:33:21] [main/INFO]: Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[16:33:22] [main/INFO]: No existing world data, creating new world
+[16:33:23] [main/INFO]: Loaded 2279 recipes
+[16:33:24] [main/INFO]: Loaded 2393 advancements
+[16:33:24] [main/INFO]: Loaded custom elemental statuses
+[16:33:24] [main/INFO]: Loaded 10 server scripts and 1 client scripts
+[16:33:27] [main/INFO]: Loaded 936 moves
+[16:33:27] [main/INFO]: Loaded Cobblemon move presentation provider; specific=106, genericProfiles=1, genericMove=true, MegaShowdown=84
+[16:33:27] [main/INFO]: Pokemon skill icons resolved; megaShowdown=665, cobblemon=271, fallback=0
+[16:33:27] [main/INFO]: Cobblemon move provider synchronized; providerMoves=936, registeredSkills=936, generatedConfigs=936, specificMoveVfx=106, genericMoveVfx=2
+[16:33:28] [main/INFO]: Loaded 320 abilities
+[16:33:28] [main/INFO]: Loaded 48 entity behaviours
+[16:33:28] [main/INFO]: Finished additions
+[16:33:29] [cobblemon Datafixer Bootstrap/INFO]: 4 Datafixer optimizations took 44 milliseconds
+[16:33:30] [main/INFO]: Loaded 1025 Pokémon species
+[16:33:30] [main/INFO]: Loaded 28 spawn detail presets.
+[16:33:30] [main/INFO]: Starting dummy Showdown battle to force it to pre-load data.
+[16:33:30] [main/INFO]: Imported 266 held item IDs from showdown
+[16:33:30] [main/INFO]: Loaded 15 fossils
+[16:33:30] [main/ERROR]: Invalid path in mod resource-pack cobblemon: cobblemon:dex_entry_additions/README.md, ignoring
+[16:33:30] [main/ERROR]: Invalid path in mod resource-pack cobblemon: cobblemon:dex_additions/README.md, ignoring
+[16:33:30] [main/INFO]: Loaded 6 callbacks and 0 client callbacks
+[16:33:30] [main/INFO]: Loaded 168 marks
+[16:33:31] [main/INFO]: Loaded 70 berries
+[16:33:31] [main/INFO]: Loaded 137 Pokémon interaction sets
+[16:33:33] [main/INFO]: Applied 617 biome modifications to 64 of 64 new biomes in 17.49 ms
+[16:33:33] [Server thread/INFO]: Fusion storage network guards installed
+[16:33:33] [Server thread/INFO]: Staged 4 Snowstorm asset(s) / 3 particle id(s)
+[16:33:33] [Server thread/INFO]: Starting minecraft server version 1.21.1
+[16:33:33] [Server thread/INFO]: Loading properties
+[16:33:33] [Server thread/INFO]: Default game type: SURVIVAL
+[16:33:33] [Server thread/INFO]: Generating keypair
+[16:33:33] [Server thread/INFO]: Starting Minecraft server on *:25565
+[16:33:33] [Server thread/INFO]: Using epoll channel type
+[16:33:34] [Server thread/WARN]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
+[16:33:34] [Server thread/WARN]: The server will make no attempt to authenticate usernames. Beware.
+[16:33:34] [Server thread/WARN]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
+[16:33:34] [Server thread/WARN]: To change this, set "online-mode" to "true" in the server.properties file.
+[16:33:34] [Server thread/INFO]: Preparing level "world"
+[16:33:40] [Server thread/INFO]: Preparing start region for dimension minecraft:overworld
+[16:33:40] [Worker-Main-3/INFO]: Preparing spawn area: 2%
+[16:33:41] [Worker-Main-3/INFO]: Preparing spawn area: 2%
+[16:33:41] [Worker-Main-1/INFO]: Preparing spawn area: 2%
+[16:33:42] [Worker-Main-1/INFO]: Preparing spawn area: 2%
+[16:33:42] [Worker-Main-2/INFO]: Preparing spawn area: 18%
+[16:33:43] [Worker-Main-1/INFO]: Preparing spawn area: 18%
+[16:33:43] [Worker-Main-1/INFO]: Preparing spawn area: 18%
+[16:33:44] [Worker-Main-3/INFO]: Preparing spawn area: 18%
+[16:33:44] [Worker-Main-1/INFO]: Preparing spawn area: 51%
+[16:33:45] [Worker-Main-2/INFO]: Preparing spawn area: 51%
+[16:33:45] [Worker-Main-3/INFO]: Preparing spawn area: 51%
+[16:33:46] [Worker-Main-2/INFO]: Preparing spawn area: 51%
+[16:33:46] [Server thread/INFO]: Time elapsed: 5564 ms
+[16:33:46] [Server thread/INFO]: Done (12.145s)! For help, type "help"
+[16:33:46] [Server thread/INFO]: Optimizing spawn pools...
+WARN StatusConsoleListener Unable to register Log4j shutdown hook because JVM is shutting down. Using SimpleLogger

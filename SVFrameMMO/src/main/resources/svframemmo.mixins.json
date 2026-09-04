@@ -3,9 +3,36 @@
   "package": "vn.svframe.svframemmo.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ServerPlayNetworkHandlerMixin"
+    "ServerPlayNetworkHandlerMixin",
+    "ServerCommonNetworkHandlerMixin",
+    "EntityAttributesS2CPacketInvoker",
+    "BlockItemExperienceMixin",
+    "FluidBlockExperienceMixin",
+    "LivingEntityExperienceMixin",
+    "CraftingResultSlotExperienceMixin",
+    "FurnaceOutputSlotExperienceMixin",
+    "AnvilExperienceMixin",
+    "EnchantmentExperienceMixin",
+    "TameableEntityExperienceMixin",
+    "FishingBobberExperienceMixin",
+    "BrewingStandExperienceMixin",
+    "LivingEntitySpawnerOriginMixin",
+    "MobEntitySpawnerOriginMixin",
+    "ServerPlayerInteractionManagerMixin",
+    "CustomMiningRestrictionMixin",
+    "EconomyRuntimeMixin",
+    "PlayerDataResourceMixin",
+    "PlayerVanillaExperienceMixin",
+    "PlayerDataUnlockEventMixin",
+    "CommandManagerMixin",
+    "SkillBarRuntimeTickMixin",
+    "DisplayEntityAccessor",
+    "TextDisplayEntityAccessor",
+    "CraftingScreenHandlerAccessor",
+    "EnchantmentScreenHandlerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "refmap": "SVFrameMMO-refmap.json"
 }

@@ -30,13 +30,13 @@ default:
         base: .1
         per-level: 0
     MAX_MANA:
-        base: 20
+        base: 100
         per-level: 0
     MAX_STAMINA:
-        base: 20
+        base: 100
         per-level: 0
     MAX_STELLIUM:
-        base: 20
+        base: 100
         per-level: 0
     MANA_REGENERATION:
         base: .166

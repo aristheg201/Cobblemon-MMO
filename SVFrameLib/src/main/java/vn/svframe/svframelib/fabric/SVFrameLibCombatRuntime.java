@@ -15,6 +15,7 @@ import vn.svframe.svframelib.fabric.runtime.NativeCombatEffectRegistry;
 import vn.svframe.svframelib.fabric.runtime.NativeCombatEvents;
 import vn.svframe.svframelib.fabric.runtime.NativeDamageMetadata;
 import vn.svframe.svframelib.fabric.runtime.NativeElementRegistry;
+import vn.svframe.svframelib.fabric.runtime.RegisteredDamageMetadataBridge;
 import vn.svframe.svframelib.fabric.runtime.StatProviderRegistry;
 import vn.svframe.svframelib.fabric.runtime.script.ScriptContext;
 
@@ -80,8 +81,7 @@ public final class SVFrameLibCombatRuntime {
     public static float process(LivingEntity target, DamageSource source, float vanillaDamage,
                                 List<DamageType> classifiedTypes, SVFrameLibDamageSettings settings) {
         if (target == null || source == null || vanillaDamage <= 0.0f) return vanillaDamage;
-        DamageType[] types = classifiedTypes == null ? new DamageType[0] : classifiedTypes.toArray(DamageType[]::new);
-        NativeDamageMetadata damage = new NativeDamageMetadata(vanillaDamage, types);
+        NativeDamageMetadata damage = RegisteredDamageMetadataBridge.resolve(target, vanillaDamage, classifiedTypes);
         Entity rawAttacker = source.getAttacker();
         LivingEntity attacker = rawAttacker instanceof LivingEntity living ? living : null;
 

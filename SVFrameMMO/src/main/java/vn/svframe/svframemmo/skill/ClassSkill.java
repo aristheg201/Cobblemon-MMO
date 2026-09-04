@@ -1,13 +1,16 @@
 package vn.svframe.svframemmo.skill;
 
 import vn.svframe.svframelib.UtilityMethods;
+import vn.svframe.svframelib.gui.editable.placeholder.Placeholders;
 import vn.svframe.svframelib.skill.handler.SkillHandler;
 import vn.svframe.svframelib.skill.parameter.value.FormulaFailsafeException;
 import vn.svframe.svframelib.skill.parameter.value.ScalingFormula;
 import vn.svframe.svframelib.skill.trigger.TriggerType;
 import vn.svframe.svframemmo.api.player.PlayerData;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -64,7 +67,8 @@ public final class ClassSkill {
     public boolean isUnlockedByDefault() { return unlockedByDefault; }
     public boolean isPermanent() { return permanent; }
     public String getUnlockNamespacedKey() { return "skill:" + skill.getLowerCaseId(); }
-    public String getCooldownPath() { return "skill_" + skill.getId(); }
+    /** Must match Skill/ClassCastableSkill's CooldownMap key so HUD and runtime read the same cooldown. */
+    public String getCooldownPath() { return skill.getLowerCaseId(); }
 
     public ScalingFormula getParameterFormula(String parameter) {
         return Objects.requireNonNull(parameters.get(parameter), "Could not find parameter called '" + parameter + "'");
@@ -84,17 +88,30 @@ public final class ClassSkill {
         }
     }
 
-    public double getParameter(String parameter, PlayerData caster) {
-        return getParameter(parameter, caster.getSkillLevel(skill), caster);
-    }
-
+    public double getParameter(String parameter, PlayerData caster) { return getParameter(parameter, caster.getSkillLevel(skill), caster); }
     public Map<String, ScalingFormula> getParameters() { return Map.copyOf(parameters); }
+
+    /** MMOCore-style evaluated GUI lore, including class and item skill modifiers. */
+    public List<String> calculateLore(PlayerData data) { return calculateLore(data, data.getSkillLevel(skill)); }
+
+    public List<String> calculateLore(PlayerData data, int skillLevel) {
+        Placeholders placeholders = new Placeholders();
+        for (String parameter : parameters.keySet()) {
+            double baseValue = getParameter(parameter, skillLevel, data);
+            double modifiedValue = data.getMMOPlayerData().getSkillModifierMap().calculateValue(skill, baseValue, parameter);
+            placeholders.register(parameter, skill.getParameterDecimalFormat(parameter).format(modifiedValue));
+        }
+        placeholders.register("level", skillLevel);
+        placeholders.register("skill", skill.getName());
+        List<String> result = new ArrayList<>();
+        for (String line : skill.getUiLore()) result.add(placeholders.apply(data.getPlayer(), line));
+        return List.copyOf(result);
+    }
 
     private static int integer(Object value, int fallback) {
         try { return value instanceof Number number ? number.intValue() : value == null ? fallback : Integer.parseInt(String.valueOf(value)); }
         catch (RuntimeException ignored) { return fallback; }
     }
-
     private static boolean bool(Object value, boolean fallback) {
         if (value instanceof Boolean flag) return flag;
         return value == null ? fallback : Boolean.parseBoolean(String.valueOf(value));

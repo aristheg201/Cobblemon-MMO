@@ -11,6 +11,7 @@ import vn.svframe.svframelib.player.skill.PassiveSkill;
 import vn.svframe.svframelib.player.skillmod.SkillModifier;
 import vn.svframe.svframelib.skill.SkillMetadata;
 import vn.svframe.svframelib.skill.result.SkillResult;
+import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.skill.ClassSkill;
 
@@ -23,7 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-/** Owns runtime-only passive registrations and skill-slot parameter buffs. */
+/** Owns runtime-only passive registrations, class scripts and skill-slot parameter buffs. */
 public final class SkillRuntime {
     private final Map<UUID, Map<String, Registration>> registrations = new LinkedHashMap<>();
 
@@ -42,12 +43,19 @@ public final class SkillRuntime {
         for (ClassSkill skill : data.getProfess().getSkills()) {
             if (!skill.isPermanent() || !skill.getTrigger().isPassive() || !data.canUseSkill(skill)) continue;
             Registration registration = new Registration(data.getMMOPlayerData());
-            PassiveSkill passive = new PassiveSkill(
-                    "svframemmo-permanent-" + skill.getSkill().getLowerCaseId(),
+            PassiveSkill passive = new PassiveSkill("svframemmo-permanent-" + skill.getSkill().getLowerCaseId(),
                     skill.getTrigger(), new ClassCastableSkill(skill, data), EquipmentSlot.OTHER, ModifierSource.OTHER);
             passive.register(data.getMMOPlayerData());
             registration.modifiers.add(passive);
             next.put("permanent:" + skill.getSkill().getId(), registration);
+        }
+
+        int classScriptIndex = 0;
+        for (PassiveSkill script : data.getProfess().getScripts()) {
+            Registration registration = new Registration(data.getMMOPlayerData());
+            script.register(data.getMMOPlayerData());
+            registration.modifiers.add(script);
+            next.put("class-script:" + classScriptIndex++, registration);
         }
 
         for (Map.Entry<Integer, String> entry : data.getSkillBindings().entrySet()) {
@@ -56,41 +64,56 @@ public final class SkillRuntime {
             var slotDefinition = data.getProfess().getSkillSlot(slot);
             if (skill == null || slotDefinition == null || !data.canUseSkill(skill)) continue;
             Registration registration = new Registration(data.getMMOPlayerData());
-
             int buffIndex = 0;
             for (String line : slotDefinition.skillBuffs()) {
                 SkillModifier modifier = parseSlotBuff(data, slot, skill, line, buffIndex++);
                 modifier.register(data.getMMOPlayerData());
                 registration.modifiers.add(modifier);
             }
-
             if (skill.getTrigger().isPassive() && !skill.isPermanent()) {
-                PassiveSkill passive = new PassiveSkill(
-                        "svframemmo-bound-slot-" + slot,
+                PassiveSkill passive = new PassiveSkill("svframemmo-bound-slot-" + slot,
                         skill.getTrigger(), new ClassCastableSkill(skill, data), EquipmentSlot.OTHER, ModifierSource.OTHER);
                 passive.register(data.getMMOPlayerData());
                 registration.modifiers.add(passive);
             }
             next.put("slot:" + slot, registration);
         }
+
+        for (Map.Entry<String, Integer> learned : SVFrameMMO.externalProgression().learned(data.getUniqueId()).entrySet()) {
+            ClassSkill skill = SVFrameMMO.externalSkills().get(learned.getKey());
+            if (skill == null || !skill.getTrigger().isPassive()) continue;
+            Registration registration = new Registration(data.getMMOPlayerData());
+            PassiveSkill passive = new PassiveSkill("svframemmo-external-" + skill.getSkill().getLowerCaseId(),
+                    skill.getTrigger(), new ClassCastableSkill(skill, data, false), EquipmentSlot.OTHER, ModifierSource.OTHER);
+            passive.register(data.getMMOPlayerData());
+            registration.modifiers.add(passive);
+            next.put("external:" + skill.getSkill().getId(), registration);
+        }
         registrations.put(data.getUniqueId(), next);
     }
 
     public SkillResult castBound(PlayerData data, int slot) {
+        ClassSkill external = SVFrameMMO.externalProgression().boundSkill(data.getUniqueId(), slot);
+        if (external != null) return cast(data, external);
         ClassSkill skill = data.getBoundSkill(slot);
         if (skill == null) throw new IllegalArgumentException("No skill bound to slot " + slot);
         return cast(data, skill);
     }
 
     public SkillResult cast(PlayerData data, String skillId) {
-        ClassSkill skill = data.getProfess().getSkill(skillId);
-        if (skill == null) throw new IllegalArgumentException("Skill '" + skillId + "' does not belong to class '" + data.getClassId() + "'");
+        ClassSkill skill = resolve(data, skillId);
+        if (skill == null) throw new IllegalArgumentException("Unknown or unavailable SVFrameMMO skill '" + skillId + "'");
         return cast(data, skill);
     }
 
-    public SkillResult cast(PlayerData data, ClassSkill skill) { return cast(data, skill, true); }
+    public SkillResult cast(PlayerData data, ClassSkill skill) {
+        boolean external = SVFrameMMO.externalSkills().get(skill.getSkill().getId()) != null;
+        if (external && !SVFrameMMO.externalProgression().isLearned(data.getUniqueId(), skill.getSkill().getId()))
+            throw new IllegalStateException("External skill is not learned: " + skill.getSkill().getId());
+        return cast(data, skill, !external);
+    }
 
-    /** Casts a runtime-owned temporary skill without requiring it to belong to the player's class. */
+    /** Casts a runtime-owned temporary skill without requiring persistent ownership. */
     public SkillResult castTemporary(PlayerData data, ClassSkill skill) { return cast(data, skill, false); }
 
     private SkillResult cast(PlayerData data, ClassSkill skill, boolean requireClassProgression) {
@@ -107,6 +130,13 @@ public final class SkillRuntime {
         return map == null ? 0 : map.size();
     }
 
+    private static ClassSkill resolve(PlayerData data, String skillId) {
+        ClassSkill skill = data.getProfess().getSkill(skillId);
+        if (skill != null) return skill;
+        ClassSkill external = SVFrameMMO.externalSkills().get(skillId);
+        return external != null && SVFrameMMO.externalProgression().isLearned(data.getUniqueId(), external.getSkill().getId()) ? external : null;
+    }
+
     private static SkillModifier parseSlotBuff(PlayerData data, int slot, ClassSkill skill, String line, int index) {
         MMOLineConfig config = new MMOLineConfig(line);
         String key = config.getKey().trim().toLowerCase(Locale.ROOT).replace('-', '_');
@@ -116,7 +146,8 @@ public final class SkillRuntime {
         skill.getParameterFormula(parameter);
         double amount = config.getDouble("amount");
         ModifierType type = ModifierType.valueOf(UtilityMethods.enumName(config.getString("type", "FLAT")));
-        UUID id = UUID.nameUUIDFromBytes((data.getUniqueId() + ":slot:" + slot + ":" + skill.getSkill().getId() + ":" + index).getBytes(StandardCharsets.UTF_8));
+        UUID id = UUID.nameUUIDFromBytes((data.getUniqueId() + ":slot:" + slot + ":" + skill.getSkill().getId() + ":" + index)
+                .getBytes(StandardCharsets.UTF_8));
         return new SkillModifier(id, "svframemmo_skill_slot", parameter, List.of(skill.getSkill()), amount, type,
                 EquipmentSlot.OTHER, ModifierSource.OTHER);
     }
@@ -124,9 +155,7 @@ public final class SkillRuntime {
     private static final class Registration {
         private final MMOPlayerData data;
         private final List<PlayerModifier> modifiers = new ArrayList<>();
-
         private Registration(MMOPlayerData data) { this.data = Objects.requireNonNull(data, "data"); }
-
         private void close() {
             for (int i = modifiers.size() - 1; i >= 0; i--) modifiers.get(i).unregister(data);
             modifiers.clear();

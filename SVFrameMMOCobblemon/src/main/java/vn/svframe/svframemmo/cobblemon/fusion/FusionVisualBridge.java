@@ -123,17 +123,21 @@ public final class FusionVisualBridge {
     /** Missing players/Pokemon are returned so FusionService can terminate stale sessions. */
     public Set<UUID> tick(MinecraftServer server) {
         if (states.isEmpty()) return Set.of();
-        Set<UUID> invalid = new HashSet<>();
+        Set<UUID> invalid = null;
 
-        for (State state : List.copyOf(states.values())) {
+        // ConcurrentHashMap values are weakly consistent and safe while stale sessions are removed.
+        // Avoid allocating a full snapshot every 2 ticks for the common all-valid case.
+        for (State state : states.values()) {
             ServerPlayerEntity player = server.getPlayerManager().getPlayer(state.playerUuid);
             if (player == null) {
+                if (invalid == null) invalid = new LinkedHashSet<>();
                 invalid.add(state.playerUuid);
                 continue;
             }
 
             Pokemon pokemon = Cobblemon.INSTANCE.getStorage().getParty(player).get(state.pokemonUuid);
             if (pokemon == null) {
+                if (invalid == null) invalid = new LinkedHashSet<>();
                 invalid.add(state.playerUuid);
                 continue;
             }
@@ -154,7 +158,7 @@ public final class FusionVisualBridge {
             state.frame = current;
             syncViewers(player, state, !current.equals(previous));
         }
-        return invalid;
+        return invalid == null ? Set.of() : invalid;
     }
 
     public void stop(ServerPlayerEntity player, UUID playerId) {

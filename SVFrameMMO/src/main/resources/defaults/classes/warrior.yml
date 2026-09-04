@@ -122,20 +122,20 @@ skills:
     level: 1
     max-level: 30
   CLS_WARRIOR_WEAKEN:
-    level: 1
+    level: 3
     max-level: 30
   CLS_WARRIOR_EMPOWERED_ATTACK:
     level: 5
     max-level: 30
   CLS_WARRIOR_COMBO_ATTACK:
-    level: 10
+    level: 7
     max-level: 30
   CLS_WARRIOR_MINOR_HEALINGS:
-    level: 15
+    level: 10
     max-level: 30
     upgradable: false
   CLS_WARRIOR_FIRE_BERSERKER:
-    level: 20
+    level: 15
 attributes:
     mana-regeneration:
         base: -0.5

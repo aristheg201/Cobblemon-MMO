@@ -5,7 +5,20 @@
   "name": "SVFrameMMO",
   "description": "Native Fabric RPG progression framework for SVFrame.",
   "environment": "server",
-  "entrypoints": { "main": ["vn.svframe.svframemmo.SVFrameMMO"] },
+  "entrypoints": {
+    "main": [
+      "vn.svframe.svframemmo.SVFrameMMO",
+      "vn.svframe.svframemmo.runtime.PersistentHudRuntime",
+      "vn.svframe.svframemmo.runtime.PlayerRespawnRuntime",
+      "vn.svframe.svframemmo.command.SkillGrantCommands",
+      "vn.svframe.svframemmo.command.AdminParityCommands",
+      "vn.svframe.svframemmo.command.ResetParityCommands",
+      "vn.svframe.svframemmo.command.ImportParityCommands",
+      "vn.svframe.svframemmo.command.ExportDataCommands",
+      "vn.svframe.svframemmo.persistence.PersistenceBootstrap",
+      "vn.svframe.svframemmo.runtime.PublicApiEventRuntime"
+    ]
+  },
   "mixins": ["svframemmo.mixins.json"],
   "depends": {
     "fabricloader": ">=0.18.4",

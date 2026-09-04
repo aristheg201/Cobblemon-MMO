@@ -2,8 +2,6 @@ package vn.svframe.svframelib.version;
 
 import vn.svframe.svframelib.version.wrapper.VersionWrapper;
 
-import java.util.Arrays;
-
 /** Fabric-native 1.21.1 server version descriptor retaining the 1.7.1 comparison API. */
 public class ServerVersion {
     private static final int[] VERSION = {1, 21, 1};
@@ -14,8 +12,13 @@ public class ServerVersion {
     public ServerVersion() { this(false); }
     private ServerVersion(boolean ignored) { }
 
-    public void validateMappings() { }
-    public boolean isFabric() { return false; }
+    public void validateMappings() {
+        if (!(wrapper instanceof VersionWrapper.Native))
+            throw new IllegalStateException("SVFrameLib 1.21.1 requires the native Fabric version wrapper");
+        if (!"fabric-1.21.1".equals(getLoaderPlatform()))
+            throw new IllegalStateException("Unexpected loader platform: " + getLoaderPlatform());
+    }
+    public boolean isFabric() { return true; }
     public boolean isAbove(int... version) { return isStrictlyHigher(version); }
     public boolean isUnder(int... version) { return compare(VERSION, version) < 0; }
     public String getLoaderPlatform() { return "fabric-1.21.1"; }

@@ -1,5 +1,6 @@
 package vn.svframe.svframelib.fabric;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.network.packet.Packet;
@@ -19,12 +20,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class SVFrameLibHealthScale {
     private static final Set<UUID> ACTIVE = ConcurrentHashMap.newKeySet();
     private static final Map<UUID, Double> OVERRIDES = new ConcurrentHashMap<>();
+    private static final boolean EXTERNAL_HEALTH_PRESENTATION = FabricLoader.getInstance().isModLoaded("svframemmo");
 
     private SVFrameLibHealthScale() {}
 
     public static void onJoin(ServerPlayerEntity player) {
         if (player == null) return;
         ACTIVE.remove(player.getUuid());
+        if (EXTERNAL_HEALTH_PRESENTATION) return;
         SVFrameLibGeneralSettings settings = SVFrameLibFabricMod.settings();
         Double override = OVERRIDES.get(player.getUuid());
         if (override == null && (settings == null || !settings.healthScale().enabled())) return;
@@ -45,6 +48,7 @@ public final class SVFrameLibHealthScale {
     }
 
     public static void onReload(Collection<ServerPlayerEntity> players) {
+        if (EXTERNAL_HEALTH_PRESENTATION) { ACTIVE.clear(); return; }
         SVFrameLibGeneralSettings current = SVFrameLibFabricMod.settings();
         boolean enabled = current != null && current.healthScale().enabled();
         for (ServerPlayerEntity player : players) {
@@ -63,7 +67,7 @@ public final class SVFrameLibHealthScale {
     }
 
     public static boolean active(UUID playerId) {
-        return playerId != null && ACTIVE.contains(playerId);
+        return !EXTERNAL_HEALTH_PRESENTATION && playerId != null && ACTIVE.contains(playerId);
     }
 
     /** Per-player equivalent of server-plugin platform Player#setHealthScale/setHealthScaled(true). */
@@ -71,6 +75,7 @@ public final class SVFrameLibHealthScale {
         if (player == null) throw new IllegalArgumentException("player");
         if (!Double.isFinite(scale) || scale <= 0.0d) throw new IllegalArgumentException("scale must be finite and > 0");
         OVERRIDES.put(player.getUuid(), scale);
+        if (EXTERNAL_HEALTH_PRESENTATION) { ACTIVE.remove(player.getUuid()); return; }
         ACTIVE.add(player.getUuid());
         sendScaledMaxHealth(player, scale);
         player.markHealthDirty();
@@ -80,6 +85,7 @@ public final class SVFrameLibHealthScale {
     public static void resetScale(ServerPlayerEntity player) {
         if (player == null) return;
         OVERRIDES.remove(player.getUuid());
+        if (EXTERNAL_HEALTH_PRESENTATION) { ACTIVE.remove(player.getUuid()); return; }
         SVFrameLibGeneralSettings settings = SVFrameLibFabricMod.settings();
         if (settings != null && settings.healthScale().enabled()) {
             ACTIVE.add(player.getUuid());
@@ -93,6 +99,7 @@ public final class SVFrameLibHealthScale {
 
     public static double currentScale(ServerPlayerEntity player) {
         if (player == null) return 0.0d;
+        if (EXTERNAL_HEALTH_PRESENTATION) return player.getMaxHealth();
         Double override = OVERRIDES.get(player.getUuid());
         if (override != null) return override;
         SVFrameLibGeneralSettings settings = SVFrameLibFabricMod.settings();
@@ -100,7 +107,7 @@ public final class SVFrameLibHealthScale {
     }
 
     public static Packet<?> transform(ServerPlayerEntity player, Packet<?> packet) {
-        if (player == null || packet == null || !active(player.getUuid())) return packet;
+        if (EXTERNAL_HEALTH_PRESENTATION || player == null || packet == null || !active(player.getUuid())) return packet;
         SVFrameLibGeneralSettings settings = SVFrameLibFabricMod.settings();
         Double override = OVERRIDES.get(player.getUuid());
         if (override == null && (settings == null || !settings.healthScale().enabled())) return packet;

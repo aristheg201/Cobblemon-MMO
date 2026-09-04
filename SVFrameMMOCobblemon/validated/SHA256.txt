@@ -1,0 +1,1 @@
+523b92439ddc12c2327db170243708c06fc2d3e28d2bf6b4eba074d3e1efe617  SVFrameMMOCobblemon/build/libs/SVFrameMMO-Cobblemon-Integration-0.1.15.jar

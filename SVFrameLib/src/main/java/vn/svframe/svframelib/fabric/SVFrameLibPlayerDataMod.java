@@ -1,6 +1,7 @@
 package vn.svframe.svframelib.fabric;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -16,7 +17,9 @@ import java.util.function.Consumer;
 /** Native Fabric lifecycle manager replacing MMOPlayerData's server-plugin platform player listener/static map. */
 public final class SVFrameLibPlayerDataMod implements ModInitializer {
     private static final Map<UUID, NativePlayerData> PLAYER_DATA = new ConcurrentHashMap<>();
+    private static final Map<UUID, NativePlayerData> ONLINE = new ConcurrentHashMap<>();
     private static volatile boolean initialized;
+    private static long cleanupTicker;
 
     @Override public void onInitialize() { initialize(); }
 
@@ -28,7 +31,16 @@ public final class SVFrameLibPlayerDataMod implements ModInitializer {
             ServerPlayerEntity player = handler.player;
             NativePlayerData data = setup(player.getUuid());
             data.updatePlayer(player);
+            ONLINE.put(player.getUuid(), data);
             SVFrameLibHealthScale.onJoin(player);
+        });
+
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            UUID playerId = newPlayer.getUuid();
+            NativePlayerData data = setup(playerId);
+            data.updatePlayer(newPlayer);
+            ONLINE.put(playerId, data);
+            SVFrameLibHealthScale.onJoin(newPlayer);
         });
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
@@ -37,14 +49,17 @@ public final class SVFrameLibPlayerDataMod implements ModInitializer {
             if (data != null) {
                 data.shutdownSession();
                 data.updatePlayer(null);
+                ONLINE.remove(player.getUuid(), data);
+            } else {
+                ONLINE.remove(player.getUuid());
             }
             SVFrameLibCombatRuntime.clearPlayer(player.getUuid());
             SVFrameLibHealthScale.onDisconnect(player.getUuid());
         });
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            for (NativePlayerData data : PLAYER_DATA.values()) if (data.online()) data.tickOnline();
-            flushOfflinePlayerData();
+            for (NativePlayerData data : ONLINE.values()) data.tickOnline();
+            if ((++cleanupTicker & 31L) == 0L) flushOfflinePlayerData();
         });
     }
 
@@ -80,5 +95,5 @@ public final class SVFrameLibPlayerDataMod implements ModInitializer {
         PLAYER_DATA.entrySet().removeIf(entry -> entry.getValue().timedOut());
     }
 
-    public static void clear() { PLAYER_DATA.clear(); }
+    public static void clear() { ONLINE.clear(); PLAYER_DATA.clear(); }
 }

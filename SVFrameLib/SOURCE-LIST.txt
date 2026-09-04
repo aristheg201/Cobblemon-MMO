@@ -49,6 +49,9 @@ vn/svframe/svframelib/api/crafting/uifilters/VanillaUIFilter
 vn/svframe/svframelib/api/crafting/uimanager/ProvidedUIFilter
 vn/svframe/svframelib/api/crafting/uimanager/UIFilterCountermatch
 vn/svframe/svframelib/api/crafting/uimanager/UIFilterManager
+vn/svframe/svframelib/api/economy/CurrencyBackend
+vn/svframe/svframelib/api/economy/CurrencyKey
+vn/svframe/svframelib/api/economy/CurrencyService
 vn/svframe/svframelib/api/event/AttackEvent
 vn/svframe/svframelib/api/event/AttackUnregisteredEvent
 vn/svframe/svframelib/api/event/DamageMitigationEvent
@@ -228,6 +231,8 @@ vn/svframe/svframelib/fabric/SVFrameLibTriggerRegistry
 vn/svframe/svframelib/fabric/SVFrameLibVanillaCraftingMod
 vn/svframe/svframelib/fabric/SVFrameLibWorkbenchCommands
 vn/svframe/svframelib/fabric/SVFrameLibWorkbenchMod
+vn/svframe/svframelib/fabric/integration/economy/BEconomyCurrencyBackend
+vn/svframe/svframelib/fabric/integration/economy/CobbleDollarsCurrencyBackend
 vn/svframe/svframelib/fabric/mixin/BlockItemPlaceTriggerMixin
 vn/svframe/svframelib/fabric/mixin/CrossbowTriggerMixin
 vn/svframe/svframelib/fabric/mixin/DisplayEntityAccessor
@@ -258,6 +263,7 @@ vn/svframe/svframelib/fabric/runtime/NativeStatHandler
 vn/svframe/svframelib/fabric/runtime/NativeStatModifier
 vn/svframe/svframelib/fabric/runtime/NativeTemporaryStatModifier
 vn/svframe/svframelib/fabric/runtime/ProjectilePassiveSnapshotHolder
+vn/svframe/svframelib/fabric/runtime/RegisteredDamageMetadataBridge
 vn/svframe/svframelib/fabric/runtime/RpgProfileRegistry
 vn/svframe/svframelib/fabric/runtime/RpgResourceRegistry
 vn/svframe/svframelib/fabric/runtime/SVFrameLibCraftingRuntime

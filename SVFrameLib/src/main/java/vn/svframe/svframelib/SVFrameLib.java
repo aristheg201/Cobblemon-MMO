@@ -1,5 +1,6 @@
 package vn.svframe.svframelib;
 
+import vn.svframe.svframelib.api.economy.CurrencyService;
 import vn.svframe.svframelib.comp.adventure.AdventureParser;
 import vn.svframe.svframelib.comp.flags.FlagHandler;
 import vn.svframe.svframelib.comp.flags.FlagPlugin;
@@ -23,6 +24,7 @@ import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
 import vn.svframe.svframelib.fabric.runtime.NativePlaceholderRegistry;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SVFrameLib extends MMOPlugin {
@@ -43,6 +45,7 @@ public class SVFrameLib extends MMOPlugin {
     private final AdventureParser adventureParser = new AdventureParser();
     private final GlowModule glowModule = new GlowModule.Native();
     private final PlaceholderParser placeholderParser = NativePlaceholderRegistry::parse;
+    private final CurrencyService economy = CurrencyService.get();
     private final Logger logger = Logger.getLogger("SVFrameLib");
     private volatile ProfileMode profileMode = ProfileMode.NONE;
     private volatile ProfileHandler profileHandler = emptyProfileHandler();
@@ -54,7 +57,7 @@ public class SVFrameLib extends MMOPlugin {
     public static synchronized SVFrameLib bootstrap() { return plugin == null ? new SVFrameLib() : plugin; }
     public static SVFrameLib inst() { return bootstrap(); }
     public void onLoad() { plugin = this; }
-    public void onEnable() { initializeProfiles(); glowModule.enable(); mitigationModule.reload(); onHitModule.reload(); }
+    public void onEnable() { version.validateMappings(); economy.initialize(); initializeProfiles(); glowModule.enable(); mitigationModule.reload(); onHitModule.reload(); }
     public void reload() { skillManager.reload(); NativeBuiltinSkillBootstrap.materializeDefaultHandlers(skillManager); elementManager.reset(); mitigationModule.reload(); onHitModule.reload(); }
     public void onDisable() { glowModule.disable(); }
     public Logger getLogger() { return logger; }
@@ -74,12 +77,23 @@ public class SVFrameLib extends MMOPlugin {
     public PlaceholderParser getPlaceholderParser() { return placeholderParser; }
     public AdventureParser getAdventureParser() { return adventureParser; }
     public GlowModule getGlowing() { return glowModule; }
+    public CurrencyService getEconomy() { return economy; }
     public MinecraftServer getServer() { return SVFrameLibFabricMod.server(); }
     public void handleFlags(FlagPlugin plugin) { flagHandler.registerPlugin(plugin); }
     public synchronized void useLegacyProfiles() { profileMode = ProfileMode.LEGACY; initializeProfiles(); }
     public synchronized void useNoProfiles() { profileMode = ProfileMode.NONE; initializeProfiles(); }
     public synchronized void useProxyProfiles() { profileMode = ProfileMode.PROXY; initializeProfiles(); }
-    private void initializeProfiles() { try { profileHandler = profileMode.newProfileHandler(); } catch (Throwable ignored) { profileHandler = emptyProfileHandler(); } profileHandler.onStartup(); }
+    private void initializeProfiles() {
+        try {
+            profileHandler = profileMode.newProfileHandler();
+            profileHandler.onStartup();
+        } catch (RuntimeException exception) {
+            logger.log(Level.SEVERE, "Failed to initialize profile mode " + profileMode, exception);
+            profileHandler = emptyProfileHandler();
+            profileHandler.onStartup();
+            if (profileMode != ProfileMode.NONE) throw exception;
+        }
+    }
     public boolean hasProfiles() { return profileMode != ProfileMode.NONE; }
     public ProfileMode getProfileMode() { return profileMode; }
     public ProfileHandler getProfileHandler() { return profileHandler; }

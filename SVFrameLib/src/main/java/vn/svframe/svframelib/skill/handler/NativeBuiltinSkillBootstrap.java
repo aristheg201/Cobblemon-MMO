@@ -61,8 +61,9 @@ public final class NativeBuiltinSkillBootstrap {
                     manager.registerSkillHandler(construct(types, new MapConfigObject(id, config), id));
                 loaded++;
             }
-            if (loaded != 90 || manager.getHandlers().stream().filter(handler -> types.containsKey(norm(handler.getId()))).count() != 90)
-                throw new IllegalStateException("Expected 90 native built-in skill handlers");
+            long materialized = manager.getHandlers().stream().filter(handler -> types.containsKey(norm(handler.getId()))).count();
+            if (loaded != 90 || materialized != 90)
+                throw new IllegalStateException("Expected 90 native built-in skill handlers, got " + materialized);
         } catch (RuntimeException exception) {
             throw exception;
         } catch (Exception exception) {

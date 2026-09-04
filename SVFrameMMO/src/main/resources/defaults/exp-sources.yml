@@ -1,0 +1,7 @@
+# Reusable MMOCore-style EXP source groups. Reference a group with from{source=<id>}.
+test-exp-source:
+  - 'damagedealt{type=physical;amount=250}'
+  - 'move{type=WALK;amount=300}'
+  - 'from{source=test2}'
+test2:
+  - 'eat{type=CARROT;amount="50"}'
