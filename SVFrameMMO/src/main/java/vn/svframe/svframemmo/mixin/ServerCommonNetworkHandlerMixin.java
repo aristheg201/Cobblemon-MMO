@@ -46,15 +46,22 @@ public abstract class ServerCommonNetworkHandlerMixin {
         }
 
         if (original instanceof EntityAttributesS2CPacket attributes && attributes.getEntityId() == player.getId()) {
-            List<EntityAttributesS2CPacket.Entry> entries = new ArrayList<>(attributes.getEntries());
-            boolean changed = false;
-            for (int i = 0; i < entries.size(); i++) {
-                EntityAttributesS2CPacket.Entry entry = entries.get(i);
-                if (!entry.attribute().equals(EntityAttributes.GENERIC_MAX_HEALTH)) continue;
-                entries.set(i, new EntityAttributesS2CPacket.Entry(entry.attribute(), cap, List.of()));
-                changed = true;
+            List<EntityAttributesS2CPacket.Entry> originalEntries = attributes.getEntries();
+            int maxHealthIndex = -1;
+            for (int i = 0; i < originalEntries.size(); i++) {
+                if (originalEntries.get(i).attribute().equals(EntityAttributes.GENERIC_MAX_HEALTH)) {
+                    maxHealthIndex = i;
+                    break;
+                }
             }
-            if (changed) return EntityAttributesS2CPacketInvoker.svframe$create(attributes.getEntityId(), entries);
+            if (maxHealthIndex < 0) return original;
+
+            // Copy only packets that actually contain MAX_HEALTH. Packet order, client rounding,
+            // and all non-health attribute entries remain byte-for-byte equivalent in meaning.
+            List<EntityAttributesS2CPacket.Entry> entries = new ArrayList<>(originalEntries);
+            EntityAttributesS2CPacket.Entry entry = entries.get(maxHealthIndex);
+            entries.set(maxHealthIndex, new EntityAttributesS2CPacket.Entry(entry.attribute(), cap, List.of()));
+            return EntityAttributesS2CPacketInvoker.svframe$create(attributes.getEntityId(), entries);
         }
         return original;
     }
