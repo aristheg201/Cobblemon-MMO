@@ -47,6 +47,7 @@ public final class CosmeticService {
 
     public void reloadDefinitions() throws java.io.IOException {
         particleAliases = loadParticleAliases();
+        CosmeticEmitterMetadata.clear();
         LinkedHashMap<String, CosmeticDefinition> next = new LinkedHashMap<>();
         if (Files.isDirectory(CosmeticDefaults.COSMETICS)) {
             try (var stream = Files.walk(CosmeticDefaults.COSMETICS)) {
@@ -55,6 +56,7 @@ public final class CosmeticService {
                     if (definition == null) continue;
                     if (next.putIfAbsent(definition.id(), definition) != null)
                         throw new java.io.IOException("Duplicate cosmetic " + definition.id());
+                    CosmeticEmitterMetadata.register(file, definition);
                 }
             }
         }
