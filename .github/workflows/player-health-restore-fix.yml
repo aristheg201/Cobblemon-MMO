@@ -1,0 +1,152 @@
+name: SVFrameMMO Player Health Restore Fix
+
+on:
+  push:
+    branches: [svframemmo-fabric-1.21.1]
+    paths:
+      - '.github/workflows/player-health-restore-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: svframemmo-fabric-1.21.1
+          fetch-depth: 1
+
+      - name: Apply authoritative health restore fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def patch(path, old, new, count=1):
+              p = Path(path)
+              text = p.read_text()
+              found = text.count(old)
+              if found != count:
+                  raise SystemExit(f"{path}: expected {count} occurrences, found {found}")
+              p.write_text(text.replace(old, new, count))
+
+          player = 'SVFrameMMO/src/main/java/vn/svframe/svframemmo/api/player/PlayerData.java'
+
+          # Fresh player/class health is resolved from the effective live MAX_HEALTH after all MMO modifiers apply.
+          patch(player,
+                '        health = config.defaultHealth();\n',
+                '        // Zero is an internal "fill from effective MAX_HEALTH on first attach" sentinel.\n        health = 0d;\n')
+
+          # Preserve persisted health across attach. clampAll() reads the live ServerPlayerEntity health, which is
+          # commonly vanilla 20 on a replacement/new entity, so it must not be allowed to destroy the stored value.
+          patch(player,
+                '''    public void attach(ServerPlayerEntity player) {\n        this.player = Objects.requireNonNull(player, "player");\n        MMOPlayerData.setup(player);\n        refreshClassStats();\n        attributes.reload();\n        applyHardBindings();\n        skillTrees.resolveClassTrees();\n        applyTemporaryProgression();\n        skillTrees.applyTemporary();\n        clampAll();\n        setResource(PlayerResource.HEALTH, health, ResourceUpdateReason.CHOOSE_CLASS);\n        SVFrameMMO.skillRuntime().attach(this);\n    }\n''',
+                '''    public void attach(ServerPlayerEntity player) {\n        double requestedHealth = health;\n        this.player = Objects.requireNonNull(player, "player");\n        MMOPlayerData.setup(player);\n        refreshClassStats();\n        attributes.reload();\n        applyHardBindings();\n        skillTrees.resolveClassTrees();\n        applyTemporaryProgression();\n        skillTrees.applyTemporary();\n        clampAll();\n        setResource(PlayerResource.HEALTH,\n                requestedHealth <= 0d ? getMaxResource(PlayerResource.HEALTH) : requestedHealth,\n                ResourceUpdateReason.CHOOSE_CLASS);\n        SVFrameMMO.skillRuntime().attach(this);\n    }\n''')
+
+          # The same stale-live-health overwrite existed when restoring/changing class slots.
+          patch(player,
+                '''        playerClass = target.getId();\n        restoreClassState(targetState);\n        refreshClassStats();\n        attributes.reload();\n        applyHardBindings();\n        skillTrees.resolveClassTrees();\n        applyTemporaryProgression();\n        skillTrees.applyTemporary();\n        clampAll();\n        if (isOnline()) {\n            setResource(PlayerResource.HEALTH, health, ResourceUpdateReason.CHOOSE_CLASS);\n            SVFrameMMO.skillRuntime().attach(this);\n        }\n''',
+                '''        playerClass = target.getId();\n        restoreClassState(targetState);\n        double requestedHealth = health;\n        refreshClassStats();\n        attributes.reload();\n        applyHardBindings();\n        skillTrees.resolveClassTrees();\n        applyTemporaryProgression();\n        skillTrees.applyTemporary();\n        clampAll();\n        if (isOnline()) {\n            setResource(PlayerResource.HEALTH,\n                    requestedHealth <= 0d ? getMaxResource(PlayerResource.HEALTH) : requestedHealth,\n                    ResourceUpdateReason.CHOOSE_CLASS);\n            SVFrameMMO.skillRuntime().attach(this);\n        }\n''')
+
+          # A never-used class slot starts full relative to its eventual effective MAX_HEALTH, not at literal 20.
+          patch(player,
+                '                cfg.defaultHealth(), cfg.defaultMana(), cfg.defaultStamina(), cfg.defaultStellium(),\n',
+                '                0d, cfg.defaultMana(), cfg.defaultStamina(), cfg.defaultStellium(),\n')
+
+          snapshot = 'SVFrameMMO/src/main/java/vn/svframe/svframemmo/persistence/PlayerDataSnapshot.java'
+          patch(snapshot, 'import vn.svframe.svframemmo.SVFrameMMO;\n', '')
+          patch(snapshot,
+                '''    public void apply(PlayerData value) {\n        double restoredHealth = health <= 0d ? SVFrameMMO.config().defaultHealth() : health;\n        value.restore(playerClass, level, experience, classPoints, skillPoints, attributePoints,\n                attributeReallocationPoints, skillReallocationPoints, skillTreeReallocationPoints,\n                restoredHealth, mana, stamina, stellium, attributes, skills, bindings, unlockedItems, claims,\n                professionLevels, professionExperience, skillTreePoints, skillTreeNodeLevels, classSlots);\n    }\n''',
+                '''    public void apply(PlayerData value) {\n        // Preserve the stored value exactly. A non-positive value is interpreted later, after effective\n        // MAX_HEALTH is known, as "spawn/refill to the real max" rather than a hardcoded 20 HP.\n        value.restore(playerClass, level, experience, classPoints, skillPoints, attributePoints,\n                attributeReallocationPoints, skillReallocationPoints, skillTreeReallocationPoints,\n                health, mana, stamina, stellium, attributes, skills, bindings, unlockedItems, claims,\n                professionLevels, professionExperience, skillTreePoints, skillTreeNodeLevels, classSlots);\n    }\n''')
+
+          print('Applied PlayerData authoritative health restore fix')
+          PY
+
+      - name: Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Gradle 8.8
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
+      - name: Build SVFrameLib
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameLib
+          gradle --no-daemon --stacktrace clean test remapJar
+
+      - name: Build and test SVFrameMMO
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameMMO
+          gradle --no-daemon --stacktrace clean test remapJar
+          gradle --no-daemon nativeCoreSmoke
+
+      - name: Verify health restore invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAYER=SVFrameMMO/src/main/java/vn/svframe/svframemmo/api/player/PlayerData.java
+          SNAP=SVFrameMMO/src/main/java/vn/svframe/svframemmo/persistence/PlayerDataSnapshot.java
+          grep -q 'health = 0d;' "$PLAYER"
+          grep -q 'double requestedHealth = health;' "$PLAYER"
+          grep -q 'requestedHealth <= 0d ? getMaxResource(PlayerResource.HEALTH)' "$PLAYER"
+          grep -q '0d, cfg.defaultMana(), cfg.defaultStamina(), cfg.defaultStellium()' "$PLAYER"
+          ! grep -q 'health <= 0d ? SVFrameMMO.config().defaultHealth()' "$SNAP"
+          grep -q 'health, mana, stamina, stellium' "$SNAP"
+          grep -q 'actual / actualMax \* cap' SVFrameMMO/src/main/java/vn/svframe/svframemmo/mixin/ServerCommonNetworkHandlerMixin.java
+          grep -q 'ServerPlayerEvents.AFTER_RESPAWN' SVFrameMMO/src/main/java/vn/svframe/svframemmo/runtime/PlayerRespawnRuntime.java
+
+      - name: Combined Fabric server boot
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameMMO
+          rm -rf run/config/SVFrameMMO run/svframemmo-userdata
+          mkdir -p run
+          printf 'eula=true\n' > run/eula.txt
+          set +e
+          timeout 90s gradle --no-daemon --stacktrace runServer > build/player-health-server.log 2>&1
+          status=$?
+          set -e
+          cat build/player-health-server.log
+          if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
+          grep -q 'SVFrameLib online' build/player-health-server.log
+          grep -Eq 'SVFrameMMO Fabric online;' build/player-health-server.log
+          grep -q 'Done (' build/player-health-server.log
+          ! grep -Eq 'Mixin apply failed|Could not execute entrypoint stage|Exception in server tick loop|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError' build/player-health-server.log
+
+      - name: Stage validated JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p SVFrameMMO/validated
+          JAR="$(find SVFrameMMO/build/libs -maxdepth 1 -type f -name 'SVFrameMMO-*.jar' ! -name '*sources*' | head -1)"
+          test -s "$JAR"
+          cp "$JAR" SVFrameMMO/validated/SVFrameMMO-1.13.1-fabric.jar
+          sha256sum "$JAR" > SVFrameMMO/validated/SVFrameMMO-1.13.1-fabric.sha256
+          cp SVFrameMMO/build/player-health-server.log SVFrameMMO/validated/server-boot.log
+
+      - name: Commit validated fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SVFrame Health Fix'
+          git config user.email 'actions@users.noreply.github.com'
+          git add SVFrameMMO/src SVFrameMMO/validated
+          if ! git diff --cached --quiet; then
+            git commit -m 'Fix saved and initial health being overwritten by vanilla 20 [skip ci]'
+            git push origin HEAD:svframemmo-fabric-1.21.1
+          fi
