@@ -19,6 +19,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.CraftingScreenHandler;
@@ -29,7 +30,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import vn.svframe.svframelib.api.event.PlayerAttackEvent;
 import vn.svframe.svframelib.damage.DamageType;
 import vn.svframe.svframemmo.SVFrameMMO;
@@ -278,29 +279,41 @@ public final class NativeExperienceRuntime {
     }
 
     private void tickPlayer(ServerPlayerEntity player, long tick) {
-        Vec3d current = player.getPos();
-        String dimension = player.getServerWorld().getRegistryKey().getValue().toString();
-        PositionState previous = positions.put(player.getUuid(), PositionState.capture(player, dimension));
-        if (previous != null && previous.dimension.equals(dimension)) {
-            int bx = player.getBlockX(), by = player.getBlockY(), bz = player.getBlockZ();
-            int dx = bx - previous.blockX, dy = by - previous.blockY, dz = bz - previous.blockZ;
-            if (dx != 0 || dy != 0 || dz != 0) {
-                PlayerData data = SVFrameMMO.playerData().get(player);
-                double blockDistance = Math.sqrt((double) dx * dx + (double) dy * dy + (double) dz * dz);
-                if (!player.hasVehicle()) sources.accept(data, ExperienceSignal.builder("move").primary(movingType(player)).units(blockDistance).build());
-                BlockState feet = player.getServerWorld().getBlockState(player.getBlockPos());
-                if (dy > 0 && isClimbable(feet)) sources.accept(data, ExperienceSignal.builder("climb").primary(blockId(feet)).units(dy).build());
+        UUID playerId = player.getUuid();
+        RegistryKey<World> dimension = player.getServerWorld().getRegistryKey();
+        double x = player.getX(), y = player.getY(), z = player.getZ();
+        int bx = player.getBlockX(), by = player.getBlockY(), bz = player.getBlockZ();
+
+        PositionState previous = positions.get(playerId);
+        if (previous == null) {
+            previous = new PositionState(dimension, x, y, z, bx, by, bz);
+            positions.put(playerId, previous);
+        } else {
+            if (previous.dimension.equals(dimension)) {
+                int dx = bx - previous.blockX, dy = by - previous.blockY, dz = bz - previous.blockZ;
+                if (dx != 0 || dy != 0 || dz != 0) {
+                    PlayerData data = SVFrameMMO.playerData().get(player);
+                    double blockDistance = Math.sqrt((double) dx * dx + (double) dy * dy + (double) dz * dz);
+                    if (!player.hasVehicle()) sources.accept(data, ExperienceSignal.builder("move").primary(movingType(player)).units(blockDistance).build());
+                    BlockState feet = player.getServerWorld().getBlockState(player.getBlockPos());
+                    if (dy > 0 && isClimbable(feet)) sources.accept(data, ExperienceSignal.builder("climb").primary(blockId(feet)).units(dy).build());
+                }
+                if (player.hasVehicle() && player.getVehicle() != null) {
+                    double dxExact = x - previous.x, dyExact = y - previous.y, dzExact = z - previous.z;
+                    double rideDistanceSquared = dxExact * dxExact + dyExact * dyExact + dzExact * dzExact;
+                    if (rideDistanceSquared > 0d) {
+                        double rideDistance = Math.sqrt(rideDistanceSquared);
+                        sources.accept(SVFrameMMO.playerData().get(player), ExperienceSignal.builder("ride")
+                                .primary(id(Registries.ENTITY_TYPE.getId(player.getVehicle().getType()).toString())).units(rideDistance).build());
+                    }
+                }
             }
-            if (player.hasVehicle() && player.getVehicle() != null) {
-                double rideDistance = current.distanceTo(previous.position);
-                if (rideDistance > 0d) sources.accept(SVFrameMMO.playerData().get(player), ExperienceSignal.builder("ride")
-                        .primary(id(Registries.ENTITY_TYPE.getId(player.getVehicle().getType()).toString())).units(rideDistance).build());
-            }
+            previous.update(dimension, x, y, z, bx, by, bz);
         }
         if (tick % 20L == 0L) {
             PlayerData data = SVFrameMMO.playerData().get(player);
             sources.accept(data, ExperienceSignal.builder("play")
-                    .attribute("world", dimension).attribute("x", current.x).attribute("z", current.z)
+                    .attribute("world", previous.dimensionId).attribute("x", x).attribute("z", z)
                     .attribute("in-combat", data.isInCombat()).build());
         }
     }
@@ -450,11 +463,36 @@ public final class NativeExperienceRuntime {
         return map.get(key);
     }
 
-    private record PositionState(String dimension, Vec3d position, int blockX, int blockY, int blockZ) {
-        private static PositionState capture(ServerPlayerEntity player, String dimension) {
-            return new PositionState(dimension, player.getPos(), player.getBlockX(), player.getBlockY(), player.getBlockZ());
+    private static final class PositionState {
+        private RegistryKey<World> dimension;
+        private String dimensionId;
+        private double x;
+        private double y;
+        private double z;
+        private int blockX;
+        private int blockY;
+        private int blockZ;
+
+        private PositionState(RegistryKey<World> dimension, double x, double y, double z,
+                              int blockX, int blockY, int blockZ) {
+            update(dimension, x, y, z, blockX, blockY, blockZ);
+        }
+
+        private void update(RegistryKey<World> dimension, double x, double y, double z,
+                            int blockX, int blockY, int blockZ) {
+            if (!dimension.equals(this.dimension)) {
+                this.dimension = dimension;
+                this.dimensionId = dimension.getValue().toString();
+            }
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.blockX = blockX;
+            this.blockY = blockY;
+            this.blockZ = blockZ;
         }
     }
+
     private record PlacedBlock(String dimension, long pos) {
         private static PlacedBlock of(ServerWorld world, BlockPos pos) { return new PlacedBlock(world.getRegistryKey().getValue().toString(), pos.asLong()); }
     }
