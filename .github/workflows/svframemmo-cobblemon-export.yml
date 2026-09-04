@@ -3,7 +3,9 @@ name: Export SVFrameMMO Cobblemon Integration
 on:
   push:
     branches: [svframemmo-cobblemon-integration-1.21.1]
-    paths: ['.github/workflows/svframemmo-cobblemon-export.yml']
+    paths:
+      - '.github/workflows/svframemmo-cobblemon-export.yml'
+      - 'SVFrameMMOCobblemon/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -43,16 +45,18 @@ jobs:
         run: |
           set -euo pipefail
           cd SVFrameMMOCobblemon
+          ! grep -q 'copyBundledTree("defaults/cosmetics"' src/main/java/vn/svframe/svframemmo/cobblemon/cosmetic/CosmeticDefaults.java
+          grep -q 'cleanupLegacyAutoInstalledCosmetic' src/main/java/vn/svframe/svframemmo/cobblemon/cosmetic/CosmeticDefaults.java
           gradle --no-daemon --stacktrace remapJar
           jar=$(find build/libs -maxdepth 1 -type f -name 'SVFrameMMO-Cobblemon-Integration-*.jar' ! -name '*sources*' | head -n 1)
           test -n "$jar"
-          unzip -Z1 "$jar" | grep -qx 'defaults/cosmetics/back_dai_thanh_hoa_bao.yml'
           unzip -Z1 "$jar" | grep -qx 'vn/svframe/svframemmo/cobblemon/cosmetic/CosmeticRenderer.class'
-          cp "$jar" build/libs/SVFrameMMO-Cobblemon-Integration-DaiThanh.jar
-      - name: Upload Dai Thanh jar
+          unzip -Z1 "$jar" | grep -qx 'vn/svframe/svframemmo/cobblemon/cosmetic/CosmeticDefaults.class'
+          cp "$jar" build/libs/SVFrameMMO-Cobblemon-Integration-DaiThanh-Fixed.jar
+      - name: Upload fixed jar
         uses: actions/upload-artifact@v4
         with:
-          name: SVFrameMMO-Cobblemon-Integration-DaiThanh
-          path: SVFrameMMOCobblemon/build/libs/SVFrameMMO-Cobblemon-Integration-DaiThanh.jar
+          name: SVFrameMMO-Cobblemon-Integration-DaiThanh-Fixed
+          path: SVFrameMMOCobblemon/build/libs/SVFrameMMO-Cobblemon-Integration-DaiThanh-Fixed.jar
           if-no-files-found: error
           retention-days: 7
