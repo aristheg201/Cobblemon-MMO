@@ -1,0 +1,57 @@
+name: Export SVFrameMMO Cobblemon Integration
+on:
+  push:
+    branches: [svframemmo-cobblemon-integration-1.21.1]
+    paths: ['.github/workflows/svframemmo-cobblemon-export.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: svframemmo-cobblemon-integration-1.21.1
+          fetch-depth: 1
+      - name: Sync SVFrameLib and SVFrameMMO
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframelib-fabric-1.21.1
+          rm -rf SVFrameLib
+          git checkout FETCH_HEAD -- SVFrameLib
+          git fetch --no-tags --depth=1 origin svframemmo-fabric-1.21.1
+          rm -rf SVFrameMMO
+          git checkout FETCH_HEAD -- SVFrameMMO
+      - uses: actions/setup-java@v5
+        with: { distribution: temurin, java-version: '21' }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.8' }
+      - name: Build framework jars
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd SVFrameLib && gradle --no-daemon remapJar)
+          (cd SVFrameMMO && gradle --no-daemon remapJar)
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '9.2.0' }
+      - name: Build integration jar
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameMMOCobblemon
+          gradle --no-daemon --stacktrace remapJar
+          jar=$(find build/libs -maxdepth 1 -type f -name 'SVFrameMMO-Cobblemon-Integration-*.jar' ! -name '*sources*' | head -n 1)
+          test -n "$jar"
+          unzip -Z1 "$jar" | grep -qx 'defaults/cosmetics/back_dai_thanh_hoa_bao.yml'
+          unzip -Z1 "$jar" | grep -qx 'vn/svframe/svframemmo/cobblemon/cosmetic/CosmeticRenderer.class'
+          cp "$jar" build/libs/SVFrameMMO-Cobblemon-Integration-DaiThanh.jar
+      - name: Upload Dai Thanh jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: SVFrameMMO-Cobblemon-Integration-DaiThanh
+          path: SVFrameMMOCobblemon/build/libs/SVFrameMMO-Cobblemon-Integration-DaiThanh.jar
+          if-no-files-found: error
+          retention-days: 7
