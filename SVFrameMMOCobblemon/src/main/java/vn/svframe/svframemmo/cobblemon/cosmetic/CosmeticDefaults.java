@@ -3,6 +3,7 @@ package vn.svframe.svframemmo.cobblemon.cosmetic;
 import net.fabricmc.loader.api.FabricLoader;
 import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -86,7 +87,11 @@ public final class CosmeticDefaults {
         Path target = duplicate.resolveSibling(base);
         int suffix = 2;
         while (Files.exists(target)) target = duplicate.resolveSibling(base + "." + suffix++);
-        Files.move(duplicate, target, StandardCopyOption.ATOMIC_MOVE);
+        try {
+            Files.move(duplicate, target, StandardCopyOption.ATOMIC_MOVE);
+        } catch (AtomicMoveNotSupportedException ignored) {
+            Files.move(duplicate, target);
+        }
         SVFrameMMOCobblemon.LOG.warn(
                 "Duplicate cosmetic id '{}' found. Keeping {} and disabling duplicate as {}.", id, keep, target);
     }
