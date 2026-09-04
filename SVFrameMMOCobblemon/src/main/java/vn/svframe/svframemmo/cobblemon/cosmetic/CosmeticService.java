@@ -27,6 +27,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /** Persistent, data-driven player cosmetic ownership/equip service. */
 public final class CosmeticService {
@@ -40,6 +43,7 @@ public final class CosmeticService {
     private volatile MinecraftServer server;
     private Path saveFile;
     private volatile boolean dirty;
+    private volatile ExecutorService ioExecutor;
 
     public void reloadDefinitions() throws java.io.IOException {
         particleAliases = loadParticleAliases();
@@ -90,17 +94,48 @@ public final class CosmeticService {
         return size();
     }
 
-    public void start(MinecraftServer server) {
+    public synchronized void start(MinecraftServer server) {
         this.server = server;
         this.saveFile = server.getSavePath(WorldSavePath.ROOT).resolve("svframemmo-cobblemon-cosmetics.json");
         load();
+        ioExecutor = Executors.newSingleThreadExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "svframemmo-cobblemon-cosmetic-save");
+            thread.setDaemon(true);
+            return thread;
+        });
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) onJoin(player);
     }
 
+    /** Shutdown barrier: drain queued writes and then synchronously write the final RAM snapshot. */
     public void stop() {
-        save();
-        renderer.clear();
-        server = null;
+        ExecutorService executor;
+        synchronized (this) {
+            save();
+            executor = ioExecutor;
+            ioExecutor = null;
+        }
+        if (executor != null) {
+            executor.shutdown();
+            try {
+                while (!executor.awaitTermination(1L, TimeUnit.SECONDS)) { }
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                executor.shutdownNow();
+            }
+        }
+        synchronized (this) {
+            if (saveFile != null) {
+                try {
+                    write(saveFile, snapshot());
+                    dirty = false;
+                } catch (Exception error) {
+                    throw new IllegalStateException("Could not save cosmetic state", error);
+                }
+            }
+            renderer.clear();
+            server = null;
+            saveFile = null;
+        }
     }
 
     public void tick(long tick, MinecraftServer server) {
@@ -121,6 +156,8 @@ public final class CosmeticService {
 
     public void onDisconnect(ServerPlayerEntity player) {
         renderer.clearPlayer(player.getUuid());
+        // Do not wait for the 100-tick periodic flush when a player logs out.
+        save();
     }
 
     public Collection<CosmeticDefinition> definitions() {
@@ -258,31 +295,47 @@ public final class CosmeticService {
         } catch (Exception error) {
             throw new IllegalStateException("Could not load cosmetic state", error);
         }
+        dirty = false;
     }
 
+    /** Captures an immutable save snapshot on the server thread and enqueues only disk IO. */
     public synchronized void save() {
-        if (saveFile == null) return;
-        try {
-            Files.createDirectories(saveFile.getParent());
-            LinkedHashMap<String, SavedState> out = new LinkedHashMap<>();
-            states.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
-                LinkedHashMap<String, String> equipped = new LinkedHashMap<>();
-                entry.getValue().equipped().entrySet().stream()
-                        .sorted(Map.Entry.comparingByKey())
-                        .forEach(slot -> equipped.put(slot.getKey().id(), slot.getValue()));
-                out.put(entry.getKey().toString(),
-                        new SavedState(new ArrayList<>(entry.getValue().owned()), equipped));
-            });
-            Path tmp = saveFile.resolveSibling(saveFile.getFileName() + ".tmp");
-            Files.writeString(tmp, GSON.toJson(out));
+        Path file = saveFile;
+        ExecutorService executor = ioExecutor;
+        if (file == null || executor == null || executor.isShutdown() || !dirty) return;
+        Map<String, SavedState> out = snapshot();
+        dirty = false;
+        executor.execute(() -> {
             try {
-                Files.move(tmp, saveFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-            } catch (java.nio.file.AtomicMoveNotSupportedException ignored) {
-                Files.move(tmp, saveFile, StandardCopyOption.REPLACE_EXISTING);
+                write(file, out);
+            } catch (Exception error) {
+                dirty = true;
+                SVFrameMMOCobblemon.LOG.error("Could not asynchronously save cosmetic state", error);
             }
-            dirty = false;
-        } catch (Exception error) {
-            throw new IllegalStateException("Could not save cosmetic state", error);
+        });
+    }
+
+    private Map<String, SavedState> snapshot() {
+        LinkedHashMap<String, SavedState> out = new LinkedHashMap<>();
+        states.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
+            LinkedHashMap<String, String> equipped = new LinkedHashMap<>();
+            entry.getValue().equipped().entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .forEach(slot -> equipped.put(slot.getKey().id(), slot.getValue()));
+            out.put(entry.getKey().toString(),
+                    new SavedState(new ArrayList<>(entry.getValue().owned()), equipped));
+        });
+        return out;
+    }
+
+    private static void write(Path file, Map<String, SavedState> out) throws java.io.IOException {
+        Files.createDirectories(file.getParent());
+        Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
+        Files.writeString(tmp, GSON.toJson(out));
+        try {
+            Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (java.nio.file.AtomicMoveNotSupportedException ignored) {
+            Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
