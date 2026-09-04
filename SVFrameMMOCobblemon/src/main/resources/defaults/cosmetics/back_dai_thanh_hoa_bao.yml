@@ -3,13 +3,16 @@ slot: BACK
 name: "Đại Thánh Hỏa Bào"
 permission: svframemmo.cobblemon.cosmetic.use.back_dai_thanh_hoa_bao
 
-# Sun Wukong / Đại Thánh Trở Về-inspired flame mantle.
-# Vanilla flame draws the cape silhouette; the finite Snowstorm ember burst is the Cobblemon fire core.
+# Đại Thánh Trở Về-inspired battle mantle:
+# - deep crimson particle cloth
+# - hot orange/gold vanilla flame border
+# - finite Cobblemon/Snowstorm ember surges
+# - progressively stronger drag/lift/sway toward the free tail
 backend: MINECRAFT
 particle: minecraft:flame
-count: 2
-spread: 0.025
-speed: 0.004
+count: 1
+spread: 0.02
+speed: 0.003
 hide-without-resource-pack: false
 
 fallback:
@@ -20,14 +23,42 @@ fallback:
 
 phases:
   EQUIP_BURST:
-    # A short ignition wave down the spine. The custom Cobblemon Snowstorm emitter is finite (~1.1s).
+    # Ignition travels from the shoulder line down the spine into the split tail.
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      delay-ticks: 0
+      repetitions: 3
+      interval-ticks: 2
+      anchor: BACK
+      offset-x: -0.48
+      offset-y: 0.34
+      offset-z: -0.24
+      count: 4
+      spread: 0.06
+      speed: 0.015
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      delay-ticks: 1
+      repetitions: 3
+      interval-ticks: 2
+      anchor: BACK
+      offset-x: 0.48
+      offset-y: 0.34
+      offset-z: -0.24
+      count: 4
+      spread: 0.06
+      speed: 0.015
+      broadcast-radius: 28
+      max-viewers: 32
     - backend: COBBLEMON
       particle: ember_burst
       delay-ticks: 0
       repetitions: 1
       anchor: BACK
       offset-x: 0.00
-      offset-y: 0.31
+      offset-y: 0.30
       offset-z: -0.30
       broadcast-radius: 28
       max-viewers: 32
@@ -37,8 +68,8 @@ phases:
       repetitions: 1
       anchor: BACK
       offset-x: 0.00
-      offset-y: 0.02
-      offset-z: -0.41
+      offset-y: -0.02
+      offset-z: -0.44
       broadcast-radius: 28
       max-viewers: 32
     - backend: COBBLEMON
@@ -47,89 +78,153 @@ phases:
       repetitions: 1
       anchor: BACK
       offset-x: 0.00
-      offset-y: -0.33
-      offset-z: -0.53
+      offset-y: -0.45
+      offset-z: -0.67
       broadcast-radius: 28
       max-viewers: 32
 
   PREVIEW:
-    # Shoulder flames.
+    # Crimson cloth preview: broad shoulders, narrow waist, long forked tail.
     - backend: MINECRAFT
-      particle: minecraft:flame
-      repetitions: 8
-      interval-ticks: 5
+      particle: minecraft:dust
+      color: "#A40D12"
+      scale: 1.05
+      repetitions: 10
+      interval-ticks: 4
       anchor: BACK
-      offset-x: -0.39
-      offset-y: 0.30
-      offset-z: -0.25
-      count: 2
-      spread: 0.03
-      speed: 0.005
+      offset-x: -0.42
+      offset-y: 0.28
+      offset-z: -0.28
+      count: 3
+      spread: 0.045
       broadcast-radius: 28
       max-viewers: 32
     - backend: MINECRAFT
-      particle: minecraft:flame
+      particle: minecraft:dust
+      color: "#C51A12"
+      scale: 1.10
       delay-ticks: 1
-      repetitions: 8
-      interval-ticks: 5
+      repetitions: 10
+      interval-ticks: 4
       anchor: BACK
-      offset-x: 0.39
-      offset-y: 0.30
-      offset-z: -0.25
-      count: 2
-      spread: 0.03
-      speed: 0.005
+      offset-x: 0.00
+      offset-y: 0.25
+      offset-z: -0.31
+      count: 3
+      spread: 0.045
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#A40D12"
+      scale: 1.05
+      delay-ticks: 2
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: 0.42
+      offset-y: 0.28
+      offset-z: -0.28
+      count: 3
+      spread: 0.045
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#8E090C"
+      scale: 0.96
+      delay-ticks: 1
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: -0.25
+      offset-y: -0.04
+      offset-z: -0.42
+      count: 3
+      spread: 0.04
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#B6120D"
+      scale: 1.00
+      delay-ticks: 3
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.08
+      offset-z: -0.46
+      count: 3
+      spread: 0.04
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#8E090C"
+      scale: 0.96
+      delay-ticks: 2
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: 0.25
+      offset-y: -0.04
+      offset-z: -0.42
+      count: 3
+      spread: 0.04
       broadcast-radius: 28
       max-viewers: 32
 
-    # Spine and taper.
+    # Hot border / shoulder flare.
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: -0.51
+      offset-y: 0.34
+      offset-z: -0.24
+      count: 2
+      spread: 0.035
+      speed: 0.006
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      delay-ticks: 2
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: 0.51
+      offset-y: 0.34
+      offset-z: -0.24
+      count: 2
+      spread: 0.035
+      speed: 0.006
+      broadcast-radius: 28
+      max-viewers: 32
     - backend: MINECRAFT
       particle: minecraft:small_flame
-      delay-ticks: 2
-      repetitions: 8
-      interval-ticks: 5
+      delay-ticks: 1
+      repetitions: 10
+      interval-ticks: 4
       anchor: BACK
-      offset-x: -0.24
-      offset-y: 0.05
-      offset-z: -0.35
+      offset-x: -0.31
+      offset-y: -0.13
+      offset-z: -0.48
       count: 2
       spread: 0.025
       broadcast-radius: 28
       max-viewers: 32
     - backend: MINECRAFT
-      particle: minecraft:flame
+      particle: minecraft:small_flame
       delay-ticks: 3
-      repetitions: 8
-      interval-ticks: 5
+      repetitions: 10
+      interval-ticks: 4
       anchor: BACK
-      offset-x: 0.00
-      offset-y: 0.07
-      offset-z: -0.39
-      count: 2
-      spread: 0.025
-      broadcast-radius: 28
-      max-viewers: 32
-    - backend: MINECRAFT
-      particle: minecraft:small_flame
-      delay-ticks: 4
-      repetitions: 8
-      interval-ticks: 5
-      anchor: BACK
-      offset-x: 0.24
-      offset-y: 0.05
-      offset-z: -0.35
-      count: 2
-      spread: 0.025
-      broadcast-radius: 28
-      max-viewers: 32
-    - backend: MINECRAFT
-      particle: minecraft:flame
-      repetitions: 8
-      interval-ticks: 5
-      anchor: BACK
-      offset-x: -0.13
-      offset-y: -0.25
-      offset-z: -0.47
+      offset-x: 0.31
+      offset-y: -0.13
+      offset-z: -0.48
       count: 2
       spread: 0.025
       broadcast-radius: 28
@@ -137,131 +232,375 @@ phases:
     - backend: MINECRAFT
       particle: minecraft:flame
       delay-ticks: 2
-      repetitions: 8
-      interval-ticks: 5
+      repetitions: 10
+      interval-ticks: 4
       anchor: BACK
-      offset-x: 0.13
-      offset-y: -0.25
-      offset-z: -0.47
+      offset-x: -0.14
+      offset-y: -0.52
+      offset-z: -0.70
       count: 2
-      spread: 0.025
+      spread: 0.03
+      speed: 0.004
+      broadcast-radius: 28
+      max-viewers: 32
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: 0.14
+      offset-y: -0.52
+      offset-z: -0.70
+      count: 2
+      spread: 0.03
+      speed: 0.004
       broadcast-radius: 28
       max-viewers: 32
     - backend: COBBLEMON
       particle: ember_burst
-      delay-ticks: 5
+      delay-ticks: 6
       repetitions: 2
       interval-ticks: 18
       anchor: BACK
       offset-x: 0.00
-      offset-y: -0.42
-      offset-z: -0.57
+      offset-y: -0.40
+      offset-z: -0.66
       broadcast-radius: 28
       max-viewers: 32
 
   WHILE_EQUIPPED:
-    # Seven staggered vanilla anchors form a tapered, flaming cloth silhouette behind the player.
-    # Staggering spreads work over time instead of bursting every layer on the same tick.
+    # ===== Crimson mantle body =====
+    # Shoulder mass stays close to the body. The lower rows receive progressively more drag and lift.
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#9E0A10"
+      scale: 1.10
+      delay-ticks: 0
+      interval-ticks: 12
+      anchor: BACK
+      offset-x: -0.42
+      offset-y: 0.29
+      offset-z: -0.27
+      count: 3
+      spread: 0.045
+      motion-drag: 0.25
+      motion-lift: 0.08
+      sway-amplitude: 0.025
+      sway-period-ticks: 38
+      sway-offset-ticks: 0
+      broadcast-radius: 28
+      max-viewers: 28
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#C71912"
+      scale: 1.15
+      delay-ticks: 4
+      interval-ticks: 12
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: 0.26
+      offset-z: -0.31
+      count: 3
+      spread: 0.045
+      motion-drag: 0.35
+      motion-lift: 0.10
+      sway-amplitude: 0.018
+      sway-period-ticks: 42
+      sway-offset-ticks: 7
+      broadcast-radius: 28
+      max-viewers: 28
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#9E0A10"
+      scale: 1.10
+      delay-ticks: 8
+      interval-ticks: 12
+      anchor: BACK
+      offset-x: 0.42
+      offset-y: 0.29
+      offset-z: -0.27
+      count: 3
+      spread: 0.045
+      motion-drag: 0.25
+      motion-lift: 0.08
+      sway-amplitude: 0.025
+      sway-period-ticks: 38
+      sway-offset-ticks: 18
+      broadcast-radius: 28
+      max-viewers: 28
+
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#89070B"
+      scale: 1.00
+      delay-ticks: 2
+      interval-ticks: 12
+      anchor: BACK
+      offset-x: -0.28
+      offset-y: -0.01
+      offset-z: -0.42
+      count: 3
+      spread: 0.04
+      motion-drag: 1.05
+      motion-lift: 0.30
+      sway-amplitude: 0.055
+      sway-period-ticks: 34
+      sway-offset-ticks: 4
+      broadcast-radius: 28
+      max-viewers: 28
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#B8100C"
+      scale: 1.05
+      delay-ticks: 6
+      interval-ticks: 12
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.06
+      offset-z: -0.47
+      count: 3
+      spread: 0.04
+      motion-drag: 1.25
+      motion-lift: 0.36
+      sway-amplitude: 0.035
+      sway-period-ticks: 36
+      sway-offset-ticks: 12
+      broadcast-radius: 28
+      max-viewers: 28
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#89070B"
+      scale: 1.00
+      delay-ticks: 10
+      interval-ticks: 12
+      anchor: BACK
+      offset-x: 0.28
+      offset-y: -0.01
+      offset-z: -0.42
+      count: 3
+      spread: 0.04
+      motion-drag: 1.05
+      motion-lift: 0.30
+      sway-amplitude: 0.055
+      sway-period-ticks: 34
+      sway-offset-ticks: 21
+      broadcast-radius: 28
+      max-viewers: 28
+
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#7B0507"
+      scale: 0.92
+      delay-ticks: 1
+      interval-ticks: 12
+      anchor: BACK
+      offset-x: -0.19
+      offset-y: -0.29
+      offset-z: -0.55
+      count: 2
+      spread: 0.035
+      motion-drag: 2.15
+      motion-lift: 0.72
+      sway-amplitude: 0.095
+      sway-period-ticks: 30
+      sway-offset-ticks: 3
+      broadcast-radius: 28
+      max-viewers: 28
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#7B0507"
+      scale: 0.92
+      delay-ticks: 7
+      interval-ticks: 12
+      anchor: BACK
+      offset-x: 0.19
+      offset-y: -0.29
+      offset-z: -0.55
+      count: 2
+      spread: 0.035
+      motion-drag: 2.15
+      motion-lift: 0.72
+      sway-amplitude: 0.095
+      sway-period-ticks: 30
+      sway-offset-ticks: 18
+      broadcast-radius: 28
+      max-viewers: 28
+
+    # Split free tail: strongest lag and flutter, giving the long Hero-Is-Back silhouette when sprinting.
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#660306"
+      scale: 0.82
+      delay-ticks: 3
+      interval-ticks: 12
+      anchor: BACK
+      offset-x: -0.12
+      offset-y: -0.55
+      offset-z: -0.72
+      count: 2
+      spread: 0.03
+      motion-drag: 3.45
+      motion-lift: 1.15
+      sway-amplitude: 0.16
+      sway-period-ticks: 26
+      sway-offset-ticks: 0
+      broadcast-radius: 28
+      max-viewers: 28
+    - backend: MINECRAFT
+      particle: minecraft:dust
+      color: "#660306"
+      scale: 0.82
+      delay-ticks: 9
+      interval-ticks: 12
+      anchor: BACK
+      offset-x: 0.12
+      offset-y: -0.55
+      offset-z: -0.72
+      count: 2
+      spread: 0.03
+      motion-drag: 3.45
+      motion-lift: 1.15
+      sway-amplitude: 0.16
+      sway-period-ticks: 26
+      sway-offset-ticks: 13
+      broadcast-radius: 28
+      max-viewers: 28
+
+    # ===== Gold/orange flame edging =====
     - backend: MINECRAFT
       particle: minecraft:flame
       delay-ticks: 0
-      interval-ticks: 10
+      interval-ticks: 14
       anchor: BACK
-      offset-x: -0.39
-      offset-y: 0.30
-      offset-z: -0.25
+      offset-x: -0.52
+      offset-y: 0.35
+      offset-z: -0.23
       count: 2
-      spread: 0.025
-      speed: 0.004
+      spread: 0.03
+      speed: 0.005
+      motion-drag: 0.20
+      motion-lift: 0.06
+      sway-amplitude: 0.02
+      sway-period-ticks: 40
       broadcast-radius: 28
-      max-viewers: 32
-    - backend: MINECRAFT
-      particle: minecraft:flame
-      delay-ticks: 5
-      interval-ticks: 10
-      anchor: BACK
-      offset-x: 0.39
-      offset-y: 0.30
-      offset-z: -0.25
-      count: 2
-      spread: 0.025
-      speed: 0.004
-      broadcast-radius: 28
-      max-viewers: 32
-    - backend: MINECRAFT
-      particle: minecraft:small_flame
-      delay-ticks: 2
-      interval-ticks: 10
-      anchor: BACK
-      offset-x: -0.24
-      offset-y: 0.05
-      offset-z: -0.35
-      count: 2
-      spread: 0.020
-      speed: 0.003
-      broadcast-radius: 28
-      max-viewers: 32
+      max-viewers: 28
     - backend: MINECRAFT
       particle: minecraft:flame
       delay-ticks: 7
-      interval-ticks: 10
+      interval-ticks: 14
       anchor: BACK
-      offset-x: 0.00
-      offset-y: 0.07
-      offset-z: -0.39
+      offset-x: 0.52
+      offset-y: 0.35
+      offset-z: -0.23
       count: 2
-      spread: 0.020
-      speed: 0.003
+      spread: 0.03
+      speed: 0.005
+      motion-drag: 0.20
+      motion-lift: 0.06
+      sway-amplitude: 0.02
+      sway-period-ticks: 40
+      sway-offset-ticks: 20
       broadcast-radius: 28
-      max-viewers: 32
+      max-viewers: 28
     - backend: MINECRAFT
       particle: minecraft:small_flame
-      delay-ticks: 4
-      interval-ticks: 10
+      delay-ticks: 3
+      interval-ticks: 14
       anchor: BACK
-      offset-x: 0.24
-      offset-y: 0.05
-      offset-z: -0.35
+      offset-x: -0.34
+      offset-y: -0.12
+      offset-z: -0.49
       count: 2
-      spread: 0.020
+      spread: 0.025
       speed: 0.003
+      motion-drag: 1.40
+      motion-lift: 0.43
+      sway-amplitude: 0.07
+      sway-period-ticks: 32
+      sway-offset-ticks: 3
       broadcast-radius: 28
-      max-viewers: 32
+      max-viewers: 28
+    - backend: MINECRAFT
+      particle: minecraft:small_flame
+      delay-ticks: 10
+      interval-ticks: 14
+      anchor: BACK
+      offset-x: 0.34
+      offset-y: -0.12
+      offset-z: -0.49
+      count: 2
+      spread: 0.025
+      speed: 0.003
+      motion-drag: 1.40
+      motion-lift: 0.43
+      sway-amplitude: 0.07
+      sway-period-ticks: 32
+      sway-offset-ticks: 19
+      broadcast-radius: 28
+      max-viewers: 28
     - backend: MINECRAFT
       particle: minecraft:flame
-      delay-ticks: 1
-      interval-ticks: 10
+      delay-ticks: 5
+      interval-ticks: 14
       anchor: BACK
-      offset-x: -0.13
-      offset-y: -0.25
-      offset-z: -0.47
+      offset-x: -0.16
+      offset-y: -0.55
+      offset-z: -0.73
       count: 2
-      spread: 0.020
-      speed: 0.003
+      spread: 0.03
+      speed: 0.004
+      motion-drag: 3.65
+      motion-lift: 1.20
+      sway-amplitude: 0.18
+      sway-period-ticks: 26
+      sway-offset-ticks: 1
       broadcast-radius: 28
-      max-viewers: 32
+      max-viewers: 28
     - backend: MINECRAFT
       particle: minecraft:flame
-      delay-ticks: 6
-      interval-ticks: 10
+      delay-ticks: 12
+      interval-ticks: 14
       anchor: BACK
-      offset-x: 0.13
-      offset-y: -0.25
-      offset-z: -0.47
+      offset-x: 0.16
+      offset-y: -0.55
+      offset-z: -0.73
       count: 2
-      spread: 0.020
-      speed: 0.003
+      spread: 0.03
+      speed: 0.004
+      motion-drag: 3.65
+      motion-lift: 1.20
+      sway-amplitude: 0.18
+      sway-period-ticks: 26
+      sway-offset-ticks: 14
       broadcast-radius: 28
-      max-viewers: 32
+      max-viewers: 28
 
-    # Sparse finite Cobblemon/Snowstorm embers at the tail make the mantle feel supernatural without emitter buildup.
+    # ===== Cobblemon fire soul =====
+    # Finite emitters only; no steady/infinite Snowstorm emitter buildup on clients.
     - backend: COBBLEMON
       particle: ember_burst
-      delay-ticks: 9
-      interval-ticks: 36
+      delay-ticks: 13
+      interval-ticks: 48
       anchor: BACK
       offset-x: 0.00
-      offset-y: -0.43
-      offset-z: -0.58
+      offset-y: 0.21
+      offset-z: -0.34
+      motion-drag: 0.55
+      motion-lift: 0.14
       broadcast-radius: 28
-      max-viewers: 32
+      max-viewers: 28
+    - backend: COBBLEMON
+      particle: ember_burst
+      delay-ticks: 29
+      interval-ticks: 58
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.45
+      offset-z: -0.68
+      motion-drag: 3.20
+      motion-lift: 1.05
+      sway-amplitude: 0.12
+      sway-period-ticks: 28
+      sway-offset-ticks: 7
+      broadcast-radius: 28
+      max-viewers: 28
