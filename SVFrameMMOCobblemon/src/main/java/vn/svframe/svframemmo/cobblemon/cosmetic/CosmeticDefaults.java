@@ -6,10 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Creates the editable cosmetic/VFX directories.
+ * Creates the editable cosmetic/VFX directories and installs missing bundled defaults.
  *
- * Player cosmetic definitions are intentionally not bundled or copied. The engine is data-driven: administrators
- * define cosmetics under config/SVFrameMMOCobblemon/cosmetics. Bundled VFX assets remain available as primitives.
+ * Bundled defaults are copied only when a destination file is absent, so administrators may freely edit or remove
+ * installed definitions without future updates overwriting their changes. VFX assets are handled the same way.
  */
 public final class CosmeticDefaults {
     public static final Path ROOT = FabricLoader.getInstance().getConfigDir().resolve("SVFrameMMOCobblemon");
@@ -23,6 +23,7 @@ public final class CosmeticDefaults {
         Files.createDirectories(VFX);
         migrateLegacyVfx();
         copyBundledTree("defaults/vfx", VFX);
+        copyBundledTree("defaults/cosmetics", COSMETICS);
     }
 
     private static void migrateLegacyVfx() throws java.io.IOException {
