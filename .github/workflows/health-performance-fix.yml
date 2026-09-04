@@ -1,0 +1,199 @@
+name: SVFrameLib Health Respawn Performance Fix
+
+on:
+  push:
+    branches: [svframelib-fabric-1.21.1]
+    paths:
+      - '.github/workflows/health-performance-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: svframelib-fabric-1.21.1
+          fetch-depth: 1
+
+      - name: Apply respawn, health and hot-path fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def patch(path, old, new, count=1):
+              p = Path(path)
+              text = p.read_text()
+              found = text.count(old)
+              if found != count:
+                  raise SystemExit(f"{path}: expected {count} occurrences, found {found}")
+              p.write_text(text.replace(old, new, count))
+
+          # 1) Rebind the stat engine to Minecraft's new ServerPlayerEntity on respawn.
+          path = 'SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/SVFrameLibStatMod.java'
+          patch(path,
+              'import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;\n',
+              'import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;\nimport net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;\n')
+          patch(path,
+              '''        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {\n''',
+              '''        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {\n            UUID playerId = newPlayer.getUuid();\n            ONLINE_PLAYERS.put(playerId, newPlayer);\n            // Re-publish all update-on-login handlers against the replacement player entity.\n            // Modifier state stays in the engine; only the Minecraft attribute target changed.\n            ENGINE.onSessionOpen(playerId);\n        });\n        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {\n''')
+
+          # 2) Native player-data lifecycle: keep only online entries in the per-tick loop,
+          # rebind on respawn, and make offline cleanup low-frequency instead of every tick.
+          path = 'SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/SVFrameLibPlayerDataMod.java'
+          patch(path,
+              'import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;\n',
+              'import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;\nimport net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;\n')
+          patch(path,
+              '''    private static final Map<UUID, NativePlayerData> PLAYER_DATA = new ConcurrentHashMap<>();\n    private static volatile boolean initialized;\n''',
+              '''    private static final Map<UUID, NativePlayerData> PLAYER_DATA = new ConcurrentHashMap<>();\n    private static final Map<UUID, NativePlayerData> ONLINE = new ConcurrentHashMap<>();\n    private static volatile boolean initialized;\n    private static long cleanupTicker;\n''')
+          patch(path,
+              '''            NativePlayerData data = setup(player.getUuid());\n            data.updatePlayer(player);\n            SVFrameLibHealthScale.onJoin(player);\n        });\n\n        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {\n''',
+              '''            NativePlayerData data = setup(player.getUuid());\n            data.updatePlayer(player);\n            ONLINE.put(player.getUuid(), data);\n            SVFrameLibHealthScale.onJoin(player);\n        });\n\n        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {\n            UUID playerId = newPlayer.getUuid();\n            NativePlayerData data = setup(playerId);\n            data.updatePlayer(newPlayer);\n            ONLINE.put(playerId, data);\n            SVFrameLibHealthScale.onJoin(newPlayer);\n        });\n\n        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {\n''')
+          patch(path,
+              '''            if (data != null) {\n                data.shutdownSession();\n                data.updatePlayer(null);\n            }\n            SVFrameLibCombatRuntime.clearPlayer(player.getUuid());\n''',
+              '''            if (data != null) {\n                data.shutdownSession();\n                data.updatePlayer(null);\n                ONLINE.remove(player.getUuid(), data);\n            } else {\n                ONLINE.remove(player.getUuid());\n            }\n            SVFrameLibCombatRuntime.clearPlayer(player.getUuid());\n''')
+          patch(path,
+              '''        ServerTickEvents.END_SERVER_TICK.register(server -> {\n            for (NativePlayerData data : PLAYER_DATA.values()) if (data.online()) data.tickOnline();\n            flushOfflinePlayerData();\n        });\n''',
+              '''        ServerTickEvents.END_SERVER_TICK.register(server -> {\n            for (NativePlayerData data : ONLINE.values()) data.tickOnline();\n            if ((++cleanupTicker & 31L) == 0L) flushOfflinePlayerData();\n        });\n''')
+          patch(path,
+              '    public static void clear() { PLAYER_DATA.clear(); }\n',
+              '    public static void clear() { ONLINE.clear(); PLAYER_DATA.clear(); }\n')
+
+          # 3) Both player-data wrappers must accept replacement entity objects, not only null<->non-null transitions.
+          path = 'SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/runtime/NativePlayerData.java'
+          patch(path,
+              '''    public synchronized void updatePlayer(ServerPlayerEntity next) {\n        if (next == null && player != null) {\n            player = null;\n            lastLogActivity = System.currentTimeMillis();\n        } else if (next != null && player == null) {\n            player = next;\n            lastLogActivity = System.currentTimeMillis();\n            lastPlayerName = next.getGameProfile().getName();\n        }\n    }\n''',
+              '''    public synchronized void updatePlayer(ServerPlayerEntity next) {\n        if (player == next) return;\n        player = next;\n        lastLogActivity = System.currentTimeMillis();\n        if (next != null) lastPlayerName = next.getGameProfile().getName();\n    }\n''')
+
+          path = 'SVFrameLib/src/main/java/vn/svframe/svframelib/api/player/MMOPlayerData.java'
+          patch(path,
+              '''    public void updatePlayer(ServerPlayerEntity player) {\n        if (player == null && this.player != null) {\n            this.player = null;\n            lastLogActivity = System.currentTimeMillis();\n        } else if (player != null && this.player == null) {\n            this.player = player;\n            lastLogActivity = System.currentTimeMillis();\n            lastPlayerName = player.getGameProfile().getName();\n        }\n    }\n''',
+              '''    public void updatePlayer(ServerPlayerEntity player) {\n        if (this.player == player) return;\n        this.player = player;\n        lastLogActivity = System.currentTimeMillis();\n        if (player != null) lastPlayerName = player.getGameProfile().getName();\n    }\n''')
+
+          # 4) Do not stack SVFrameLib's legacy health-scale packet transform on top of SVFrameMMO's two-row HUD transform.
+          path = 'SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/SVFrameLibHealthScale.java'
+          patch(path,
+              'import net.minecraft.entity.attribute.EntityAttributeInstance;\n',
+              'import net.fabricmc.loader.api.FabricLoader;\nimport net.minecraft.entity.attribute.EntityAttributeInstance;\n')
+          patch(path,
+              '''    private static final Set<UUID> ACTIVE = ConcurrentHashMap.newKeySet();\n    private static final Map<UUID, Double> OVERRIDES = new ConcurrentHashMap<>();\n''',
+              '''    private static final Set<UUID> ACTIVE = ConcurrentHashMap.newKeySet();\n    private static final Map<UUID, Double> OVERRIDES = new ConcurrentHashMap<>();\n    private static final boolean EXTERNAL_HEALTH_PRESENTATION = FabricLoader.getInstance().isModLoaded("svframemmo");\n''')
+          patch(path,
+              '''    public static void onJoin(ServerPlayerEntity player) {\n        if (player == null) return;\n        ACTIVE.remove(player.getUuid());\n''',
+              '''    public static void onJoin(ServerPlayerEntity player) {\n        if (player == null) return;\n        ACTIVE.remove(player.getUuid());\n        if (EXTERNAL_HEALTH_PRESENTATION) return;\n''')
+          patch(path,
+              '''    public static void onReload(Collection<ServerPlayerEntity> players) {\n        SVFrameLibGeneralSettings current = SVFrameLibFabricMod.settings();\n''',
+              '''    public static void onReload(Collection<ServerPlayerEntity> players) {\n        if (EXTERNAL_HEALTH_PRESENTATION) { ACTIVE.clear(); return; }\n        SVFrameLibGeneralSettings current = SVFrameLibFabricMod.settings();\n''')
+          patch(path,
+              '''    public static boolean active(UUID playerId) {\n        return playerId != null && ACTIVE.contains(playerId);\n    }\n''',
+              '''    public static boolean active(UUID playerId) {\n        return !EXTERNAL_HEALTH_PRESENTATION && playerId != null && ACTIVE.contains(playerId);\n    }\n''')
+          patch(path,
+              '''        OVERRIDES.put(player.getUuid(), scale);\n        ACTIVE.add(player.getUuid());\n''',
+              '''        OVERRIDES.put(player.getUuid(), scale);\n        if (EXTERNAL_HEALTH_PRESENTATION) { ACTIVE.remove(player.getUuid()); return; }\n        ACTIVE.add(player.getUuid());\n''')
+          patch(path,
+              '''        OVERRIDES.remove(player.getUuid());\n        SVFrameLibGeneralSettings settings = SVFrameLibFabricMod.settings();\n''',
+              '''        OVERRIDES.remove(player.getUuid());\n        if (EXTERNAL_HEALTH_PRESENTATION) { ACTIVE.remove(player.getUuid()); return; }\n        SVFrameLibGeneralSettings settings = SVFrameLibFabricMod.settings();\n''')
+          patch(path,
+              '''    public static double currentScale(ServerPlayerEntity player) {\n        if (player == null) return 0.0d;\n''',
+              '''    public static double currentScale(ServerPlayerEntity player) {\n        if (player == null) return 0.0d;\n        if (EXTERNAL_HEALTH_PRESENTATION) return player.getMaxHealth();\n''')
+          patch(path,
+              '''    public static Packet<?> transform(ServerPlayerEntity player, Packet<?> packet) {\n        if (player == null || packet == null || !active(player.getUuid())) return packet;\n''',
+              '''    public static Packet<?> transform(ServerPlayerEntity player, Packet<?> packet) {\n        if (EXTERNAL_HEALTH_PRESENTATION || player == null || packet == null || !active(player.getUuid())) return packet;\n''')
+
+          # 5) Attribute math must use the live vanilla base after removing our own modifier.
+          # This keeps real MAX_HEALTH authoritative even when another mod changes the underlying base.
+          path = 'SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/FabricAttributeStatHandler.java'
+          patch(path,
+              '''        vanilla.removeModifier(ATTRIBUTE_KEY);\n        double total = instance.total(playerDefaultBase + configuredBaseValue(), NativeStatEngine.EquipmentSlot.MAIN_HAND);\n        double amount = total - playerDefaultBase;\n''',
+              '''        vanilla.removeModifier(ATTRIBUTE_KEY);\n        double vanillaBase = vanilla.getBaseValue();\n        double total = instance.total(vanillaBase + configuredBaseValue(), NativeStatEngine.EquipmentSlot.MAIN_HAND);\n        double amount = total - vanillaBase;\n''')
+
+          # 6) Expiration remains exact every tick; expensive cache pruning becomes a once-per-minute maintenance pass.
+          path = 'SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/runtime/NativeStatEngine.java'
+          patch(path,
+              '''    public int tick(long currentTick) {\n        int removed = expireDue(currentTick);\n        for (Map.Entry<UUID, EntityStats> entityEntry : entities.entrySet()) {\n''',
+              '''    public int tick(long currentTick) {\n        int removed = expireDue(currentTick);\n        if (currentTick % 1200L != 0L) return removed;\n        for (Map.Entry<UUID, EntityStats> entityEntry : entities.entrySet()) {\n''')
+
+          print('Applied SVFrameLib health/respawn/performance fixes')
+          PY
+
+      - name: Java 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Gradle 8.8
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
+      - name: Apply deterministic namespace migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 SVFrameLib/tools/svframe_namespace_migrate.py SVFrameLib
+          python3 SVFrameLib/tools/svframe_namespace_postfix.py SVFrameLib
+
+      - name: Build and test
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameLib
+          gradle --no-daemon --stacktrace clean test remapJar
+
+      - name: Dedicated server boot smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameLib
+          mkdir -p run
+          printf 'eula=true\n' > run/eula.txt
+          set +e
+          timeout 90s gradle --no-daemon --stacktrace runServer > build/health-fix-server.log 2>&1
+          status=$?
+          set -e
+          cat build/health-fix-server.log
+          if [ "$status" -ne 0 ] && [ "$status" -ne 124 ]; then exit "$status"; fi
+          grep -q 'SVFrameLib online' build/health-fix-server.log
+          ! grep -Eq 'Mixin apply failed|Could not execute entrypoint stage|Exception in server tick loop|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError' build/health-fix-server.log
+
+      - name: Verify hot-path invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'ServerPlayerEvents.AFTER_RESPAWN' SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/SVFrameLibStatMod.java
+          grep -q 'currentTick % 1200L' SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/runtime/NativeStatEngine.java
+          grep -q 'double vanillaBase = vanilla.getBaseValue()' SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/FabricAttributeStatHandler.java
+          grep -q 'EXTERNAL_HEALTH_PRESENTATION' SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/SVFrameLibHealthScale.java
+          grep -q 'ONLINE.values()' SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/SVFrameLibPlayerDataMod.java
+
+      - name: Stage validated JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p SVFrameLib/dist
+          JAR="$(find SVFrameLib/build/libs -maxdepth 1 -type f -name 'SVFrameLib-*.jar' ! -name '*sources*' | head -1)"
+          test -s "$JAR"
+          cp "$JAR" SVFrameLib/dist/SVFrameLib-1.7.1-fabric.jar
+          sha256sum "$JAR" > SVFrameLib/dist/SVFrameLib-1.7.1-fabric.sha256
+          cp SVFrameLib/build/health-fix-server.log SVFrameLib/dist/server-boot.log
+
+      - name: Commit validated fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SVFrame Health Fix'
+          git config user.email 'actions@users.noreply.github.com'
+          git add SVFrameLib/src SVFrameLib/dist
+          if ! git diff --cached --quiet; then
+            git commit -m 'Fix health respawn binding and stat hot paths [skip ci]'
+            git push origin HEAD:svframelib-fabric-1.21.1
+          fi
