@@ -1,0 +1,177 @@
+name: Cobblemon Fusion Active Hotpath Fix
+
+on:
+  push:
+    branches: [svframemmo-cobblemon-integration-1.21.1]
+    paths:
+      - '.github/workflows/fusion-active-hotpath-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-boot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: svframemmo-cobblemon-integration-1.21.1
+          fetch-depth: 1
+
+      - name: Remove active-fusion snapshot allocations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def patch(path, old, new, count=1):
+              p = Path(path)
+              text = p.read_text()
+              found = text.count(old)
+              if found != count:
+                  raise SystemExit(f"{path}: expected {count} occurrences, found {found}")
+              p.write_text(text.replace(old, new, count))
+
+          service = 'SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionService.java'
+          patch(service,
+                '        for (FusionSession session : List.copyOf(byPlayer.values())) {\n',
+                '        for (FusionSession session : byPlayer.values()) {\n')
+
+          visual = 'SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java'
+          patch(visual,
+                '''        Set<UUID> invalid = new HashSet<>();\n\n        for (State state : List.copyOf(states.values())) {\n''',
+                '''        Set<UUID> invalid = null;\n\n        // ConcurrentHashMap values are weakly consistent and safe while stale sessions are removed.\n        // Avoid allocating a full snapshot every 2 ticks for the common all-valid case.\n        for (State state : states.values()) {\n''')
+          patch(visual,
+                '''            if (player == null) {\n                invalid.add(state.playerUuid);\n                continue;\n            }\n''',
+                '''            if (player == null) {\n                if (invalid == null) invalid = new LinkedHashSet<>();\n                invalid.add(state.playerUuid);\n                continue;\n            }\n''')
+          patch(visual,
+                '''            if (pokemon == null) {\n                invalid.add(state.playerUuid);\n                continue;\n            }\n''',
+                '''            if (pokemon == null) {\n                if (invalid == null) invalid = new LinkedHashSet<>();\n                invalid.add(state.playerUuid);\n                continue;\n            }\n''')
+          patch(visual,
+                '        return invalid;\n    }\n',
+                '        return invalid == null ? Set.of() : invalid;\n    }\n',
+                1)
+          print('Applied allocation-free active fusion iteration')
+          PY
+
+      - name: Sync latest SVFrameLib and SVFrameMMO
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframelib-fabric-1.21.1
+          LIB_SHA="$(git rev-parse FETCH_HEAD)"
+          rm -rf SVFrameLib
+          git checkout FETCH_HEAD -- SVFrameLib
+          git fetch --no-tags --depth=1 origin svframemmo-fabric-1.21.1
+          MMO_SHA="$(git rev-parse FETCH_HEAD)"
+          rm -rf SVFrameMMO
+          git checkout FETCH_HEAD -- SVFrameMMO
+          echo "SVFRAMELIB_SHA=$LIB_SHA" >> "$GITHUB_ENV"
+          echo "SVFRAMEMMO_SHA=$MMO_SHA" >> "$GITHUB_ENV"
+          grep -q 'ServerPlayerEvents.AFTER_RESPAWN' SVFrameLib/src/main/java/vn/svframe/svframelib/fabric/SVFrameLibStatMod.java
+          grep -q 'PlayerRespawnRuntime' SVFrameMMO/src/main/resources/fabric.mod.json
+          grep -q 'actual / actualMax \* cap' SVFrameMMO/src/main/java/vn/svframe/svframemmo/mixin/ServerCommonNetworkHandlerMixin.java
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
+      - name: Build foundations
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameLib
+          gradle --no-daemon clean test remapJar
+          cd ../SVFrameMMO
+          gradle --no-daemon clean test remapJar
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.2.0'
+
+      - name: Build and test integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd SVFrameMMOCobblemon
+          gradle --no-daemon --stacktrace clean test nativeIntegrationSmoke remapJar copyProductionRuntimeDeps
+
+      - name: Verify no active snapshot allocations
+        shell: bash
+        run: |
+          set -euo pipefail
+          SERVICE=SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionService.java
+          VISUAL=SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/fusion/FusionVisualBridge.java
+          grep -q 'for (FusionSession session : byPlayer.values())' "$SERVICE"
+          grep -q 'for (State state : states.values())' "$VISUAL"
+          grep -q 'invalid == null ? Set.of() : invalid' "$VISUAL"
+          ! grep -q 'List.copyOf(byPlayer.values())' "$SERVICE"
+          ! grep -q 'List.copyOf(states.values())' "$VISUAL"
+          grep -q 'FUSION_RUNTIME_INTERVAL_TICKS = 2L' SVFrameMMOCobblemon/src/main/java/vn/svframe/svframemmo/cobblemon/SVFrameMMOCobblemon.java
+
+      - name: Production integration boot
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$PWD/SVFrameMMOCobblemon"
+          SERVER="$ROOT/build/production-server"
+          rm -rf "$SERVER"
+          mkdir -p "$SERVER/mods" "$SERVER/extra-libs"
+          for jar in "$ROOT"/build/production-runtime-deps/*.jar; do
+            if unzip -Z1 "$jar" | grep -qx 'fabric.mod.json'; then cp "$jar" "$SERVER/mods/"; else cp "$jar" "$SERVER/extra-libs/"; fi
+          done
+          cp SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar "$SERVER/mods/"
+          cp SVFrameMMO/build/libs/SVFrameMMO-1.13.1-fabric.jar "$SERVER/mods/"
+          integration_jar=$(find "$ROOT/build/libs" -maxdepth 1 -type f -name 'SVFrameMMO-Cobblemon-Integration-*.jar' ! -name '*sources*' | head -n 1)
+          test -n "$integration_jar"
+          cp "$integration_jar" "$SERVER/mods/"
+          curl -fsSL 'https://maven.fabricmc.net/net/fabricmc/fabric-installer/1.0.3/fabric-installer-1.0.3.jar' -o "$SERVER/fabric-installer.jar"
+          cd "$SERVER"
+          java -jar fabric-installer.jar server -mcversion 1.21.1 -loader 0.18.4 -downloadMinecraft
+          printf 'eula=true\n' > eula.txt
+          printf 'online-mode=false\nserver-port=25565\n' > server.properties
+          java -Xms512M -Xmx2G -cp 'extra-libs/*:fabric-server-launch.jar' net.fabricmc.loader.impl.launch.server.FabricServerLauncher nogui > "$ROOT/build/hotpath-server.log" 2>&1 &
+          pid=$!
+          ready=0
+          for _ in $(seq 1 150); do
+            if grep -q 'Done (' "$ROOT/build/hotpath-server.log" && grep -q 'Cobblemon Integration online' "$ROOT/build/hotpath-server.log"; then ready=1; break; fi
+            if ! kill -0 "$pid" 2>/dev/null; then break; fi
+            sleep 1
+          done
+          kill "$pid" 2>/dev/null || true
+          wait "$pid" 2>/dev/null || true
+          cat "$ROOT/build/hotpath-server.log"
+          test "$ready" -eq 1
+          ! grep -Eq 'Mixin apply failed|Could not execute entrypoint stage|Exception in server tick loop|NoClassDefFoundError|NoSuchMethodError|NoSuchFieldError' "$ROOT/build/hotpath-server.log"
+
+      - name: Stage integration JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p SVFrameMMOCobblemon/validated
+          JAR=$(find SVFrameMMOCobblemon/build/libs -maxdepth 1 -type f -name 'SVFrameMMO-Cobblemon-Integration-*.jar' ! -name '*sources*' | head -n 1)
+          test -s "$JAR"
+          cp "$JAR" SVFrameMMOCobblemon/validated/
+          sha256sum "$JAR" > SVFrameMMOCobblemon/validated/SHA256.txt
+          cp SVFrameMMOCobblemon/build/hotpath-server.log SVFrameMMOCobblemon/validated/server-boot.log
+
+      - name: Commit validated integration optimization
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'SVFrame Performance Fix'
+          git config user.email 'actions@users.noreply.github.com'
+          git add SVFrameMMOCobblemon/src SVFrameMMOCobblemon/validated
+          if ! git diff --cached --quiet; then
+            git commit -m 'Remove active fusion snapshot allocations [skip ci]'
+            git push origin HEAD:svframemmo-cobblemon-integration-1.21.1
+          fi
