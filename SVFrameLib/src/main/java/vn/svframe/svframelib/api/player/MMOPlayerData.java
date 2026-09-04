@@ -98,14 +98,10 @@ public class MMOPlayerData {
     }
 
     public void updatePlayer(ServerPlayerEntity player) {
-        if (player == null && this.player != null) {
-            this.player = null;
-            lastLogActivity = System.currentTimeMillis();
-        } else if (player != null && this.player == null) {
-            this.player = player;
-            lastLogActivity = System.currentTimeMillis();
-            lastPlayerName = player.getGameProfile().getName();
-        }
+        if (this.player == player) return;
+        this.player = player;
+        lastLogActivity = System.currentTimeMillis();
+        if (player != null) lastPlayerName = player.getGameProfile().getName();
     }
 
     public UUID getOfficialId() { return officialId; }

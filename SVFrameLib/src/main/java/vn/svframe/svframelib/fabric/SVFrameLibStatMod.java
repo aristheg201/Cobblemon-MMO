@@ -1,6 +1,7 @@
 package vn.svframe.svframelib.fabric;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -54,6 +55,13 @@ public final class SVFrameLibStatMod implements ModInitializer {
             } finally {
                 if (!opened) ONLINE_PLAYERS.remove(playerId, player);
             }
+        });
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            UUID playerId = newPlayer.getUuid();
+            ONLINE_PLAYERS.put(playerId, newPlayer);
+            // Re-publish all update-on-login handlers against the replacement player entity.
+            // Modifier state stays in the engine; only the Minecraft attribute target changed.
+            ENGINE.onSessionOpen(playerId);
         });
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ServerPlayerEntity player = handler.player;

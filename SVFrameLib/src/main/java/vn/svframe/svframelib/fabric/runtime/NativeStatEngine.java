@@ -467,6 +467,7 @@ public final class NativeStatEngine {
 
     public int tick(long currentTick) {
         int removed = expireDue(currentTick);
+        if (currentTick % 1200L != 0L) return removed;
         for (Map.Entry<UUID, EntityStats> entityEntry : entities.entrySet()) {
             EntityStats entity = entityEntry.getValue();
             entity.stats.entrySet().removeIf(entry -> entry.getValue().isEmpty()

@@ -83,8 +83,9 @@ public class FabricAttributeStatHandler extends NativeStatHandler {
     private void updateAttributeModifierValue(NativeStatEngine.StatInstance instance) {
         EntityAttributeInstance vanilla = requireAttribute(instance);
         vanilla.removeModifier(ATTRIBUTE_KEY);
-        double total = instance.total(playerDefaultBase + configuredBaseValue(), NativeStatEngine.EquipmentSlot.MAIN_HAND);
-        double amount = total - playerDefaultBase;
+        double vanillaBase = vanilla.getBaseValue();
+        double total = instance.total(vanillaBase + configuredBaseValue(), NativeStatEngine.EquipmentSlot.MAIN_HAND);
+        double amount = total - vanillaBase;
         if (Math.abs(amount) > EPSILON) {
             vanilla.addTemporaryModifier(new EntityAttributeModifier(
                     ATTRIBUTE_KEY,
