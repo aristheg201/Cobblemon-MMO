@@ -12,7 +12,7 @@ import java.util.Map;
 
 /** Fabric-native passive skill map with SVFrameLib 1.7.1 timer/login semantics. */
 public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
-    private final Map<String, Long> nextFireAt = new HashMap<>();
+    private final Map<String, TimerState> timers = new HashMap<>();
 
     public PassiveSkillMap(MMOPlayerData playerData) {
         super(playerData);
@@ -38,17 +38,50 @@ public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
             if (!TriggerType.TIMER.equals(passive.getTrigger())) continue;
 
             String handlerId = passive.getTriggeredSkill().getHandler().getId();
+            long period = passive.getTimerPeriod();
             long now = System.currentTimeMillis();
-            Long deadline = nextFireAt.get(handlerId);
-            if (deadline != null && now < deadline) continue;
+            TimerState timer = timers.get(handlerId);
+            if (timer != null) {
+                // The legacy runtime evaluated timer every tick. If a live parameter changes,
+                // recompute from the last actual fire timestamp so the original phase is preserved.
+                if (timer.period != period) timer.reschedule(period);
+                if (now < timer.nextFireAt) continue;
+            }
 
-            // Revalidate runtime conditions at the exact point the passive is due.
-            // Leaving the deadline unchanged while blocked preserves the old behavior:
-            // the skill fires on the first eligible tick instead of skipping an interval.
+            // Runtime eligibility is deliberately revalidated only when the passive is due.
+            // A blocked fire leaves the deadline due, matching the old "fire first eligible tick" behavior.
             if (getPlayerData().getPlayer().interactionManager.getGameMode() == GameMode.SPECTATOR) continue;
 
+            // Legacy code recorded lastCast immediately before cast. Keep the same phase anchor.
+            long firedAt = System.currentTimeMillis();
+            if (timer == null) {
+                timer = new TimerState(firedAt, period);
+                timers.put(handlerId, timer);
+            } else {
+                timer.fired(firedAt, period);
+            }
             passive.getTriggeredSkill().cast(metadata.get());
-            nextFireAt.put(handlerId, now + passive.getTimerPeriod());
+        }
+    }
+
+    private static final class TimerState {
+        private long lastFireAt;
+        private long period;
+        private long nextFireAt;
+
+        private TimerState(long lastFireAt, long period) {
+            fired(lastFireAt, period);
+        }
+
+        private void fired(long lastFireAt, long period) {
+            this.lastFireAt = lastFireAt;
+            this.period = period;
+            this.nextFireAt = lastFireAt + period;
+        }
+
+        private void reschedule(long period) {
+            this.period = period;
+            this.nextFireAt = lastFireAt + period;
         }
     }
 }
