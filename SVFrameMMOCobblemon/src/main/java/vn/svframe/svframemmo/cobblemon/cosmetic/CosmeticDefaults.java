@@ -5,7 +5,10 @@ import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Creates the editable cosmetic/VFX directories.
@@ -19,9 +22,6 @@ public final class CosmeticDefaults {
     public static final Path COSMETICS = ROOT.resolve("cosmetics");
     public static final Path VFX = ROOT.resolve("vfx");
 
-    private static final String LEGACY_DAI_THANH_ID = "back_dai_thanh_hoa_bao";
-    private static final String LEGACY_DAI_THANH_FILE = "back_dai_thanh_hoa_bao.yml";
-
     private CosmeticDefaults() { }
 
     public static void ensure() throws java.io.IOException {
@@ -29,11 +29,7 @@ public final class CosmeticDefaults {
         Files.createDirectories(VFX);
         migrateLegacyVfx();
         copyBundledTree("defaults/vfx", VFX);
-
-        // Versions that briefly auto-installed the Dai Thanh example could leave a generated canonical file next to
-        // an administrator-supplied copy with the same id. Remove only that known generated file when another file
-        // already defines the same id, before CosmeticService scans the directory.
-        cleanupLegacyAutoInstalledCosmetic(LEGACY_DAI_THANH_ID, LEGACY_DAI_THANH_FILE);
+        quarantineDuplicateCosmetics();
     }
 
     private static void migrateLegacyVfx() throws java.io.IOException {
@@ -41,27 +37,58 @@ public final class CosmeticDefaults {
         copyMissingTree(legacy.resolve("vfx"), VFX);
     }
 
-    private static void cleanupLegacyAutoInstalledCosmetic(String id, String canonicalName) throws java.io.IOException {
-        Path canonical = COSMETICS.resolve(canonicalName).toAbsolutePath().normalize();
-        if (!Files.isRegularFile(canonical)) return;
+    /**
+     * Cosmetic definitions are user configuration, so duplicate ids must never take down the whole server.
+     * The canonical <id>.yml file wins when present; otherwise the lexicographically first path wins.
+     * Losing files are preserved next to the original with a .duplicate-disabled suffix, which keeps them out of
+     * the YAML scanner while making the conflict obvious and reversible to an administrator.
+     */
+    private static void quarantineDuplicateCosmetics() throws java.io.IOException {
+        if (!Files.isDirectory(COSMETICS)) return;
 
-        boolean duplicate = false;
+        Map<String, Path> selected = new LinkedHashMap<>();
         try (var stream = Files.walk(COSMETICS)) {
-            for (Path file : stream.filter(Files::isRegularFile).filter(CosmeticDefaults::yaml).toList()) {
-                Path normalized = file.toAbsolutePath().normalize();
-                if (normalized.equals(canonical)) continue;
-                if (id.equals(readCosmeticId(file))) {
-                    duplicate = true;
-                    break;
+            for (Path file : stream.filter(Files::isRegularFile).filter(CosmeticDefaults::yaml).sorted().toList()) {
+                String id = readCosmeticId(file);
+                if (id.isBlank()) continue;
+
+                Path existing = selected.get(id);
+                if (existing == null) {
+                    selected.put(id, file);
+                    continue;
                 }
+
+                Path keep = preferred(existing, file, id);
+                Path duplicate = keep.equals(existing) ? file : existing;
+                if (!keep.equals(existing)) selected.put(id, keep);
+                quarantine(duplicate, id, keep);
             }
         }
-        if (!duplicate) return;
+    }
 
-        Files.deleteIfExists(canonical);
+    private static Path preferred(Path first, Path second, String id) {
+        int firstScore = canonicalScore(first, id);
+        int secondScore = canonicalScore(second, id);
+        if (firstScore != secondScore) return firstScore < secondScore ? first : second;
+        return first.toString().compareToIgnoreCase(second.toString()) <= 0 ? first : second;
+    }
+
+    private static int canonicalScore(Path file, String id) {
+        String name = file.getFileName().toString().toLowerCase(Locale.ROOT);
+        String normalized = id.toLowerCase(Locale.ROOT);
+        if (name.equals(normalized + ".yml")) return 0;
+        if (name.equals(normalized + ".yaml")) return 1;
+        return 2;
+    }
+
+    private static void quarantine(Path duplicate, String id, Path keep) throws java.io.IOException {
+        String base = duplicate.getFileName().toString() + ".duplicate-disabled";
+        Path target = duplicate.resolveSibling(base);
+        int suffix = 2;
+        while (Files.exists(target)) target = duplicate.resolveSibling(base + "." + suffix++);
+        Files.move(duplicate, target, StandardCopyOption.ATOMIC_MOVE);
         SVFrameMMOCobblemon.LOG.warn(
-                "Removed legacy auto-installed cosmetic {} because another YAML already defines id '{}'. "
-                        + "Cosmetic YAML is now fully administrator-managed.", canonical, id);
+                "Duplicate cosmetic id '{}' found. Keeping {} and disabling duplicate as {}.", id, keep, target);
     }
 
     private static String readCosmeticId(Path file) {
