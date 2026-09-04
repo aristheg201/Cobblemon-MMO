@@ -24,6 +24,7 @@ import vn.svframe.svframemmo.api.event.PlayerKeyPressEvent;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
 import vn.svframe.svframemmo.config.SVFrameMMOConfig;
+import vn.svframe.svframemmo.runtime.PersistentHudRuntime;
 import vn.svframe.svframemmo.skill.ClassSkill;
 import vn.svframe.svframemmo.skill.PlayerSkillCatalog;
 import vn.svframe.svframemmo.skill.cast.ComboMap;
@@ -174,6 +175,7 @@ public final class SkillBarRuntime {
                     else if (live.skillCasting().comboMode()) showCombo(data, session, live.skillCasting());
                 }
             } else if (live.actionBar().enabled() && tick % live.actionBar().updateTicks() == 0L) {
+                if (PersistentHudRuntime.willOverrideIdle(data, mmo, live, tick)) continue;
                 mmo.getActionBar().show(DEFAULT_BAR_PRIORITY,
                         Math.max(2L, live.actionBar().updateTicks() + 1L),
                         () -> SVFrameLib.inst().parseColors(formatDefaultBar(data, live.actionBar().format())));
