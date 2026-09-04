@@ -11,6 +11,7 @@ import vn.svframe.svframelib.api.stat.provider.PlayerStatProvider;
 import vn.svframe.svframelib.damage.AttackMetadata;
 import vn.svframe.svframelib.damage.DamageMetadata;
 import vn.svframe.svframelib.damage.DamageType;
+import vn.svframe.svframelib.element.Element;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -74,6 +75,23 @@ public class PlayerMetadata implements PlayerStatProvider {
         return attack;
     }
 
+    /** Attack overload for integrations that need packet-level elemental identity. */
+    public AttackMetadata attack(LivingEntity target, double damage, Element element, List<DamageType> damageTypes) {
+        return attack(target, damage, element, true, damageTypes);
+    }
+
+    /** The boolean is knockback, exactly as SVFrameLib 1.7.1. */
+    public AttackMetadata attack(LivingEntity target, double damage, Element element, boolean knockback, List<DamageType> damageTypes) {
+        AttackMetadata registered = SVFrameLib.plugin.getDamage().getRegisteredAttackMetadata(target);
+        if (registered != null) {
+            registered.getDamage().add(damage, element, damageTypes);
+            return registered;
+        }
+        AttackMetadata attack = new AttackMetadata(new DamageMetadata(damage, element, damageTypes), target, this);
+        SVFrameLib.plugin.getDamage().registerAttack(attack, knockback, false);
+        return attack;
+    }
+
     public AttackMetadata attack(LivingEntity target, double damage, DamageType... damageTypes) {
         return attack(target, damage, Arrays.asList(damageTypes));
     }
@@ -81,6 +99,15 @@ public class PlayerMetadata implements PlayerStatProvider {
     /** The boolean is knockback, exactly as SVFrameLib 1.7.1. */
     public AttackMetadata attack(LivingEntity target, double damage, boolean knockback, DamageType... damageTypes) {
         return attack(target, damage, knockback, Arrays.asList(damageTypes));
+    }
+
+    public AttackMetadata attack(LivingEntity target, double damage, Element element, DamageType... damageTypes) {
+        return attack(target, damage, element, Arrays.asList(damageTypes));
+    }
+
+    /** The boolean is knockback, exactly as SVFrameLib 1.7.1. */
+    public AttackMetadata attack(LivingEntity target, double damage, Element element, boolean knockback, DamageType... damageTypes) {
+        return attack(target, damage, element, knockback, Arrays.asList(damageTypes));
     }
 
     @Override public PlayerMetadata cache(EquipmentSlot slot) { return this; }

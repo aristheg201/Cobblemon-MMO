@@ -49,14 +49,10 @@ public final class NativePlayerData {
     public SVFramePlayerSessionRuntime sessions() { return sessions; }
 
     public synchronized void updatePlayer(ServerPlayerEntity next) {
-        if (next == null && player != null) {
-            player = null;
-            lastLogActivity = System.currentTimeMillis();
-        } else if (next != null && player == null) {
-            player = next;
-            lastLogActivity = System.currentTimeMillis();
-            lastPlayerName = next.getGameProfile().getName();
-        }
+        if (player == next) return;
+        player = next;
+        lastLogActivity = System.currentTimeMillis();
+        if (next != null) lastPlayerName = next.getGameProfile().getName();
     }
 
     public boolean hasProfile() {

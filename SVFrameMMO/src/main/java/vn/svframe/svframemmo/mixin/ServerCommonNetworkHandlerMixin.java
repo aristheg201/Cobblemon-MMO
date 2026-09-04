@@ -18,15 +18,17 @@ import java.util.List;
 /**
  * Limits only the owning client's vanilla heart count while leaving authoritative health untouched.
  *
- * Do not proportionally remap current health against MAX_HEALTH here. Minecraft 1.21.1 treats any lower
- * HealthUpdateS2CPacket value as damage, so a MAX_HEALTH increase could otherwise make a healing player appear hurt.
- * Instead the presentation is a direct clamp: current visual health is min(real health, visual cap), and visual
- * MAX_HEALTH is capped to the same value. Exact real health/max-health remain available through SVFrameMMO's HUD.
+ * The owning client receives a proportional health presentation capped to the configured vanilla-heart budget.
+ * With the default cap of 40 HP, the client renders at most 20 hearts / two rows while server-side current/max health
+ * remain authoritative and uncapped. Exact real health/max-health remain available through SVFrameMMO's numeric HUD.
  */
 @Mixin(ServerCommonNetworkHandler.class)
 public abstract class ServerCommonNetworkHandlerMixin {
     @ModifyVariable(method = "send", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private Packet<?> svframe$maskLocalHealth(Packet<?> original) {
+        // send() is a very hot path. Ignore every unrelated packet before resolving player/attributes.
+        if (!(original instanceof HealthUpdateS2CPacket)
+                && !(original instanceof EntityAttributesS2CPacket)) return original;
         if (!((Object) this instanceof ServerPlayNetworkHandler play)) return original;
         ServerPlayerEntity player = play.getPlayer();
         if (player == null) return original;
@@ -39,8 +41,8 @@ public abstract class ServerCommonNetworkHandlerMixin {
 
         if (original instanceof HealthUpdateS2CPacket health) {
             float actual = health.getHealth();
-            if (actual <= 0f) return original;
-            float visible = (float) Math.min(cap, actual);
+            if (!Float.isFinite(actual)) return original;
+            float visible = (float) Math.max(0.0d, Math.min(cap, actual / actualMax * cap));
             if (Float.compare(visible, actual) == 0) return original;
             return new HealthUpdateS2CPacket(visible, health.getFood(), health.getSaturation());
         }

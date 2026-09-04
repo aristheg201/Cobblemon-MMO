@@ -7,6 +7,7 @@ base { archivesName = 'SVFrameLib' }
 repositories {
     mavenCentral()
     maven { url = 'https://maven.fabricmc.net/' }
+    maven { url = 'https://api.modrinth.com/maven' }
 }
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
@@ -14,10 +15,24 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     compileOnly 'net.luckperms:api:5.4'
+
+    // Optional native economy APIs. Keep these off Loom's mod-remap pipeline because the
+    // server's BEconomy/CobbleDollars jars were produced by newer Loom versions than this
+    // single-version 1.21.1 project; runtime presence is detected with Fabric Loader.
+    compileOnly 'maven.modrinth:4Kma4Oms:CpGrhJed' // BEconomy 1.5.4 / BEconomy-1.5.jar
+    compileOnly 'maven.modrinth:s7N7AsqL:NQdxKsW7' // CobbleDollars Fabric 2.0.0+Beta-6.1+1.21.1
+    compileOnly 'org.jetbrains.kotlin:kotlin-stdlib:2.4.10'
+
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 tasks.withType(JavaCompile).configureEach {
     options.release = 21
     options.encoding = 'UTF-8'
+}
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
 }
 java {
     sourceCompatibility = JavaVersion.VERSION_21
