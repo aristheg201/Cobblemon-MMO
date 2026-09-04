@@ -63,7 +63,8 @@ public final class PlayerData {
         attributeReallocationPoints = config.defaultReallocationPoints();
         skillReallocationPoints = config.defaultReallocationPoints();
         skillTreeReallocationPoints = config.defaultReallocationPoints();
-        health = config.defaultHealth();
+        // Zero is an internal "fill from effective MAX_HEALTH on first attach" sentinel.
+        health = 0d;
         mana = config.defaultMana();
         stamina = config.defaultStamina();
         stellium = config.defaultStellium();
@@ -75,6 +76,7 @@ public final class PlayerData {
     public MMOPlayerData getMMOPlayerData() { return player == null ? MMOPlayerData.get(id) : MMOPlayerData.setup(player); }
 
     public void attach(ServerPlayerEntity player) {
+        double requestedHealth = health;
         this.player = Objects.requireNonNull(player, "player");
         MMOPlayerData.setup(player);
         refreshClassStats();
@@ -84,7 +86,9 @@ public final class PlayerData {
         applyTemporaryProgression();
         skillTrees.applyTemporary();
         clampAll();
-        setResource(PlayerResource.HEALTH, health, ResourceUpdateReason.CHOOSE_CLASS);
+        setResource(PlayerResource.HEALTH,
+                requestedHealth <= 0d ? getMaxResource(PlayerResource.HEALTH) : requestedHealth,
+                ResourceUpdateReason.CHOOSE_CLASS);
         SVFrameMMO.skillRuntime().attach(this);
     }
 
@@ -156,6 +160,7 @@ public final class PlayerData {
 
         playerClass = target.getId();
         restoreClassState(targetState);
+        double requestedHealth = health;
         refreshClassStats();
         attributes.reload();
         applyHardBindings();
@@ -164,7 +169,9 @@ public final class PlayerData {
         skillTrees.applyTemporary();
         clampAll();
         if (isOnline()) {
-            setResource(PlayerResource.HEALTH, health, ResourceUpdateReason.CHOOSE_CLASS);
+            setResource(PlayerResource.HEALTH,
+                    requestedHealth <= 0d ? getMaxResource(PlayerResource.HEALTH) : requestedHealth,
+                    ResourceUpdateReason.CHOOSE_CLASS);
             SVFrameMMO.skillRuntime().attach(this);
         }
         return true;
@@ -526,7 +533,7 @@ public final class PlayerData {
         var cfg = SVFrameMMO.config();
         return new SavedClassState(cfg.defaultLevel(), 0d, cfg.defaultSkillPoints(), cfg.defaultAttributePoints(),
                 cfg.defaultReallocationPoints(), cfg.defaultReallocationPoints(), cfg.defaultReallocationPoints(),
-                cfg.defaultHealth(), cfg.defaultMana(), cfg.defaultStamina(), cfg.defaultStellium(),
+                0d, cfg.defaultMana(), cfg.defaultStamina(), cfg.defaultStellium(),
                 Map.of(), Map.of(), Map.of(), Set.of(), Map.of(), Map.of(), Map.of());
     }
 
