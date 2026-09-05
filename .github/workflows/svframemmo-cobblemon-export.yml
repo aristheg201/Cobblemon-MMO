@@ -1,5 +1,5 @@
 name: Export SVFrameMMO Cobblemon Integration
-# Exports the latest YAML-driven cosmetic renderer build.
+# Exports the generic renderer plus the external Dai Thanh fire-mantle YAML.
 on:
   push:
     branches: [svframemmo-cobblemon-integration-1.21.1]
@@ -45,19 +45,31 @@ jobs:
         run: |
           set -euo pipefail
           cd SVFrameMMOCobblemon
-          ! grep -q 'copyBundledTree("defaults/cosmetics"' src/main/java/vn/svframe/svframemmo/cobblemon/cosmetic/CosmeticDefaults.java
-          grep -q 'quarantineDuplicateCosmetics' src/main/java/vn/svframe/svframemmo/cobblemon/cosmetic/CosmeticDefaults.java
-          ! grep -q 'back_dai_thanh_hoa_bao' src/main/java/vn/svframe/svframemmo/cobblemon/cosmetic/CosmeticDefaults.java
+          defaults=src/main/java/vn/svframe/svframemmo/cobblemon/cosmetic/CosmeticDefaults.java
+          cape=examples/cosmetics/back_dai_thanh_hoa_bao.yml
+          ! grep -q 'copyBundledTree("defaults/cosmetics"' "$defaults"
+          grep -q 'quarantineDuplicateCosmetics' "$defaults"
+          ! grep -q 'back_dai_thanh_hoa_bao' "$defaults"
+          test -f "$cape"
+          grep -q '^slot: BACK$' "$cape"
+          grep -q 'particle: minecraft:flame' "$cape"
+          grep -q 'particle: minecraft:small_flame' "$cape"
+          grep -q 'backend: COBBLEMON' "$cape"
+          ! grep -q 'minecraft:dust' "$cape"
+          grep -q 'offset-z: -1.68' "$cape"
           gradle --no-daemon --stacktrace remapJar
           jar=$(find build/libs -maxdepth 1 -type f -name 'SVFrameMMO-Cobblemon-Integration-*.jar' ! -name '*sources*' | head -n 1)
           test -n "$jar"
           unzip -Z1 "$jar" | grep -qx 'vn/svframe/svframemmo/cobblemon/cosmetic/CosmeticRenderer.class'
           unzip -Z1 "$jar" | grep -qx 'vn/svframe/svframemmo/cobblemon/cosmetic/CosmeticDefaults.class'
-          cp "$jar" build/libs/SVFrameMMO-Cobblemon-Integration-DaiThanh-Fixed.jar
-      - name: Upload fixed jar
+          ! unzip -Z1 "$jar" | grep -qx 'defaults/cosmetics/back_dai_thanh_hoa_bao.yml'
+          cp "$jar" build/libs/SVFrameMMO-Cobblemon-Integration-DaiThanh-FireMantle.jar
+      - name: Upload fire mantle bundle
         uses: actions/upload-artifact@v4
         with:
-          name: SVFrameMMO-Cobblemon-Integration-DaiThanh-Fixed
-          path: SVFrameMMOCobblemon/build/libs/SVFrameMMO-Cobblemon-Integration-DaiThanh-Fixed.jar
+          name: SVFrameMMO-Cobblemon-Integration-DaiThanh-FireMantle
+          path: |
+            SVFrameMMOCobblemon/build/libs/SVFrameMMO-Cobblemon-Integration-DaiThanh-FireMantle.jar
+            SVFrameMMOCobblemon/examples/cosmetics/back_dai_thanh_hoa_bao.yml
           if-no-files-found: error
           retention-days: 7
