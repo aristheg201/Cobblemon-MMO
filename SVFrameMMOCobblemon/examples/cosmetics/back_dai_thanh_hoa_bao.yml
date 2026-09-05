@@ -3,262 +3,279 @@ slot: BACK
 name: "Đại Thánh Hỏa Bào"
 permission: svframemmo.cobblemon.cosmetic.use.back_dai_thanh_hoa_bao
 
-# Hero Is Back-inspired FIRE MANTLE.
-# This is intentionally all flame: no red dust/body paint.
-# Shape is built entirely behind the player: broad burning shoulders -> tapered body -> split trailing tails.
-backend: MINECRAFT
-particle: minecraft:flame
-count: 2
-spread: 0.035
-speed: 0.004
+# YAML-ONLY cosmetic. No Java/JAR patch is required for this design.
+# Hero Is Back-inspired mantle built from Cobblemon's Flamethrower impact fire:
+# broad burning shoulders -> dense middle sheet -> long split trailing tails.
+#
+# Why flamethrower_target instead of flamethrower_actor?
+# - target is a large 1x1 fire billboard with a finite lifetime (~0.5s)
+# - it has no hard-coded world firing direction
+# - local BACK offsets therefore rotate correctly with the player using the existing renderer
+# - actor fires toward world -Z when spawned as a standalone Snowstorm packet
+backend: COBBLEMON
+particle: cobblemon:flamethrower_target
 hide-without-resource-pack: false
 
 fallback:
   particle: minecraft:flame
-  count: 2
-  spread: 0.05
-  speed: 0.005
+  count: 3
+  spread: 0.06
+  speed: 0.006
 
 phases:
   EQUIP_BURST:
-    # Cobblemon/Snowstorm ignition runs down the back when the mantle appears.
+    # Shoulder ignition.
     - backend: COBBLEMON
-      particle: ember_burst
-      repetitions: 1
+      particle: cobblemon:flamethrower_target
+      repetitions: 2
+      interval-ticks: 3
       anchor: BACK
-      offset-x: 0.00
+      offset-x: -0.62
       offset-y: 0.46
-      offset-z: -0.72
+      offset-z: -0.64
       broadcast-radius: 28
-      max-viewers: 28
+      max-viewers: 24
 
     - backend: COBBLEMON
-      particle: ember_burst
+      particle: cobblemon:flamethrower_target
+      delay-ticks: 1
+      repetitions: 2
+      interval-ticks: 3
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: 0.44
+      offset-z: -0.68
+      broadcast-radius: 28
+      max-viewers: 24
+
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      delay-ticks: 2
+      repetitions: 2
+      interval-ticks: 3
+      anchor: BACK
+      offset-x: 0.62
+      offset-y: 0.46
+      offset-z: -0.64
+      broadcast-radius: 28
+      max-viewers: 24
+
+    # Fire rolls down the mantle.
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
       delay-ticks: 3
-      repetitions: 1
+      repetitions: 2
+      interval-ticks: 3
       anchor: BACK
-      offset-x: 0.00
+      offset-x: -0.38
       offset-y: 0.08
-      offset-z: -0.98
+      offset-z: -0.90
       broadcast-radius: 28
-      max-viewers: 28
+      max-viewers: 24
 
     - backend: COBBLEMON
-      particle: ember_burst
-      delay-ticks: 6
-      repetitions: 1
-      anchor: BACK
-      offset-x: 0.00
-      offset-y: -0.40
-      offset-z: -1.42
-      broadcast-radius: 28
-      max-viewers: 28
-
-  PREVIEW:
-    # Broad shoulder crown, deliberately well behind the torso.
-    - backend: MINECRAFT
-      particle: minecraft:flame
-      repetitions: 12
-      interval-ticks: 3
-      anchor: BACK
-      offset-x: -0.70
-      offset-y: 0.50
-      offset-z: -0.72
-      count: 4
-      spread: 0.08
-      speed: 0.008
-      broadcast-radius: 28
-      max-viewers: 28
-
-    - backend: MINECRAFT
-      particle: minecraft:flame
-      delay-ticks: 1
-      repetitions: 12
-      interval-ticks: 3
-      anchor: BACK
-      offset-x: 0.00
-      offset-y: 0.46
-      offset-z: -0.76
-      count: 5
-      spread: 0.10
-      speed: 0.009
-      broadcast-radius: 28
-      max-viewers: 28
-
-    - backend: MINECRAFT
-      particle: minecraft:flame
-      delay-ticks: 2
-      repetitions: 12
-      interval-ticks: 3
-      anchor: BACK
-      offset-x: 0.70
-      offset-y: 0.50
-      offset-z: -0.72
-      count: 4
-      spread: 0.08
-      speed: 0.008
-      broadcast-radius: 28
-      max-viewers: 28
-
-    # Mid mantle.
-    - backend: MINECRAFT
-      particle: minecraft:small_flame
-      repetitions: 12
-      interval-ticks: 3
-      anchor: BACK
-      offset-x: -0.48
-      offset-y: 0.16
-      offset-z: -0.94
-      count: 4
-      spread: 0.07
-      speed: 0.006
-      broadcast-radius: 28
-      max-viewers: 28
-
-    - backend: MINECRAFT
-      particle: minecraft:flame
-      delay-ticks: 1
-      repetitions: 12
-      interval-ticks: 3
-      anchor: BACK
-      offset-x: 0.00
-      offset-y: 0.10
-      offset-z: -1.00
-      count: 4
-      spread: 0.08
-      speed: 0.007
-      broadcast-radius: 28
-      max-viewers: 28
-
-    - backend: MINECRAFT
-      particle: minecraft:small_flame
-      delay-ticks: 2
-      repetitions: 12
-      interval-ticks: 3
-      anchor: BACK
-      offset-x: 0.48
-      offset-y: 0.16
-      offset-z: -0.94
-      count: 4
-      spread: 0.07
-      speed: 0.006
-      broadcast-radius: 28
-      max-viewers: 28
-
-    # Long split tail.
-    - backend: MINECRAFT
-      particle: minecraft:flame
-      repetitions: 12
-      interval-ticks: 3
-      anchor: BACK
-      offset-x: -0.22
-      offset-y: -0.38
-      offset-z: -1.42
-      count: 4
-      spread: 0.07
-      speed: 0.007
-      broadcast-radius: 28
-      max-viewers: 28
-
-    - backend: MINECRAFT
-      particle: minecraft:flame
-      delay-ticks: 2
-      repetitions: 12
-      interval-ticks: 3
-      anchor: BACK
-      offset-x: 0.22
-      offset-y: -0.38
-      offset-z: -1.42
-      count: 4
-      spread: 0.07
-      speed: 0.007
-      broadcast-radius: 28
-      max-viewers: 28
-
-    - backend: COBBLEMON
-      particle: ember_burst
+      particle: cobblemon:flamethrower_target
       delay-ticks: 4
       repetitions: 2
-      interval-ticks: 16
+      interval-ticks: 3
+      anchor: BACK
+      offset-x: 0.38
+      offset-y: 0.08
+      offset-z: -0.90
+      broadcast-radius: 28
+      max-viewers: 24
+
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      delay-ticks: 6
+      repetitions: 2
+      interval-ticks: 3
+      anchor: BACK
+      offset-x: -0.18
+      offset-y: -0.36
+      offset-z: -1.30
+      broadcast-radius: 28
+      max-viewers: 24
+
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      delay-ticks: 7
+      repetitions: 2
+      interval-ticks: 3
+      anchor: BACK
+      offset-x: 0.18
+      offset-y: -0.36
+      offset-z: -1.30
+      broadcast-radius: 28
+      max-viewers: 24
+
+  PREVIEW:
+    # Preview runs denser than the idle cosmetic so the whole silhouette is obvious immediately.
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: -0.66
+      offset-y: 0.47
+      offset-z: -0.66
+      broadcast-radius: 28
+      max-viewers: 24
+
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      delay-ticks: 1
+      repetitions: 10
+      interval-ticks: 4
       anchor: BACK
       offset-x: 0.00
-      offset-y: -0.28
-      offset-z: -1.34
+      offset-y: 0.45
+      offset-z: -0.70
       broadcast-radius: 28
-      max-viewers: 28
+      max-viewers: 24
+
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      delay-ticks: 2
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: 0.66
+      offset-y: 0.47
+      offset-z: -0.66
+      broadcast-radius: 28
+      max-viewers: 24
+
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: -0.42
+      offset-y: 0.10
+      offset-z: -0.92
+      broadcast-radius: 28
+      max-viewers: 24
+
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      delay-ticks: 1
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: 0.05
+      offset-z: -0.98
+      broadcast-radius: 28
+      max-viewers: 24
+
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      delay-ticks: 2
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: 0.42
+      offset-y: 0.10
+      offset-z: -0.92
+      broadcast-radius: 28
+      max-viewers: 24
+
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: 0.00
+      offset-y: -0.18
+      offset-z: -1.14
+      broadcast-radius: 28
+      max-viewers: 24
+
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      delay-ticks: 1
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: -0.20
+      offset-y: -0.42
+      offset-z: -1.38
+      broadcast-radius: 28
+      max-viewers: 24
+
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      delay-ticks: 3
+      repetitions: 10
+      interval-ticks: 4
+      anchor: BACK
+      offset-x: 0.20
+      offset-y: -0.42
+      offset-z: -1.38
+      broadcast-radius: 28
+      max-viewers: 24
 
   WHILE_EQUIPPED:
-    # ===== Shoulder crown =====
-    # Large, bright and high: this is the visual signature from the reference.
-    - backend: MINECRAFT
-      particle: minecraft:flame
+    # ===== Broad shoulder crown =====
+    # Flamethrower target billboards overlap into one large shoulder mass.
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
       delay-ticks: 0
-      interval-ticks: 8
+      interval-ticks: 9
       anchor: BACK
-      offset-x: -0.72
-      offset-y: 0.52
-      offset-z: -0.72
-      count: 4
-      spread: 0.085
-      speed: 0.008
-      motion-drag: 0.25
-      motion-lift: 0.08
-      sway-amplitude: 0.035
-      sway-period-ticks: 36
+      offset-x: -0.64
+      offset-y: 0.46
+      offset-z: -0.64
+      motion-drag: 0.18
+      motion-lift: 0.05
+      sway-amplitude: 0.030
+      sway-period-ticks: 38
       sway-offset-ticks: 0
       broadcast-radius: 28
       max-viewers: 24
 
-    - backend: MINECRAFT
-      particle: minecraft:flame
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
       delay-ticks: 3
-      interval-ticks: 8
+      interval-ticks: 9
       anchor: BACK
       offset-x: 0.00
-      offset-y: 0.48
-      offset-z: -0.78
-      count: 5
-      spread: 0.10
-      speed: 0.009
-      motion-drag: 0.35
-      motion-lift: 0.10
-      sway-amplitude: 0.025
-      sway-period-ticks: 40
+      offset-y: 0.44
+      offset-z: -0.70
+      motion-drag: 0.25
+      motion-lift: 0.07
+      sway-amplitude: 0.020
+      sway-period-ticks: 42
       sway-offset-ticks: 8
       broadcast-radius: 28
       max-viewers: 24
 
-    - backend: MINECRAFT
-      particle: minecraft:flame
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
       delay-ticks: 6
-      interval-ticks: 8
+      interval-ticks: 9
       anchor: BACK
-      offset-x: 0.72
-      offset-y: 0.52
-      offset-z: -0.72
-      count: 4
-      spread: 0.085
-      speed: 0.008
-      motion-drag: 0.25
-      motion-lift: 0.08
-      sway-amplitude: 0.035
-      sway-period-ticks: 36
-      sway-offset-ticks: 18
+      offset-x: 0.64
+      offset-y: 0.46
+      offset-z: -0.64
+      motion-drag: 0.18
+      motion-lift: 0.05
+      sway-amplitude: 0.030
+      sway-period-ticks: 38
+      sway-offset-ticks: 19
       broadcast-radius: 28
       max-viewers: 24
 
-    # ===== Upper / middle sheet =====
-    - backend: MINECRAFT
-      particle: minecraft:small_flame
+    # ===== Dense middle sheet =====
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
       delay-ticks: 1
-      interval-ticks: 8
+      interval-ticks: 9
       anchor: BACK
-      offset-x: -0.50
-      offset-y: 0.20
-      offset-z: -0.94
-      count: 4
-      spread: 0.075
-      speed: 0.006
+      offset-x: -0.40
+      offset-y: 0.10
+      offset-z: -0.91
       motion-drag: 0.75
       motion-lift: 0.22
       sway-amplitude: 0.055
@@ -267,36 +284,30 @@ phases:
       broadcast-radius: 28
       max-viewers: 24
 
-    - backend: MINECRAFT
-      particle: minecraft:flame
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
       delay-ticks: 4
-      interval-ticks: 8
+      interval-ticks: 9
       anchor: BACK
       offset-x: 0.00
-      offset-y: 0.14
-      offset-z: -1.02
-      count: 5
-      spread: 0.09
-      speed: 0.007
+      offset-y: 0.05
+      offset-z: -0.99
       motion-drag: 0.95
-      motion-lift: 0.28
+      motion-lift: 0.29
       sway-amplitude: 0.035
-      sway-period-ticks: 38
+      sway-period-ticks: 36
       sway-offset-ticks: 11
       broadcast-radius: 28
       max-viewers: 24
 
-    - backend: MINECRAFT
-      particle: minecraft:small_flame
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
       delay-ticks: 7
-      interval-ticks: 8
+      interval-ticks: 9
       anchor: BACK
-      offset-x: 0.50
-      offset-y: 0.20
-      offset-z: -0.94
-      count: 4
-      spread: 0.075
-      speed: 0.006
+      offset-x: 0.40
+      offset-y: 0.10
+      offset-z: -0.91
       motion-drag: 0.75
       motion-lift: 0.22
       sway-amplitude: 0.055
@@ -305,169 +316,129 @@ phases:
       broadcast-radius: 28
       max-viewers: 24
 
-    - backend: MINECRAFT
-      particle: minecraft:small_flame
+    # Lower centre closes the gap before the forked tails.
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
       delay-ticks: 2
-      interval-ticks: 8
-      anchor: BACK
-      offset-x: -0.34
-      offset-y: -0.08
-      offset-z: -1.14
-      count: 4
-      spread: 0.065
-      speed: 0.006
-      motion-drag: 1.40
-      motion-lift: 0.45
-      sway-amplitude: 0.085
-      sway-period-ticks: 30
-      sway-offset-ticks: 3
-      broadcast-radius: 28
-      max-viewers: 24
-
-    - backend: MINECRAFT
-      particle: minecraft:flame
-      delay-ticks: 5
-      interval-ticks: 8
+      interval-ticks: 9
       anchor: BACK
       offset-x: 0.00
-      offset-y: -0.12
-      offset-z: -1.20
-      count: 4
-      spread: 0.075
-      speed: 0.007
-      motion-drag: 1.60
-      motion-lift: 0.52
-      sway-amplitude: 0.050
-      sway-period-ticks: 32
-      sway-offset-ticks: 10
-      broadcast-radius: 28
-      max-viewers: 24
-
-    - backend: MINECRAFT
-      particle: minecraft:small_flame
-      delay-ticks: 0
-      interval-ticks: 8
-      anchor: BACK
-      offset-x: 0.34
-      offset-y: -0.08
-      offset-z: -1.14
-      count: 4
-      spread: 0.065
-      speed: 0.006
-      motion-drag: 1.40
-      motion-lift: 0.45
-      sway-amplitude: 0.085
-      sway-period-ticks: 30
-      sway-offset-ticks: 18
+      offset-y: -0.18
+      offset-z: -1.16
+      motion-drag: 1.55
+      motion-lift: 0.50
+      sway-amplitude: 0.060
+      sway-period-ticks: 31
+      sway-offset-ticks: 7
       broadcast-radius: 28
       max-viewers: 24
 
     # ===== Split free tails =====
-    # Strong drag makes the two tongues stream backward while sprinting instead of sticking to the legs.
-    - backend: MINECRAFT
-      particle: minecraft:flame
-      delay-ticks: 2
-      interval-ticks: 8
+    # Stronger drag/lift makes these two fire plates trail behind while sprinting.
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      delay-ticks: 5
+      interval-ticks: 9
       anchor: BACK
-      offset-x: -0.24
-      offset-y: -0.40
-      offset-z: -1.46
-      count: 4
-      spread: 0.07
-      speed: 0.007
-      motion-drag: 2.70
-      motion-lift: 0.90
-      sway-amplitude: 0.15
+      offset-x: -0.20
+      offset-y: -0.42
+      offset-z: -1.40
+      motion-drag: 2.60
+      motion-lift: 0.88
+      sway-amplitude: 0.145
       sway-period-ticks: 26
       sway-offset-ticks: 0
       broadcast-radius: 28
       max-viewers: 24
 
-    - backend: MINECRAFT
-      particle: minecraft:small_flame
-      delay-ticks: 5
-      interval-ticks: 8
+    - backend: COBBLEMON
+      particle: cobblemon:flamethrower_target
+      delay-ticks: 8
+      interval-ticks: 9
       anchor: BACK
-      offset-x: -0.12
-      offset-y: -0.54
-      offset-z: -1.68
-      count: 3
-      spread: 0.06
-      speed: 0.006
-      motion-drag: 3.30
-      motion-lift: 1.10
-      sway-amplitude: 0.18
-      sway-period-ticks: 24
-      sway-offset-ticks: 5
-      broadcast-radius: 28
-      max-viewers: 24
-
-    - backend: MINECRAFT
-      particle: minecraft:flame
-      delay-ticks: 6
-      interval-ticks: 8
-      anchor: BACK
-      offset-x: 0.24
-      offset-y: -0.40
-      offset-z: -1.46
-      count: 4
-      spread: 0.07
-      speed: 0.007
-      motion-drag: 2.70
-      motion-lift: 0.90
-      sway-amplitude: 0.15
+      offset-x: 0.20
+      offset-y: -0.42
+      offset-z: -1.40
+      motion-drag: 2.60
+      motion-lift: 0.88
+      sway-amplitude: 0.145
       sway-period-ticks: 26
       sway-offset-ticks: 13
       broadcast-radius: 28
       max-viewers: 24
 
+    # ===== Vanilla edge sparks =====
+    # Only an outline; Cobblemon Flamethrower remains the visual body of the mantle.
     - backend: MINECRAFT
       particle: minecraft:small_flame
       delay-ticks: 1
-      interval-ticks: 8
+      interval-ticks: 13
       anchor: BACK
-      offset-x: 0.12
-      offset-y: -0.54
-      offset-z: -1.68
-      count: 3
-      spread: 0.06
-      speed: 0.006
-      motion-drag: 3.30
-      motion-lift: 1.10
-      sway-amplitude: 0.18
-      sway-period-ticks: 24
-      sway-offset-ticks: 17
+      offset-x: -0.78
+      offset-y: 0.52
+      offset-z: -0.61
+      count: 2
+      spread: 0.035
+      speed: 0.004
+      motion-drag: 0.15
+      motion-lift: 0.04
+      sway-amplitude: 0.025
+      sway-period-ticks: 38
       broadcast-radius: 28
       max-viewers: 24
 
-    # ===== Cobblemon fire core =====
-    # Finite bursts only; no steady Snowstorm emitter buildup.
-    - backend: COBBLEMON
-      particle: ember_burst
+    - backend: MINECRAFT
+      particle: minecraft:small_flame
+      delay-ticks: 7
+      interval-ticks: 13
+      anchor: BACK
+      offset-x: 0.78
+      offset-y: 0.52
+      offset-z: -0.61
+      count: 2
+      spread: 0.035
+      speed: 0.004
+      motion-drag: 0.15
+      motion-lift: 0.04
+      sway-amplitude: 0.025
+      sway-period-ticks: 38
+      sway-offset-ticks: 19
+      broadcast-radius: 28
+      max-viewers: 24
+
+    - backend: MINECRAFT
+      particle: minecraft:flame
       delay-ticks: 4
-      interval-ticks: 28
+      interval-ticks: 14
       anchor: BACK
-      offset-x: 0.00
-      offset-y: 0.28
-      offset-z: -0.90
-      motion-drag: 0.65
-      motion-lift: 0.18
-      sway-amplitude: 0.04
-      sway-period-ticks: 34
+      offset-x: -0.27
+      offset-y: -0.50
+      offset-z: -1.48
+      count: 2
+      spread: 0.040
+      speed: 0.005
+      motion-drag: 2.80
+      motion-lift: 0.95
+      sway-amplitude: 0.16
+      sway-period-ticks: 25
       broadcast-radius: 28
       max-viewers: 24
 
-    - backend: COBBLEMON
-      particle: ember_burst
-      delay-ticks: 16
-      interval-ticks: 32
+    - backend: MINECRAFT
+      particle: minecraft:flame
+      delay-ticks: 11
+      interval-ticks: 14
       anchor: BACK
-      offset-x: 0.00
-      offset-y: -0.28
-      offset-z: -1.34
-      motion-drag: 2.20
-      motion-lift: 0.72
-      sway-amplitude: 0.10
-      sway-period-ticks: 28
+      offset-x: 0.27
+      offset-y: -0.50
+      offset-z: -1.48
+      count: 2
+      spread: 0.040
+      speed: 0.005
+      motion-drag: 2.80
+      motion-lift: 0.95
+      sway-amplitude: 0.16
+      sway-period-ticks: 25
+      sway-offset-ticks: 12
       broadcast-radius: 28
       max-viewers: 24
