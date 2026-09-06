@@ -46,10 +46,6 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '9.2.0'
-
       - name: Cobblemon 1.8 dependency gate
         shell: bash
         run: |
@@ -60,12 +56,22 @@ jobs:
           grep -q 'maven.modrinth:SszvX85I:${mega_showdown_version}' SVFrameMMOCobblemon/build.gradle
           grep -q '"cobblemon": ">=1.8.0+1.21.1 <1.9.0"' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
 
+      - name: Setup Gradle 8.8 for shared modules
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.8'
+
       - name: Build shared modules
         shell: bash
         run: |
           set -euo pipefail
           gradle --no-daemon -p SVFrameLib build
           gradle --no-daemon -p SVFrameMMO build
+
+      - name: Setup Gradle 9.2 for Cobblemon 1.8 integration
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.2.0'
 
       - name: Build Cobblemon integration
         shell: bash
