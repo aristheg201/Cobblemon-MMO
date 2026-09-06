@@ -1,0 +1,82 @@
+name: SVFrameMMO Cobblemon Integration - Cobblemon 1.8
+
+on:
+  push:
+    branches:
+      - port/cobblemon-1.8-svframemmo-integration
+    paths:
+      - '.github/workflows/svframemmo-cobblemon-1.8.yml'
+      - 'SVFrameMMOCobblemon/**'
+  workflow_dispatch:
+
+concurrency:
+  group: svframemmo-cobblemon-1.8
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Sync SVFrameLib
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframelib-fabric-1.21.1
+          rm -rf SVFrameLib
+          git checkout FETCH_HEAD -- SVFrameLib
+
+      - name: Sync SVFrameMMO
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin svframemmo-fabric-1.21.1
+          rm -rf SVFrameMMO
+          git checkout FETCH_HEAD -- SVFrameMMO
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.2.0'
+
+      - name: Cobblemon 1.8 dependency gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '^cobblemon_version=1.8.0+1.21.1$' SVFrameMMOCobblemon/gradle.properties
+          grep -q '^mega_showdown_version=1.0+1.8+1.21.1-beta2$' SVFrameMMOCobblemon/gradle.properties
+          grep -q 'maven.modrinth:MdwFAVRL:${cobblemon_version}' SVFrameMMOCobblemon/build.gradle
+          grep -q 'maven.modrinth:SszvX85I:${mega_showdown_version}' SVFrameMMOCobblemon/build.gradle
+          grep -q '"cobblemon": ">=1.8.0+1.21.1 <1.9.0"' SVFrameMMOCobblemon/src/main/resources/fabric.mod.json
+
+      - name: Build shared modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle --no-daemon -p SVFrameLib build
+          gradle --no-daemon -p SVFrameMMO build
+
+      - name: Build Cobblemon integration
+        shell: bash
+        run: gradle --no-daemon -p SVFrameMMOCobblemon build
+
+      - name: Run integration smoke checks
+        shell: bash
+        run: gradle --no-daemon -p SVFrameMMOCobblemon nativeIntegrationSmoke
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: svframemmo-cobblemon-1.8
+          path: SVFrameMMOCobblemon/build/libs/*.jar
+          if-no-files-found: error
