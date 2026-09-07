@@ -30,7 +30,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     modImplementation "net.fabricmc:fabric-language-kotlin:${fabric_kotlin_version}"
-    modImplementation "maven.modrinth:MdwFAVRL:kF7CvxTo"
+    modImplementation "maven.modrinth:MdwFAVRL:YgmyyFcs"
     modImplementation "maven.modrinth:SszvX85I:ch7DfnXP"
     modImplementation "eu.pb4:polymer-core:0.9.19+1.21.1"
     modImplementation "eu.pb4:polymer-resource-pack:0.9.19+1.21.1"
@@ -46,7 +46,7 @@ dependencies {
     modImplementation files('../SVFrameMMO/build/libs/SVFrameMMO-1.13.1-fabric.jar')
 
     productionRuntimeDeps "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
-    productionRuntimeDeps "maven.modrinth:MdwFAVRL:kF7CvxTo"
+    productionRuntimeDeps "maven.modrinth:MdwFAVRL:YgmyyFcs"
     productionRuntimeDeps "maven.modrinth:SszvX85I:ch7DfnXP"
     productionRuntimeDeps "eu.pb4:polymer-core:0.9.19+1.21.1"
     productionRuntimeDeps "eu.pb4:polymer-resource-pack:0.9.19+1.21.1"
