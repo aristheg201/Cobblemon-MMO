@@ -4,7 +4,6 @@ import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.moves.Move;
 import com.cobblemon.mod.common.api.moves.MoveTemplate;
 import com.cobblemon.mod.common.api.moves.categories.DamageCategories;
-import com.cobblemon.mod.common.api.pokemon.stats.Stats;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import net.minecraft.entity.LivingEntity;
@@ -27,7 +26,6 @@ import vn.svframe.svframemmo.cobblemon.move.MoveSemanticRegistry;
 import vn.svframe.svframemmo.cobblemon.move.RealtimeBattleState;
 import vn.svframe.svframemmo.skill.runtime.TemporarySkillOverlayRuntime;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -227,11 +225,9 @@ public final class FusionService {
         if (hit && target != null && move.getPower() > 0d) {
             int hits = semantic.multiHitMin() == semantic.multiHitMax() ? semantic.multiHitMin()
                     : ThreadLocalRandom.current().nextInt(semantic.multiHitMin(), semantic.multiHitMax() + 1);
-            double perHit = damage(cast, target, move, tick);
-            for (int i = 0; i < hits; i++) {
-                applyMoveAttack(player, metadata, target, perHit, move);
-                dealt += perHit;
-            }
+            double perHit = rawMoveDamage(metadata, cast, move);
+            dealt = perHit * Math.max(1, hits);
+            applyMoveAttack(player, metadata, target, dealt, move);
         }
 
         if (hit && semantic.status() != MoveSemantic.Status.NONE && target != null
@@ -282,33 +278,10 @@ public final class FusionService {
         return ThreadLocalRandom.current().nextDouble() < chance;
     }
 
-    private double damage(MoveCast cast, LivingEntity target, MoveTemplate move, long tick) {
-        boolean physical = move.getDamageCategory() == DamageCategories.INSTANCE.getPHYSICAL();
-        BattleStat attackStageStat = physical ? BattleStat.ATTACK : BattleStat.SPECIAL_ATTACK;
-        BattleStat defenseStageStat = physical ? BattleStat.DEFENSE : BattleStat.SPECIAL_DEFENSE;
-        double attack = cast.pokemon().getStat(physical ? Stats.ATTACK : Stats.SPECIAL_ATTACK)
-                * stageMultiplier(realtime.stage(cast.session().playerUuid(), attackStageStat, tick));
-        double defense = targetDefense(target, physical)
-                * stageMultiplier(realtime.stage(target.getUuid(), defenseStageStat, tick));
-        double level = cast.pokemon().getLevel();
-        double base = (((2d * level / 5d + 2d) * move.getPower() * Math.max(1d, attack) / Math.max(1d, defense)) / 50d) + 2d;
+    private static double rawMoveDamage(SkillMetadata metadata, MoveCast cast, MoveTemplate move) {
+        double configuredDamage = Math.max(0d, metadata.getParameter("damage"));
+        double base = configuredDamage > 0d ? configuredDamage : Math.max(1d, move.getPower() / 10d);
         return Math.max(1d, base * cast.session().bonusMultiplier());
-    }
-
-    private double targetDefense(LivingEntity target, boolean physical) {
-        if (target instanceof PokemonEntity pokemonEntity) {
-            return Math.max(1d, pokemonEntity.getPokemon().getStat(physical ? Stats.DEFENCE : Stats.SPECIAL_DEFENCE));
-        }
-        FusionSession targetFusion = byPlayer.get(target.getUuid());
-        if (targetFusion != null && targetFusion.activated() && target instanceof ServerPlayerEntity player) {
-            Pokemon pokemon = Cobblemon.INSTANCE.getStorage().getParty(player).get(targetFusion.pokemonUuid());
-            if (pokemon != null) return Math.max(1d, pokemon.getStat(physical ? Stats.DEFENCE : Stats.SPECIAL_DEFENCE));
-        }
-        return physical ? Math.max(20d, 100d + target.getArmor() * 5d) : 100d;
-    }
-
-    private static double stageMultiplier(int stage) {
-        return stage >= 0 ? (2d + stage) / 2d : 2d / (2d - stage);
     }
 
     private static double accuracyMultiplier(int stage) {
