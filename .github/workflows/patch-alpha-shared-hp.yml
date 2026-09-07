@@ -1,0 +1,129 @@
+name: Patch Alpha Shared HP Phases
+
+on:
+  push:
+    branches: [ alpha-encounter-fabric-1.21.1 ]
+    paths: [ '.github/workflows/patch-alpha-shared-hp.yml' ]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: alpha-encounter-fabric-1.21.1
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.2.0'
+      - name: Patch shared HP battle semantics
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('src/main/java/dev/aristheg/alphaencounter/AlphaEncounterMod.java')
+          s = p.read_text()
+
+          old_transition = '''                    if (active.hp <= 0.5f || CobblemonBridge.currentHealth(pokemon) <= 0) {
+                        defeatEncounter(server, active, false);
+                    } else {
+                        active.state = EncounterState.HUNT;
+                        active.targetPlayer = active.lastBattlePlayer;
+                        active.nextReengageTick = tick + Math.max(10, tier(active.tierId).reengageCooldownTicks);
+                        stateDirty = true;
+                    }'''
+          new_transition = '''                    if (active.hp <= 0.5f) {
+                        defeatEncounter(server, active, false);
+                    } else {
+                        if (CobblemonBridge.currentHealth(pokemon) <= 0) {
+                            restorePokemonForNextPhase(active, pokemon);
+                        }
+                        active.state = EncounterState.HUNT;
+                        active.targetPlayer = active.lastBattlePlayer;
+                        active.nextReengageTick = tick + Math.max(10, tier(active.tierId).reengageCooldownTicks);
+                        stateDirty = true;
+                    }'''
+
+          old_prepare = '''        private void preparePokemonHealthForBattle(ActiveEncounter active, PokemonEntity pokemon) {
+            initializeHealth(active, pokemon);
+            int max = Math.max(1, CobblemonBridge.maxHealth(pokemon));
+            float ratio = Math.max(0.01f, Math.min(1f, active.hp / active.maxHp));
+            int desired = Math.max(1, Math.min(max, Math.round(max * ratio)));
+            CobblemonBridge.setCurrentHealth(pokemon, desired);
+            active.lastPokemonHealth = desired;
+        }
+
+        private void syncBattleHealth(ActiveEncounter active, PokemonEntity pokemon) {
+            initializeHealth(active, pokemon);
+            int max = Math.max(1, CobblemonBridge.maxHealth(pokemon));
+            int current = Math.max(0, CobblemonBridge.currentHealth(pokemon));
+            float next = active.maxHp * (current / (float) max);
+            if (Math.abs(next - active.hp) > 0.01f) {
+                active.hp = Math.max(0f, Math.min(active.maxHp, next));
+                stateDirty = true;
+            }
+            active.lastPokemonHealth = current;
+        }'''
+          new_prepare = '''        private void preparePokemonHealthForBattle(ActiveEncounter active, PokemonEntity pokemon) {
+            initializeHealth(active, pokemon);
+            int max = Math.max(1, CobblemonBridge.maxHealth(pokemon));
+            int desired = Math.max(1, Math.min(max, (int) Math.ceil(active.hp)));
+            CobblemonBridge.setCurrentHealth(pokemon, desired);
+            active.lastPokemonHealth = desired;
+        }
+
+        private void syncBattleHealth(ActiveEncounter active, PokemonEntity pokemon) {
+            initializeHealth(active, pokemon);
+            int current = Math.max(0, CobblemonBridge.currentHealth(pokemon));
+            if (active.lastPokemonHealth < 0) {
+                active.lastPokemonHealth = current;
+                return;
+            }
+
+            int delta = active.lastPokemonHealth - current;
+            if (delta > 0) {
+                active.hp = Math.max(0f, active.hp - delta);
+                stateDirty = true;
+            } else if (delta < 0) {
+                active.hp = Math.min(active.maxHp, active.hp + (-delta));
+                stateDirty = true;
+            }
+            active.lastPokemonHealth = current;
+        }
+
+        private void restorePokemonForNextPhase(ActiveEncounter active, PokemonEntity pokemon) {
+            int max = Math.max(1, CobblemonBridge.maxHealth(pokemon));
+            int desired = Math.max(1, Math.min(max, (int) Math.ceil(active.hp)));
+            CobblemonBridge.setCurrentHealth(pokemon, desired);
+            active.lastPokemonHealth = desired;
+        }'''
+
+          for old, new, label in [
+              (old_transition, new_transition, 'battle transition'),
+              (old_prepare, new_prepare, 'shared HP sync'),
+          ]:
+              if old not in s:
+                  raise SystemExit(f'Expected {label} block not found; refusing blind patch')
+              s = s.replace(old, new, 1)
+
+          p.write_text(s)
+          PY
+      - name: Build
+        run: gradle build --stacktrace
+      - name: Remove one-shot workflow and commit validated patch
+        run: |
+          rm .github/workflows/patch-alpha-shared-hp.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/main/java/dev/aristheg/alphaencounter/AlphaEncounterMod.java .github/workflows/patch-alpha-shared-hp.yml
+          git commit -m 'Make shared HP multi-phase and battle-delta driven'
+          git push origin HEAD:alpha-encounter-fabric-1.21.1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Alpha-Encounter-multiphase
+          path: build/libs/*.jar
