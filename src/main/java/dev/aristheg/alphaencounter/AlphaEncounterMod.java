@@ -1093,7 +1093,7 @@ public final class AlphaEncounterMod implements ModInitializer {
         public static boolean playAnimation(PokemonEntity entity, String animation) {
             if (entity == null || animation == null || animation.isBlank()) return false;
             try {
-                entity.playAnimation(animation);
+                entity.playAnimation(animation, java.util.List.of());
                 return true;
             } catch (Throwable t) {
                 LOGGER.debug("Could not play Cobblemon animation '{}' on {}.", animation, entity.getUuid(), t);
