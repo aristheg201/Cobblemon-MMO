@@ -58,7 +58,8 @@ public record CobblemonMoveProfile(
     public double healBase() { return moveId.equals("rest") ? 12d : 8d; }
 
     public boolean requiresSingleTarget() {
-        return executor == Executor.TARGET || executor == Executor.PROJECTILE || executor == Executor.TARGET_DEBUFF;
+        return executor == Executor.TARGET || executor == Executor.PROJECTILE
+                || executor == Executor.TARGET_DEBUFF || executor == Executor.DASH;
     }
 
     public String fallbackStatus() {
