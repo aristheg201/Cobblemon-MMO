@@ -104,6 +104,7 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
                 Vec3d velocity = player.getVelocity().multiply(0.35d).add(look.multiply(profile.dashStrength())).add(0, 0.12d, 0);
                 player.setVelocity(velocity);
                 player.velocityModified = true;
+                executeDamage(player, result.target, move, profile, semantic, metadata);
             }
             case AOE -> executeAoe(player, move, profile, semantic, metadata);
             case SELF_BUFF -> applySelfSemantic(player, semantic, 0d);
@@ -119,7 +120,10 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
         Box box = player.getBoundingBox().expand(profile.radius());
         List<LivingEntity> targets = player.getServerWorld().getEntitiesByClass(LivingEntity.class, box,
                 living -> living.isAlive() && living != player && !fusions.isVisualEntityOf(player.getUuid(), living.getUuid()));
-        for (LivingEntity target : targets) executeDamage(player, target, move, profile, semantic, metadata);
+        for (LivingEntity target : targets) {
+            executeDamage(player, target, move, profile, semantic, metadata);
+            SVFrameMMOCobblemon.moveVfx().renderImpact(player, move, target.getBoundingBox().getCenter());
+        }
     }
 
     private void executeDamage(ServerPlayerEntity player, LivingEntity target, MoveTemplate move,
@@ -129,12 +133,9 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
                 : ThreadLocalRandom.current().nextInt(semantic.multiHitMin(), semantic.multiHitMax() + 1);
         double configuredDamage = Math.max(0d, metadata.getParameter("damage"));
         double perHit = Math.max(1d, configuredDamage > 0d ? configuredDamage : profile.baseDamage());
-        double dealt = 0d;
+        double dealt = perHit * Math.max(1, hits);
         DamageType category = profile.damageCategory().equals("physical") ? DamageType.PHYSICAL : DamageType.MAGIC;
-        for (int i = 0; i < hits && target.isAlive(); i++) {
-            metadata.attack(target, perHit, DamageType.SKILL, category);
-            dealt += perHit;
-        }
+        metadata.attack(target, dealt, DamageType.SKILL, category);
         applyTargetSemantic(target, semantic);
         applySelfSemantic(player, semantic, dealt);
     }
