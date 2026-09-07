@@ -25,7 +25,7 @@
     "cobblemon": ">=1.8.0+1.21.1 <1.9.0",
     "svframelib": ">=1.7.1-fabric",
     "svframemmo": ">=1.13.1-fabric",
-    "mega_showdown": ">=10.0.8",
+    "mega_showdown": ">=1.9.3",
     "polymer-core": ">=0.9.19+1.21.1",
     "polymer-resource-pack": ">=0.9.19+1.21.1"
   },
