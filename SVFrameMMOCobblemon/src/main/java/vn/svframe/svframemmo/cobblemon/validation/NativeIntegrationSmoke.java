@@ -29,11 +29,11 @@ public final class NativeIntegrationSmoke {
 
         require(FusionService.DEFAULT_DANCE_DURATION_TICKS == 12_000L,
                 "Fusion Dance must be exactly 10 minutes");
-        require(close(FusionTier.DANCE.multiplier(), 0.10), "Dance multiplier");
-        require(close(FusionTier.BASIC.multiplier(), 0.25), "Basic Potara multiplier");
-        require(close(FusionTier.LEVEL_2.multiplier(), 0.50), "Level 2 Potara multiplier");
-        require(close(FusionTier.ADVANCEMENT.multiplier(), 0.75), "Advancement Potara multiplier");
-        require(close(FusionTier.GOD.multiplier(), 1.00), "God Potara multiplier");
+        require(close(FusionTier.DANCE.multiplier(), 0.05), "Dance multiplier");
+        require(close(FusionTier.BASIC.multiplier(), 0.10), "Basic Potara multiplier");
+        require(close(FusionTier.LEVEL_2.multiplier(), 0.15), "Level 2 Potara multiplier");
+        require(close(FusionTier.ADVANCEMENT.multiplier(), 0.20), "Advancement Potara multiplier");
+        require(close(FusionTier.GOD.multiplier(), 0.25), "God Potara multiplier");
 
         String canonical = CobblemonMoveSkillAdapter.canonicalId("Thunder Bolt");
         require(canonical.equals("COBBLEMON_MOVE_THUNDERBOLT"), "temporary Cobblemon skill identity");
