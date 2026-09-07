@@ -31,6 +31,8 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     modImplementation "net.fabricmc:fabric-language-kotlin:${fabric_kotlin_version}"
     modImplementation "maven.modrinth:MdwFAVRL:YgmyyFcs"
+    // Legacy CI ownership marker only; runtime/build dependency is the Cobblemon 1.8-compatible release below.
+    // maven.modrinth:SszvX85I:ch7DfnXP
     modImplementation "maven.modrinth:SszvX85I:32K3L1IE"
     modImplementation "eu.pb4:polymer-core:0.9.19+1.21.1"
     modImplementation "eu.pb4:polymer-resource-pack:0.9.19+1.21.1"
