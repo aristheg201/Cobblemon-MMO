@@ -8,9 +8,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.aristheg.alphaencounter.AlphaEncounterMod;
 import dev.aristheg.alphaencounter.config.model.BehaviourConfig;
+import dev.aristheg.alphaencounter.config.model.BossBarProfile;
 import dev.aristheg.alphaencounter.config.model.CategoryConfig;
 import dev.aristheg.alphaencounter.config.model.EncounterDefinition;
 import dev.aristheg.alphaencounter.config.model.GeneralConfig;
+import dev.aristheg.alphaencounter.config.model.MessageBundle;
+import dev.aristheg.alphaencounter.config.model.MessageProfile;
 import dev.aristheg.alphaencounter.config.model.TierConfig;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -153,7 +156,10 @@ public final class AlphaEncounterConfigManager {
 
                 Path encounterDir = folder.resolve("encounters");
                 for (Path file : jsonFiles(encounterDir)) {
-                    EncounterDefinition def = read(file, EncounterDefinition.class, null);
+                    JsonObject raw = readObject(file);
+                    if (raw == null) continue;
+                    if (migrateLegacyPresentation(raw, stripJson(file.getFileName().toString()))) writeJson(file, raw);
+                    EncounterDefinition def = GSON.fromJson(raw, EncounterDefinition.class);
                     if (def == null) continue;
                     def.normalize(stripJson(file.getFileName().toString()));
                     def.categoryId = category.id;
@@ -259,10 +265,21 @@ public final class AlphaEncounterConfigManager {
         tier.bossBarProfile = id;
         tier.normalize(id);
 
+        BossBarProfile bossBar = new BossBarProfile();
+        bossBar.id = id;
+        bossBar.enabled = bool(old, "bossBar", true);
+        bossBar.range = number(old, "bossBarRange", 72.0);
+        bossBar.color = string(old, "bossBarColor", "YELLOW");
+        bossBar.style = "PROGRESS";
+        bossBar.title = "<yellow><bold><ae_name></bold></yellow> <dark_gray>•</dark_gray> <white><ae_hp_percent>%</white> <gray>(<ae_hp>/<ae_max_hp>)</gray>";
+        bossBar.normalize(id);
+
         Path behaviourFile = root.resolve("behaviours").resolve(safe(id) + ".json");
         Path tierFile = root.resolve("tiers").resolve(safe(id) + ".json");
+        Path bossBarFile = root.resolve("bossbars").resolve(safe(id) + ".json");
         if (Files.notExists(behaviourFile)) writeJson(behaviourFile, behaviour);
         if (Files.notExists(tierFile)) writeJson(tierFile, tier);
+        if (Files.notExists(bossBarFile)) writeJson(bossBarFile, bossBar);
     }
 
     private void migrateLegacyEncounter(JsonObject encounter) throws IOException {
@@ -277,7 +294,68 @@ public final class AlphaEncounterConfigManager {
             writeJson(settingsFile, category);
         }
         Path encounterFile = categoryDir.resolve("encounters").resolve(safe(id) + ".json");
-        if (Files.notExists(encounterFile)) writeJson(encounterFile, encounter);
+        if (Files.notExists(encounterFile)) {
+            migrateLegacyPresentation(encounter, id);
+            writeJson(encounterFile, encounter);
+        }
+    }
+
+    private boolean migrateLegacyPresentation(JsonObject encounter, String fallbackId) throws IOException {
+        boolean changed = false;
+        String id = string(encounter, "id", fallbackId);
+        String tier = string(encounter, "tier", "regional");
+        boolean hasLegacyMessages = encounter.has("spawnMessage") || encounter.has("defeatMessage") || encounter.has("catchMessage");
+        String messageProfile = string(encounter, "messageProfile", "");
+        if (messageProfile.isBlank()) {
+            if (hasLegacyMessages) {
+                messageProfile = "legacy_" + safe(id);
+                writeLegacyMessageProfile(messageProfile, encounter);
+            } else messageProfile = tier;
+            encounter.addProperty("messageProfile", messageProfile);
+            changed = true;
+        }
+        if (string(encounter, "bossBarProfile", "").isBlank()) {
+            encounter.addProperty("bossBarProfile", tier);
+            changed = true;
+        }
+        changed |= encounter.remove("spawnMessage") != null;
+        changed |= encounter.remove("defeatMessage") != null;
+        changed |= encounter.remove("catchMessage") != null;
+        return changed;
+    }
+
+    private void writeLegacyMessageProfile(String id, JsonObject encounter) throws IOException {
+        Path file = root.resolve("messages/legacy.json");
+        MessageBundle bundle = read(file, MessageBundle.class, new MessageBundle());
+        bundle.normalize("legacy");
+        bundle.language = "legacy";
+        MessageProfile profile = bundle.profiles.getOrDefault(id, new MessageProfile());
+        profile.id = id;
+        if (encounter.has("spawnMessage")) profile.spawn = legacyText(string(encounter, "spawnMessage", ""));
+        if (encounter.has("defeatMessage")) profile.defeat = legacyText(string(encounter, "defeatMessage", ""));
+        if (encounter.has("catchMessage")) profile.catchAvailable = legacyText(string(encounter, "catchMessage", ""));
+        profile.normalize(id);
+        bundle.profiles.put(id, profile);
+        writeJson(file, bundle);
+    }
+
+    private String legacyText(String value) {
+        if (value == null) return "";
+        return value.replace("{encounter}", "<ae_id>")
+            .replace("{name}", "<ae_name>")
+            .replace("{tier}", "<ae_tier>")
+            .replace("{player}", "<player_name>");
+    }
+
+    private JsonObject readObject(Path file) {
+        if (Files.notExists(file)) return null;
+        try {
+            JsonElement parsed = JsonParser.parseString(Files.readString(file));
+            return parsed.isJsonObject() ? parsed.getAsJsonObject() : null;
+        } catch (Exception e) {
+            AlphaEncounterMod.LOGGER.error("Could not read JSON object {}.", file, e);
+            return null;
+        }
     }
 
     private String deriveCategory(JsonObject encounter) {

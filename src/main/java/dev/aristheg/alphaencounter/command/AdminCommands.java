@@ -18,7 +18,7 @@ public final class AdminCommands {
     public static void register(com.mojang.brigadier.CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("alphaencounter").requires(s -> s.hasPermissionLevel(2))
             .then(CommandManager.literal("help").executes(c -> help(c.getSource())))
-            .then(CommandManager.literal("reload").executes(c -> { AlphaEncounterMod.CONFIG.load(); feedback(c.getSource(), "Alpha-Encounter config tree reloaded."); return 1; }))
+            .then(CommandManager.literal("reload").executes(c -> { AlphaEncounterMod.CONFIG.load(); feedback(c.getSource(), "Alpha-Encounter gameplay config, messages, and bossbars reloaded."); return 1; }))
             .then(CommandManager.literal("save").executes(c -> { AlphaEncounterMod.RUNTIME.saveState(c.getSource().getServer()); feedback(c.getSource(), "Alpha-Encounter state saved."); return 1; }))
             .then(CommandManager.literal("debug").executes(c -> { feedback(c.getSource(), AlphaEncounterMod.RUNTIME.perfLine()); return 1; })
                 .then(CommandManager.literal("reset").executes(c -> { AlphaEncounterMod.RUNTIME.resetCounters(); feedback(c.getSource(), "Counters reset."); return 1; })))

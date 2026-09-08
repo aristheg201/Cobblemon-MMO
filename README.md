@@ -15,6 +15,8 @@ Hard dependencies: Fabric API and Cobblemon only. SVFrameLib, SVFrameMMO, and SV
 - Shared HP is mapped proportionally to one Cobblemon battle HP bar. There is no multi-phase KO or phase respawn.
 - A local battle KO is the encounter defeat. If the battle ends before KO, remaining local HP maps back to shared HP and the encounter returns to HUNT.
 - Optional catch and reward phases run after the single final defeat.
+- On restart, active encounters rebind to the world-saved Pokemon entity by entity UUID/canonical Pokemon UUID; restore never blind-spawns a replacement, preventing duplicate bosses.
+- Catch windows are persisted with their remaining ticks and rebound on restart.
 
 ## Text and integrations
 

@@ -31,6 +31,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap;
 
 import java.nio.file.Files;
@@ -68,6 +69,9 @@ public final class EncounterRuntime {
     private long battleEnds;
     private long defeats;
     private long adminSpawns;
+    private long restoredEncounters;
+    private long restoredCatchWindows;
+    private long restoreMisses;
 
     public EncounterRuntime(AlphaEncounterConfigManager config) {
         this.config = config;
@@ -82,6 +86,15 @@ public final class EncounterRuntime {
 
     public void reloadConfig() {
         config.load();
+        AlphaEncounterMod.UI.load();
+        for (ActiveEncounter active : activeByPokemon.values()) {
+            if (active.bossBar != null) active.bossBar.clearPlayers();
+            active.bossBar = null;
+            active.bossBarViewers.clear();
+            EncounterDefinition def = config.encounter(active.definitionId);
+            if (def != null) setupBossBar(active, def, config.tier(def.tier));
+        }
+        AlphaEncounterMod.LOGGER.info("Reloaded Alpha-Encounter gameplay config, messages, and bossbar profiles.");
     }
 
     public void tick(MinecraftServer server) {
@@ -510,8 +523,8 @@ public final class EncounterRuntime {
         while (it.hasNext()) {
             CatchWindow window = it.next().getValue();
             Entity entity = findEntity(server, window.entityId);
-            if (entity == null || entity.isRemoved()) { it.remove(); continue; }
-            if (tick >= window.expiresAtTick) { entity.discard(); it.remove(); }
+            if (entity == null || entity.isRemoved()) { it.remove(); stateDirty = true; continue; }
+            if (tick >= window.expiresAtTick) { entity.discard(); it.remove(); stateDirty = true; }
         }
     }
 
@@ -614,7 +627,7 @@ public final class EncounterRuntime {
         try {
             if (Files.notExists(config.stateFile())) return;
             SavedState loaded = GSON.fromJson(Files.readString(config.stateFile()), SavedState.class);
-            if (loaded != null) pendingSavedState = loaded;
+            if (loaded != null) { loaded.normalize(); pendingSavedState = loaded; }
         } catch (Exception e) { AlphaEncounterMod.LOGGER.error("Failed loading persistent state.", e); }
     }
 
@@ -631,6 +644,18 @@ public final class EncounterRuntime {
                 if (entity != null) updateLocation(active, entity);
                 saved.active.add(SavedEncounter.from(active));
             }
+            for (CatchWindow window : catchWindows.values()) {
+                long remaining = Math.max(0, window.expiresAtTick - tick);
+                Entity raw = findEntity(server, window.entityId);
+                if (remaining <= 0 || !(raw instanceof PokemonEntity entity) || entity.isRemoved()) continue;
+                SavedCatchWindow catchWindow = new SavedCatchWindow();
+                catchWindow.entityId = entity.getUuid().toString();
+                catchWindow.pokemonId = entity.getPokemon().getUuid().toString();
+                catchWindow.dimension = entity.getWorld().getRegistryKey().getValue().toString();
+                catchWindow.x = entity.getX(); catchWindow.y = entity.getY(); catchWindow.z = entity.getZ();
+                catchWindow.remainingTicks = remaining;
+                saved.catchWindows.add(catchWindow);
+            }
             Files.writeString(config.stateFile(), GSON.toJson(saved));
             stateDirty = false;
         } catch (Exception e) { AlphaEncounterMod.LOGGER.error("Failed saving persistent state.", e); }
@@ -639,26 +664,82 @@ public final class EncounterRuntime {
     private void restoreState(MinecraftServer server) {
         restoreApplied = true;
         if (pendingSavedState == null) return;
-        for (Map.Entry<String, Long> e : pendingSavedState.cooldownRemaining.entrySet()) globalCooldownUntil.put(e.getKey(), tick + Math.max(0, e.getValue()));
+        pendingSavedState.normalize();
+        for (Map.Entry<String, Long> e : pendingSavedState.cooldownRemaining.entrySet()) {
+            globalCooldownUntil.put(e.getKey(), tick + Math.max(0, e.getValue()));
+        }
+
         for (SavedEncounter saved : pendingSavedState.active) {
             EncounterDefinition def = config.encounter(saved.definitionId);
             if (def == null || !def.enabled) continue;
             ServerWorld world = resolveWorld(server, saved.dimension);
-            if (world == null) continue;
+            if (world == null) { restoreMisses++; continue; }
             BlockPos pos = BlockPos.ofFloored(saved.x, saved.y, saved.z);
             if (config.general().loadEncounterChunksOnRestore) world.getChunk(pos);
-            ActiveEncounter active = spawnEncounter(def.id, world, pos, true);
-            if (active == null) continue;
-            active.maxHp = saved.maxHp > 0 ? saved.maxHp : active.maxHp;
-            active.hp = Math.max(1, Math.min(active.maxHp, saved.hp));
-            active.state = EncounterState.HUNT;
+
+            PokemonEntity entity = findSavedPokemonEntity(server, world, saved.entityId, saved.pokemonId, saved.x, saved.y, saved.z);
+            if (entity == null) {
+                restoreMisses++;
+                AlphaEncounterMod.LOGGER.warn("Could not rebind saved encounter '{}' pokemonUUID={} entityUUID={}; skipping instead of spawning a duplicate.", saved.definitionId, saved.pokemonId, saved.entityId);
+                continue;
+            }
+            Pokemon pokemon = entity.getPokemon();
+            if (activeByPokemon.containsKey(pokemon.getUuid()) || activeByEntity.containsKey(entity.getUuid())) {
+                AlphaEncounterMod.LOGGER.warn("Saved encounter '{}' already rebound; ignoring duplicate state entry.", saved.definitionId);
+                continue;
+            }
+
+            TierConfig tier = config.tier(def.tier);
+            ActiveEncounter active = new ActiveEncounter(def.id, def.tier, entity.getUuid(), pokemon.getUuid(), tier.healthMultiplier);
+            active.entityRef = entity;
+            active.pokemonRef = pokemon;
+            active.maxHp = saved.maxHp > 0 ? saved.maxHp : Math.max(1, pokemon.getMaxHealth()) * Math.max(1f, tier.healthMultiplier);
+            active.hp = Math.max(1, Math.min(active.maxHp, saved.hp > 0 ? saved.hp : active.maxHp));
+            active.state = "IDLE".equalsIgnoreCase(saved.state) && !config.behaviourForTier(def.tier).aggressive ? EncounterState.IDLE : EncounterState.HUNT;
             active.targetPlayer = parseUuid(saved.targetPlayer);
             active.lastBattlePlayer = parseUuid(saved.lastBattlePlayer);
-            active.participants.clear();
             for (String value : saved.participants) { UUID id = parseUuid(value); if (id != null) active.participants.add(id); }
-            prepareLocalBar(active, resolvePokemon(active));
+            entity.setQueuedToDespawn(false);
+            if (pokemon.getCurrentHealth() <= 0) pokemon.setCurrentHealth(Math.max(1, pokemon.getMaxHealth()));
+            updateLocation(active, entity);
+            bind(active);
+            setupBossBar(active, def, tier);
+            restoredEncounters++;
+            AlphaEncounterMod.LOGGER.info("Rebound saved encounter '{}' pokemonUUID={} entityUUID={} sharedHP={}/{}", def.id, pokemon.getUuid(), entity.getUuid(), Math.round(active.hp), Math.round(active.maxHp));
+        }
+
+        for (SavedCatchWindow saved : pendingSavedState.catchWindows) {
+            if (saved.remainingTicks <= 0) continue;
+            ServerWorld world = resolveWorld(server, saved.dimension);
+            if (world == null) { restoreMisses++; continue; }
+            BlockPos pos = BlockPos.ofFloored(saved.x, saved.y, saved.z);
+            if (config.general().loadEncounterChunksOnRestore) world.getChunk(pos);
+            PokemonEntity entity = findSavedPokemonEntity(server, world, saved.entityId, saved.pokemonId, saved.x, saved.y, saved.z);
+            if (entity == null) {
+                restoreMisses++;
+                AlphaEncounterMod.LOGGER.warn("Could not rebind saved catch window pokemonUUID={} entityUUID={}; dropping stale window.", saved.pokemonId, saved.entityId);
+                continue;
+            }
+            entity.setQueuedToDespawn(false);
+            entity.setGlowing(true);
+            catchWindows.put(entity.getUuid(), new CatchWindow(entity.getUuid(), tick + saved.remainingTicks));
+            restoredCatchWindows++;
         }
         pendingSavedState = null;
+        stateDirty = true;
+    }
+
+    private PokemonEntity findSavedPokemonEntity(MinecraftServer server, ServerWorld world, String entityIdRaw, String pokemonIdRaw, double x, double y, double z) {
+        UUID expectedEntity = parseUuid(entityIdRaw);
+        UUID expectedPokemon = parseUuid(pokemonIdRaw);
+        if (expectedEntity != null) {
+            Entity raw = findEntity(server, expectedEntity);
+            if (raw instanceof PokemonEntity entity && (expectedPokemon == null || expectedPokemon.equals(entity.getPokemon().getUuid()))) return entity;
+        }
+        if (expectedPokemon == null) return null;
+        Box box = new Box(x - 32.0, y - 32.0, z - 32.0, x + 32.0, y + 32.0, z + 32.0);
+        for (PokemonEntity entity : world.getEntitiesByClass(PokemonEntity.class, box, candidate -> expectedPokemon.equals(candidate.getPokemon().getUuid()))) return entity;
+        return null;
     }
 
     private UUID parseUuid(String value) {
@@ -731,22 +812,38 @@ public final class EncounterRuntime {
     public int activeCount() { return activeByPokemon.size(); }
     public long cooldownRemainingTicks(String id) { return Math.max(0L, globalCooldownUntil.getOrDefault(id, 0L) - tick); }
     public ActiveEncounter resolveExternalTarget(net.minecraft.server.command.ServerCommandSource source, String token) { return resolveAdminTarget(source, token); }
-    public String perfLine() { return "AlphaEncounter active="+activeByPokemon.size()+" spawnChecks="+spawnChecks+" spawned="+spawnSuccess+" adminSpawned="+adminSpawns+" worldHits="+interceptedHits+" fieldAttacks="+fieldAttacks+" battlesQueued="+battlesQueued+" battlesStarted="+battlesStarted+" battleEnds="+battleEnds+" defeats="+defeats+" "+AlphaEncounterMod.TEXT.integrationStatus(); }
-    public void resetCounters() { spawnChecks=spawnSuccess=interceptedHits=fieldAttacks=battlesQueued=battlesStarted=battleEnds=defeats=adminSpawns=0; }
+    public String perfLine() { return "AlphaEncounter active="+activeByPokemon.size()+" catchWindows="+catchWindows.size()+" spawnChecks="+spawnChecks+" spawned="+spawnSuccess+" adminSpawned="+adminSpawns+" worldHits="+interceptedHits+" fieldAttacks="+fieldAttacks+" battlesQueued="+battlesQueued+" battlesStarted="+battlesStarted+" battleEnds="+battleEnds+" defeats="+defeats+" restored="+restoredEncounters+" restoredCatch="+restoredCatchWindows+" restoreMisses="+restoreMisses+" "+AlphaEncounterMod.TEXT.integrationStatus(); }
+    public void resetCounters() { spawnChecks=spawnSuccess=interceptedHits=fieldAttacks=battlesQueued=battlesStarted=battleEnds=defeats=adminSpawns=restoredEncounters=restoredCatchWindows=restoreMisses=0; }
 
     public static final class CatchWindow {
         public final UUID entityId; public final long expiresAtTick;
         public CatchWindow(UUID entityId, long expiresAtTick) { this.entityId=entityId; this.expiresAtTick=expiresAtTick; }
     }
     public static final class SavedState {
+        public int version = 2;
         public Map<String, Long> cooldownRemaining = new HashMap<>();
         public List<SavedEncounter> active = new ArrayList<>();
+        public List<SavedCatchWindow> catchWindows = new ArrayList<>();
+        public void normalize() {
+            if (cooldownRemaining == null) cooldownRemaining = new HashMap<>();
+            if (active == null) active = new ArrayList<>();
+            if (catchWindows == null) catchWindows = new ArrayList<>();
+        }
     }
     public static final class SavedEncounter {
-        public String definitionId, tierId, pokemonId, targetPlayer, lastBattlePlayer, dimension;
+        public String definitionId, tierId, entityId, pokemonId, state, targetPlayer, lastBattlePlayer, dimension;
         public float maxHp, hp; public double x,y,z; public List<String> participants = new ArrayList<>();
         static SavedEncounter from(ActiveEncounter a) {
-            SavedEncounter s = new SavedEncounter(); s.definitionId=a.definitionId; s.tierId=a.tierId; s.pokemonId=a.pokemonId.toString(); s.maxHp=a.maxHp; s.hp=a.hp; s.targetPlayer=a.targetPlayer==null?null:a.targetPlayer.toString(); s.lastBattlePlayer=a.lastBattlePlayer==null?null:a.lastBattlePlayer.toString(); s.dimension=a.dimension; s.x=a.x; s.y=a.y; s.z=a.z; for(UUID id:a.participants)s.participants.add(id.toString()); return s;
+            SavedEncounter s = new SavedEncounter();
+            s.definitionId=a.definitionId; s.tierId=a.tierId; s.entityId=a.entityId==null?null:a.entityId.toString(); s.pokemonId=a.pokemonId==null?null:a.pokemonId.toString(); s.state=a.state==null?null:a.state.name();
+            s.maxHp=a.maxHp; s.hp=a.hp; s.targetPlayer=a.targetPlayer==null?null:a.targetPlayer.toString(); s.lastBattlePlayer=a.lastBattlePlayer==null?null:a.lastBattlePlayer.toString(); s.dimension=a.dimension; s.x=a.x; s.y=a.y; s.z=a.z;
+            for(UUID id:a.participants)s.participants.add(id.toString());
+            return s;
         }
+    }
+    public static final class SavedCatchWindow {
+        public String entityId, pokemonId, dimension;
+        public long remainingTicks;
+        public double x,y,z;
     }
 }

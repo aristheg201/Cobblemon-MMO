@@ -28,6 +28,14 @@ public final class UiConfigManager {
             String language = config.general().language;
             messages = read(config.root().resolve("messages").resolve(language + ".json"), MessageBundle.class, defaultMessages(language));
             messages.normalize(language);
+            Path legacyFile = config.root().resolve("messages/legacy.json");
+            if (Files.exists(legacyFile)) {
+                MessageBundle legacy = read(legacyFile, MessageBundle.class, null);
+                if (legacy != null) {
+                    legacy.normalize("legacy");
+                    for (Map.Entry<String, MessageProfile> entry : legacy.profiles.entrySet()) messages.profiles.putIfAbsent(entry.getKey(), entry.getValue());
+                }
+            }
             bossBars.clear();
             try (Stream<Path> files = Files.list(config.root().resolve("bossbars"))) {
                 for (Path file : files.filter(Files::isRegularFile).filter(p -> p.getFileName().toString().endsWith(".json")).sorted().toList()) {
