@@ -3,6 +3,7 @@ package dev.aristheg.alphaencounter.command;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.aristheg.alphaencounter.AlphaEncounterMod;
+import dev.aristheg.alphaencounter.integration.RankScalingService;
 import dev.aristheg.alphaencounter.runtime.ActiveEncounter;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -18,10 +19,11 @@ public final class AdminCommands {
     public static void register(com.mojang.brigadier.CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager.literal("alphaencounter").requires(s -> s.hasPermissionLevel(2))
             .then(CommandManager.literal("help").executes(c -> help(c.getSource())))
-            .then(CommandManager.literal("reload").executes(c -> { AlphaEncounterMod.RUNTIME.reloadConfig(); feedback(c.getSource(), "Alpha-Encounter gameplay config, messages, and bossbars reloaded."); return 1; }))
+            .then(CommandManager.literal("reload").executes(c -> { AlphaEncounterMod.RUNTIME.reloadConfig(); feedback(c.getSource(), "Alpha-Encounter gameplay config, messages, bossbars, and rank scaling reloaded."); return 1; }))
             .then(CommandManager.literal("save").executes(c -> { AlphaEncounterMod.RUNTIME.saveState(c.getSource().getServer()); feedback(c.getSource(), "Alpha-Encounter state saved."); return 1; }))
             .then(CommandManager.literal("debug").executes(c -> { feedback(c.getSource(), AlphaEncounterMod.RUNTIME.perfLine()); return 1; })
-                .then(CommandManager.literal("reset").executes(c -> { AlphaEncounterMod.RUNTIME.resetCounters(); feedback(c.getSource(), "Counters reset."); return 1; })))
+                .then(CommandManager.literal("reset").executes(c -> { AlphaEncounterMod.RUNTIME.resetCounters(); feedback(c.getSource(), "Counters reset."); return 1; }))
+                .then(CommandManager.literal("player").then(CommandManager.argument("player", EntityArgumentType.player()).executes(c -> debugPlayer(c.getSource(), EntityArgumentType.getPlayer(c, "player"))))))
             .then(CommandManager.literal("list").executes(c -> list(c.getSource())))
             .then(CommandManager.literal("spawn").then(CommandManager.argument("id", StringArgumentType.word())
                 .suggests((c,b) -> { AlphaEncounterMod.CONFIG.encounterIds().forEach(b::suggest); return b.buildFuture(); })
@@ -38,12 +40,13 @@ public final class AdminCommands {
     }
 
     private static int help(ServerCommandSource s) {
-        feedback(s,"/alphaencounter reload | save | debug [reset] | list");
+        feedback(s,"/alphaencounter reload | save | debug [reset|player <player>] | list");
         feedback(s,"/alphaencounter spawn <id> [player] | inspect <nearest|uuid|id>");
         feedback(s,"/alphaencounter despawn|defeat <target> | sethp <target> <1-100>");
         feedback(s,"/alphaencounter battle <target> <player> | attack <target> <player> | anim <target> <animation> | reset <id|all>");
         return 1;
     }
+    private static int debugPlayer(ServerCommandSource s, ServerPlayerEntity player){ feedback(s, RankScalingService.instance().debugLine(player)); return 1; }
     private static int list(ServerCommandSource s){ var list=AlphaEncounterMod.RUNTIME.activeSorted(); feedback(s,"Active: "+list.size()); for(var a:list) feedback(s,AlphaEncounterMod.RUNTIME.inspectLine(s.getServer(),a)); return list.size(); }
     private static int spawn(ServerCommandSource s,String id,ServerPlayerEntity player){ ServerWorld w=player==null?s.getWorld():player.getServerWorld(); BlockPos p=player==null?BlockPos.ofFloored(s.getPosition()):player.getBlockPos(); ActiveEncounter a=AlphaEncounterMod.RUNTIME.spawnEncounter(id,w,p,true); if(a==null){feedback(s,"Spawn failed: "+id);return 0;} feedback(s,AlphaEncounterMod.RUNTIME.inspectLine(s.getServer(),a));return 1; }
     private static int inspect(ServerCommandSource s,String t){ ActiveEncounter a=AlphaEncounterMod.RUNTIME.resolveAdminTarget(s,t); if(a==null){feedback(s,"No matching encounter.");return 0;} feedback(s,AlphaEncounterMod.RUNTIME.inspectLine(s.getServer(),a)); return 1; }

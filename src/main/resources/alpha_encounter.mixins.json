@@ -2,6 +2,6 @@
   "required": true,
   "package": "dev.aristheg.alphaencounter.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": ["LivingEntityDamageMixin"],
+  "mixins": ["LivingEntityDamageMixin", "EncounterRuntimeMixin"],
   "injectors": { "defaultRequire": 1 }
 }
