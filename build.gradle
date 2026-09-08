@@ -7,6 +7,7 @@ base { archivesName = project.archives_base_name }
 repositories {
     mavenCentral()
     maven { url = 'https://maven.fabricmc.net/' }
+    maven { url = 'https://maven.nucleoid.xyz/' }
     exclusiveContent {
         forRepository {
             maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' }
@@ -24,6 +25,10 @@ dependencies {
     // Cobblemon 1.8.0 bundles Fabric Language Kotlin 1.13.6 + Kotlin 2.2.20.
     // This is compile-only: Alpha-Encounter still has no additional runtime dependency.
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib:2.2.20"
+    // Adventure/MiniMessage is bundled so formatting works without another server mod.
+    modImplementation include("net.kyori:adventure-platform-fabric:5.14.2")
+    // Text Placeholder API remains optional at runtime.
+    modCompileOnly "eu.pb4:placeholder-api:2.4.2+1.21"
 }
 
 tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8' }

@@ -66,7 +66,6 @@ public final class EncounterRuntime {
     private long battlesQueued;
     private long battlesStarted;
     private long battleEnds;
-    private long phaseRecoveries;
     private long defeats;
     private long adminSpawns;
 
@@ -90,7 +89,6 @@ public final class EncounterRuntime {
         if (!restoreApplied) restoreState(server);
         processBattleTransitions(server);
         processPendingBattles(server);
-        processPhaseRecoveries(server);
         processCatchWindows(server);
         tickFieldAttacks(server);
 
@@ -176,7 +174,7 @@ public final class EncounterRuntime {
             if (!admin) globalCooldownUntil.put(def.id, tick + def.spawn.globalCooldownTicks);
             else adminSpawns++;
             setupBossBar(active, def, tier);
-            broadcast(world.getServer(), format(def.spawnMessage, active, null));
+            broadcastProfile(world.getServer(), active, null, "spawn");
             stateDirty = true;
             AlphaEncounterMod.LOGGER.info("Spawned '{}' properties='{}' pokemonAspects={} entityAspects={} pokemonUUID={} entityUUID={}", def.id, def.pokemon, pokemon.getAspects(), entity.getAspects(), pokemon.getUuid(), entity.getUuid());
             return active;
@@ -223,7 +221,7 @@ public final class EncounterRuntime {
     }
 
     private void queueBattle(ActiveEncounter active, ServerPlayerEntity player) {
-        if (active.state == EncounterState.DEFEATED || active.state == EncounterState.BATTLE || active.state == EncounterState.BATTLE_PENDING || active.state == EncounterState.PHASE_RECOVERY) return;
+        if (active.state == EncounterState.DEFEATED || active.state == EncounterState.BATTLE || active.state == EncounterState.BATTLE_PENDING) return;
         active.pendingBattlePlayer = player.getUuid();
         active.targetPlayer = player.getUuid();
         active.participants.add(player.getUuid());
@@ -254,6 +252,7 @@ public final class EncounterRuntime {
             if (invoked) {
                 active.lastBattlePlayer = player.getUuid();
                 active.participants.add(player.getUuid());
+                broadcastProfile(server, active, player.getUuid(), "battleStart");
             }
             active.pendingBattlePlayer = null;
             if (!invoked || tick - active.pendingSinceTick > config.general().battlePendingTimeoutTicks) {
@@ -288,27 +287,21 @@ public final class EncounterRuntime {
     }
 
     private void syncBattleHealth(ActiveEncounter active, int current) {
-        if (active.lastPokemonHealth < 0) { active.lastPokemonHealth = current; return; }
-        int delta = active.lastPokemonHealth - current;
-        if (delta > 0) {
-            active.hp = Math.max(0f, active.hp - delta);
-            stateDirty = true;
-        } else if (delta < 0) {
-            active.hp = Math.min(active.maxHp, active.hp + (-delta));
-            stateDirty = true;
-        }
+        if (active.maxHp <= 0f) return;
+        Pokemon pokemon = resolvePokemon(active);
+        int localMax = active.battleLocalMax > 0 ? active.battleLocalMax : Math.max(1, pokemon.getMaxHealth());
+        active.battleLocalMax = localMax;
+        active.hp = Math.max(0f, Math.min(active.maxHp, active.maxHp * (Math.max(0, current) / (float)localMax)));
         active.lastPokemonHealth = current;
+        stateDirty = true;
     }
 
     private void onBattleFainted(BattleFaintedEvent event) {
         ActiveEncounter active = activeByPokemon.get(event.getKilled().getOriginalPokemon().getUuid());
         if (active == null) return;
-        syncBattleHealth(active, event.getKilled().getHealth());
-        if (active.hp <= 0.5f) {
-            active.defeatPending = true;
-        } else {
-            active.phaseRespawnPending = true;
-        }
+        active.hp = 0f;
+        active.lastPokemonHealth = 0;
+        active.defeatPending = true;
         stateDirty = true;
     }
 
@@ -325,8 +318,10 @@ public final class EncounterRuntime {
         if (active == null) return;
         Pokemon pokemon = resolvePokemon(active);
         syncBattleHealth(active, pokemon.getCurrentHealth());
-        if (active.hp <= 0.5f) active.defeatPending = true;
-        else if (pokemon.getCurrentHealth() <= 0) active.phaseRespawnPending = true;
+        if (pokemon.getCurrentHealth() <= 0 || active.hp <= 0.5f) {
+            active.hp = 0f;
+            active.defeatPending = true;
+        }
         stateDirty = true;
     }
 
@@ -344,56 +339,29 @@ public final class EncounterRuntime {
         battleEnds++;
         PokemonEntity entity = resolveEntity(server, active);
         if (entity != null) CobblemonBridge.playAnimation(entity, animation(active, "battleEnd"));
-        if (active.defeatPending || active.hp <= 0.5f) {
+        if (active.defeatPending || active.hp <= 0.5f || resolvePokemon(active).getCurrentHealth() <= 0) {
+            active.hp = 0f;
             defeatEncounter(server, active, false);
-            return;
-        }
-        if (active.phaseRespawnPending || resolvePokemon(active).getCurrentHealth() <= 0) {
-            active.state = EncounterState.PHASE_RECOVERY;
-            active.phaseRecoveryAtTick = tick + 1;
-            stateDirty = true;
             return;
         }
         active.state = EncounterState.HUNT;
         active.targetPlayer = active.lastBattlePlayer;
         active.nextReengageTick = tick + config.behaviourForTier(active.tierId).reengageCooldownTicks;
         active.lastPokemonHealth = -1;
+        active.battleLocalMax = -1;
+        active.defeatPending = false;
+        broadcastProfile(server, active, active.lastBattlePlayer, "battleEnd");
         stateDirty = true;
-    }
-
-    private void processPhaseRecoveries(MinecraftServer server) {
-        for (ActiveEncounter active : activeByPokemon.values()) {
-            if (active.state != EncounterState.PHASE_RECOVERY || tick < active.phaseRecoveryAtTick) continue;
-            Pokemon pokemon = resolvePokemon(active);
-            int localHp = Math.max(1, Math.min(pokemon.getMaxHealth(), (int) Math.ceil(active.hp)));
-            pokemon.setCurrentHealth(localHp);
-            ServerWorld world = resolveWorld(server, active.dimension);
-            if (world == null) continue;
-            PokemonEntity entity = resolveEntity(server, active);
-            if (entity == null || entity.isRemoved()) {
-                BlockPos pos = BlockPos.ofFloored(active.x, active.y, active.z);
-                entity = CobblemonBridge.respawnCanonical(pokemon, world, pos);
-                if (entity == null) continue;
-                rebindEntity(active, entity);
-            }
-            entity.setQueuedToDespawn(false);
-            active.phaseRespawnPending = false;
-            active.defeatPending = false;
-            active.lastPokemonHealth = -1;
-            active.state = EncounterState.HUNT;
-            active.targetPlayer = active.lastBattlePlayer;
-            active.nextReengageTick = tick + config.behaviourForTier(active.tierId).reengageCooldownTicks;
-            phaseRecoveries++;
-            stateDirty = true;
-            AlphaEncounterMod.LOGGER.info("Recovered encounter '{}' into next phase at shared HP {}/{} using entity {}.", active.definitionId, active.hp, active.maxHp, entity.getUuid());
-        }
     }
 
     private void prepareLocalBar(ActiveEncounter active, Pokemon pokemon) {
         initializeHealth(active, pokemon);
-        int hp = Math.max(1, Math.min(pokemon.getMaxHealth(), (int) Math.ceil(active.hp)));
-        pokemon.setCurrentHealth(hp);
-        active.lastPokemonHealth = hp;
+        int localMax = Math.max(1, pokemon.getMaxHealth());
+        int localHp = Math.max(1, Math.min(localMax, (int)Math.ceil(localMax * (active.hp / active.maxHp))));
+        pokemon.setCurrentHealth(localHp);
+        active.battleLocalMax = localMax;
+        active.lastPokemonHealth = localHp;
+        active.defeatPending = false;
     }
 
     private void tickHunts(MinecraftServer server) {
@@ -414,7 +382,7 @@ public final class EncounterRuntime {
             boolean newTarget = !target.getUuid().equals(active.targetPlayer);
             active.targetPlayer = target.getUuid();
             active.state = EncounterState.HUNT;
-            if (newTarget) CobblemonBridge.playAnimation(pokemon, animation(active, "aggro"));
+            if (newTarget) { CobblemonBridge.playAnimation(pokemon, animation(active, "aggro")); broadcastProfile(server, active, target.getUuid(), "aggro"); }
             if (pokemon instanceof MobEntity mob) {
                 mob.setTarget(target);
                 if (tick >= active.nextPathRefreshTick || mob.getNavigation().isIdle()) {
@@ -468,41 +436,28 @@ public final class EncounterRuntime {
         for (ActiveEncounter active : activeByPokemon.values()) {
             if (active.bossBar == null) continue;
             PokemonEntity pokemon = resolveEntity(server, active);
-            if (pokemon == null && active.state != EncounterState.PHASE_RECOVERY) continue;
+            if (pokemon == null) continue;
             EncounterDefinition def = config.encounter(active.definitionId);
-            TierConfig tier = config.tier(active.tierId);
+            if (def == null) continue;
+            var profile = AlphaEncounterMod.UI.bossBar(def.bossBarProfile);
             active.bossBar.setPercent(active.maxHp <= 0 ? 1f : Math.max(0f, Math.min(1f, active.hp / active.maxHp)));
-            active.bossBar.setName(Text.literal((def == null ? active.definitionId : def.displayName) + "  " + Math.round(active.hp) + "/" + Math.round(active.maxHp)));
+            active.bossBar.setName(AlphaEncounterMod.TEXT.render(profile.title, textContext(server, active, null)));
             Set<UUID> desired = new HashSet<>(active.participants);
-            if (pokemon != null) {
-                double rangeSq = tier.bossBarRange * tier.bossBarRange;
-                for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                    if (player.getWorld() == pokemon.getWorld() && pokemon.squaredDistanceTo(player) <= rangeSq) desired.add(player.getUuid());
-                }
-            }
-            for (UUID id : desired) {
-                if (active.bossBarViewers.add(id)) {
-                    ServerPlayerEntity player = server.getPlayerManager().getPlayer(id);
-                    if (player != null) active.bossBar.addPlayer(player);
-                }
-            }
+            double rangeSq = profile.range * profile.range;
+            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) if (player.getWorld() == pokemon.getWorld() && pokemon.squaredDistanceTo(player) <= rangeSq) desired.add(player.getUuid());
+            for (UUID id : desired) if (active.bossBarViewers.add(id)) { ServerPlayerEntity player = server.getPlayerManager().getPlayer(id); if (player != null) active.bossBar.addPlayer(player); }
             Iterator<UUID> it = active.bossBarViewers.iterator();
-            while (it.hasNext()) {
-                UUID id = it.next();
-                if (desired.contains(id)) continue;
-                ServerPlayerEntity player = server.getPlayerManager().getPlayer(id);
-                if (player != null) active.bossBar.removePlayer(player);
-                it.remove();
-            }
+            while (it.hasNext()) { UUID id=it.next(); if(desired.contains(id))continue; ServerPlayerEntity player=server.getPlayerManager().getPlayer(id); if(player!=null)active.bossBar.removePlayer(player); it.remove(); }
         }
     }
 
     private void setupBossBar(ActiveEncounter active, EncounterDefinition def, TierConfig tier) {
-        if (!tier.bossBar) return;
-        BossBar.Color color;
-        try { color = BossBar.Color.valueOf(tier.bossBarColor.toUpperCase(Locale.ROOT)); }
-        catch (Exception ignored) { color = BossBar.Color.PURPLE; }
-        active.bossBar = new ServerBossBar(Text.literal(def.displayName), color, BossBar.Style.PROGRESS);
+        var profile = AlphaEncounterMod.UI.bossBar(def.bossBarProfile == null || def.bossBarProfile.isBlank() ? tier.bossBarProfile : def.bossBarProfile);
+        if (!profile.enabled) return;
+        BossBar.Color color; BossBar.Style style;
+        try { color = BossBar.Color.valueOf(profile.color.toUpperCase(Locale.ROOT)); } catch(Exception ignored){ color=BossBar.Color.PURPLE; }
+        try { style = BossBar.Style.valueOf(profile.style.toUpperCase(Locale.ROOT)); } catch(Exception ignored){ style=BossBar.Style.PROGRESS; }
+        active.bossBar = new ServerBossBar(Text.literal(def.displayName), color, style);
     }
 
     private void defeatEncounter(MinecraftServer server, ActiveEncounter active, boolean adminForced) {
@@ -515,7 +470,7 @@ public final class EncounterRuntime {
         if (entity != null) CobblemonBridge.playAnimation(entity, animation(active, "defeat"));
         if (def != null && (!adminForced || def.rewardOnAdminDefeat)) {
             runRewards(server, active, def);
-            broadcast(server, format(def.defeatMessage, active, null));
+            broadcastProfile(server, active, null, "defeat");
         }
 
         if (def != null && def.catchable && def.catchPhaseSeconds > 0) {
@@ -528,7 +483,7 @@ public final class EncounterRuntime {
             if (catchEntity != null) {
                 catchEntity.setGlowing(true);
                 catchWindows.put(catchEntity.getUuid(), new CatchWindow(catchEntity.getUuid(), tick + def.catchPhaseSeconds * 20L));
-                broadcast(server, format(def.catchMessage, active, null));
+                broadcastProfile(server, active, null, "catchAvailable");
             }
         } else if (entity != null && !entity.isRemoved()) {
             entity.discard();
@@ -562,12 +517,12 @@ public final class EncounterRuntime {
 
     private void cleanupMissingEntries(MinecraftServer server) {
         for (ActiveEncounter active : new ArrayList<>(activeByPokemon.values())) {
-            if (active.state == EncounterState.PHASE_RECOVERY || active.state == EncounterState.BATTLE) continue;
+            if (active.state == EncounterState.BATTLE) continue;
             PokemonEntity entity = resolveEntity(server, active);
             if (entity != null && !entity.isRemoved()) { active.missingSinceTick = 0; continue; }
             if (active.missingSinceTick == 0) active.missingSinceTick = tick;
             if (tick - active.missingSinceTick < config.general().missingEntityGraceTicks) continue;
-            AlphaEncounterMod.LOGGER.warn("Encounter '{}' disappeared outside battle/recovery; removing runtime entry.", active.definitionId);
+            AlphaEncounterMod.LOGGER.warn("Encounter '{}' disappeared outside battle; removing runtime entry.", active.definitionId);
             removeActive(active, false);
             stateDirty = true;
         }
@@ -637,14 +592,22 @@ public final class EncounterRuntime {
         };
     }
 
-    private String format(String raw, ActiveEncounter active, ServerPlayerEntity player) {
-        if (raw == null || raw.isBlank()) return "";
+    private void broadcastProfile(MinecraftServer server, ActiveEncounter active, UUID playerId, String key) {
         EncounterDefinition def = config.encounter(active.definitionId);
-        return raw.replace("{encounter}", active.definitionId).replace("{name}", def == null ? active.definitionId : def.displayName).replace("{tier}", active.tierId).replace("{player}", player == null ? "" : player.getName().getString());
+        if (def == null) return;
+        var profile = AlphaEncounterMod.UI.messages(def.messageProfile);
+        String raw = switch (key) { case "spawn" -> profile.spawn; case "aggro" -> profile.aggro; case "battleStart" -> profile.battleStart; case "battleEnd" -> profile.battleEnd; case "defeat" -> profile.defeat; case "catchAvailable" -> profile.catchAvailable; case "despawn" -> profile.despawn; default -> ""; };
+        ServerPlayerEntity player = playerId == null ? null : server.getPlayerManager().getPlayer(playerId);
+        AlphaEncounterMod.TEXT.broadcast(server, raw, textContext(server, active, player));
     }
 
-    private void broadcast(MinecraftServer server, String message) {
-        if (server != null && message != null && !message.isBlank()) server.getPlayerManager().broadcast(Text.literal(message), false);
+    public dev.aristheg.alphaencounter.text.TextContext textContext(MinecraftServer server, ActiveEncounter active, ServerPlayerEntity player) {
+        Pokemon pokemon = resolvePokemon(active);
+        PokemonEntity entity = resolveEntity(server, active);
+        EncounterDefinition def = config.encounter(active.definitionId);
+        String biome = "";
+        if (entity != null) biome = entity.getWorld().getBiome(entity.getBlockPos()).getKey().map(k -> k.getValue().toString()).orElse("");
+        return new dev.aristheg.alphaencounter.text.TextContext(server, player, active, def, pokemon, entity, biome);
     }
 
     private void loadStateFile() {
@@ -765,8 +728,11 @@ public final class EncounterRuntime {
         return true;
     }
     public void resetCooldown(String id) { if (id == null || id.equalsIgnoreCase("all")) globalCooldownUntil.clear(); else globalCooldownUntil.remove(id); stateDirty = true; }
-    public String perfLine() { return "AlphaEncounter active="+activeByPokemon.size()+" spawnChecks="+spawnChecks+" spawned="+spawnSuccess+" adminSpawned="+adminSpawns+" worldHits="+interceptedHits+" fieldAttacks="+fieldAttacks+" battlesQueued="+battlesQueued+" battlesStarted="+battlesStarted+" battleEnds="+battleEnds+" phaseRecoveries="+phaseRecoveries+" defeats="+defeats; }
-    public void resetCounters() { spawnChecks=spawnSuccess=interceptedHits=fieldAttacks=battlesQueued=battlesStarted=battleEnds=phaseRecoveries=defeats=adminSpawns=0; }
+    public int activeCount() { return activeByPokemon.size(); }
+    public long cooldownRemainingTicks(String id) { return Math.max(0L, globalCooldownUntil.getOrDefault(id, 0L) - tick); }
+    public ActiveEncounter resolveExternalTarget(net.minecraft.server.command.ServerCommandSource source, String token) { return resolveAdminTarget(source, token); }
+    public String perfLine() { return "AlphaEncounter active="+activeByPokemon.size()+" spawnChecks="+spawnChecks+" spawned="+spawnSuccess+" adminSpawned="+adminSpawns+" worldHits="+interceptedHits+" fieldAttacks="+fieldAttacks+" battlesQueued="+battlesQueued+" battlesStarted="+battlesStarted+" battleEnds="+battleEnds+" defeats="+defeats+" "+AlphaEncounterMod.TEXT.integrationStatus(); }
+    public void resetCounters() { spawnChecks=spawnSuccess=interceptedHits=fieldAttacks=battlesQueued=battlesStarted=battleEnds=defeats=adminSpawns=0; }
 
     public static final class CatchWindow {
         public final UUID entityId; public final long expiresAtTick;

@@ -8,107 +8,23 @@ Hard dependencies: Fabric API and Cobblemon only. SVFrameLib, SVFrameMMO, and SV
 
 ## Encounter lifecycle
 
-`IDLE -> HUNT -> BATTLE_PENDING -> BATTLE -> PHASE_RECOVERY/HUNT/DEFEATED`
+`IDLE -> HUNT -> BATTLE_PENDING -> BATTLE -> HUNT/DEFEATED`
 
-- Aggressive encounters acquire and chase nearby players in the world.
-- Reaching melee range does **not** automatically start a Cobblemon battle.
-- While hunting, the Pokemon performs real Minecraft `mobAttack` damage against the player, with configurable damage/range/cooldown/knockback and a semantic attack animation.
-- A player damaging a managed Pokemon outside battle deals resolved field damage to shared HP, then provokes a Cobblemon PVE battle on the next server tick.
-- Field damage cannot finish the encounter; it clamps shared HP to at least 1 so the battle layer owns the actual defeat.
-- Battle damage subtracts the real local HP delta from the shared encounter HP pool.
-- Cobblemon `BATTLE_FAINTED`, `BATTLE_FLED`, and `BATTLE_VICTORY` events drive lifecycle decisions instead of guessing knockout state from a disappearing world entity.
-- Encounter identity is keyed by the canonical Pokemon UUID. Entity UUID is only the current world shell.
-- If a local battle HP bar reaches zero while shared HP remains, the canonical Pokemon enters `PHASE_RECOVERY`; if Cobblemon removed the wild entity, Alpha-Encounter respawns/rebinds a new world entity around the same Pokemon object and returns to `HUNT`.
-- Only shared HP reaching zero causes `DEFEATED`.
-- Fleeing leaves the encounter alive and hostile; it returns to HUNT and prefers the last player after the re-engage cooldown.
-- Optional catch phase exposes the canonical defeated Pokemon at low HP instead of rolling a replacement Pokemon.
+- Alpha encounters attack players in the world with vanilla Minecraft damage and do not auto-start a battle by proximity.
+- A player damaging a managed Alpha queues Cobblemon PVE battle on the next server tick.
+- Shared HP is mapped proportionally to one Cobblemon battle HP bar. There is no multi-phase KO or phase respawn.
+- A local battle KO is the encounter defeat. If the battle ends before KO, remaining local HP maps back to shared HP and the encounter returns to HUNT.
+- Optional catch and reward phases run after the single final defeat.
 
-## Config layout
+## Text and integrations
 
-Alpha-Encounter now uses a modular folder tree inspired by the organizational approach of raid plugins such as NovaRaids, while using independent implementation/code:
-
-```text
-config/alpha-encounter/
-  config.json
-  behaviours/
-    passive.json
-    aggressive.json
-    apex_hunter.json
-  tiers/
-    regional.json
-    signature.json
-    apex.json
-  categories/
-    <category-id>/
-      settings.json
-      encounters/
-        <encounter>.json
-  persistent/
-    state.json
-  legacy/
-    config-v1.json
-    state-v1.json
-```
-
-`config.json` contains global runtime/spawn cadences only. Behaviours own field AI/combat. Tiers own shared-HP multiplier and bossbar presentation. Category settings can provide common dimension/biome conditions. Each encounter lives in its own JSON file.
-
-### Automatic migration
-
-A legacy monolithic `config/alpha-encounter/config.json` containing `general`, `tiers`, and `encounters` is detected automatically. On first load Alpha-Encounter:
-
-1. backs it up to `legacy/config-v1.json`;
-2. writes global settings back to the new `config.json`;
-3. splits legacy tiers into `tiers/*.json` and matching behaviour profiles;
-4. splits every legacy encounter into `categories/<derived-biome>/encounters/*.json`;
-5. moves old `state.json` to `persistent/state.json` and preserves a legacy copy.
-
-No manual rewrite of the existing large config is required.
-
-## Mount Yeager / Godzilla Tyranitar
-
-Default modular config creates:
-
-```text
-categories/bestiary_mount_yeager/settings.json
-categories/bestiary_mount_yeager/encounters/tyranitar_godzilla.json
-```
-
-The encounter uses the exact Cobblemon property string:
-
-```text
-tyranitar level=100 alpha=true cosmetic_item-godzilla
-```
-
-Dimension: `minecraft:overworld`
-
-Biome: `bestiary:mount_yeager`
-
-The resource-pack resolver matches the aspect `cosmetic_item-godzilla`; `tyranitar_godzilla` is only the model/poser/animation family name. The runtime logs both requested properties and resolved Pokemon/entity aspects when an encounter spawns, and `/alphaencounter inspect` exposes them for testing.
-
-## Shared HP / multi-phase KO
-
-Tier `healthMultiplier` creates a true shared HP pool. Example: native max HP 400 with Apex multiplier 12 gives 4800 shared HP.
-
-A Cobblemon battle still uses a normal local Pokemon HP bar (up to native max HP). Damage subtracts point-for-point from the shared pool. If the local Pokemon faints at 4400 shared HP, it is not defeated: the battle ends, the same canonical Pokemon is restored into another world phase, and the next battle starts with another local HP bar. Final defeat occurs only when shared HP reaches zero.
-
-This is event-driven using Cobblemon battle events so it remains valid even if the fainted wild entity is removed after battle.
-
-## Field combat
-
-Behaviour files expose:
-
-- `aggressive`
-- `aggroRadius`
-- `leashRadius`
-- `chaseSpeed`
-- `fieldAttackRange`
-- `fieldAttackDamage`
-- `fieldAttackCooldownTicks`
-- `fieldAttackKnockback`
-- `fieldAttackAnimation`
-- `reengageCooldownTicks`
-
-Boss attacks call Minecraft's normal damage path. There is no custom player-defense formula and no SVFrame integration layer.
+- All encounter messages and bossbar titles use MiniMessage through bundled Adventure Fabric.
+- Text Placeholder API (`placeholder-api`) is a soft dependency. If installed, Alpha-Encounter registers global placeholders and parses placeholders from other mods in its configured messages.
+- Message files live under `config/alpha-encounter/messages/<language>.json`.
+- Bossbar profiles live under `config/alpha-encounter/bossbars/*.json`.
+- Encounter files reference `messageProfile` and `bossBarProfile` instead of carrying user-facing text.
+- Internal MiniMessage tags include `<ae_name>`, `<ae_id>`, `<ae_tier>`, `<ae_state>`, `<ae_hp>`, `<ae_max_hp>`, `<ae_hp_percent>`, `<ae_species>`, `<ae_level>`, `<ae_aspects>`, `<ae_dimension>`, `<ae_biome>`, `<ae_distance>`, and `<player_name>`.
+- Placeholder API exports `%alpha_encounter:active_count%`, `%alpha_encounter:cooldown_seconds <id>%`, and target-aware placeholders such as `%alpha_encounter:name nearest%`, `%alpha_encounter:hp_percent nearest%`, `%alpha_encounter:species nearest%`, and `%alpha_encounter:distance nearest%`.
 
 ## Performance behavior
 

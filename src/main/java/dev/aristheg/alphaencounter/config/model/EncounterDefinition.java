@@ -9,6 +9,8 @@ public final class EncounterDefinition {
     public boolean enabled = true;
     public String tier = "regional";
     public String pokemon = "pikachu level=50 alpha=true";
+    public String messageProfile = "";
+    public String bossBarProfile = "";
     public Spawn spawn = new Spawn();
     public Animations animations = new Animations();
     public boolean catchable = false;
@@ -16,9 +18,6 @@ public final class EncounterDefinition {
     public float catchHealthPercent = 0.10f;
     public boolean rewardOnAdminDefeat = false;
     public List<String> rewardCommands = new ArrayList<>();
-    public String spawnMessage = "";
-    public String defeatMessage = "";
-    public String catchMessage = "";
     public transient String categoryId = "misc";
 
     public void normalize(String fallbackId) {
@@ -26,6 +25,8 @@ public final class EncounterDefinition {
         if (displayName == null || displayName.isBlank()) displayName = id;
         if (tier == null || tier.isBlank()) tier = "regional";
         if (pokemon == null) pokemon = "";
+        if (messageProfile == null || messageProfile.isBlank()) messageProfile = tier;
+        if (bossBarProfile == null || bossBarProfile.isBlank()) bossBarProfile = tier;
         if (spawn == null) spawn = new Spawn();
         spawn.normalize();
         if (animations == null) animations = new Animations();
@@ -33,9 +34,6 @@ public final class EncounterDefinition {
         catchPhaseSeconds = Math.max(0, catchPhaseSeconds);
         catchHealthPercent = Math.max(0.01f, Math.min(1.0f, catchHealthPercent));
         if (rewardCommands == null) rewardCommands = new ArrayList<>();
-        if (spawnMessage == null) spawnMessage = "";
-        if (defeatMessage == null) defeatMessage = "";
-        if (catchMessage == null) catchMessage = "";
     }
 
     public static final class Spawn {

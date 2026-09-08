@@ -10,6 +10,9 @@
     "main": ["dev.aristheg.alphaencounter.AlphaEncounterMod"]
   },
   "mixins": ["alpha_encounter.mixins.json"],
+  "suggests": {
+    "placeholder-api": ">=2.4.2"
+  },
   "depends": {
     "fabricloader": ">=0.18.4",
     "fabric-api": "*",
