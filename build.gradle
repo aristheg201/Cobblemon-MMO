@@ -21,6 +21,9 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     modImplementation "maven.modrinth:MdwFAVRL:${cobblemon_modrinth_version}"
+    // Cobblemon's Java-visible event API exposes kotlin Function1 types.
+    // Runtime Kotlin is already provided through Cobblemon/Fabric Language Kotlin.
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib:2.1.20"
 }
 
 tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8' }
