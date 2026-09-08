@@ -31,7 +31,8 @@ public final class UiConfigManager {
             bossBars.clear();
             try (Stream<Path> files = Files.list(config.root().resolve("bossbars"))) {
                 for (Path file : files.filter(Files::isRegularFile).filter(p -> p.getFileName().toString().endsWith(".json")).sorted().toList()) {
-                    String id = file.getFileName().toString().replaceFirst("\.json$", "");
+                    String fileName = file.getFileName().toString();
+                    String id = fileName.substring(0, fileName.length() - 5);
                     BossBarProfile profile = read(file, BossBarProfile.class, null);
                     if (profile != null) { profile.normalize(id); bossBars.put(profile.id, profile); }
                 }
