@@ -25,8 +25,9 @@ dependencies {
     // Cobblemon 1.8.0 bundles Fabric Language Kotlin 1.13.6 + Kotlin 2.2.20.
     // This is compile-only: Alpha-Encounter still has no additional runtime dependency.
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib:2.2.20"
-    // LuckPerms is optional at runtime. Rank scaling reflects against its provider only when configured.
-    compileOnly "net.luckperms:api:5.5"
+    // LuckPerms remains optional at runtime. Compile against API 5.4 to match the
+    // LuckPerms Fabric 5.4.x line used by Minecraft 1.21.1 servers.
+    compileOnly "net.luckperms:api:5.4"
     // Adventure/MiniMessage is bundled so formatting works without another server mod.
     modImplementation include("net.kyori:adventure-platform-fabric:5.14.2")
     // Text Placeholder API remains optional at runtime.
