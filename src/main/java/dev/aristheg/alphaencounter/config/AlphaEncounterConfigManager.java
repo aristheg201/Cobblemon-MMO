@@ -256,9 +256,7 @@ public final class AlphaEncounterConfigManager {
         tier.id = id;
         tier.healthMultiplier = (float) number(old, "healthMultiplier", 4.0);
         tier.behaviour = id;
-        tier.bossBar = bool(old, "bossBar", true);
-        tier.bossBarRange = number(old, "bossBarRange", 72.0);
-        tier.bossBarColor = string(old, "bossBarColor", "YELLOW");
+        tier.bossBarProfile = id;
         tier.normalize(id);
 
         Path behaviourFile = root.resolve("behaviours").resolve(safe(id) + ".json");
@@ -328,9 +326,8 @@ public final class AlphaEncounterConfigManager {
         godzilla.catchable = true;
         godzilla.catchPhaseSeconds = 120;
         godzilla.catchHealthPercent = 0.10f;
-        godzilla.spawnMessage = "[Alpha] {name} has emerged in Mount Yeager.";
-        godzilla.defeatMessage = "[Alpha] {name} has been defeated.";
-        godzilla.catchMessage = "[Alpha] {name} is vulnerable to capture for a short time.";
+        godzilla.messageProfile = "apex";
+        godzilla.bossBarProfile = "apex";
         writeIfMissing(yeager.resolve("encounters/tyranitar_godzilla.json"), godzilla);
     }
 
@@ -387,8 +384,7 @@ public final class AlphaEncounterConfigManager {
         t.id = "regional";
         t.healthMultiplier = 4.0f;
         t.behaviour = "passive";
-        t.bossBarRange = 72;
-        t.bossBarColor = "YELLOW";
+        t.bossBarProfile = "regional";
         return t;
     }
 
@@ -397,8 +393,7 @@ public final class AlphaEncounterConfigManager {
         t.id = "signature";
         t.healthMultiplier = 7.0f;
         t.behaviour = "aggressive";
-        t.bossBarRange = 88;
-        t.bossBarColor = "BLUE";
+        t.bossBarProfile = "signature";
         return t;
     }
 
@@ -407,8 +402,7 @@ public final class AlphaEncounterConfigManager {
         t.id = "apex";
         t.healthMultiplier = 12.0f;
         t.behaviour = "apex_hunter";
-        t.bossBarRange = 112;
-        t.bossBarColor = "PURPLE";
+        t.bossBarProfile = "apex";
         return t;
     }
 
