@@ -3,6 +3,7 @@ package dev.aristheg.alphaencounter;
 import dev.aristheg.alphaencounter.command.AdminCommands;
 import dev.aristheg.alphaencounter.config.AlphaEncounterConfigManager;
 import dev.aristheg.alphaencounter.config.UiConfigManager;
+import dev.aristheg.alphaencounter.integration.AlphaLootGuard;
 import dev.aristheg.alphaencounter.runtime.EncounterRuntime;
 import dev.aristheg.alphaencounter.text.TextService;
 import net.fabricmc.api.ModInitializer;
@@ -19,5 +20,5 @@ public final class AlphaEncounterMod implements ModInitializer {
     public static final UiConfigManager UI=new UiConfigManager(CONFIG);
     public static final EncounterRuntime RUNTIME=new EncounterRuntime(CONFIG);
     public static final TextService TEXT=new TextService(CONFIG);
-    @Override public void onInitialize(){ CONFIG.load(); UI.load(); RUNTIME.initialize(); TEXT.initialize(RUNTIME); ServerLifecycleEvents.SERVER_STARTING.register(TEXT::start); ServerTickEvents.END_SERVER_TICK.register(RUNTIME::tick); ServerLifecycleEvents.SERVER_STOPPING.register(RUNTIME::saveState); ServerLifecycleEvents.SERVER_STOPPED.register(server->TEXT.stop()); CommandRegistrationCallback.EVENT.register((dispatcher,registryAccess,environment)->AdminCommands.register(dispatcher)); LOGGER.info("Alpha-Encounter initialized: single-KO shared HP, MiniMessage, optional Text Placeholder API, vanilla field combat."); }
+    @Override public void onInitialize(){ CONFIG.load(); UI.load(); AlphaLootGuard.initialize(); RUNTIME.initialize(); TEXT.initialize(RUNTIME); ServerLifecycleEvents.SERVER_STARTING.register(TEXT::start); ServerTickEvents.END_SERVER_TICK.register(RUNTIME::tick); ServerLifecycleEvents.SERVER_STOPPING.register(RUNTIME::saveState); ServerLifecycleEvents.SERVER_STOPPED.register(server->TEXT.stop()); CommandRegistrationCallback.EVENT.register((dispatcher,registryAccess,environment)->AdminCommands.register(dispatcher)); LOGGER.info("Alpha-Encounter initialized: single-KO shared HP, MiniMessage, optional Text Placeholder API, vanilla field combat, Alpha IV-candy loot guard."); }
 }
