@@ -51,6 +51,7 @@ public final class PlayerResourceUpdateEvent {
     public boolean isDecrease() { return Double.compare(newAmount, oldAmount) < 0; }
     public boolean isHealthGain() { return resource == PlayerResource.HEALTH && isIncrease(); }
     public boolean isHealthLoss() { return resource == PlayerResource.HEALTH && isDecrease(); }
+    public boolean isHealthRegeneration() { return isHealthGain() && reason.isRegeneration(); }
     public void setNewAmount(double value) { newAmount = value; }
     public boolean isCancelled() { return cancelled; }
     public void setCancelled(boolean value) { cancelled = value; }
