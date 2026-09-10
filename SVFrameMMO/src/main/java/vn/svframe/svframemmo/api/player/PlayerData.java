@@ -305,25 +305,28 @@ public final class PlayerData {
     public void setSkillLevel(String skill, int value) {
         String skillId = normalizeEnum(skill);
         ClassSkill definition = getProfess().getSkill(skillId);
-        if (definition == null) throw new IllegalArgumentException("Skill '" + skillId + "' does not belong to class '" + getClassId() + "'");
+        if (definition == null) throw new IllegalArgumentException("Unknown class skill '" + skillId + "' for class '" + getClassId() + "'");
         int next = Math.max(1, value);
         if (definition.hasMaxLevel()) next = Math.min(next, definition.getMaxLevel());
+        int previous = getSkillLevel(skillId);
+        if (previous == next) return;
         if (next <= 1) skillLevels.remove(skillId); else skillLevels.put(skillId, next);
         if (isOnline()) SVFrameMMO.skillRuntime().refresh(this);
     }
-    public void resetSkills() { skillLevels.clear(); skillBindings.clear(); applyHardBindings(); if (isOnline()) SVFrameMMO.skillRuntime().refresh(this); }
-    public Map<String, Integer> getSkillLevels() { return Collections.unmodifiableMap(skillLevels); }
-    public boolean hasUnlockedLevel(ClassSkill skill) { return skill != null && getLevel() >= skill.getUnlockLevel(); }
-    public boolean canUseSkill(ClassSkill skill) { return skill != null && hasUnlockedLevel(skill) && hasUnlocked(skill.getUnlockNamespacedKey()); }
+
+    public boolean canUseSkill(ClassSkill skill) {
+        if (skill == null) return false;
+        if (skill.getRequiredLevel() > getLevel()) return false;
+        for (String permission : skill.getPermissions()) if (!SVFrameMMO.permissions().has(id, permission)) return false;
+        return true;
+    }
 
     public boolean upgradeSkill(String skillId) {
         ClassSkill skill = requireClassSkill(skillId);
-        if (!canUseSkill(skill) || !skill.isUpgradable()) return false;
         int current = getSkillLevel(skill.getSkill());
-        if (skill.hasMaxLevel() && current >= skill.getMaxLevel()) return false;
-        if (skillPoints <= 0) return false;
+        if (!canUseSkill(skill) || skillPoints < 1 || (skill.hasMaxLevel() && current >= skill.getMaxLevel())) return false;
         setSkillLevel(skill.getSkill(), current + 1);
-        setSkillPoints(skillPoints - 1);
+        giveSkillPoints(-1);
         return true;
     }
 
@@ -438,20 +441,35 @@ public final class PlayerData {
 
     public void refreshClassStats() {
         if (player == null) return;
+        ServerPlayerEntity healthPlayer = player;
+        float previousHealth = healthPlayer.getHealth();
         MMOPlayerData mmo = getMMOPlayerData();
         var statMap = mmo.getStatMap();
         PlayerClass profess = getProfess();
-        statMap.bufferUpdates(() -> {
-            for (var instance : statMap.getInstances()) instance.remove(CLASS_STAT_KEY);
-            for (String stat : profess.getEffectiveStats()) {
-                var instance = statMap.getInstance(stat);
-                double value = profess.calculateBaseStat(stat, getLevel(), this) - instance.getDefaultBase();
-                if (value == 0d) continue;
-                UUID modifierId = UUID.nameUUIDFromBytes((id + ":class:" + stat).getBytes(StandardCharsets.UTF_8));
-                instance.registerModifier(new StatModifier(modifierId, CLASS_STAT_KEY, stat, value,
-                        ModifierType.FLAT, EquipmentSlot.OTHER, ModifierSource.OTHER));
+        try {
+            statMap.bufferUpdates(() -> {
+                for (var instance : statMap.getInstances()) instance.remove(CLASS_STAT_KEY);
+                for (String stat : profess.getEffectiveStats()) {
+                    var instance = statMap.getInstance(stat);
+                    double value = profess.calculateBaseStat(stat, getLevel(), this) - instance.getDefaultBase();
+                    if (value == 0d) continue;
+                    UUID modifierId = UUID.nameUUIDFromBytes((id + ":class:" + stat).getBytes(StandardCharsets.UTF_8));
+                    instance.registerModifier(new StatModifier(modifierId, CLASS_STAT_KEY, stat, value,
+                            ModifierType.FLAT, EquipmentSlot.OTHER, ModifierSource.OTHER));
+                }
+            });
+        } finally {
+            // A class refresh can rebuild MAX_HEALTH through SVFrameLib. Keep the
+            // player's absolute health stable across that transaction; only clamp if
+            // the final effective max health is genuinely lower. Never resurrect a
+            // player that was already dead when the refresh began.
+            if (healthPlayer == player && previousHealth > 0.0F && healthPlayer.isAlive()) {
+                float restoredHealth = Math.min(previousHealth, healthPlayer.getMaxHealth());
+                if (Float.compare(healthPlayer.getHealth(), restoredHealth) != 0) {
+                    healthPlayer.setHealth(restoredHealth);
+                }
             }
-        });
+        }
     }
 
     public void clampAll() {
@@ -518,96 +536,85 @@ public final class PlayerData {
 
     public Map<String, SavedClassState> getClassSlots() { return Map.copyOf(classSlots); }
 
-    public SavedClassState captureClassState() {
-        Map<String, Integer> progressionClaims = new LinkedHashMap<>();
-        claimCounts.forEach((key, value) -> {
-            if (isClassScopedClaim(key)) progressionClaims.put(key, value);
-        });
-        return new SavedClassState(getLevel(), experience, skillPoints, attributePoints,
-                attributeReallocationPoints, skillReallocationPoints, skillTreeReallocationPoints,
-                getHealth(), mana, stamina, stellium, attributes.mapPoints(), skillLevels, skillBindings,
-                unlockedItems, skillTrees.pointMap(), skillTrees.nodeLevelMap(), progressionClaims);
-    }
-
-    private SavedClassState defaultClassState() {
-        var cfg = SVFrameMMO.config();
-        return new SavedClassState(cfg.defaultLevel(), 0d, cfg.defaultSkillPoints(), cfg.defaultAttributePoints(),
-                cfg.defaultReallocationPoints(), cfg.defaultReallocationPoints(), cfg.defaultReallocationPoints(),
-                0d, cfg.defaultMana(), cfg.defaultStamina(), cfg.defaultStellium(),
-                Map.of(), Map.of(), Map.of(), Set.of(), Map.of(), Map.of(), Map.of());
-    }
-
-    private static SavedClassState copyState(SavedClassState base, int level, double experience, int skillPoints,
-                                               int attributePoints, int attributeReallocationPoints, int skillReallocationPoints) {
-        return new SavedClassState(level, experience, skillPoints, attributePoints, attributeReallocationPoints,
-                skillReallocationPoints, base.skillTreeReallocationPoints(), base.health(), base.mana(), base.stamina(),
-                base.stellium(), base.attributes(), base.skills(), base.bindings(), base.unlockedItems(),
-                base.skillTreePoints(), base.skillTreeNodeLevels(), base.progressionClaims());
-    }
-
-    private void restoreClassState(SavedClassState state) {
-        level = Math.max(1, state.level());
-        if (getProfess().hasMaxLevel()) level = Math.min(level, getProfess().getMaxLevel());
-        experience = state.experience();
-        skillPoints = state.skillPoints();
-        attributePoints = state.attributePoints();
-        attributeReallocationPoints = state.attributeReallocationPoints();
-        skillReallocationPoints = state.skillReallocationPoints();
-        skillTreeReallocationPoints = state.skillTreeReallocationPoints();
-        health = state.health(); mana = state.mana(); stamina = state.stamina(); stellium = state.stellium();
-        attributes.load(state.attributes());
-        skillLevels.clear();
-        state.skills().forEach((key, value) -> {
-            ClassSkill definition = getProfess().getSkill(key);
-            if (definition == null) return;
-            int effective = Math.max(1, value);
-            if (definition.hasMaxLevel()) effective = Math.min(effective, definition.getMaxLevel());
-            if (effective > 1) skillLevels.put(normalizeEnum(key), effective);
-        });
-        skillBindings.clear();
-        state.bindings().forEach((slot, skill) -> {
-            if (slot > 0 && getProfess().getSkillSlot(slot) != null && getProfess().getSkill(skill) != null)
-                skillBindings.put(slot, normalizeEnum(skill));
-        });
-        unlockedItems.clear(); unlockedItems.addAll(state.unlockedItems());
-        claimCounts.keySet().removeIf(PlayerData::isClassScopedClaim);
-        claimCounts.putAll(state.progressionClaims());
-        skillTrees.restore(state.skillTreePoints(), state.skillTreeNodeLevels());
-    }
-
-    private void removeTemporaryProgression(PlayerClass clazz) {
-        if (clazz.hasExperienceTable()) SVFrameMMO.experienceTables().unclaim(clazz.getExperienceTableId(), clazz.getKey(), this, false);
-        for (var attribute : SVFrameMMO.attributes().getAll())
-            if (attribute.hasExperienceTable()) SVFrameMMO.experienceTables().unclaim(attribute.getExperienceTableId(), attribute.getKey(), this, false);
-        for (String treeId : clazz.getSkillTreeIds()) {
-            var tree = SVFrameMMO.skillTrees().get(treeId);
-            if (tree == null) continue;
-            for (var node : tree.getNodes()) SVFrameMMO.experienceTables().unclaim(node.getExperienceTable(), node.getKey(), this, false);
-        }
-    }
-
-    private static boolean isClassScopedClaim(String key) {
-        return key != null && (key.startsWith("class_") || key.startsWith("attribute:") || key.startsWith("node:"));
+    private ClassSkill requireClassSkill(String skillId) {
+        ClassSkill skill = getProfess().getSkill(skillId);
+        if (skill == null) throw new IllegalArgumentException("Unknown class skill '" + skillId + "'");
+        return skill;
     }
 
     private void applyHardBindings() {
-        for (var slot : getProfess().getSlots()) if (slot.hardset() != null && getProfess().getSkill(slot.hardset()) != null) {
-            if (hasUnlocked("slot:" + slot.slot()) && canUseSkill(getProfess().getSkill(slot.hardset()))) skillBindings.put(slot.slot(), slot.hardset());
+        skillBindings.entrySet().removeIf(entry -> getProfess().getSkillSlot(entry.getKey()) == null || getProfess().getSkill(entry.getValue()) == null);
+        for (var slot : getProfess().getSkillSlots()) {
+            if (slot.hardset() != null) skillBindings.put(slot.id(), slot.hardset());
         }
     }
 
     private void applyTemporaryProgression() {
-        if (getProfess().hasExperienceTable())
-            SVFrameMMO.experienceTables().applyTemporary(getProfess().getExperienceTableId(), getProfess().getKey(), this);
-        for (var profession : SVFrameMMO.professions().getAll()) if (profession.hasExperienceTable())
-            SVFrameMMO.experienceTables().applyTemporary(profession.getExperienceTableId(), profession.getKey(), this);
+        removeTemporaryProgression(getProfess());
+        PlayerClass profess = getProfess();
+        for (ClassSkill skill : profess.getSkills()) {
+            if (!skill.isPermanent() || !canUseSkill(skill)) continue;
+            skill.getSkill().registerModifiers(getMMOPlayerData(), getSkillLevel(skill.getSkill()));
+        }
     }
 
-    private ClassSkill requireClassSkill(String id) {
-        ClassSkill skill = getProfess().getSkill(id);
-        if (skill == null) throw new IllegalArgumentException("Skill '" + id + "' does not belong to class '" + getClassId() + "'");
-        return skill;
+    private void removeTemporaryProgression(PlayerClass profess) {
+        if (profess == null) return;
+        for (ClassSkill skill : profess.getSkills())
+            if (skill.isPermanent()) skill.getSkill().unregisterModifiers(getMMOPlayerData());
     }
-    private static String normalizeEnum(String value) { return value.trim().toUpperCase(Locale.ROOT).replace('-', '_').replace(' ', '_'); }
-    private static String normalizeUnlockKey(String key) { return key.trim().toLowerCase(Locale.ROOT).replace(' ', '-').replace('_', '-'); }
+
+    private SavedClassState captureClassState() {
+        int spentSkills = Math.max(0, getProfess().countSpentSkillPoints(this));
+        int spentAttributes = Math.max(0, attributes.countPoints());
+        return new SavedClassState(getLevel(), experience, skillPoints, attributePoints, spentSkills, spentAttributes,
+                attributeReallocationPoints, skillReallocationPoints,
+                new LinkedHashMap<>(skillLevels), attributes.mapPoints(), new LinkedHashMap<>(skillBindings), new LinkedHashSet<>(unlockedItems),
+                new LinkedHashMap<>(claimCounts), skillTrees.pointMap(), skillTrees.nodeLevelMap());
+    }
+
+    private SavedClassState defaultClassState() {
+        var cfg = SVFrameMMO.config();
+        return new SavedClassState(cfg.defaultLevel(), 0d, cfg.defaultSkillPoints(), cfg.defaultAttributePoints(), 0, 0,
+                cfg.defaultReallocationPoints(), cfg.defaultReallocationPoints(),
+                Map.of(), Map.of(), Map.of(), Set.of(), Map.of(), Map.of(), Map.of());
+    }
+
+    private static SavedClassState copyState(SavedClassState base, int level, double experience, int skillPoints, int attributePoints,
+                                             int attributeReallocationPoints, int skillReallocationPoints) {
+        return new SavedClassState(level, experience, skillPoints, attributePoints,
+                base.spentSkillPoints(), base.spentAttributePoints(), attributeReallocationPoints, skillReallocationPoints,
+                base.skillLevels(), base.attributeLevels(), base.skillBindings(), base.unlockedItems(), base.claimCounts(), base.skillTreePoints(), base.skillTreeNodeLevels());
+    }
+
+    private void restoreClassState(SavedClassState state) {
+        level = Math.max(1, state.level());
+        experience = Math.max(0d, state.experience());
+        skillPoints = Math.max(0, state.skillPoints());
+        attributePoints = Math.max(0, state.attributePoints());
+        attributeReallocationPoints = Math.max(0, state.attributeReallocationPoints());
+        skillReallocationPoints = Math.max(0, state.skillReallocationPoints());
+        skillLevels.clear();
+        state.skillLevels().forEach((key, value) -> { if (value != null && value > 1) skillLevels.put(normalizeEnum(key), value); });
+        attributes.load(state.attributeLevels());
+        skillBindings.clear();
+        skillBindings.putAll(state.skillBindings());
+        unlockedItems.clear();
+        state.unlockedItems().forEach(key -> unlockedItems.add(normalizeUnlockKey(key)));
+        claimCounts.clear();
+        state.claimCounts().forEach((key, value) -> { if (value != null && value > 0) claimCounts.put(key, value); });
+        skillTrees.restore(state.skillTreePoints(), state.skillTreeNodeLevels());
+    }
+
+    private static String normalizeEnum(String value) {
+        if (value == null) return "";
+        return value.trim().toUpperCase(Locale.ROOT).replace('-', '_').replace(' ', '_');
+    }
+
+    private static String normalizeUnlockKey(String value) {
+        String normalized = value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+        int split = normalized.indexOf(':');
+        if (split < 0) return normalized;
+        return normalized.substring(0, split + 1) + normalizeEnum(normalized.substring(split + 1));
+    }
 }
