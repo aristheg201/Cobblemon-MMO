@@ -106,7 +106,9 @@ public class FabricAttributeStatHandler extends NativeStatHandler {
 
         if (player != null && previousHealth > 0.0F && player.isAlive()) {
             float restoredHealth = Math.min(previousHealth, player.getMaxHealth());
-            if (Float.compare(player.getHealth(), restoredHealth) != 0) {
+            // Correction is monotonic: it may undo a transient clamp, but it must
+            // never lower health if another legitimate heal happened in the same tick.
+            if (player.getHealth() < restoredHealth) {
                 player.setHealth(restoredHealth);
             }
         }
