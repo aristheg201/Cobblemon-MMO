@@ -1,0 +1,8 @@
+{
+  "id": "regional",
+  "enabled": true,
+  "title": "<yellow><bold><ae_name></bold></yellow> <dark_gray>•</dark_gray> <white><ae_hp_percent>%</white> <gray>(<ae_hp>/<ae_max_hp>)</gray>",
+  "range": 72.0,
+  "color": "YELLOW",
+  "style": "PROGRESS"
+}

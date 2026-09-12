@@ -1,0 +1,70 @@
+{
+  "language": "en_us",
+  "profiles": {
+    "default": {
+      "id": "default",
+      "spawn": "<gold><bold>ALPHA</bold></gold> <gray><ae_name> has appeared in <ae_biome>.</gray>",
+      "aggro": "<red><ae_name></red> <gray>is hunting <player_name>.</gray>",
+      "battleStart": "<yellow><player_name></yellow> <gray>engaged <ae_name>.</gray>",
+      "battleEnd": "",
+      "defeat": "<gold><bold><ae_name></bold></gold> <yellow>has been defeated!</yellow>",
+      "catchAvailable": "<green><ae_name></green> <gray>can be captured for <ae_catch_seconds> seconds.</gray>",
+      "despawn": ""
+    },
+    "regional": {
+      "id": "regional",
+      "spawn": "<gold><bold>ALPHA</bold></gold> <gray><ae_name> has appeared in <ae_biome>.</gray>",
+      "aggro": "<red><ae_name></red> <gray>is hunting <player_name>.</gray>",
+      "battleStart": "<yellow><player_name></yellow> <gray>engaged <ae_name>.</gray>",
+      "battleEnd": "",
+      "defeat": "<gold><bold><ae_name></bold></gold> <yellow>has been defeated!</yellow>",
+      "catchAvailable": "<green><ae_name></green> <gray>can be captured for <ae_catch_seconds> seconds.</gray>",
+      "despawn": ""
+    },
+    "signature": {
+      "id": "signature",
+      "spawn": "<gold><bold>ALPHA</bold></gold> <gray><ae_name> has appeared in <ae_biome>.</gray>",
+      "aggro": "<red><ae_name></red> <gray>is hunting <player_name>.</gray>",
+      "battleStart": "<yellow><player_name></yellow> <gray>engaged <ae_name>.</gray>",
+      "battleEnd": "",
+      "defeat": "<gold><bold><ae_name></bold></gold> <yellow>has been defeated!</yellow>",
+      "catchAvailable": "<green><ae_name></green> <gray>can be captured for <ae_catch_seconds> seconds.</gray>",
+      "despawn": ""
+    },
+    "apex": {
+      "id": "apex",
+      "spawn": "<gold><bold>ALPHA</bold></gold> <gray><ae_name> has appeared in <ae_biome>.</gray>",
+      "aggro": "<red><ae_name></red> <gray>is hunting <player_name>.</gray>",
+      "battleStart": "<yellow><player_name></yellow> <gray>engaged <ae_name>.</gray>",
+      "battleEnd": "",
+      "defeat": "<gold><bold><ae_name></bold></gold> <yellow>has been defeated!</yellow>",
+      "catchAvailable": "<green><ae_name></green> <gray>can be captured for <ae_catch_seconds> seconds.</gray>",
+      "despawn": ""
+    }
+  },
+  "text": {
+    "admin.help": "<gold><bold>Alpha-Encounter admin</bold></gold>\n<gray>/alphaencounter reload | save | debug [reset|player \\<player\\>] | list</gray>\n<gray>/alphaencounter spawn \\<id\\> [player] | inspect \\<nearest|uuid|id\\></gray>\n<gray>/alphaencounter despawn|defeat \\<target\\> | sethp \\<target\\> \\<1-100\\></gray>\n<gray>/alphaencounter battle \\<target\\> \\<player\\> | attack \\<target\\> \\<player\\> | anim \\<target\\> \\<animation\\> | reset \\<id|all\\></gray>",
+    "admin.reload.success": "<green>Alpha-Encounter gameplay config, messages, bossbars, and rank scaling reloaded.</green>",
+    "admin.save.success": "<green>Alpha-Encounter state saved.</green>",
+    "admin.debug.runtime": "<gray><arg_details></gray>",
+    "admin.debug.reset": "<green>Debug counters reset.</green>",
+    "admin.debug.rank": "<gold>RankScaling</gold> <gray>player=</gray><white><arg_player></white> <gray>enabled=</gray><white><arg_enabled></white> <gray>provider=</gray><white><arg_provider></white> <gray>providerAvailable=</gray><white><arg_provider_available></white> <gray>profile=</gray><white><arg_profile></white> <gray>matched=</gray><white><arg_matched></white> <gray>spawnChance=</gray><white>x<arg_spawn_multiplier></white>",
+    "admin.rank.fallback": "fallback",
+    "admin.list.header": "<gray>Active encounters: <white><arg_count></white></gray>",
+    "admin.inspect": "<gold><ae_id></gold> <gray>state=</gray><white><ae_state></white> <gray>sharedHP=</gray><white><ae_hp>/<ae_max_hp></white> <gray>pokemonUUID=</gray><white><ae_pokemon_uuid></white> <gray>entityUUID=</gray><white><ae_entity_uuid></white> <gray>properties=</gray><white><ae_pokemon_properties></white> <gray>pokemonAspects=</gray><white><ae_aspects></white> <gray>entityAspects=</gray><white><ae_entity_aspects></white>",
+    "admin.spawn.failed": "<red>Spawn failed: <arg_id></red>",
+    "admin.target.not_found": "<red>No matching encounter.</red>",
+    "admin.despawn.success": "<green>Encounter despawned.</green>",
+    "admin.defeat.success": "<green>Encounter defeat forced.</green>",
+    "admin.sethp.success": "<green>Encounter HP set to <arg_percent>%.</green>",
+    "admin.battle.success": "<green>Battle queued.</green>",
+    "admin.battle.failed": "<red>Could not queue battle.</red>",
+    "admin.attack.success": "<green>Vanilla field attack landed.</green>",
+    "admin.attack.failed": "<red>Field attack failed.</red>",
+    "admin.animation.success": "<green>Played animation <arg_animation>.</green>",
+    "admin.animation.failed": "<red>Animation failed.</red>",
+    "admin.cooldown.reset": "<green>Reset cooldown: <arg_id></green>",
+    "placeholder.error.expected_encounter_id": "Expected encounter id",
+    "placeholder.error.no_matching_encounter": "No matching Alpha-Encounter"
+  }
+}

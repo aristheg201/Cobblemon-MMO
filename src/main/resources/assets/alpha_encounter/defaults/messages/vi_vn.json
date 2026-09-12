@@ -1,0 +1,70 @@
+{
+  "language": "vi_vn",
+  "profiles": {
+    "default": {
+      "id": "default",
+      "spawn": "<gold><bold>ALPHA</bold></gold> <gray><ae_name> đã xuất hiện tại <ae_biome>.</gray>",
+      "aggro": "<red><ae_name></red> <gray>đang săn đuổi <player_name>.</gray>",
+      "battleStart": "<yellow><player_name></yellow> <gray>đã giao chiến với <ae_name>.</gray>",
+      "battleEnd": "",
+      "defeat": "<gold><bold><ae_name></bold></gold> <yellow>đã bị đánh bại!</yellow>",
+      "catchAvailable": "<green><ae_name></green> <gray>có thể bị bắt trong <ae_catch_seconds> giây.</gray>",
+      "despawn": ""
+    },
+    "regional": {
+      "id": "regional",
+      "spawn": "<gold><bold>ALPHA</bold></gold> <gray><ae_name> đã xuất hiện tại <ae_biome>.</gray>",
+      "aggro": "<red><ae_name></red> <gray>đang săn đuổi <player_name>.</gray>",
+      "battleStart": "<yellow><player_name></yellow> <gray>đã giao chiến với <ae_name>.</gray>",
+      "battleEnd": "",
+      "defeat": "<gold><bold><ae_name></bold></gold> <yellow>đã bị đánh bại!</yellow>",
+      "catchAvailable": "<green><ae_name></green> <gray>có thể bị bắt trong <ae_catch_seconds> giây.</gray>",
+      "despawn": ""
+    },
+    "signature": {
+      "id": "signature",
+      "spawn": "<gold><bold>ALPHA</bold></gold> <gray><ae_name> đã xuất hiện tại <ae_biome>.</gray>",
+      "aggro": "<red><ae_name></red> <gray>đang săn đuổi <player_name>.</gray>",
+      "battleStart": "<yellow><player_name></yellow> <gray>đã giao chiến với <ae_name>.</gray>",
+      "battleEnd": "",
+      "defeat": "<gold><bold><ae_name></bold></gold> <yellow>đã bị đánh bại!</yellow>",
+      "catchAvailable": "<green><ae_name></green> <gray>có thể bị bắt trong <ae_catch_seconds> giây.</gray>",
+      "despawn": ""
+    },
+    "apex": {
+      "id": "apex",
+      "spawn": "<gold><bold>ALPHA</bold></gold> <gray><ae_name> đã xuất hiện tại <ae_biome>.</gray>",
+      "aggro": "<red><ae_name></red> <gray>đang săn đuổi <player_name>.</gray>",
+      "battleStart": "<yellow><player_name></yellow> <gray>đã giao chiến với <ae_name>.</gray>",
+      "battleEnd": "",
+      "defeat": "<gold><bold><ae_name></bold></gold> <yellow>đã bị đánh bại!</yellow>",
+      "catchAvailable": "<green><ae_name></green> <gray>có thể bị bắt trong <ae_catch_seconds> giây.</gray>",
+      "despawn": ""
+    }
+  },
+  "text": {
+    "admin.help": "<gold><bold>Quản trị Alpha-Encounter</bold></gold>\n<gray>/alphaencounter reload | save | debug [reset|player \\<player\\>] | list</gray>\n<gray>/alphaencounter spawn \\<id\\> [player] | inspect \\<nearest|uuid|id\\></gray>\n<gray>/alphaencounter despawn|defeat \\<target\\> | sethp \\<target\\> \\<1-100\\></gray>\n<gray>/alphaencounter battle \\<target\\> \\<player\\> | attack \\<target\\> \\<player\\> | anim \\<target\\> \\<animation\\> | reset \\<id|all\\></gray>",
+    "admin.reload.success": "<green>Đã reload gameplay config, message, bossbar và rank scaling của Alpha-Encounter.</green>",
+    "admin.save.success": "<green>Đã lưu trạng thái Alpha-Encounter.</green>",
+    "admin.debug.runtime": "<gray><arg_details></gray>",
+    "admin.debug.reset": "<green>Đã reset bộ đếm debug.</green>",
+    "admin.debug.rank": "<gold>RankScaling</gold> <gray>player=</gray><white><arg_player></white> <gray>enabled=</gray><white><arg_enabled></white> <gray>provider=</gray><white><arg_provider></white> <gray>providerAvailable=</gray><white><arg_provider_available></white> <gray>profile=</gray><white><arg_profile></white> <gray>matched=</gray><white><arg_matched></white> <gray>spawnChance=</gray><white>x<arg_spawn_multiplier></white>",
+    "admin.rank.fallback": "mặc định",
+    "admin.list.header": "<gray>Encounter đang hoạt động: <white><arg_count></white></gray>",
+    "admin.inspect": "<gold><ae_id></gold> <gray>trạng thái=</gray><white><ae_state></white> <gray>sharedHP=</gray><white><ae_hp>/<ae_max_hp></white> <gray>pokemonUUID=</gray><white><ae_pokemon_uuid></white> <gray>entityUUID=</gray><white><ae_entity_uuid></white> <gray>properties=</gray><white><ae_pokemon_properties></white> <gray>pokemonAspects=</gray><white><ae_aspects></white> <gray>entityAspects=</gray><white><ae_entity_aspects></white>",
+    "admin.spawn.failed": "<red>Không spawn được encounter: <arg_id></red>",
+    "admin.target.not_found": "<red>Không tìm thấy encounter phù hợp.</red>",
+    "admin.despawn.success": "<green>Đã despawn encounter.</green>",
+    "admin.defeat.success": "<green>Đã buộc encounter vào trạng thái bị đánh bại.</green>",
+    "admin.sethp.success": "<green>Đã đặt HP encounter thành <arg_percent>%.</green>",
+    "admin.battle.success": "<green>Đã xếp battle vào hàng đợi.</green>",
+    "admin.battle.failed": "<red>Không thể xếp battle vào hàng đợi.</red>",
+    "admin.attack.success": "<green>Đòn đánh field vanilla đã trúng.</green>",
+    "admin.attack.failed": "<red>Đòn đánh field thất bại.</red>",
+    "admin.animation.success": "<green>Đã chạy animation <arg_animation>.</green>",
+    "admin.animation.failed": "<red>Không chạy được animation.</red>",
+    "admin.cooldown.reset": "<green>Đã reset cooldown: <arg_id></green>",
+    "placeholder.error.expected_encounter_id": "Cần encounter id",
+    "placeholder.error.no_matching_encounter": "Không tìm thấy Alpha-Encounter phù hợp"
+  }
+}

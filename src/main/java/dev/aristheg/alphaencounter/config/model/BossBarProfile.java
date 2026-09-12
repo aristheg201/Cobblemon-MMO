@@ -3,7 +3,7 @@ package dev.aristheg.alphaencounter.config.model;
 public final class BossBarProfile {
     public String id = "regional";
     public boolean enabled = true;
-    public String title = "<yellow><bold><ae_name></bold></yellow> <dark_gray>•</dark_gray> <white><ae_hp_percent>%</white>";
+    public String title = "";
     public double range = 72.0;
     public String color = "YELLOW";
     public String style = "PROGRESS";
