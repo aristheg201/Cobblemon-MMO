@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** Implements MMOCore death EXP loss, vanilla EXP redirection and RPG EXP-bar override. */
+/** Implements MMOCore death EXP loss, vanilla EXP redirection and optional RPG EXP-bar override. */
 public final class VanillaProgressionRuntime {
     private static final Logger LOG = Logger.getLogger("SVFrameMMO-VanillaEXP");
     private static final VanillaProgressionRuntime INSTANCE = new VanillaProgressionRuntime();
@@ -92,7 +92,7 @@ public final class VanillaProgressionRuntime {
             settings = new Settings(
                     bool(redirect.get("enabled"), false),
                     Math.max(0d, number(redirect.get("ratio"), .8d)),
-                    bool(root.get("override-vanilla-exp"), true),
+                    bool(root.get("override-vanilla-exp"), false),
                     bool(death.get("enabled"), false),
                     Math.max(0d, Math.min(100d, number(death.get("percent"), 30d)))
             );
@@ -117,6 +117,6 @@ public final class VanillaProgressionRuntime {
 
     private record Settings(boolean redirectEnabled, double redirectRatio, boolean overrideVanilla,
                             boolean deathLossEnabled, double deathLossPercent) {
-        static Settings defaults() { return new Settings(false, .8d, true, false, 30d); }
+        static Settings defaults() { return new Settings(false, .8d, false, false, 30d); }
     }
 }
