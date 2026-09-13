@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 public final class UiConfigManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final String DEFAULT_ROOT = "/assets/alpha_encounter/defaults/";
+    private static final String LEGACY_RUNTIME_DEBUG = "<gray><arg_details></gray>";
 
     private final AlphaEncounterConfigManager config;
     private final Map<String, BossBarProfile> bossBars = new LinkedHashMap<>();
@@ -158,6 +159,12 @@ public final class UiConfigManager {
                 target.text.put(entry.getKey(), entry.getValue());
                 changed = true;
             }
+        }
+        String currentDebug = target.text.get("admin.debug.runtime");
+        String defaultDebug = defaults.text.get("admin.debug.runtime");
+        if (LEGACY_RUNTIME_DEBUG.equals(currentDebug) && defaultDebug != null && !defaultDebug.equals(currentDebug)) {
+            target.text.put("admin.debug.runtime", defaultDebug);
+            changed = true;
         }
         return changed;
     }
