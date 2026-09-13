@@ -1,6 +1,6 @@
 # SVFrameMMO - Fabric 1.21.1
 # Production-oriented defaults for the classless, skill-first server setup.
-config-version: 11
+config-version: 12
 
 # ---------------------------------------------------------------------------
 # Player data
@@ -117,7 +117,9 @@ vanilla-exp-redirection:
   enabled: false
   ratio: 0.8
 
-override-vanilla-exp: true
+# Leave Minecraft's XP level/progress/total untouched by default.
+# Set true only when intentionally using the MMO level as the vanilla XP bar.
+override-vanilla-exp: false
 
 death-exp-loss:
   enabled: false
