@@ -1,6 +1,7 @@
 package dev.aristheg.alphaencounter.integration;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.world.ServerWorld;
 
 import java.util.UUID;
 
@@ -22,5 +23,9 @@ public final class AlphaLootGuard {
 
     public static boolean shouldBlockItemDrop(LivingEntity entity, Object itemId) {
         return AlphaDropPolicy.shouldFilter(entity, itemId);
+    }
+
+    public static boolean shouldBlockNativeAlphaLoot(ServerWorld world, double x, double y, double z, Object itemId) {
+        return AlphaDropPolicy.shouldFilterNativeAlphaLoot(world, x, y, z, itemId);
     }
 }
