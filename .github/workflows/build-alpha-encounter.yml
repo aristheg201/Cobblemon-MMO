@@ -6,58 +6,39 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  inspect-cobblemon:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '9.2.0'
-      - name: Build
-        run: gradle build --stacktrace
-      - name: Trace Cobblemon 1.8 native alpha rewards
+      - name: Fetch exact Cobblemon 1.8.0 Fabric binary
         shell: bash
         run: |
           set -euo pipefail
-          ROOT="$HOME/.gradle/caches/modules-2/files-2.1/maven.modrinth/MdwFAVRL/YgmyyFcs"
-          COB=$(find "$ROOT" -type f -name '*.jar' | head -n 1)
-          echo "COBBLEMON_JAR=$COB"
-          echo '--- alpha reward loot tables ---'
-          for path in \
-            data/cobblemon/loot_table/alpha/alpha_rewards_tier1.json \
-            data/cobblemon/loot_table/alpha/alpha_rewards_tier2.json \
-            data/cobblemon/loot_table/alpha/alpha_rewards_tier3.json \
-            data/cobblemon/loot_table/alpha/alpha_rewards_tier4.json; do
-            echo "### $path"
-            unzip -p "$COB" "$path" || true
-            echo
-          done
-          echo '--- classes referencing alpha reward tables ---'
-          python3 - "$COB" <<'PY' | tee /tmp/alpha_reward_classes.txt
+          curl -fsSL 'https://api.modrinth.com/maven/maven/modrinth/MdwFAVRL/YgmyyFcs/MdwFAVRL-YgmyyFcs.jar' -o /tmp/Cobblemon-fabric-1.8.0+1.21.1.jar
+          sha256sum /tmp/Cobblemon-fabric-1.8.0+1.21.1.jar
+          python3 - /tmp/Cobblemon-fabric-1.8.0+1.21.1.jar <<'PY'
           import sys, zipfile
           jar=sys.argv[1]
-          needles=(b'alpha_rewards', b'alpha/alpha_rewards', b'alpha_rewards_tier')
           with zipfile.ZipFile(jar) as z:
+              print('--- all members referencing alpha_rewards ---')
               for n in z.namelist():
-                  if not n.endswith('.class'):
-                      continue
+                  try: b=z.read(n)
+                  except Exception: continue
+                  if b'alpha_rewards' in b or b'alpha/alpha_rewards' in b:
+                      print(n)
+              print('--- classes likely combining alpha + loot/battle ---')
+              for n in z.namelist():
+                  if not n.endswith('.class'): continue
                   b=z.read(n)
-                  if any(x in b for x in needles):
-                      print(n[:-6].replace('/', '.'))
+                  low=b.lower()
+                  if b'alpha' in low and (b'loot' in low or b'battle' in low or b'reward' in low or b'faint' in low):
+                      print(n)
           PY
-          echo '--- javap callers ---'
-          while IFS= read -r cls; do
-            [ -z "$cls" ] && continue
-            echo "### $cls"
-            javap -classpath "$COB" -p -c "$cls" || true
-          done < /tmp/alpha_reward_classes.txt
-          echo '--- alpha-specific class names ---'
-          jar tf "$COB" | grep '^com/cobblemon/.*\.class$' | grep -Ei '/[^/]*alpha[^/]*\.class$' || true
       - uses: actions/upload-artifact@v4
         with:
-          name: Alpha-Encounter
-          path: build/libs/*.jar
+          name: Cobblemon-1.8.0-binary
+          path: /tmp/Cobblemon-fabric-1.8.0+1.21.1.jar
+          compression-level: 0
