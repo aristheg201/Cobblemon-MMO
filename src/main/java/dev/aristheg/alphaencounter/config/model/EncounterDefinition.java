@@ -5,10 +5,10 @@ import java.util.List;
 
 public final class EncounterDefinition {
     public String id = "unnamed";
-    public String displayName = "Unnamed Alpha";
+    public String displayName = "";
     public boolean enabled = true;
     public String tier = "regional";
-    public String pokemon = "pikachu level=50 alpha=true";
+    public String pokemon = "";
     public String messageProfile = "";
     public String bossBarProfile = "";
     public Spawn spawn = new Spawn();
