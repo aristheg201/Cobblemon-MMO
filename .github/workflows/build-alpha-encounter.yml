@@ -6,39 +6,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  inspect-cobblemon:
+  build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
-      - name: Fetch exact Cobblemon 1.8.0 Fabric binary
-        shell: bash
-        run: |
-          set -euo pipefail
-          curl -fsSL 'https://api.modrinth.com/maven/maven/modrinth/MdwFAVRL/YgmyyFcs/MdwFAVRL-YgmyyFcs.jar' -o /tmp/Cobblemon-fabric-1.8.0+1.21.1.jar
-          sha256sum /tmp/Cobblemon-fabric-1.8.0+1.21.1.jar
-          python3 - /tmp/Cobblemon-fabric-1.8.0+1.21.1.jar <<'PY'
-          import sys, zipfile
-          jar=sys.argv[1]
-          with zipfile.ZipFile(jar) as z:
-              print('--- all members referencing alpha_rewards ---')
-              for n in z.namelist():
-                  try: b=z.read(n)
-                  except Exception: continue
-                  if b'alpha_rewards' in b or b'alpha/alpha_rewards' in b:
-                      print(n)
-              print('--- classes likely combining alpha + loot/battle ---')
-              for n in z.namelist():
-                  if not n.endswith('.class'): continue
-                  b=z.read(n)
-                  low=b.lower()
-                  if b'alpha' in low and (b'loot' in low or b'battle' in low or b'reward' in low or b'faint' in low):
-                      print(n)
-          PY
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.2.0'
+      - name: Build
+        run: gradle build --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: Cobblemon-1.8.0-binary
-          path: /tmp/Cobblemon-fabric-1.8.0+1.21.1.jar
-          compression-level: 0
+          name: Alpha-Encounter
+          path: build/libs/*.jar
