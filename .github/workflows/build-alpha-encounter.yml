@@ -19,6 +19,30 @@ jobs:
           gradle-version: '9.2.0'
       - name: Build
         run: gradle build --stacktrace
+      - name: Inspect Cobblemon 1.8 alpha rewards
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$HOME/.gradle/caches/modules-2/files-2.1/maven.modrinth/MdwFAVRL/YgmyyFcs"
+          echo "Cobblemon dependency files:"
+          find "$ROOT" -type f -maxdepth 4 -print || true
+          COB=$(find "$ROOT" -type f -name '*.jar' | head -n 1)
+          echo "COBBLEMON_JAR=$COB"
+          echo '--- alpha-related classes/resources ---'
+          jar tf "$COB" | grep -Ei 'alpha|reward|loot|drop' | head -n 800 || true
+          echo '--- members containing health_candy literal ---'
+          python3 - "$COB" <<'PY'
+          import sys, zipfile
+          jar=sys.argv[1]
+          with zipfile.ZipFile(jar) as z:
+              for n in z.namelist():
+                  try:
+                      b=z.read(n)
+                  except Exception:
+                      continue
+                  if b'health_candy' in b or b'mighty_candy' in b or b'quick_candy' in b:
+                      print(n)
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: Alpha-Encounter
