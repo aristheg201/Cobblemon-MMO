@@ -13,11 +13,12 @@ import vn.svframe.svframemmo.experience.EXPSource;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** Implements MMOCore death EXP loss, vanilla EXP redirection and optional RPG EXP-bar override. */
+/** Implements death EXP loss, optional vanilla EXP mirroring and explicit RPG EXP-bar takeover. */
 public final class VanillaProgressionRuntime {
     private static final Logger LOG = Logger.getLogger("SVFrameMMO-VanillaEXP");
     private static final VanillaProgressionRuntime INSTANCE = new VanillaProgressionRuntime();
@@ -39,7 +40,7 @@ public final class VanillaProgressionRuntime {
         reloadSettings();
         if (settings.redirectEnabled)
             SVFrameMMO.playerData().get(player).giveExperience(amount * settings.redirectRatio, EXPSource.VANILLA);
-        if (settings.overrideVanilla) {
+        if (settings.displayMode == DisplayMode.MMO) {
             sync(player);
             return true;
         }
@@ -48,7 +49,7 @@ public final class VanillaProgressionRuntime {
 
     public boolean suppressDeathVanillaXp() {
         reloadSettings();
-        return settings.overrideVanilla;
+        return settings.displayMode == DisplayMode.MMO;
     }
 
     private void onDeath(ServerPlayerEntity player) {
@@ -62,7 +63,7 @@ public final class VanillaProgressionRuntime {
     private void tick(MinecraftServer server) {
         if ((SVFrameMMO.currentTick() & 7L) != 0L) return;
         reloadSettings();
-        if (!settings.overrideVanilla) return;
+        if (settings.displayMode != DisplayMode.MMO) return;
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) sync(player);
     }
 
@@ -88,16 +89,21 @@ public final class VanillaProgressionRuntime {
         try {
             Map<String, Object> root = map(YamlLite.parse(file));
             Map<String, Object> redirect = map(root.get("vanilla-exp-redirection"));
+            Map<String, Object> display = map(root.get("vanilla-exp-display"));
             Map<String, Object> death = map(root.get("death-exp-loss"));
+            if (display.isEmpty() && bool(root.get("override-vanilla-exp"), false)) {
+                LOG.warning("Ignoring legacy override-vanilla-exp=true; use vanilla-exp-display.mode: MMO for an explicit XP-bar takeover.");
+            }
             settings = new Settings(
                     bool(redirect.get("enabled"), false),
                     Math.max(0d, number(redirect.get("ratio"), .8d)),
-                    bool(root.get("override-vanilla-exp"), false),
+                    DisplayMode.parse(display.get("mode")),
                     bool(death.get("enabled"), false),
                     Math.max(0d, Math.min(100d, number(death.get("percent"), 30d)))
             );
         } catch (Exception exception) {
             LOG.log(Level.WARNING, "Could not reload vanilla EXP settings", exception);
+            settings = Settings.defaults();
         }
     }
 
@@ -115,8 +121,19 @@ public final class VanillaProgressionRuntime {
         catch (RuntimeException ignored) { return fallback; }
     }
 
-    private record Settings(boolean redirectEnabled, double redirectRatio, boolean overrideVanilla,
+    private enum DisplayMode {
+        VANILLA,
+        MMO;
+
+        static DisplayMode parse(Object raw) {
+            if (raw == null) return VANILLA;
+            try { return valueOf(String.valueOf(raw).trim().toUpperCase(Locale.ROOT)); }
+            catch (IllegalArgumentException ignored) { return VANILLA; }
+        }
+    }
+
+    private record Settings(boolean redirectEnabled, double redirectRatio, DisplayMode displayMode,
                             boolean deathLossEnabled, double deathLossPercent) {
-        static Settings defaults() { return new Settings(false, .8d, false, false, 30d); }
+        static Settings defaults() { return new Settings(false, .8d, DisplayMode.VANILLA, false, 30d); }
     }
 }
