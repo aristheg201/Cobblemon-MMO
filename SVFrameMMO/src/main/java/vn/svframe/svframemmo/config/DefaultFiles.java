@@ -49,7 +49,7 @@ public final class DefaultFiles {
         }
         migrateLegacyHealthCap();
         migrateLegacyHealthHudComment();
-        migrateLegacyVanillaXpOverride();
+        migrateVanillaXpDisplayMode();
     }
 
     /** Removes only the exact 20/0/40 MAX_HEALTH block shipped by the broken Fabric port. */
@@ -78,18 +78,25 @@ public final class DefaultFiles {
     }
 
     /**
-     * v11 accidentally enabled MMO ownership of the vanilla XP bar by default. Migrate that
-     * shipped legacy setting once so existing servers regain normal Minecraft XP. Admins can
-     * explicitly set override-vanilla-exp back to true after the file is on config-version 12.
+     * Legacy builds used override-vanilla-exp, which could silently take ownership of Minecraft XP.
+     * The v13 contract is explicit: missing/newly migrated configs use VANILLA, while MMO takeover
+     * requires vanilla-exp-display.mode: MMO to be written intentionally after migration.
      */
-    private static void migrateLegacyVanillaXpOverride() throws IOException {
+    private static void migrateVanillaXpDisplayMode() throws IOException {
         Path config = ROOT.resolve("config.yml");
         if (!Files.isRegularFile(config)) return;
         String text = Files.readString(config, StandardCharsets.UTF_8);
-        String legacyVersion = "config-version: 11\n";
-        if (!text.contains(legacyVersion)) return;
-        String migrated = text.replace(legacyVersion, "config-version: 12\n");
-        migrated = migrated.replace("override-vanilla-exp: true\n", "override-vanilla-exp: false\n");
+        String migrated = text.replaceFirst("(?m)^config-version:\\s*\\d+\\s*$", "config-version: 13");
+
+        if (!migrated.contains("\nvanilla-exp-display:\n") && !migrated.startsWith("vanilla-exp-display:\n")) {
+            migrated = migrated.replace("override-vanilla-exp: true\n", "")
+                    .replace("override-vanilla-exp: false\n", "");
+            if (!migrated.endsWith("\n")) migrated += "\n";
+            migrated += "\n# VANILLA preserves normal Minecraft XP. Set MMO only for an intentional XP-bar takeover.\n"
+                    + "vanilla-exp-display:\n"
+                    + "  mode: VANILLA\n";
+        }
+
         if (!migrated.equals(text)) writeReplacing(config, migrated, "config.yml");
     }
 
