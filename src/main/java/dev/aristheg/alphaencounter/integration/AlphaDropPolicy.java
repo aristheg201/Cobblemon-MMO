@@ -11,6 +11,7 @@ import dev.aristheg.alphaencounter.AlphaEncounterMod;
 import dev.aristheg.alphaencounter.config.model.DropFilterConfig;
 import dev.aristheg.alphaencounter.runtime.ActiveEncounter;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.server.world.ServerWorld;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,6 +23,7 @@ final class AlphaDropPolicy {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Map<UUID, String> BY_POKEMON = new ConcurrentHashMap<>();
     private static final Map<UUID, String> BY_ENTITY = new ConcurrentHashMap<>();
+    private static final double NATIVE_ALPHA_CALLBACK_MATCH_DISTANCE_SQUARED = 4.0D;
     private static volatile DropFilterConfig filter = defaults();
 
     private AlphaDropPolicy() {}
@@ -59,6 +61,18 @@ final class AlphaDropPolicy {
         return definitionId != null && filter.blocks(definitionId, itemId.toString());
     }
 
+    /**
+     * Cobblemon 1.8 native Alpha rewards are not Pokemon DropTable drops. The
+     * battle_fainted Molang callback calls world.spawn_loot_table_items at the
+     * fainted Pokemon's exact coordinates. Resolve that callback back to the
+     * managed encounter and apply the same data-driven item policy.
+     */
+    static boolean shouldFilterNativeAlphaLoot(ServerWorld world, double x, double y, double z, Object itemId) {
+        if (world == null || itemId == null) return false;
+        String definitionId = definitionIdAt(world, x, y, z);
+        return definitionId != null && filter.blocks(definitionId, itemId.toString());
+    }
+
     private static void onLoot(LootDroppedEvent event) {
         if (!(event.getEntity() instanceof PokemonEntity pokemon)) return;
         String definitionId = definitionId(pokemon);
@@ -79,6 +93,43 @@ final class AlphaDropPolicy {
             }
         }
         return null;
+    }
+
+    private static String definitionIdAt(ServerWorld world, double x, double y, double z) {
+        String dimension = world.getRegistryKey().getValue().toString();
+        ActiveEncounter nearest = null;
+        double nearestDistanceSquared = Double.MAX_VALUE;
+
+        for (ActiveEncounter active : AlphaEncounterMod.RUNTIME.activeSorted()) {
+            double ax;
+            double ay;
+            double az;
+
+            PokemonEntity entity = active.entityRef;
+            if (entity != null && entity.getWorld() == world) {
+                ax = entity.getX();
+                ay = entity.getY();
+                az = entity.getZ();
+            } else {
+                if (!dimension.equals(active.dimension)) continue;
+                ax = active.x;
+                ay = active.y;
+                az = active.z;
+            }
+
+            double dx = ax - x;
+            double dy = ay - y;
+            double dz = az - z;
+            double distanceSquared = dx * dx + dy * dy + dz * dz;
+            if (distanceSquared < nearestDistanceSquared) {
+                nearest = active;
+                nearestDistanceSquared = distanceSquared;
+            }
+        }
+
+        if (nearest == null || nearestDistanceSquared > NATIVE_ALPHA_CALLBACK_MATCH_DISTANCE_SQUARED) return null;
+        track(nearest.definitionId, nearest.entityId, nearest.pokemonId);
+        return nearest.definitionId;
     }
 
     private static DropFilterConfig defaults() {
