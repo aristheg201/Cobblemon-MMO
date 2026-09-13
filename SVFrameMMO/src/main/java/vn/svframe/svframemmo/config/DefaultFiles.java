@@ -49,6 +49,7 @@ public final class DefaultFiles {
         }
         migrateLegacyHealthCap();
         migrateLegacyHealthHudComment();
+        migrateLegacyVanillaXpOverride();
     }
 
     /** Removes only the exact 20/0/40 MAX_HEALTH block shipped by the broken Fabric port. */
@@ -74,6 +75,22 @@ public final class DefaultFiles {
                 + "# Authoritative MAX_HEALTH/current health remain uncapped; the numeric HUD shows real values.\n"
                 + "# 40 visible HP = 20 hearts = at most two vanilla heart rows.\n";
         writeReplacing(config, text.replace(legacy, replacement), "config.yml");
+    }
+
+    /**
+     * v11 accidentally enabled MMO ownership of the vanilla XP bar by default. Migrate that
+     * shipped legacy setting once so existing servers regain normal Minecraft XP. Admins can
+     * explicitly set override-vanilla-exp back to true after the file is on config-version 12.
+     */
+    private static void migrateLegacyVanillaXpOverride() throws IOException {
+        Path config = ROOT.resolve("config.yml");
+        if (!Files.isRegularFile(config)) return;
+        String text = Files.readString(config, StandardCharsets.UTF_8);
+        String legacyVersion = "config-version: 11\n";
+        if (!text.contains(legacyVersion)) return;
+        String migrated = text.replace(legacyVersion, "config-version: 12\n");
+        migrated = migrated.replace("override-vanilla-exp: true\n", "override-vanilla-exp: false\n");
+        if (!migrated.equals(text)) writeReplacing(config, migrated, "config.yml");
     }
 
     private static void writeReplacing(Path target, String content, String prefix) throws IOException {
