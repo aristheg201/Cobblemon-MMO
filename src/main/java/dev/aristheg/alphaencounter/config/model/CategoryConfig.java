@@ -5,7 +5,7 @@ import java.util.List;
 
 public final class CategoryConfig {
     public String id = "misc";
-    public String displayName = "Misc";
+    public String displayName = "";
     public boolean enabled = true;
     public List<String> dimensions = new ArrayList<>();
     public List<String> biomes = new ArrayList<>();
