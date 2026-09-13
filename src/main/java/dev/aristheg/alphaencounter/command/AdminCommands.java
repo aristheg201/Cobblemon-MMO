@@ -3,6 +3,7 @@ package dev.aristheg.alphaencounter.command;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import dev.aristheg.alphaencounter.AlphaEncounterMod;
+import dev.aristheg.alphaencounter.integration.AlphaLootGuard;
 import dev.aristheg.alphaencounter.integration.RankScalingService;
 import dev.aristheg.alphaencounter.runtime.ActiveEncounter;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -12,10 +13,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class AdminCommands {
+    private static final Pattern DEBUG_VALUE = Pattern.compile("([A-Za-z]+)=([^ ,]+)");
+
     private AdminCommands() {}
 
     public static void register(com.mojang.brigadier.CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -23,6 +29,8 @@ public final class AdminCommands {
             .then(CommandManager.literal("help").executes(context -> help(context.getSource())))
             .then(CommandManager.literal("reload").executes(context -> {
                 AlphaEncounterMod.RUNTIME.reloadConfig();
+                RankScalingService.instance().reload();
+                AlphaLootGuard.reload();
                 feedback(context.getSource(), "admin.reload.success");
                 return 1;
             }))
@@ -33,11 +41,7 @@ public final class AdminCommands {
             }))
             .then(CommandManager.literal("debug")
                 .executes(context -> {
-                    feedback(
-                        context.getSource(),
-                        "admin.debug.runtime",
-                        Map.of("arg_details", AlphaEncounterMod.RUNTIME.perfLine())
-                    );
+                    feedback(context.getSource(), "admin.debug.runtime", runtimeDebugArguments());
                     return 1;
                 })
                 .then(CommandManager.literal("reset").executes(context -> {
@@ -154,9 +158,7 @@ public final class AdminCommands {
     private static int list(ServerCommandSource source) {
         var active = AlphaEncounterMod.RUNTIME.activeSorted();
         feedback(source, "admin.list.header", Map.of("arg_count", Integer.toString(active.size())));
-        for (ActiveEncounter encounter : active) {
-            feedbackEncounter(source, "admin.inspect", encounter);
-        }
+        for (ActiveEncounter encounter : active) feedbackEncounter(source, "admin.inspect", encounter);
         return active.size();
     }
 
@@ -189,69 +191,49 @@ public final class AdminCommands {
     }
 
     private static int defeat(ServerCommandSource source, String target) {
-        boolean ok = AlphaEncounterMod.RUNTIME.adminDefeat(
-            source.getServer(),
-            AlphaEncounterMod.RUNTIME.resolveAdminTarget(source, target)
-        );
+        boolean ok = AlphaEncounterMod.RUNTIME.adminDefeat(source.getServer(), AlphaEncounterMod.RUNTIME.resolveAdminTarget(source, target));
         feedback(source, ok ? "admin.defeat.success" : "admin.target.not_found");
         return ok ? 1 : 0;
     }
 
     private static int setHp(ServerCommandSource source, String target, float percent) {
-        boolean ok = AlphaEncounterMod.RUNTIME.adminSetHp(
-            source.getServer(),
-            AlphaEncounterMod.RUNTIME.resolveAdminTarget(source, target),
-            percent
-        );
-        if (ok) {
-            feedback(source, "admin.sethp.success", Map.of("arg_percent", formatNumber(percent)));
-        } else {
-            feedback(source, "admin.target.not_found");
-        }
+        boolean ok = AlphaEncounterMod.RUNTIME.adminSetHp(source.getServer(), AlphaEncounterMod.RUNTIME.resolveAdminTarget(source, target), percent);
+        if (ok) feedback(source, "admin.sethp.success", Map.of("arg_percent", formatNumber(percent)));
+        else feedback(source, "admin.target.not_found");
         return ok ? 1 : 0;
     }
 
     private static int battle(ServerCommandSource source, String target, ServerPlayerEntity player) {
-        boolean ok = AlphaEncounterMod.RUNTIME.adminBattle(
-            AlphaEncounterMod.RUNTIME.resolveAdminTarget(source, target),
-            player
-        );
+        boolean ok = AlphaEncounterMod.RUNTIME.adminBattle(AlphaEncounterMod.RUNTIME.resolveAdminTarget(source, target), player);
         feedback(source, ok ? "admin.battle.success" : "admin.battle.failed");
         return ok ? 1 : 0;
     }
 
     private static int attack(ServerCommandSource source, String target, ServerPlayerEntity player) {
-        boolean ok = AlphaEncounterMod.RUNTIME.adminAttack(
-            source.getServer(),
-            AlphaEncounterMod.RUNTIME.resolveAdminTarget(source, target),
-            player
-        );
+        boolean ok = AlphaEncounterMod.RUNTIME.adminAttack(source.getServer(), AlphaEncounterMod.RUNTIME.resolveAdminTarget(source, target), player);
         feedback(source, ok ? "admin.attack.success" : "admin.attack.failed");
         return ok ? 1 : 0;
     }
 
     private static int anim(ServerCommandSource source, String target, String animation) {
-        boolean ok = AlphaEncounterMod.RUNTIME.adminAnimation(
-            source.getServer(),
-            AlphaEncounterMod.RUNTIME.resolveAdminTarget(source, target),
-            animation
-        );
-        if (ok) {
-            feedback(source, "admin.animation.success", Map.of("arg_animation", animation));
-        } else {
-            feedback(source, "admin.animation.failed");
-        }
+        boolean ok = AlphaEncounterMod.RUNTIME.adminAnimation(source.getServer(), AlphaEncounterMod.RUNTIME.resolveAdminTarget(source, target), animation);
+        if (ok) feedback(source, "admin.animation.success", Map.of("arg_animation", animation));
+        else feedback(source, "admin.animation.failed");
         return ok ? 1 : 0;
     }
 
+    private static Map<String, String> runtimeDebugArguments() {
+        Map<String, String> result = new LinkedHashMap<>();
+        Matcher matcher = DEBUG_VALUE.matcher(AlphaEncounterMod.RUNTIME.perfLine());
+        while (matcher.find()) {
+            String key = matcher.group(1).replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase(Locale.ROOT);
+            result.put("arg_" + key, matcher.group(2));
+        }
+        return result;
+    }
+
     private static void feedbackEncounter(ServerCommandSource source, String key, ActiveEncounter encounter) {
-        source.sendFeedback(
-            () -> AlphaEncounterMod.TEXT.message(
-                key,
-                AlphaEncounterMod.RUNTIME.textContext(source.getServer(), encounter, null)
-            ),
-            false
-        );
+        source.sendFeedback(() -> AlphaEncounterMod.TEXT.message(key, AlphaEncounterMod.RUNTIME.textContext(source.getServer(), encounter, null)), false);
     }
 
     private static void feedback(ServerCommandSource source, String key) {
