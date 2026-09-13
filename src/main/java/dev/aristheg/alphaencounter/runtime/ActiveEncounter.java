@@ -35,6 +35,6 @@ public final class ActiveEncounter {
         this.entityId = entityId;
         this.pokemonId = pokemonId;
         this.healthMultiplier = healthMultiplier;
-        AlphaLootGuard.track(entityId, pokemonId);
+        AlphaLootGuard.track(definitionId, entityId, pokemonId);
     }
 }
