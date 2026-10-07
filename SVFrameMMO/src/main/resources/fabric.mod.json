@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "SVFrameMMO",
   "description": "Native Fabric RPG progression framework for SVFrame.",
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
     "main": [
       "vn.svframe.svframemmo.SVFrameMMO",
