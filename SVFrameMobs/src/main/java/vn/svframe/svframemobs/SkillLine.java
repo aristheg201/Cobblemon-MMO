@@ -19,7 +19,7 @@ public record SkillLine(String mechanic, Map<String, String> parameters, String 
             if (token.startsWith("@")) {
                 MMOLineConfig targetConfig = new MMOLineConfig(token.substring(1));
                 target = targetConfig.getKey().toLowerCase(Locale.ROOT);
-                if (!Set.of("self", "target", "trigger", "playersinradius", "pir").contains(target)) throw new IllegalArgumentException("Unsupported targeter " + target);
+                if (!Set.of("self", "target", "trigger", "playersinradius", "pir", "entitiesinradius", "eir").contains(target)) throw new IllegalArgumentException("Unsupported targeter " + target);
                 radius = targetConfig.getDouble("r", 8);
             } else if (token.startsWith("~")) {
                 String[] pieces = token.substring(1).toLowerCase(Locale.ROOT).split(":", -1);

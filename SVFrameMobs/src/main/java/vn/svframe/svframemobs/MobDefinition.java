@@ -5,9 +5,9 @@ import java.util.*;
 /** Validated subset of Mythic-style mob configuration; unsupported fields are rejected. */
 public record MobDefinition(String id, String type, String display, double health, double damage,
                             double armor, double speed, boolean noAi, boolean silent,
-                            Map<String, String> equipment, List<Drop> drops, List<SkillLine> skills) {
+                            Map<String, String> equipment, List<Drop> drops, List<SkillLine> skills,String pokemon) {
     public record Drop(String item, int amount, double chance) { }
-    private static final Set<String> FIELDS = Set.of("Type", "Display", "Health", "Damage", "Armor", "MovementSpeed", "Options", "Equipment", "Drops", "Skills");
+    private static final Set<String> FIELDS = Set.of("Type", "Display", "Health", "Damage", "Armor", "MovementSpeed", "Options", "Equipment", "Drops", "Skills","Pokemon");
     public static MobDefinition parse(String id, Map<String, Object> map) {
         if (!id.matches("[A-Za-z0-9_]{1,64}")) throw new IllegalArgumentException("Invalid mob ID: " + id);
         for (String key : map.keySet()) if (!FIELDS.contains(key)) throw new IllegalArgumentException(id + ": unsupported field " + key);
@@ -31,7 +31,7 @@ public record MobDefinition(String id, String type, String display, double healt
         return new MobDefinition(id, String.valueOf(map.getOrDefault("Type", "ZOMBIE")), String.valueOf(map.getOrDefault("Display", id)),
                 number(map,"Health",20,1,100000), number(map,"Damage",3,0,10000), number(map,"Armor",0,0,30), number(map,"MovementSpeed",0.23,0,2),
                 Boolean.parseBoolean(String.valueOf(options.get("NoAI"))), Boolean.parseBoolean(String.valueOf(options.get("Silent"))),
-                Map.copyOf(equipment), List.copyOf(drops), list(map.get("Skills")).stream().map(v -> SkillLine.parse(v.toString())).toList());
+                Map.copyOf(equipment), List.copyOf(drops), list(map.get("Skills")).stream().map(v -> SkillLine.parse(v.toString())).toList(),String.valueOf(map.getOrDefault("Pokemon","")));
     }
     private static List<?> list(Object value) {
         if (value == null) return List.of();

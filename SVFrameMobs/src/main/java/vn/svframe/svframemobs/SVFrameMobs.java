@@ -44,8 +44,8 @@ public final class SVFrameMobs implements ModInitializer {
             Files.createDirectories(folder);
             Path example = folder.resolve("examples.yml");
             if (!Files.exists(example)) try (var input = getClass().getResourceAsStream("/examples.yml")) { Files.copy(Objects.requireNonNull(input), example); }
-            reload();
         } catch (Exception error) { throw new IllegalStateException("Cannot load SVFrameMobs configuration", error); }
+        ServerLifecycleEvents.SERVER_STARTING.register(server->{try{reload();LOG.info("Loaded {} native mob definitions",definitions.size());}catch(Exception failure){throw new IllegalStateException("Cannot load SVFrameMobs configuration",failure);}});
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> { if (entity instanceof MobEntity mob && id(mob) != null) active.put(mob.getUuid(), mob); });
         ServerEntityEvents.ENTITY_UNLOAD.register((entity, world) -> active.remove(entity.getUuid(), entity));
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> active.clear());
@@ -86,8 +86,10 @@ public final class SVFrameMobs implements ModInitializer {
             for (Path file : files.filter(path -> path.toString().endsWith(".yml") || path.toString().endsWith(".yaml")).sorted().toList()) {
                 for (var entry : YamlLite.map(YamlLite.parse(file)).entrySet()) {
                     MobDefinition definition = MobDefinition.parse(entry.getKey(), YamlLite.map(entry.getValue()));
-                    EntityType<?> type = type(definition.type());
-                    if (type.getSpawnGroup() == SpawnGroup.MISC) throw new IllegalArgumentException("Type is not a mob: " + definition.type());
+                    var factory=vn.svframe.svframelib.entity.NativeMobFactories.get(factoryId(definition.type()));
+                    if(factory!=null)factory.validate(definition.pokemon());
+                    else {if(!definition.pokemon().isBlank())throw new IllegalArgumentException("Missing native Pokemon entity integration");EntityType<?> type = type(definition.type());
+                    if (type.getSpawnGroup() == SpawnGroup.MISC) throw new IllegalArgumentException("Type is not a mob: " + definition.type());}
                     for (String item : definition.equipment().values()) stack(item,1);
                     for (var drop : definition.drops()) stack(drop.item(),drop.amount());
                     for (SkillLine skill : definition.skills()) validateSkill(skill);
@@ -105,22 +107,31 @@ public final class SVFrameMobs implements ModInitializer {
     private MobEntity spawn(String key, ServerWorld world, Vec3d position) {
         MobDefinition definition = definitions.get(key); if (definition == null) throw new IllegalArgumentException("Unknown mob: " + key);
         if (!world.isChunkLoaded(net.minecraft.util.math.BlockPos.ofFloored(position)) || !world.getWorldBorder().contains(position.x,position.z)) throw new IllegalArgumentException("Spawn must be inside a loaded chunk and world border");
-        Entity created = type(definition.type()).create(world);
+        var factory=vn.svframe.svframelib.entity.NativeMobFactories.get(factoryId(definition.type()));
+        Entity created = factory==null?type(definition.type()).create(world):factory.create(world,definition.pokemon());
         if (!(created instanceof MobEntity mob)) { if (created != null) created.discard(); throw new IllegalArgumentException("Type is not a living mob: " + definition.type()); }
         mob.refreshPositionAndAngles(position.x,position.y,position.z,0,0);
         if (!world.isSpaceEmpty(mob)) throw new IllegalArgumentException("Spawn space is obstructed");
         mob.addCommandTag(TAG + key); mob.setPersistent(); mob.setAiDisabled(definition.noAi()); mob.setSilent(definition.silent());
         mob.setCustomName(Text.literal(colors(definition.display()))); mob.setCustomNameVisible(true);
-        attribute(mob,EntityAttributes.GENERIC_MAX_HEALTH,definition.health());
-        attribute(mob,EntityAttributes.GENERIC_ATTACK_DAMAGE,definition.damage());
-        attribute(mob,EntityAttributes.GENERIC_ARMOR,definition.armor());
-        attribute(mob,EntityAttributes.GENERIC_MOVEMENT_SPEED,definition.speed());
+        attribute(mob,EntityAttributes.GENERIC_MAX_HEALTH,definition.health(),factory!=null);
+        attribute(mob,EntityAttributes.GENERIC_ATTACK_DAMAGE,definition.damage(),factory!=null);
+        attribute(mob,EntityAttributes.GENERIC_ARMOR,definition.armor(),factory!=null);
+        attribute(mob,EntityAttributes.GENERIC_MOVEMENT_SPEED,definition.speed(),factory!=null);
         mob.setHealth((float)definition.health());
         definition.equipment().forEach((slot,item) -> { EquipmentSlot equipmentSlot = switch(slot) { case "HEAD" -> EquipmentSlot.HEAD; case "CHEST" -> EquipmentSlot.CHEST; case "LEGS" -> EquipmentSlot.LEGS; case "FEET" -> EquipmentSlot.FEET; case "OFFHAND" -> EquipmentSlot.OFFHAND; default -> EquipmentSlot.MAINHAND; }; mob.equipStack(equipmentSlot,stack(item,1)); mob.setEquipmentDropChance(equipmentSlot,0); });
         if (!world.spawnEntity(mob)) throw new IllegalArgumentException("Entity spawn rejected");
         active.put(mob.getUuid(),mob); fire(mob,"onspawn",null); return mob;
     }
-    private static void attribute(MobEntity mob, net.minecraft.registry.entry.RegistryEntry<net.minecraft.entity.attribute.EntityAttribute> type, double value) { var instance = mob.getAttributeInstance(type); if (instance != null) instance.setBaseValue(value); }
+    private static void attribute(MobEntity mob, net.minecraft.registry.entry.RegistryEntry<net.minecraft.entity.attribute.EntityAttribute> type, double value, boolean external) {
+        var instance=mob.getAttributeInstance(type);if(instance==null)return;
+        if(!external){instance.setBaseValue(value);return;}
+        // External entity runtimes periodically recompute their own base stats.
+        // Persist a separate encounter modifier instead of overwriting that base.
+        Identifier key=Identifier.of("svframemobs","configured_"+net.minecraft.registry.Registries.ATTRIBUTE.getId(type.value()).getPath().replace('.','_'));
+        instance.removeModifier(key);
+        instance.addPersistentModifier(new net.minecraft.entity.attribute.EntityAttributeModifier(key,value-instance.getValue(),net.minecraft.entity.attribute.EntityAttributeModifier.Operation.ADD_VALUE));
+    }
     private void fire(MobEntity mob, String trigger, Entity eventEntity) {
         MobDefinition definition = definition(mob); if (definition == null || triggerDepth >= 4) return;
         triggerDepth++;
@@ -139,10 +150,13 @@ public final class SVFrameMobs implements ModInitializer {
             case "target" -> mob.getTarget() == null ? List.of() : List.of(mob.getTarget());
             case "trigger" -> eventEntity == null ? List.of() : List.of(eventEntity);
             case "playersinradius", "pir" -> ((ServerWorld)mob.getWorld()).getPlayers(player -> player.isAlive() && !player.isSpectator() && !player.isCreative() && !mob.isTeammate(player) && player.squaredDistanceTo(mob) <= skill.radius()*skill.radius());
+            case "entitiesinradius", "eir" -> mob.getWorld().getEntitiesByClass(LivingEntity.class,mob.getBoundingBox().expand(skill.radius()),target->target!=mob&&target.squaredDistanceTo(mob)<=skill.radius()*skill.radius()&&!mob.isTeammate(target)&&vn.svframe.svframelib.entity.RpgEntityAdapters.allows(mob,target,vn.svframe.svframelib.entity.RpgEntityAdapters.Effect.DAMAGE));
             default -> List.of();
         };
     }
     private void execute(MobEntity mob, Entity target, SkillLine skill) {
+        if(target instanceof LivingEntity living&&!skill.mechanic().equals("message")&&!skill.mechanic().equals("effect:particles")
+                &&!vn.svframe.svframelib.entity.RpgEntityAdapters.allows(mob,living,vn.svframe.svframelib.entity.RpgEntityAdapters.Effect.STATUS))return;
         switch (skill.mechanic()) {
             case "damage" -> { if (target instanceof LivingEntity living && !living.isSpectator() && !(living instanceof ServerPlayerEntity p && p.isCreative()) && !mob.isTeammate(living)) living.damage(living.getDamageSources().mobAttack(mob),(float)Math.max(0,skill.number("amount",skill.number("a",1)))); }
             case "velocity" -> { target.setVelocity(new Vec3d(bounded(skill.number("x",0),-3,3),bounded(skill.number("y",1),-3,3),bounded(skill.number("z",0),-3,3))); target.velocityModified = true; target.velocityDirty = true; if (target instanceof ServerPlayerEntity player) player.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(player)); }
@@ -158,6 +172,7 @@ public final class SVFrameMobs implements ModInitializer {
     private static String id(MobEntity mob) { for (String tag : mob.getCommandTags()) if (tag.startsWith(TAG)) return tag.substring(TAG.length()); return null; }
     private static String colors(String text) { return text.replace('&','§'); }
     private static Identifier identifier(String input) { return Identifier.of(input.contains(":") ? input.toLowerCase(Locale.ROOT) : "minecraft:"+input.toLowerCase(Locale.ROOT)); }
+    private static String factoryId(String type){return type.equalsIgnoreCase("POKEMON")?"cobblemon:pokemon":type.toLowerCase(Locale.ROOT);}
     private static EntityType<?> type(String name) { Identifier id = identifier(name); if (!Registries.ENTITY_TYPE.containsId(id)) throw new IllegalArgumentException("Unknown entity type: " + name); return Registries.ENTITY_TYPE.get(id); }
     private static ItemStack stack(String name,int amount) { Identifier id = identifier(name); if (!Registries.ITEM.containsId(id) || id.equals(Identifier.ofVanilla("air"))) throw new IllegalArgumentException("Unknown item: " + name); return new ItemStack(Registries.ITEM.get(id),amount); }
 }

@@ -5,6 +5,10 @@ import vn.svframe.svframelib.config.YamlLite;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 class MobConfigurationTest {
+    @Test void parsesPokemonActorsAndSpatialEntityTargetsWithoutLosingSpeciesProperties(){
+        var mob=MobDefinition.parse("StormPikachu",YamlLite.map(YamlLite.parse("Type: POKEMON\nPokemon: pikachu level=50 shiny\nSkills:\n  - damage{amount=7} @EIR{r=6} ~onTimer:40\n")));
+        assertEquals("pikachu level=50 shiny",mob.pokemon());assertEquals("eir",mob.skills().getFirst().target());assertEquals(6,mob.skills().getFirst().radius());
+    }
     @Test void separatesMechanicAndTargetParameterMaps() {
         SkillLine skill = SkillLine.parse("damage{amount=7;type=MAGIC} @PlayersInRadius{r=9} ~onTimer:40 0.5");
         assertEquals(7,skill.number("amount",0)); assertEquals(9,skill.radius()); assertEquals(40,skill.interval()); assertEquals(0.5,skill.chance());

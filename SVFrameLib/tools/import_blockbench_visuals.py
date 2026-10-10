@@ -123,12 +123,15 @@ def bake(blueprint, namespace, model_id, first_data):
         geometry = {k: [(float(cube[k][i]) - origin[i]) / factor + 8 for i in range(3)] for k in ('from', 'to')}
         geometry['faces'] = faces
         resource = f'{namespace}:{model_id}/cube_{index}'
-        files[f'assets/{namespace}/models/{model_id}/cube_{index}.json'] = json.dumps({'textures': textures, 'elements': [geometry]}).encode()
+        # Untextured helper cubes are animation anchors, not drawable geometry.
+        # Preserve their identity/poses but emit an empty model: vanilla rejects
+        # an element with no faces, even though Blockbench accepts it.
+        files[f'assets/{namespace}/models/{model_id}/cube_{index}.json'] = json.dumps({'textures': textures, 'elements': [geometry] if faces else []}).encode()
         data = first_data + index
         overrides.append({'predicate': {'custom_model_data': data}, 'model': resource})
         bones.append({'item': 'minecraft:paper', 'custom-model-data': data, 'frames': []})
     animations = blueprint.get('animations', []) or [{'name': 'idle', 'length': .05, 'animators': {}}]
-    models = {}
+    models, anchors = {}, {}
     for animation in animations:
         if animation.get('anim_time_update') or animation.get('start_delay') or animation.get('loop_delay'):
             raise ValueError('Animation expressions/delays require manual porting')
@@ -136,6 +139,7 @@ def bake(blueprint, namespace, model_id, first_data):
         if duration > 240:
             raise ValueError('Animation exceeds 12 seconds')
         pose_bones = [{'item': b['item'], 'custom-model-data': b['custom-model-data'], 'frames': []} for b in bones]
+        pose_anchors = {group['name']: [] for group in groups.values() if group.get('name', '').startswith('p') and group.get('name', '')[1:].isdigit()}
         for tick in range(duration + 1):
             cache = {}
             def group_matrix(uid):
@@ -154,6 +158,10 @@ def bake(blueprint, namespace, model_id, first_data):
                                  multiply(rotate([resting[i] + rotation[i] for i in range(3)]), scale(sample(keys, 'scale', tick / 20))))
                 cache[uid] = multiply(group_matrix(parent), local)
                 return cache[uid]
+            for uid, group in groups.items():
+                if group.get('name') in pose_anchors:
+                    matrix = group_matrix(uid)
+                    pose_anchors[group['name']].append([round(matrix[i][3], 6) for i in range(3)])
             for index, (uid, cube) in enumerate(elements.items()):
                 parent = cube_parents[uid]
                 pivot = groups[parent].get('origin', [0, 0, 0]) if parent else [0, 0, 0]
@@ -163,8 +171,11 @@ def bake(blueprint, namespace, model_id, first_data):
                 matrix = multiply(group_matrix(parent), local)
                 pose_bones[index]['frames'].append([round(matrix[i][j], 6) for j in range(4) for i in range(4)])
         models[f'{model_id}@{animation["name"]}'] = pose_bones
+        anchors[f'{model_id}@{animation["name"]}'] = pose_anchors
     # A plain model ID plays the first animation.
     models[model_id] = next(iter(models.values()))
+    anchors[model_id] = next(iter(anchors.values()))
+    files[f'assets/{namespace}/anchors/{model_id}.json'] = json.dumps(anchors).encode()
     return models, files, overrides
 
 
@@ -191,6 +202,11 @@ def main():
                 files['assets/' + relative] = path.read_bytes()
     args.output.mkdir(parents=True, exist_ok=True)
     (args.output / 'reference-models.json').write_text(json.dumps(models, separators=(',', ':')))
+    anchors = {}
+    for name, content in files.items():
+        if '/anchors/' in name:
+            anchors.update(json.loads(content))
+    (args.output / 'reference-anchors.json').write_text(json.dumps(anchors, separators=(',', ':')))
     with zipfile.ZipFile(args.output / 'SVFrameReferenceVisuals-1.21.1.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
         for name, value in sorted(files.items()):
             archive.writestr(name, value)
