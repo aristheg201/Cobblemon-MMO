@@ -46,6 +46,7 @@ public final class SVFrameLibPlayerDataMod implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ServerPlayerEntity player = handler.player;
             NativePlayerData data = getOrNull(player.getUuid());
+            if (data != null && (!data.online() || data.player() != player)) return;
             if (data != null) {
                 data.shutdownSession();
                 data.updatePlayer(null);

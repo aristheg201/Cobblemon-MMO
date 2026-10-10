@@ -37,6 +37,10 @@ public final class NativeBuiltinSkillBootstrap {
             Script script = manager.getScriptOrThrow(internal);
             return new SVFrameLibSkillHandler(script);
         }, List.of("svframelib-skill-id")));
+        manager.registerSkillHandlerSource(new SkillHandlerSource("native", (config, internal) -> {
+            if(internal.equalsIgnoreCase("HERO_ENTRANCE"))return new HeroEntranceSkillHandler(config);
+            return new ReferenceClassSkillHandler(config,internal);
+        },List.of()));
         materializeDefaultHandlers(manager, types);
     }
 
@@ -60,6 +64,23 @@ public final class NativeBuiltinSkillBootstrap {
                 if (manager.getHandler(id) == null)
                     manager.registerSkillHandler(construct(types, new MapConfigObject(id, config), id));
                 loaded++;
+            }
+            if (manager.getHandler("HERO_ENTRANCE") == null) {
+                try (InputStream hero = NativeBuiltinSkillBootstrap.class.getResourceAsStream("/default/skill/hero_entrance.yml")) {
+                    if (hero == null) throw new IllegalStateException("Missing Hero's Entrance metadata");
+                    Map<String, Object> definitions = YamlLite.map(YamlLite.parse(new String(hero.readAllBytes(), StandardCharsets.UTF_8)));
+                    manager.registerSkillHandler(new HeroEntranceSkillHandler(new MapConfigObject("HERO_ENTRANCE",
+                            YamlLite.map(definitions.get("HERO_ENTRANCE")))));
+                }
+            }
+            try (InputStream reference=NativeBuiltinSkillBootstrap.class.getResourceAsStream("/default/skill/reference_classes.yml")) {
+                if(reference==null)throw new IllegalStateException("Missing reference class metadata");
+                java.nio.file.Path configured=net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir().resolve("SVFrameLib/skill/reference_classes.yml");
+                Map<String,Object> definitions=java.nio.file.Files.isRegularFile(configured)?YamlLite.map(YamlLite.parse(configured)):
+                        YamlLite.map(YamlLite.parse(new String(reference.readAllBytes(),StandardCharsets.UTF_8)));
+                if(definitions.size()!=14)throw new IllegalArgumentException("Reference class definitions must contain fourteen skills");
+                for(var entry:definitions.entrySet()) if(manager.getHandler(entry.getKey())==null)
+                    manager.registerSkillHandler(new ReferenceClassSkillHandler(new MapConfigObject(entry.getKey(),YamlLite.map(entry.getValue())),entry.getKey()));
             }
             long materialized = manager.getHandlers().stream().filter(handler -> types.containsKey(norm(handler.getId()))).count();
             if (loaded != 90 || materialized != 90)

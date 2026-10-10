@@ -1,33 +1,15 @@
 package vn.svframe.svframelib.player.particle;
 
-import vn.svframe.svframelib.UtilityMethods;
 import vn.svframe.svframelib.util.configobject.ConfigObject;
-import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleType;
-import net.minecraft.particle.SimpleParticleType;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Vector3f;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
 /** Native particle descriptor preserving the display API used by SVFrameLib particle effects. */
 public class ParticleInformation {
-    private static final Map<String,String> LEGACY = Map.ofEntries(
-            Map.entry("REDSTONE", "dust"), Map.entry("DUST", "dust"), Map.entry("FLAME", "flame"),
-            Map.entry("SMOKE_NORMAL", "smoke"), Map.entry("SMOKE_LARGE", "large_smoke"),
-            Map.entry("SPELL_WITCH", "witch"), Map.entry("SPELL", "effect"), Map.entry("SPELL_MOB", "entity_effect"),
-            Map.entry("CRIT", "crit"), Map.entry("CRIT_MAGIC", "enchanted_hit"), Map.entry("ENCHANTMENT_TABLE", "enchant"),
-            Map.entry("END_ROD", "end_rod"), Map.entry("PORTAL", "portal"), Map.entry("CLOUD", "cloud"),
-            Map.entry("HEART", "heart"), Map.entry("VILLAGER_HAPPY", "happy_villager"), Map.entry("VILLAGER_ANGRY", "angry_villager"),
-            Map.entry("SOUL", "soul"), Map.entry("SOUL_FIRE_FLAME", "soul_fire_flame"), Map.entry("ELECTRIC_SPARK", "electric_spark")
-    );
-
     private final ParticleEffect particle;
     private final int amount;
     private final double xOffset, yOffset, zOffset, speed;
@@ -49,8 +31,13 @@ public class ParticleInformation {
 
     public static ParticleInformation fromConfig(Object raw) {
         if (raw instanceof ParticleInformation info) return info;
+        if (raw instanceof Map<?, ?> map) {
+            java.util.LinkedHashMap<String, Object> values = new java.util.LinkedHashMap<>();
+            map.forEach((key, value) -> values.put(String.valueOf(key), value));
+            raw = new vn.svframe.svframelib.util.configobject.MapConfigObject("particle", values);
+        }
         if (!(raw instanceof ConfigObject obj)) throw new IllegalArgumentException("Particle config must be a ConfigObject");
-        String name = obj.getString("name", "FLAME");
+        String name = obj.getString("particle", obj.getString("name", "FLAME"));
         int amount = obj.getInt("amount", 1);
         double offset = obj.getDouble("offset", obj.getDouble("r-offset", 0d));
         double x = obj.getDouble("x-offset", offset), y = obj.getDouble("y-offset", offset), z = obj.getDouble("z-offset", offset);
@@ -61,23 +48,15 @@ public class ParticleInformation {
     public static ParticleInformation of(ParticleEffect particle) { return new ParticleInformation(particle); }
 
     private static ParticleEffect resolve(String raw, ConfigObject config) {
-        String enumName = UtilityMethods.enumName(raw);
-        String path = LEGACY.getOrDefault(enumName, raw.toLowerCase(Locale.ROOT).replace(' ', '_'));
-        if ("dust".equals(path)) {
-            int red = 255, green = 0, blue = 0;
-            if (config.contains("color")) {
-                ConfigObject color = config.getObject("color");
-                red = color.getInt("red", red); green = color.getInt("green", green); blue = color.getInt("blue", blue);
-            }
-            float r = Math.max(0, Math.min(255, red)) / 255.0f;
-            float g = Math.max(0, Math.min(255, green)) / 255.0f;
-            float b = Math.max(0, Math.min(255, blue)) / 255.0f;
-            return new DustParticleEffect(new Vector3f(r, g, b), (float) config.getDouble("size", 1d));
-        }
-        Identifier id = Identifier.tryParse(path.contains(":") ? path : "minecraft:" + path);
-        if (id == null) throw new IllegalArgumentException("Invalid particle '" + raw + "'");
-        ParticleType<?> type = Registries.PARTICLE_TYPE.get(id);
-        if (type instanceof SimpleParticleType simple) return simple;
-        throw new IllegalArgumentException("Particle '" + raw + "' requires data not supplied by this config");
+        int rgb=0xff0000;
+        Object rawColor=config.get("color");
+        if(rawColor instanceof Map<?,?> || rawColor instanceof ConfigObject){
+            ConfigObject color=config.getObject("color");
+            int red=Math.max(0,Math.min(255,color.getInt("red",255)));
+            int green=Math.max(0,Math.min(255,color.getInt("green",0)));
+            int blue=Math.max(0,Math.min(255,color.getInt("blue",0)));
+            rgb=(red<<16)|(green<<8)|blue;
+        } else if(rawColor instanceof String hex)rgb=Integer.parseInt(hex.replace("#",""),16);
+        return vn.svframe.svframelib.fabric.NativeParticles.effect(raw,rgb,(float)config.getDouble("size",1),config.getString("material","minecraft:stone"));
     }
 }
