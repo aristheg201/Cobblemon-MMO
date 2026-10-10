@@ -85,12 +85,12 @@ public final class ReferenceClassSkillRuntime {
                 options.put("damage",positive(parameters,"damage",key.startsWith("DEATH")?8:10));
                 // AMK v17 combat uses the script's meteor damage, not unused wrapper modifiers.
                 if(key.startsWith("ANTI"))options.put("damage",10d);
-                if(key.startsWith("DEATH"))options.put("cursed_execution",true);
-                if(!HeroEntranceRuntime.start(player,options))return false;
                 if(key.startsWith("DEATH")){
-                    NativeVisualRuntime.spawn("vfx_death_wings_1",player,player.getPos().add(0,1.5,0),100,true);
-                    SVFrameLibFabricMod.schedule(12,()->{if(valid(player,state.world)&&HeroEntranceRuntime.view(player)!=null) NativeVisualRuntime.spawn("vfx_soul_blade",player,player.getPos().add(0,3,0),90,true);});
+                    options.put("cursed_execution",true);options.put("death_sentence",true);
+                    options.put("warmup_ticks",28);options.put("launch_ticks",15);
+                    options.put("aim_ticks",60);options.put("descent_ticks",8);
                 }
+                if(!HeroEntranceRuntime.start(player,options))return false;
             }
             case "DEATH_KNIGHT_DEATH_STRIKE_ST" -> strike(player,state,positive(parameters,"damage",3));
             case "DEATH_KNIGHT_PHANTOM_CHARGE" -> dash(player,state,positive(parameters,"damage",4),15,1,true);
@@ -240,6 +240,7 @@ public final class ReferenceClassSkillRuntime {
     }
     public static boolean canTarget(ServerPlayerEntity caster,LivingEntity target) {
         return target!=caster && target.isAlive()&&!target.isSpectator()&&!(target instanceof ArmorStandEntity)&&target.getWorld()==caster.getWorld()
+                &&vn.svframe.svframelib.entity.RpgEntityAdapters.allows(caster,target,vn.svframe.svframelib.entity.RpgEntityAdapters.Effect.DAMAGE)
                 &&(!(target instanceof ServerPlayerEntity other)||(caster.getServerWorld().getServer().isPvpEnabled()&&!other.getAbilities().creativeMode&&!caster.isTeammate(other)));
     }
     private static List<LivingEntity> targets(ServerPlayerEntity player,Vec3d center,double radius) {

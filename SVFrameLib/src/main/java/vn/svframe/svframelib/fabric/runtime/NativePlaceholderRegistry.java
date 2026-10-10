@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 /** Native SVFrameLib placeholder surface used by scripts, commands and integrations. */
 public final class NativePlaceholderRegistry {
     private static final Pattern ANGLE = Pattern.compile("<([^<>]+)>");
+    private static final Pattern PERCENT = Pattern.compile("%([A-Za-z][A-Za-z0-9_.:\\-]*)%");
     private static final Map<String, BiFunction<UUID, String, String>> PROVIDERS = new ConcurrentHashMap<>();
 
     static {
@@ -47,7 +48,19 @@ public final class NativePlaceholderRegistry {
 
     public static String parse(UUID player, String input) {
         if (input == null || input.isEmpty()) return input == null ? "" : input;
-        Matcher matcher = ANGLE.matcher(input);
+        Matcher percent = PERCENT.matcher(input);
+        StringBuffer expanded = new StringBuffer();
+        while (percent.find()) {
+            String token = percent.group(1), normalized = token.toLowerCase(Locale.ROOT);
+            String namespace = PROVIDERS.keySet().stream()
+                    .filter(key -> normalized.startsWith(key + "_") || normalized.startsWith(key + ".") || normalized.startsWith(key + ":"))
+                    .max(java.util.Comparator.comparingInt(String::length)).orElse(null);
+            if (namespace == null) continue; // Retain unknown addon syntax for diagnostics.
+            String value = PROVIDERS.get(namespace).apply(player, token.substring(namespace.length() + 1));
+            percent.appendReplacement(expanded, Matcher.quoteReplacement(value == null ? "" : value));
+        }
+        percent.appendTail(expanded);
+        Matcher matcher = ANGLE.matcher(expanded);
         StringBuffer output = new StringBuffer();
         while (matcher.find()) matcher.appendReplacement(output, Matcher.quoteReplacement(resolve(player, matcher.group(1))));
         matcher.appendTail(output);

@@ -54,6 +54,7 @@ final class SVFrameLibCommands {
                                 .then(argument("value", DoubleArgumentType.doubleArg(0.0d))
                                         .executes(ctx -> damage(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player"), EntityArgumentType.getEntity(ctx, "target"), DoubleArgumentType.getDouble(ctx, "value")))))));
         root.then(literal("referenceqa").requires(source -> HeroEntranceRuntimeQa.enabled() && source.hasPermissionLevel(2)).executes(ctx -> ReferenceClassRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
+        root.then(literal("deathsentenceqa").requires(source -> HeroEntranceRuntimeQa.enabled() && source.hasPermissionLevel(2)).executes(ctx -> DeathSentenceRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
         root.then(literal("nativeqa").requires(source -> HeroEntranceRuntimeQa.enabled() && source.hasPermissionLevel(2)).executes(ctx -> NativeSkillRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
         root.then(literal("hero")
                 .then(literal("qa").requires(source -> HeroEntranceRuntimeQa.enabled() && source.hasPermissionLevel(2))

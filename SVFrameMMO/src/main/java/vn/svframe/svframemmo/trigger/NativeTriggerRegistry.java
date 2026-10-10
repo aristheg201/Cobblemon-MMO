@@ -229,7 +229,7 @@ public final class NativeTriggerRegistry {
         };
     }
 
-    private static boolean evaluateSkillFormula(SkillHandler<?> skill, String formula) {
+    public static boolean evaluateSkillFormula(SkillHandler<?> skill, String formula) {
         String parsed = formula;
         for (String category : skill.getCategories()) parsed = parsed.replace("<" + category + ">", "true");
         parsed = parsed.replaceAll("<.*?>", "false");

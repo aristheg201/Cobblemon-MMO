@@ -44,6 +44,10 @@ public final class SVFrameLibPassiveMod implements ModInitializer {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             long tick = SVFrameLibFabricMod.currentTick();
             PassiveSkillRuntime.tick(tick);
+            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                var data=vn.svframe.svframelib.api.player.MMOPlayerData.getOrNull(player.getUuid());
+                if(data!=null&&data.isOnline()&&data.getPlayer()==player)data.getPassiveSkillMap().tickOnlineTimerSkills();
+            }
             LAST_ACTION_TICK.entrySet().removeIf(entry -> tick - entry.getValue() > 2L);
         });
 

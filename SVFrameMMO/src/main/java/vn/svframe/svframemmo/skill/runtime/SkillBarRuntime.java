@@ -175,7 +175,8 @@ public final class SkillBarRuntime {
                     else if (live.skillCasting().comboMode()) showCombo(data, session, live.skillCasting());
                 }
             } else if (live.actionBar().enabled() && tick % live.actionBar().updateTicks() == 0L) {
-                if (PersistentHudRuntime.willOverrideIdle(data, mmo, live, tick)) continue;
+                if (PersistentHudRuntime.hasPresentationOwner(data.getUniqueId())
+                        || PersistentHudRuntime.willOverrideIdle(data, mmo, live, tick)) continue;
                 mmo.getActionBar().show(DEFAULT_BAR_PRIORITY,
                         Math.max(2L, live.actionBar().updateTicks() + 1L),
                         () -> SVFrameLib.inst().parseColors(formatDefaultBar(data, live.actionBar().format())));

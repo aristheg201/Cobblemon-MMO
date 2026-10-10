@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.DisplayEntity;
@@ -24,16 +25,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-/** Animated resource-pack bones using vanilla item_display packets. No client mod or custom entity registry. */
+/** Server-confirmed model poses using vanilla item displays and packaged presentation assets. */
 public final class NativeVisualRuntime {
     private record Bone(String item, int modelData, float scale, float endScale, float x, float y, float z, float endY, float spin, List<float[]> frames) { }
-    private record Active(Entity owner, ServerWorld world, Vec3d origin, boolean follow, List<DisplayEntity.ItemDisplayEntity> displays,
-                          List<Bone> bones, long start, int duration, float yaw) { }
+    private record Active(UUID id,String model,Entity owner, ServerWorld world, Vec3d origin, boolean follow, List<DisplayEntity.ItemDisplayEntity> displays,
+                          List<Bone> bones, long start, int duration, float yaw,float scale) { }
     private static final List<Active> ACTIVE = new ArrayList<>();
     private static Map<String,List<Bone>> models = Map.of();
+    private static Map<String,Map<String,List<List<Double>>>> anchors=Map.of();
     private NativeVisualRuntime() { }
     public static void install() {
-        reload();
+        // Optional integration items and presentation carriers must finish registration first.
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> reload());
         ServerTickEvents.END_SERVER_TICK.register(server -> tick());
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> { ACTIVE.forEach(NativeVisualRuntime::discard); ACTIVE.clear(); });
     }
@@ -72,12 +75,29 @@ public final class NativeVisualRuntime {
                     }
                 }
             }
-            models = Map.copyOf(next);
+            Map<String,Map<String,List<List<Double>>>> nextAnchors=Map.of();
+            Path anchorFile=SVFrameLibFabricMod.configRoot().resolve("visual-anchors.json");
+            if(Files.exists(anchorFile)){
+                if(Files.size(anchorFile)>8_000_000)throw new IllegalArgumentException("Anchor registry too large");
+                try(var reader=Files.newBufferedReader(anchorFile)){
+                    Map<String,Map<String,List<List<Double>>>> imported=new Gson().fromJson(reader,new TypeToken<Map<String,Map<String,List<List<Double>>>>>(){}.getType());
+                    for(var model:imported.values())for(var frames:model.values()){
+                        if(frames.size()>241)throw new IllegalArgumentException("Too many anchor frames");
+                        for(var point:frames)if(point.size()!=3||point.stream().anyMatch(n->n==null||!Double.isFinite(n)||Math.abs(n)>128))throw new IllegalArgumentException("Invalid anchor point");
+                    }
+                    nextAnchors=Map.copyOf(imported);
+                }
+            }
+            models=Map.copyOf(next);anchors=nextAnchors;
         } catch (Exception error) { throw new IllegalArgumentException("Visual models reload rejected; previous models retained",error); }
     }
     public static boolean spawn(String model, Entity owner, Vec3d origin, int ticks, boolean follow) {
+        return spawnTracked(model,owner,origin,ticks,follow,1)!=null;
+    }
+    public static UUID spawnTracked(String model,Entity owner,Vec3d origin,int ticks,boolean follow,float scale){
         List<Bone> bones = models.get(model);
-        if (bones == null || owner == null || !(owner.getWorld() instanceof ServerWorld world) || ACTIVE.size()>=64 || activeBoneCount()+bones.size()>512) return false;
+        if (bones == null || owner == null || !(owner.getWorld() instanceof ServerWorld world) || ACTIVE.size()>=64 || activeBoneCount()+bones.size()>512||!Float.isFinite(scale)||scale<.01||scale>16) return null;
+        UUID id=UUID.randomUUID();
         List<DisplayEntity.ItemDisplayEntity> displays = new ArrayList<>();
         try {
             for (Bone bone : bones) {
@@ -88,13 +108,13 @@ public final class NativeVisualRuntime {
                 display.setNoGravity(true); display.addCommandTag("svframe_ephemeral_visual");
                 var accessor = (DisplayEntityAccessor)display;
                 accessor.svframelib$setInterpolationDuration(2); accessor.svframelib$setTeleportDuration(2);
-                transform(display,bone,0,0);
+                transform(display,bone,0,0,scale);
                 display.refreshPositionAndAngles(origin.x,origin.y,origin.z,owner.getYaw(),0);
                 if (!world.spawnEntity(display)) throw new IllegalStateException("Visual entity spawn rejected");
                 displays.add(display);
             }
-            ACTIVE.add(new Active(owner,world,origin,follow,displays,bones,SVFrameLibFabricMod.currentTick(),Math.max(1,Math.min(1200,ticks)),owner.getYaw()));
-            return true;
+            ACTIVE.add(new Active(id,model,owner,world,follow?origin.subtract(owner.getPos()):origin,follow,displays,bones,SVFrameLibFabricMod.currentTick(),Math.max(1,Math.min(1200,ticks)),owner.getYaw(),scale));
+            return id;
         } catch (RuntimeException error) { displays.forEach(Entity::discard); throw error; }
     }
     private static void tick() {
@@ -102,19 +122,35 @@ public final class NativeVisualRuntime {
         for (var iterator = ACTIVE.iterator(); iterator.hasNext();) {
             Active active=iterator.next(); long age=now-active.start();
             if (age>=active.duration() || !active.owner().isAlive() || active.owner().isRemoved() || active.owner().getWorld()!=active.world()) { discard(active);iterator.remove();continue; }
-            Vec3d position=active.follow()?active.owner().getPos():active.origin();
+            Vec3d position=active.follow()?active.owner().getPos().add(active.origin()):active.origin();
             for (int i=0;i<active.displays().size();i++) {
                 var display=active.displays().get(i);
                 display.refreshPositionAndAngles(position.x,position.y,position.z,active.follow()?active.owner().getYaw():active.yaw(),0);
-                if ((age & 1)==0) transform(display,active.bones().get(i),(float)age/active.duration(),age);
+                if ((age & 1)==0) transform(display,active.bones().get(i),(float)age/active.duration(),age,active.scale());
             }
         }
     }
-    private static void transform(DisplayEntity.ItemDisplayEntity display,Bone bone,float progress,long age) {
+    private static void transform(DisplayEntity.ItemDisplayEntity display,Bone bone,float progress,long age,float modelScale) {
         float scale=bone.scale()+(bone.endScale()-bone.scale())*progress;
         var transform=bone.frames().isEmpty()?new AffineTransformation(new Vector3f(bone.x(),bone.y()+(bone.endY()-bone.y())*progress,bone.z()),new Quaternionf().rotateY((float)Math.toRadians(bone.spin()*age)),new Vector3f(scale),new Quaternionf()):new AffineTransformation(new Matrix4f().set(bone.frames().get((int)Math.min(age,bone.frames().size()-1))));
         var accessor=(DisplayEntityAccessor)display;
-        accessor.svframelib$setStartInterpolation(0); accessor.svframelib$setTransformation(transform);
+        accessor.svframelib$setStartInterpolation(0); accessor.svframelib$setTransformation(new AffineTransformation(transform.getMatrix().scaleLocal(modelScale)));
+    }
+    private static Active active(UUID handle){if(handle==null)return null;for(var visual:ACTIVE)if(visual.id().equals(handle))return visual;return null;}
+    public static boolean appearance(UUID handle,String model){
+        var visual=active(handle);var replacement=models.get(model);if(visual==null||replacement==null||replacement.size()!=visual.displays().size())return false;
+        for(int i=0;i<replacement.size();i++){
+            var bone=replacement.get(i);var display=visual.displays().get(i);var color=display.getItemStack().get(DataComponentTypes.DYED_COLOR);
+            var stack=new ItemStack(Registries.ITEM.get(Identifier.of(bone.item())));stack.set(DataComponentTypes.CUSTOM_MODEL_DATA,new CustomModelDataComponent(bone.modelData()));if(color!=null)stack.set(DataComponentTypes.DYED_COLOR,color);display.getStackReference(0).set(stack);
+        }return true;
+    }
+    public static void tint(UUID handle,int rgb){var visual=active(handle);if(visual==null)return;for(var display:visual.displays()){var stack=display.getItemStack().copy();if(!stack.isEmpty()){stack.set(DataComponentTypes.DYED_COLOR,new DyedColorComponent(rgb&0xffffff,false));display.getStackReference(0).set(stack);}}}
+    public static void visible(UUID handle,boolean visible){var visual=active(handle);if(visual==null)return;if(visible)appearance(handle,visual.model());else visual.displays().forEach(display->display.getStackReference(0).set(ItemStack.EMPTY));}
+    public static Vec3d anchor(UUID handle,String name){
+        var visual=active(handle);if(visual==null)return null;var frames=anchors.getOrDefault(visual.model(),Map.of()).get(name);if(frames==null||frames.isEmpty())return null;
+        int age=(int)Math.max(0,Math.min(frames.size()-1,SVFrameLibFabricMod.currentTick()-visual.start()));var raw=frames.get(age);
+        float yaw=visual.follow()?visual.owner().getYaw():visual.yaw();var point=new Vec3d(raw.get(0),raw.get(1),raw.get(2)).multiply(visual.scale()).rotateY((float)Math.toRadians(-yaw));
+        return point.add(visual.follow()?visual.owner().getPos().add(visual.origin()):visual.origin());
     }
     private static Bone importedBone(Map<String,Object> value) {
         for (String key : value.keySet()) if (!Set.of("item","custom-model-data","frames").contains(key))

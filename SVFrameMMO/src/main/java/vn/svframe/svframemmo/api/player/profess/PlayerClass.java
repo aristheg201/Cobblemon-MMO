@@ -64,6 +64,7 @@ public final class PlayerClass {
     private final Map<String, ScalingFormula> defaultStats;
     private final Map<String, ScalingFormula> stats = new LinkedHashMap<>();
     private final Map<String, ClassSkill> skills = new LinkedHashMap<>();
+    private final java.util.Set<String> configuredSkillIds;
     private final List<PassiveSkill> classScripts = new ArrayList<>();
     private final Map<String, List<Trigger>> eventTriggers = new LinkedHashMap<>();
     private final List<Subclass> subclasses = new ArrayList<>();
@@ -145,6 +146,7 @@ public final class PlayerClass {
             stats.put(UtilityMethods.enumName(entry.getKey()), ScalingFormula.fromConfig(entry.getValue()));
 
         Map<String, Object> configuredSkills = normalizedMap(config.get("skills"));
+        configuredSkillIds = java.util.Set.copyOf(configuredSkills.keySet());
         for (SkillHandler<?> handler : skillManager.getHandlers()) {
             Object rawSkill = configuredSkills.get(handler.getId());
             ClassSkill classSkill = rawSkill instanceof Map<?, ?> skillMap
@@ -212,6 +214,9 @@ public final class PlayerClass {
     }
 
     public Collection<ClassSkill> getSkills() { return List.copyOf(skills.values()); }
+    /** Declared class skills, distinct from fallback definitions retained for explicit grants. */
+    public boolean isSkillConfigured(String id) { return id != null && configuredSkillIds.contains(UtilityMethods.enumName(id)); }
+    public List<ClassSkill> getConfiguredSkills() { return configuredSkillIds.stream().map(skills::get).filter(Objects::nonNull).toList(); }
     public ClassSkill getSkill(SkillHandler<?> skill) { return skill == null ? null : getSkill(skill.getId()); }
     public ClassSkill getSkill(String skillId) { return skillId == null ? null : skills.get(UtilityMethods.enumName(skillId)); }
     public Set<String> getStats() { return Set.copyOf(stats.keySet()); }
