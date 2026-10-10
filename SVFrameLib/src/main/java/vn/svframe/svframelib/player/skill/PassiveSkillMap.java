@@ -32,9 +32,20 @@ public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
 
     public void tickTimerSkills() {
         if (!sessionOpen) throw new IllegalArgumentException("Session not open");
+        runTimerSkills();
+    }
+
+    /** Native single-profile users operate through the facade's fallback containers. */
+    public void tickOnlineTimerSkills() {
+        if (!getPlayerData().isOnline() || !getPlayerData().getPlayer().isAlive()) return;
+        if (getPlayerData().hasProfileSession() && !getPlayerData().isPlaying()) return;
+        runTimerSkills();
+    }
+
+    private void runTimerSkills() {
 
         var metadata = SkillMetadata.lazyOf(getPlayerData());
-        for (PassiveSkill passive : getModifiers()) {
+        for (PassiveSkill passive : java.util.List.copyOf(getModifiers())) {
             if (!TriggerType.TIMER.equals(passive.getTrigger())) continue;
 
             String handlerId = passive.getTriggeredSkill().getHandler().getId();
@@ -60,7 +71,7 @@ public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
             } else {
                 timer.fired(firedAt, period);
             }
-            passive.getTriggeredSkill().cast(metadata.get());
+            passive.getTriggeredSkill().cast(metadata.get().clone(passive.getTriggeredSkill()));
         }
     }
 
