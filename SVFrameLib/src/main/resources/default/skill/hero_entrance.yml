@@ -1,0 +1,17 @@
+HERO_ENTRANCE:
+  source: native:HERO_ENTRANCE
+  name: Hero's Entrance
+  icon: iron_chestplate
+  lore:
+    - 'Rise into the air and aim with your camera.'
+    - 'Sneak to commit the landing, damage and knock up nearby foes.'
+  parameters:
+    cooldown: {player: 20, item: 20}
+    mana: {player: 0, item: 0}
+    range: {player: 32, item: 32}
+    radius: {player: 5, item: 5}
+    height: {player: 12, item: 12}
+    damage: {player: 12, item: 12}
+    knockup: {player: 1.1, item: 1.1}
+    aim_ticks: {player: 60, item: 60}
+    descent_ticks: {player: 12, item: 12}

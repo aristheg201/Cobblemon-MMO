@@ -1,0 +1,23 @@
+{
+  "fourteen_handlers": true,
+  "unknown_rejected": true,
+  "caster_excluded": true,
+  "cursed_passive": true,
+  "attributed_hit_0": true,
+  "attributed_hit_1": true,
+  "attributed_hit_2": true,
+  "attributed_hit_3": true,
+  "four_curse_stacks": true,
+  "full_seal_weakness": true,
+  "execution_bonus": true,
+  "barrier_cast": true,
+  "barrier_converts_damage_to_heal": true,
+  "amk_passive": true,
+  "amk_shield_absorbs": true,
+  "gust_cast": true,
+  "gust_damages": true,
+  "guard_cast": true,
+  "duplicate_guard_rejected": true,
+  "guard_reduces_damage": true,
+  "guard_releases_stored_damage": true
+}

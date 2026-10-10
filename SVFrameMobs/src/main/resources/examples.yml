@@ -1,0 +1,29 @@
+# Vanilla entities: players need no SVFrameMobs client installation.
+# Drops supplement the vanilla entity's loot. Unsupported fields fail reload atomically.
+HeroTrainingDummy:
+  Type: COW
+  Display: '&6Hero Training Dummy'
+  Health: 100
+  Damage: 0
+  Options:
+    NoAI: true
+    Silent: true
+  Drops:
+    - minecraft:emerald 1 1
+  Skills:
+    - effect:particles{amount=4} @self ~onTimer:40
+StormSentinel:
+  Type: ZOMBIE
+  Display: '&bStorm Sentinel'
+  Health: 80
+  Damage: 6
+  Armor: 4
+  Equipment:
+    - minecraft:iron_sword HAND
+    - minecraft:iron_helmet HEAD
+  Drops:
+    - minecraft:emerald 2 0.5
+  Skills:
+    - effect:particles{amount=12} @self ~onSpawn
+    - damage{amount=3} @PlayersInRadius{r=5} ~onTimer:80
+    - velocity{y=0.8} @trigger ~onDamaged 0.25

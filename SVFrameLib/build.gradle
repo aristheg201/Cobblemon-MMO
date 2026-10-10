@@ -2,7 +2,7 @@ plugins {
     id 'fabric-loom' version "${loom_version}"
 }
 group = 'vn.svframe.fabricmmo'
-version = '1.7.1-fabric'
+version = '1.7.2-fabric'
 base { archivesName = 'SVFrameLib' }
 repositories {
     mavenCentral()
@@ -40,5 +40,7 @@ java {
     withSourcesJar()
 }
 processResources {
+    inputs.property("version", project.version)
+
     filesMatching('fabric.mod.json') { expand version: project.version }
 }

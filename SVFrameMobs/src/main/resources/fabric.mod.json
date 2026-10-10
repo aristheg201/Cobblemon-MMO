@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1, "id": "svframemobs", "version": "${version}",
+  "name": "SVFrameMobs", "description": "Native configurable server mobs for Minecraft 1.21.1.",
+  "environment": "*", "entrypoints": {"main": ["vn.svframe.svframemobs.SVFrameMobs"]},
+  "depends": {"fabricloader": ">=0.18.4", "minecraft": "1.21.1", "java": ">=21", "fabric-api": "*", "svframelib": ">=1.7.2-fabric"}
+}

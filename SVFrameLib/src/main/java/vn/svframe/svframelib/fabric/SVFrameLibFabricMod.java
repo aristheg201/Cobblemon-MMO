@@ -40,6 +40,9 @@ public final class SVFrameLibFabricMod implements ModInitializer {
 
     @Override public void onInitialize() {
         try { SVFrameLibDefaultFiles.ensure(); } catch (IOException exception) { throw new IllegalStateException("Could not install SVFrameLib default configuration", exception); }
+        HeroEntranceRuntime.install();
+        ReferenceClassSkillRuntime.install();
+        NativeVisualRuntime.install();
         reload();
         FabricDamageBridge.reload();
         SVFrameLibIndicatorManager.reload();
@@ -77,7 +80,7 @@ public final class SVFrameLibFabricMod implements ModInitializer {
     private static boolean castResolved(LegacySkillDefinition definition, UUID caster, UUID target, Map<String,?> parameters, ScriptContext context) {
         String source=definition.source()==null?"":definition.source().trim();
         if(source.isEmpty()){String script=SCRIPT_IDS.get(norm(definition.id()));return script!=null&&scripts.cast(script,context);} int colon=source.indexOf(':'); String provider=colon<0?"default":source.substring(0,colon).trim().toLowerCase(Locale.ROOT); String sourceId=colon<0?source:source.substring(colon+1).trim();
-        return switch(provider){case "script","svframelib"->castScript(sourceId,context);case "default"->castDefault(sourceId,definition.id(),context);default->false;};
+        return switch(provider){case "native"->sourceId.equalsIgnoreCase("HERO_ENTRANCE") ? HeroEntranceRuntime.start(server == null ? null : server.getPlayerManager().getPlayer(caster), parameters) : ReferenceClassSkillRuntime.cast(sourceId,server == null ? null : server.getPlayerManager().getPlayer(caster),parameters);case "script","svframelib"->castScript(sourceId,context);case "default"->castDefault(sourceId,definition.id(),context);default->false;};
     }
     public static void schedule(int delayTicks,Runnable task){if(task==null)return;if(delayTicks<=0){MinecraftServer value=server;if(value!=null)value.execute(task);else task.run();return;}SCHEDULED.add(new Scheduled(tick+delayTicks,task));}
     private static boolean castDefault(String sourceId,String skillId,ScriptContext context){if(BuiltinSkillOwnership.isExternalProvider(sourceId))return false;if(!BuiltinSkillOwnership.isNative(sourceId))return false;String sourceScript=SCRIPT_IDS.get(norm(sourceId));if(sourceScript!=null)return scripts.cast(sourceScript,context);String skillScript=SCRIPT_IDS.get(norm(skillId));if(skillScript!=null)return scripts.cast(skillScript,context);if(NativeTargetStatusSkillRuntime.supports(sourceId))return NativeTargetStatusSkillRuntime.cast(sourceId,context);return NativeDefaultSkillRuntime.cast(sourceId,context);}

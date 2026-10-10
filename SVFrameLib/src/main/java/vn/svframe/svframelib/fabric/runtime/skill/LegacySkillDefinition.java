@@ -68,7 +68,10 @@ public record LegacySkillDefinition(String id, String source, String name, Strin
             double itemValue = direct != null ? number(direct, parameter.itemDefaultValue())
                     : modifier != null ? number(modifier, parameter.itemDefaultValue())
                     : parameter.itemDefaultValue();
-            double resolved = playerValue + itemValue;
+            // Callers pass fully resolved class/item values. Player scaling and item defaults
+            // are alternative contexts, never additive copies of the same parameter.
+            double resolved = direct != null || modifier != null ? itemValue
+                    : supplied != null && supplied.containsKey("item_id") ? parameter.itemDefaultValue() : playerValue;
             result.put(key, resolved);
             result.put("parameter." + key, resolved);
             result.put("modifier." + key, itemValue);

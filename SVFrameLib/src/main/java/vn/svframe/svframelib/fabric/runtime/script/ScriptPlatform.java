@@ -21,9 +21,12 @@ public interface ScriptPlatform {
     long worldTime(UUID reference);
 
     void damage(UUID target, double amount, String type);
+    default void damage(UUID source, UUID target, double amount, String type) { damage(target, amount, type); }
     void heal(UUID target, double amount);
     void particle(UUID target, String particle, int amount, double x, double y, double z, double speed);
     void particleAt(Vector3 at, String particle, int amount, double x, double y, double z, double speed);
+    default void particleAt(UUID reference, Vector3 at, String particle, int amount, double x, double y, double z, double speed) { particleAt(at, particle, amount, x, y, z, speed); }
+    default void displayModel(UUID reference, String model, Vector3 at, int ticks, boolean follow) { throw new UnsupportedOperationException("Model visuals unavailable"); }
     void sound(UUID target, String sound, float volume, float pitch);
     void playerSound(UUID player, String sound, float volume, float pitch);
     void potion(UUID target, String effect, int level, int duration, boolean ambient, boolean particles, boolean icon);
@@ -60,5 +63,6 @@ public interface ScriptPlatform {
     void shootArrow(UUID player, double speed, double damage);
     void shulkerBullet(UUID source, UUID target, double damage);
     void delay(int ticks, Runnable runnable);
+    default void projectile(UUID reference, ProjectileSpec spec, Consumer<Vector3> tick, Consumer<UUID> hitEntity, Runnable hitBlock) { projectile(spec, tick, hitEntity, hitBlock); }
     void projectile(ProjectileSpec spec, Consumer<Vector3> tick, Consumer<UUID> hitEntity, Runnable hitBlock);
 }
