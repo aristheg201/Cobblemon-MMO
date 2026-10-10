@@ -58,10 +58,14 @@ public class DamageManager extends Module {
     public boolean registerAttack(AttackMetadata attack, boolean knockback, boolean ignoreImmunity) {
         Objects.requireNonNull(attack, "Attack cannot be null");
         if (attack.getTarget() == null) throw new IllegalArgumentException("Target cannot be null");
+        LivingEntity attacker = attack.hasAttacker() ? attack.getAttacker().getEntity() : null;
+        if(!vn.svframe.svframelib.entity.RpgEntityAdapters.allows(attacker,attack.getTarget(),vn.svframe.svframelib.entity.RpgEntityAdapters.Effect.DAMAGE)){attack.recordApplication(false,0);return false;}
+        double before=attack.getTarget().getHealth()+attack.getTarget().getAbsorptionAmount();
         markAsMetadata(attack);
         try {
-            LivingEntity attacker = attack.hasAttacker() ? attack.getAttacker().getEntity() : null;
-            return applyDamage(attack.getDamage().getDamage(), attack.getTarget(), attacker, knockback, ignoreImmunity);
+            boolean accepted=applyDamage(attack.getDamage().getDamage(), attack.getTarget(), attacker, knockback, ignoreImmunity);
+            attack.recordApplication(accepted,before-attack.getTarget().getHealth()-attack.getTarget().getAbsorptionAmount());
+            return accepted;
         } finally {
             unmarkAsMetadata(attack.getTarget());
         }

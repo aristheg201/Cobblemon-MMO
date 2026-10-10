@@ -63,6 +63,7 @@ public final class SkillRuntime {
             ClassSkill skill = data.getProfess().getSkill(entry.getValue());
             var slotDefinition = data.getProfess().getSkillSlot(slot);
             if (skill == null || slotDefinition == null || !data.canUseSkill(skill)) continue;
+            if (!vn.svframe.svframemmo.trigger.NativeTriggerRegistry.evaluateSkillFormula(skill.getSkill(),slotDefinition.formula())) continue;
             Registration registration = new Registration(data.getMMOPlayerData());
             int buffIndex = 0;
             for (String line : slotDefinition.skillBuffs()) {

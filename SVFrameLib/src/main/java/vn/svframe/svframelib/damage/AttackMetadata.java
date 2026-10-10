@@ -15,6 +15,12 @@ public class AttackMetadata {
     private final DamageMetadata damage;
     private final LivingEntity target;
     private final StatProvider attacker;
+    private boolean applied;
+    private double appliedDamage;
+    /** Result of the native damage call, including cancellations and immunity. */
+    public boolean wasApplied(){return applied;}
+    public double getAppliedDamage(){return appliedDamage;}
+    public void recordApplication(boolean accepted,double amount){applied=accepted;appliedDamage=accepted?Math.max(0,amount):0;}
 
     @Deprecated
     public AttackMetadata(DamageMetadata damage, StatProvider attacker) { this(damage, null, attacker); }

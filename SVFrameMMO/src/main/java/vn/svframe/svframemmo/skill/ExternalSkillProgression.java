@@ -56,18 +56,25 @@ public final class ExternalSkillProgression {
 
     /** Captures the immutable state on the server thread, then performs JSON/disk work off-thread. */
     public void save() {
+        saveDurably().exceptionally(exception->{LOG.log(Level.SEVERE,"Could not asynchronously save SVFrameMMO external skill progression",exception);return null;});
+    }
+
+    /** Completes only after the queued immutable snapshot has been atomically written. */
+    public java.util.concurrent.CompletableFuture<Void> saveDurably() {
         Path target = file;
         ExecutorService current = writer;
-        if (target == null || current == null || closing) return;
+        if (target == null || current == null || closing) return java.util.concurrent.CompletableFuture.failedFuture(new IllegalStateException("External progression writer is not running"));
         Map<String, SavedProfile> snapshot = snapshot();
+        var completion=new java.util.concurrent.CompletableFuture<Void>();
         try {
             current.execute(() -> {
-                try { write(target, snapshot); }
-                catch (Exception exception) { LOG.log(Level.SEVERE, "Could not asynchronously save SVFrameMMO external skill progression", exception); }
+                try { write(target, snapshot);completion.complete(null); }
+                catch (Exception exception) { completion.completeExceptionally(exception); }
             });
         } catch (RejectedExecutionException rejected) {
-            if (!closing) LOG.log(Level.SEVERE, "External-skill writer rejected a save", rejected);
+            completion.completeExceptionally(rejected);
         }
+        return completion;
     }
 
     /** Drains queued writes and performs one final synchronous save during server shutdown. */

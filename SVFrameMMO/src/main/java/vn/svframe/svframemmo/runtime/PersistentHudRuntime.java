@@ -23,12 +23,20 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** Permanent numeric HUD. Vanilla-heart limiting is presentation-only in the network mixin. */
+/** Fallback action-bar HUD for players without a dedicated presentation HUD. */
 public final class PersistentHudRuntime implements ModInitializer {
     private static final Logger LOG = Logger.getLogger("SVFrameMMO-HUD");
     private static final int GLOBAL_SKILL_SLOTS = 6;
     private static volatile double visualHealthCap = 40d;
     private static volatile boolean initialized;
+    private static final java.util.Set<java.util.UUID> PRESENTATION_OWNERS = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    /** Only suppresses the fallback HUD; casting messages and gameplay stats remain authoritative. */
+    public static void setPresentationOwner(java.util.UUID player, boolean active) {
+        if (active) PRESENTATION_OWNERS.add(player); else PRESENTATION_OWNERS.remove(player);
+    }
+
+    public static boolean hasPresentationOwner(java.util.UUID player) { return PRESENTATION_OWNERS.contains(player); }
 
     private volatile SVFrameMMOConfig observedConfig;
     private volatile HudOptions options = HudOptions.defaults();
@@ -37,7 +45,8 @@ public final class PersistentHudRuntime implements ModInitializer {
 
     /** True only when this runtime is guaranteed to submit the higher-priority idle HUD this same tick. */
     public static boolean willOverrideIdle(PlayerData data, MMOPlayerData mmo, SVFrameMMOConfig live, long tick) {
-        if (!initialized || data == null || mmo == null || live == null || !live.actionBar().enabled()) return false;
+        if (!initialized || data == null || mmo == null || live == null || !live.actionBar().enabled()
+                || PRESENTATION_OWNERS.contains(data.getUniqueId())) return false;
         int period = Math.max(1, live.actionBar().updateTicks());
         if (tick % period != 0L || !data.isOnline()) return false;
         ServerPlayerEntity player = data.getPlayer();
@@ -47,6 +56,8 @@ public final class PersistentHudRuntime implements ModInitializer {
     @Override
     public void onInitialize() {
         initialized = true;
+        net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PRESENTATION_OWNERS.remove(handler.player.getUuid()));
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STOPPED.register(server -> PRESENTATION_OWNERS.clear());
         ServerTickEvents.END_SERVER_TICK.register(server -> tick(server, SVFrameMMO.currentTick()));
     }
 
@@ -69,6 +80,7 @@ public final class PersistentHudRuntime implements ModInitializer {
 
             if (!live.actionBar().enabled() || player.isDead()) continue;
             boolean casting = SVFrameMMO.skillBar().isCasting(data.getUniqueId());
+            if (PRESENTATION_OWNERS.contains(data.getUniqueId())) continue;
             if (casting && !hud.alwaysVisible()) continue;
 
             String resourceFormat = casting ? hud.castingFormat() : live.actionBar().format();
