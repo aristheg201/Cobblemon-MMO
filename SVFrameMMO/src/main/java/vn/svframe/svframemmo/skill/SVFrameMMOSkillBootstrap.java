@@ -53,6 +53,9 @@ public final class SVFrameMMOSkillBootstrap {
         registerHandler(skills, new Sneaky_Picky(config(dir, "sneaky-picky.yml", "SNEAKY_PICKY")));
         registerHandler(skills, new Staff_Attack(config(dir, "staff-attack.yml", "STAFF_ATTACK")));
 
+        // An explicit grant makes the native inspection skill available to any class and to the skill bar.
+        vn.svframe.svframemmo.SVFrameMMO.externalSkills().replace("svframemmo-native",
+                java.util.List.of(new ClassSkill(skills.getHandler("HERO_ENTRANCE"), 1, 1, false, true, false)));
         aliasCount = registerNativeAliases(skills, dir.resolve(LEGACY_ALIAS_FILE));
         if (aliasCount != EXPECTED_NATIVE_ALIASES)
             throw new IOException("Expected " + EXPECTED_NATIVE_ALIASES + " native class skill aliases, got " + aliasCount);

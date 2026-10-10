@@ -1,0 +1,77 @@
+{
+  "source_folder": "https://drive.google.com/drive/folders/1mwt23RfskwG6KG6TTYBCPfqcVfqKfqWT",
+  "archives": {
+    "config1.tar": {
+      "size": 327433837,
+      "sha256": "2df0b3c2e84e2824c82903e373a619f7604bbf879597b1fbbe3b83b87908a384"
+    },
+    "plugins.tar": {
+      "size": 231302033,
+      "sha256": "973d0468ac6dbe9c93ffad96500f7e9a0382f14174ae182aa209b81fff341a90"
+    },
+    "config2.tar": {
+      "size": 140492096,
+      "sha256": "d4ec5122ce5d748bda446f6b02522790c75e7f26d42e383f362e76d72082ac2b"
+    }
+  },
+  "amk_zip_sha256": "99611845e27c1d8f3c165a4739bb14377f35494547782bc355c1adcc821717d4",
+  "death_knight_meta_skills": 69,
+  "death_knight_mechanics": {
+    "aura": 20,
+    "skill": 81,
+    "totem": 4,
+    "summon": 14,
+    "effect:sound": 39,
+    "projectile": 19,
+    "delay": 25,
+    "auraremove": 4,
+    "lunge": 3,
+    "particles": 7,
+    "damage": 10,
+    "throw": 6,
+    "sound": 30,
+    "orbital": 10,
+    "potion": 4,
+    "signal": 3,
+    "stun": 6,
+    "ondamaged": 3,
+    "effect:particlering": 23,
+    "state": 6,
+    "partvis": 18,
+    "remove": 3,
+    "pull": 2,
+    "heal": 2,
+    "slash": 7,
+    "leap": 1,
+    "propel": 1,
+    "effect:particlesphere": 10
+  },
+  "death_knight_targeters": {
+    "self": 110,
+    "forward": 32,
+    "selfeyelocation": 3,
+    "origin": 2,
+    "entitiesnearorigin": 21,
+    "mir": 3,
+    "targetedtarget": 10,
+    "selflocation": 8,
+    "eir": 17,
+    "targetblock": 2
+  },
+  "death_knight_conditions": {
+    "hasaurastacks": 12,
+    "distance": 6,
+    "entitytype": 15,
+    "mmocantarget": 15,
+    "hasaura": 10,
+    "onground": 2
+  },
+  "native_class_adapter_skills": 14,
+  "imported_blueprints": [
+    "vfx_soul_blade",
+    "vfx_death_strike_1",
+    "vfx_death_wings_1"
+  ],
+  "imported_animation_ids": 13,
+  "imported_cube_displays": 44
+}

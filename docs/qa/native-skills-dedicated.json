@@ -1,0 +1,17 @@
+{
+  "wall_blocks_projectile": true,
+  "swept_hit": true,
+  "caster_not_hit": true,
+  "model_spawned": true,
+  "model_active": true,
+  "nether_target_health": 95.0,
+  "nether_projectile_hits_nether_entity": true,
+  "nether_caster_untouched": true,
+  "model_expired": true,
+  "item_insufficient_mana": true,
+  "item_cast": true,
+  "item_mana_once": true,
+  "shared_cooldown": true,
+  "item_cooldown_rejects_recast": true,
+  "failed_item_cast_no_cost": true
+}
