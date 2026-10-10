@@ -99,9 +99,27 @@ final class FabricScriptPlatform implements ScriptPlatform {
     }
 
     @Override
-    public void damage(UUID target, double amount, String type) {
-        Entity entity = entity(target);
-        if (entity instanceof LivingEntity living && amount > 0) living.damage(living.getDamageSources().generic(), (float) amount);
+    public void damage(UUID target, double amount, String type) { damage(null, target, amount, type); }
+
+    @Override
+    public void damage(UUID source, UUID target, double amount, String type) {
+        Entity victim = entity(target);
+        if (!(victim instanceof LivingEntity living) || !Double.isFinite(amount) || amount <= 0) return;
+        Entity attacker = entity(source);
+        if (attacker instanceof ServerPlayerEntity player) {
+            var types = new java.util.ArrayList<vn.svframe.svframelib.damage.DamageType>();
+            for (String value : (type == null ? "" : type).split("[,;+\\s]+"))
+                if (!value.isBlank()) types.add(vn.svframe.svframelib.damage.DamageType.valueOf(value.toUpperCase(Locale.ROOT)));
+            if (types.isEmpty()) types.add(vn.svframe.svframelib.damage.DamageType.SKILL);
+            var metadata = new vn.svframe.svframelib.player.PlayerMetadata(MMOPlayerData.setup(player).getStatMap(),
+                    vn.svframe.svframelib.api.player.EquipmentSlot.MAIN_HAND);
+            vn.svframe.svframelib.SVFrameLib.inst().getDamage().registerAttack(
+                    new vn.svframe.svframelib.damage.AttackMetadata(
+                            new vn.svframe.svframelib.damage.DamageMetadata(amount, types), living, metadata));
+        } else {
+            living.damage(attacker instanceof LivingEntity mob ? living.getDamageSources().mobAttack(mob)
+                    : living.getDamageSources().generic(), (float) Math.min(Float.MAX_VALUE, amount));
+        }
     }
 
     @Override
@@ -125,10 +143,23 @@ final class FabricScriptPlatform implements ScriptPlatform {
     }
 
     @Override
+    public void particleAt(UUID reference, Vector3 point, String particle, int count, double dx, double dy, double dz, double speed) {
+        Entity caster = entity(reference);
+        if (caster != null) spawnParticle((ServerWorld)caster.getWorld(), point, particle, count, dx, dy, dz, speed);
+    }
+
+    @Override
+    public void displayModel(UUID reference, String model, Vector3 at, int ticks, boolean follow) {
+        Entity caster=entity(reference);
+        if (!NativeVisualRuntime.spawn(model,caster,new Vec3d(at.x(),at.y(),at.z()),ticks,follow)) throw new IllegalArgumentException("Unknown/unavailable native visual model: "+model);
+    }
+
+    @Override
     public void sound(UUID target, String sound, float volume, float pitch) {
         Entity entity = entity(target);
         if (entity == null) return;
-        var event = Registries.SOUND_EVENT.get(identifier(sound));
+        var id = identifier(sound);
+        var event = Registries.SOUND_EVENT.containsId(id) ? Registries.SOUND_EVENT.get(id) : net.minecraft.sound.SoundEvent.of(id);
         ((ServerWorld) entity.getWorld()).playSound(null, entity.getX(), entity.getY(), entity.getZ(), event,
                 SoundCategory.PLAYERS, volume, pitch);
     }
@@ -157,7 +188,15 @@ final class FabricScriptPlatform implements ScriptPlatform {
         living.removeStatusEffect(entry);
     }
 
-    @Override public void velocity(UUID target, Vector3 vector) { Entity entity = entity(target); if (entity != null) entity.setVelocity(vector.x(), vector.y(), vector.z()); }
+    @Override public void velocity(UUID target, Vector3 vector) {
+        Entity entity = entity(target);
+        if (entity == null) return;
+        entity.setVelocity(vector.x(), vector.y(), vector.z());
+        entity.velocityModified = true;
+        entity.velocityDirty = true;
+        if (entity instanceof ServerPlayerEntity player)
+            player.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket(player));
+    }
     @Override public void teleport(UUID target, Vector3 location) { Entity entity = entity(target); if (entity != null) entity.requestTeleport(location.x(), location.y(), location.z()); }
 
     @Override
@@ -368,37 +407,58 @@ final class FabricScriptPlatform implements ScriptPlatform {
 
     @Override
     public void projectile(ProjectileSpec spec, Consumer<Vector3> tick, Consumer<UUID> hit, Runnable end) {
+        fly(null, firstWorld(), spec, tick, hit, end);
+    }
+
+    @Override
+    public void projectile(UUID reference, ProjectileSpec spec, Consumer<Vector3> tick, Consumer<UUID> hit, Runnable end) {
+        Entity owner = entity(reference);
+        if (owner != null) fly(owner, (ServerWorld)owner.getWorld(), spec, tick, hit, end);
+    }
+
+    private void fly(Entity owner, ServerWorld world, ProjectileSpec spec, Consumer<Vector3> tick, Consumer<UUID> hit, Runnable end) {
+        if (world == null) return;
         Vector3 direction = spec.direction().normalize();
-        int life = Math.max(1, spec.lifeTicks());
-        double speed = Math.max(0.01, spec.speed());
+        int life = Math.max(1, Math.min(1200, spec.lifeTicks()));
+        double speed = Math.max(0.01, Math.min(8, spec.speed()));
+        double range = Math.max(0, Math.min(256, spec.range()));
+        double size = Math.max(0, Math.min(8, spec.size()));
+        if (!Double.isFinite(speed) || !Double.isFinite(range) || !Double.isFinite(size)) throw new IllegalArgumentException("Non-finite projectile parameters");
         class Flight implements Runnable {
             private Vector3 point = spec.origin();
             private int age;
             private double distance;
             @Override public void run() {
-                if (age++ >= life || distance >= spec.range()) { end.run(); return; }
-                point = point.add(direction.multiply(speed));
-                distance += speed;
-                tick.accept(point);
-                ServerWorld world = firstWorld();
-                if (world != null) {
-                    Box box = new Box(point.x() - spec.size(), point.y() - spec.size(), point.z() - spec.size(), point.x() + spec.size(), point.y() + spec.size(), point.z() + spec.size());
-                    List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, box, Entity::isAlive);
-                    if (!entities.isEmpty()) { hit.accept(entities.getFirst().getUuid()); end.run(); return; }
+                if (owner != null && (!owner.isAlive() || owner.isRemoved() || owner.getWorld() != world)) return;
+                if (age++ >= life || distance >= range) { end.run(); return; }
+                Vector3 next = point.add(direction.multiply(Math.min(speed, range-distance)));
+                Vec3d from = new Vec3d(point.x(),point.y(),point.z()), to = new Vec3d(next.x(),next.y(),next.z());
+                if (!world.isChunkLoaded(BlockPos.ofFloored(to))) { end.run(); return; }
+                var block = world.raycast(new net.minecraft.world.RaycastContext(from,to,net.minecraft.world.RaycastContext.ShapeType.COLLIDER,net.minecraft.world.RaycastContext.FluidHandling.NONE,owner));
+                double nearest = block.getType() == net.minecraft.util.hit.HitResult.Type.MISS ? Double.POSITIVE_INFINITY : from.squaredDistanceTo(block.getPos());
+                LivingEntity collision = null;
+                Box search = new Box(from,to).expand(size);
+                for (LivingEntity candidate : world.getEntitiesByClass(LivingEntity.class,search,e -> e.isAlive() && e != owner && !e.isSpectator())) {
+                    var intersection = candidate.getBoundingBox().expand(size).raycast(from,to);
+                    double at = candidate.getBoundingBox().expand(size).contains(from) ? 0 : intersection.map(from::squaredDistanceTo).orElse(Double.POSITIVE_INFINITY);
+                    if (at < nearest) { nearest=at; collision=candidate; }
                 }
-                SVFrameLibFabricMod.schedule(1, this);
+                if (Double.isFinite(nearest)) {
+                    Vec3d contact = from.add(to.subtract(from).normalize().multiply(Math.sqrt(nearest)));
+                    tick.accept(new Vector3(contact.x,contact.y,contact.z));
+                    if (collision != null) hit.accept(collision.getUuid());
+                    end.run(); return;
+                }
+                point=next; distance+=speed; tick.accept(point);
+                SVFrameLibFabricMod.schedule(1,this);
             }
         }
-        SVFrameLibFabricMod.schedule(1, new Flight());
+        SVFrameLibFabricMod.schedule(1,new Flight());
     }
 
     private static void spawnParticle(ServerWorld world, Vector3 point, String name, int count, double dx, double dy, double dz, double speed) {
-        Object value = Registries.PARTICLE_TYPE.get(identifier(name));
-        if (value instanceof ParticleEffect effect) {
-            world.spawnParticles(effect, point.x(), point.y(), point.z(), Math.max(1, count), dx, dy, dz, speed);
-            return;
-        }
-        throw new IllegalArgumentException("Particle type is not spawnable as a ParticleEffect: " + name);
+        ParticleEffect effect = NativeParticles.effect(name, 0xa83cff, 1, "minecraft:stone");
+        world.spawnParticles(effect, point.x(), point.y(), point.z(), Math.max(0, Math.min(4096,count)), dx, dy, dz, speed);
     }
 
     private static ServerPlayerEntity player(UUID uuid) {

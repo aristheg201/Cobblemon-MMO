@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
-import vn.svframe.svframelib.fabric.SVFrameLibFabricMod;
+import vn.svframe.svframelib.fabric.ItemSkillRuntime;
 import vn.svframe.svframeitems.item.ItemCodec;
 import vn.svframe.svframeitems.model.*;
 import vn.svframe.svframeitems.registry.SVFrameItemsRegistry;
@@ -32,7 +32,7 @@ public final class AbilityRuntime {
         Objects.requireNonNull(player);Objects.requireNonNull(trigger);Objects.requireNonNull(random);
         Optional<ItemInstance> read=ItemCodec.read(stack);if(read.isEmpty())return 0;ItemInstance instance=read.get();ItemDefinition definition=registry.item(instance.definitionId());if(definition==null)return 0;
         int casts=0;
-        for(ResolvedAbility ability:resolve(instance,definition,trigger,random))if(SVFrameLibFabricMod.castSkill(ability.skill(),player.getUuid(),target==null?player.getUuid():target.getUuid(),ability.parameters()))casts++;
+        for(ResolvedAbility ability:resolve(instance,definition,trigger,random))if(ItemSkillRuntime.cast(ability.skill(),player,target,ability.parameters()))casts++;
         return casts;
     }
     public static List<ResolvedAbility> resolve(ItemInstance instance,ItemDefinition definition,ItemAbility.Trigger trigger,RandomGenerator random){

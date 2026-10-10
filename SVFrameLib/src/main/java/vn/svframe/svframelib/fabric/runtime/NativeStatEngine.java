@@ -1,13 +1,14 @@
 package vn.svframe.svframelib.fabric.runtime;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -188,7 +189,9 @@ public final class NativeStatEngine {
         }
 
         public synchronized void register(Modifier modifier) {
-            modifiers.put(Objects.requireNonNull(modifier, "modifier").id(), modifier);
+            Modifier registered = Objects.requireNonNull(modifier, "modifier");
+            modifiers.put(registered.id(), registered);
+            if (registered.temporary()) owner.scheduleExpiration(entityId, stat, registered);
             notifyUpdate();
         }
 
@@ -268,12 +271,12 @@ public final class NativeStatEngine {
             return handler == null ? value : handler.clampValue(value);
         }
 
-        private synchronized int expire(long tick) {
-            int before = modifiers.size();
-            modifiers.values().removeIf(modifier -> modifier.expired(tick));
-            int removed = before - modifiers.size();
-            if (removed > 0) notifyUpdate();
-            return removed;
+        private synchronized boolean expireIfCurrent(UUID modifierId, long expiresAtTick, long currentTick) {
+            Modifier current = modifiers.get(modifierId);
+            if (current == null || current.expiresAtTick() != expiresAtTick || !current.expired(currentTick)) return false;
+            modifiers.remove(modifierId);
+            notifyUpdate();
+            return true;
         }
 
         private void notifyUpdate() {
@@ -321,8 +324,11 @@ public final class NativeStatEngine {
         }
     }
 
+    private record Expiration(long expiresAtTick, UUID entityId, String stat, UUID modifierId) { }
+
     private final Map<UUID, EntityStats> entities = new ConcurrentHashMap<>();
     private final Map<String, NativeStatHandler> handlers = new ConcurrentHashMap<>();
+    private final PriorityQueue<Expiration> expirations = new PriorityQueue<>(Comparator.comparingLong(Expiration::expiresAtTick));
 
     public NativeStatHandler registerHandler(NativeStatHandler handler) {
         Objects.requireNonNull(handler, "handler");
@@ -460,18 +466,16 @@ public final class NativeStatEngine {
     }
 
     public int tick(long currentTick) {
-        int removed = 0;
-        List<UUID> emptyEntities = new ArrayList<>();
+        int removed = expireDue(currentTick);
+        if (currentTick % 1200L != 0L) return removed;
         for (Map.Entry<UUID, EntityStats> entityEntry : entities.entrySet()) {
             EntityStats entity = entityEntry.getValue();
-            for (StatInstance instance : entity.instances()) removed += instance.expire(currentTick);
             entity.stats.entrySet().removeIf(entry -> entry.getValue().isEmpty()
                     && entry.getValue().base() == 0.0d
                     && entry.getValue().defaultBase() == 0.0d
                     && handler(entry.getKey()) == null);
-            if (entity.stats.isEmpty() && !entity.sessionOpen) emptyEntities.add(entityEntry.getKey());
+            if (entity.stats.isEmpty() && !entity.sessionOpen) entities.remove(entityEntry.getKey(), entity);
         }
-        for (UUID entityId : emptyEntities) entities.remove(entityId);
         return removed;
     }
 
@@ -481,6 +485,9 @@ public final class NativeStatEngine {
 
     public void clear() {
         entities.clear();
+        synchronized (expirations) {
+            expirations.clear();
+        }
     }
 
     public int trackedEntities() {
@@ -489,6 +496,31 @@ public final class NativeStatEngine {
 
     private EntityStats entity(UUID entityId) {
         return entities.computeIfAbsent(entityId, id -> new EntityStats(this, id));
+    }
+
+    private void scheduleExpiration(UUID entityId, String stat, Modifier modifier) {
+        Expiration expiration = new Expiration(modifier.expiresAtTick(), entityId, stat, modifier.id());
+        synchronized (expirations) {
+            expirations.add(expiration);
+        }
+    }
+
+    private int expireDue(long currentTick) {
+        int removed = 0;
+        while (true) {
+            Expiration expiration;
+            synchronized (expirations) {
+                expiration = expirations.peek();
+                if (expiration == null || expiration.expiresAtTick() > currentTick) return removed;
+                expirations.poll();
+            }
+
+            EntityStats entity = entities.get(expiration.entityId());
+            if (entity == null) continue;
+            StatInstance instance = entity.stats.get(expiration.stat());
+            if (instance != null && instance.expireIfCurrent(
+                    expiration.modifierId(), expiration.expiresAtTick(), currentTick)) removed++;
+        }
     }
 
     private void requestUpdate(UUID entityId, String stat, StatInstance instance) {

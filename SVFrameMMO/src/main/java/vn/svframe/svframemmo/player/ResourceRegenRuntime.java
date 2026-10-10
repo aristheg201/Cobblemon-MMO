@@ -13,7 +13,7 @@ public final class ResourceRegenRuntime {
         if (tick < next) return;
         next = tick + period;
         double seconds = period / 20d;
-        for (PlayerData data : SVFrameMMO.playerData().all()) {
+        for (PlayerData data : SVFrameMMO.playerData().online()) {
             var player = data.getPlayer();
             if (player == null || player.isDead()) continue;
             for (PlayerResource resource : PlayerResource.values()) {

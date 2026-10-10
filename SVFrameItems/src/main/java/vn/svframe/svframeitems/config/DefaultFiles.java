@@ -7,7 +7,7 @@ import java.util.*;
 
 public final class DefaultFiles {
     private static final List<String> FILES = List.of(
-            "types.yml", "rarities.yml", "upgrades.yml", "sets.yml", "recipes.yml", "loot.yml", "items/examples.yml");
+            "types.yml", "rarities.yml", "upgrades.yml", "sets.yml", "recipes.yml", "loot.yml", "items/examples.yml", "items/hero_entrance.yml");
     private DefaultFiles() {}
     public static Path root() { return FabricLoader.getInstance().getConfigDir().resolve("SVFrameItems"); }
     public static void ensure() throws IOException {

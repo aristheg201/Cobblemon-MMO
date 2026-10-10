@@ -2,17 +2,28 @@ package vn.svframe.svframemmo.api.player.profess;
 
 import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.UtilityMethods;
+import vn.svframe.svframelib.api.player.EquipmentSlot;
 import vn.svframe.svframelib.gui.util.IconOptions;
 import vn.svframe.svframelib.manager.SkillManager;
+import vn.svframe.svframelib.player.modifier.ModifierSource;
+import vn.svframe.svframelib.player.particle.ParticleInformation;
+import vn.svframe.svframelib.player.skill.PassiveSkill;
+import vn.svframe.svframelib.script.Script;
+import vn.svframe.svframelib.skill.SimpleSkill;
+import vn.svframe.svframelib.skill.handler.SVFrameLibSkillHandler;
 import vn.svframe.svframelib.skill.handler.SkillHandler;
 import vn.svframe.svframelib.skill.parameter.value.FormulaFailsafeException;
 import vn.svframe.svframelib.skill.parameter.value.ScalingFormula;
+import vn.svframe.svframelib.skill.trigger.TriggerType;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
 import vn.svframe.svframemmo.api.player.profess.resource.ResourceRegeneration;
 import vn.svframe.svframemmo.experience.curve.ExperienceCurve;
 import vn.svframe.svframemmo.experience.curve.ExperienceCurveRegistry;
 import vn.svframe.svframemmo.skill.ClassSkill;
+import vn.svframe.svframemmo.skill.cast.ComboMap;
+import vn.svframe.svframemmo.trigger.NativeTriggerRegistry;
+import vn.svframe.svframemmo.trigger.Trigger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,9 +37,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** Native player-class definition backed by the class configuration corpus. */
 public final class PlayerClass {
+    private static final Logger LOG = Logger.getLogger("SVFrameMMO-PlayerClass");
+
     public record SkillSlotDefinition(int slot, String name, String formula, List<String> lore,
                                       boolean unlockedByDefault, boolean canManuallyBind,
                                       String hardset, List<String> skillBuffs) { }
@@ -49,10 +64,15 @@ public final class PlayerClass {
     private final Map<String, ScalingFormula> defaultStats;
     private final Map<String, ScalingFormula> stats = new LinkedHashMap<>();
     private final Map<String, ClassSkill> skills = new LinkedHashMap<>();
+    private final List<PassiveSkill> classScripts = new ArrayList<>();
+    private final Map<String, List<Trigger>> eventTriggers = new LinkedHashMap<>();
     private final List<Subclass> subclasses = new ArrayList<>();
     private final Map<String, Integer> unresolvedSubclasses = new LinkedHashMap<>();
     private final Map<PlayerResource, ResourceRegeneration> resourceHandlers = new EnumMap<>(PlayerResource.class);
     private final List<SkillSlotDefinition> skillSlots;
+    private final ParticleInformation castParticle;
+    private final Map<String, Object> keyCombos;
+    private final ComboMap comboMap;
     private final Map<String, Object> raw;
 
     public PlayerClass(String id, Map<String, Object> config,
@@ -76,6 +96,49 @@ public final class PlayerClass {
         this.experienceTableId = config.get("exp-table") == null ? null : String.valueOf(config.get("exp-table"));
         this.skillTreeIds = stringList(config.get("skill-trees"));
         this.mainExperienceSources = stringList(config.get("main-exp-sources"));
+
+        Map<String, Object> configuredScripts = map(config.get("scripts"));
+        for (Map.Entry<String, Object> entry : configuredScripts.entrySet()) {
+            try {
+                TriggerType trigger = TriggerType.valueOf(UtilityMethods.enumName(entry.getKey()));
+                Script script = skillManager.loadScript(this.id + "_CLASS_" + UtilityMethods.enumName(entry.getKey()), entry.getValue());
+                SimpleSkill castSkill = new SimpleSkill(new SVFrameLibSkillHandler(script));
+                classScripts.add(new PassiveSkill("svframemmo_class_script_" + this.id.toLowerCase(Locale.ROOT) + "_" + trigger.getLowerCaseId(),
+                        trigger, castSkill, EquipmentSlot.OTHER, ModifierSource.OTHER));
+            } catch (RuntimeException exception) {
+                LOG.log(Level.WARNING, "Could not load class script '" + entry.getKey() + "' from class '" + this.id + "': " + exception.getMessage());
+            }
+        }
+
+        this.keyCombos = Map.copyOf(map(config.get("key-combos")));
+        ComboMap parsedCombos = null;
+        if (!keyCombos.isEmpty()) {
+            try { parsedCombos = new ComboMap(keyCombos); }
+            catch (RuntimeException exception) {
+                LOG.log(Level.WARNING, "Could not load combo map from class '" + this.id + "': " + exception.getMessage());
+            }
+        }
+        this.comboMap = parsedCombos;
+
+        Map<String, Object> configuredTriggers = map(config.get("triggers"));
+        for (Map.Entry<String, Object> entry : configuredTriggers.entrySet()) {
+            String triggerId = eventKey(entry.getKey());
+            try {
+                List<Trigger> parsed = NativeTriggerRegistry.parseAll(entry.getValue());
+                if (!parsed.isEmpty()) eventTriggers.put(triggerId, parsed);
+            } catch (RuntimeException exception) {
+                LOG.log(Level.WARNING, "Could not load event trigger '" + triggerId + "' from class '" + this.id + "': " + exception.getMessage());
+            }
+        }
+
+        ParticleInformation particle = null;
+        if (config.containsKey("cast-particle")) {
+            try { particle = ParticleInformation.fromConfig(config.get("cast-particle")); }
+            catch (RuntimeException exception) {
+                LOG.log(Level.WARNING, "Could not load cast particle from class '" + this.id + "': " + exception.getMessage());
+            }
+        }
+        this.castParticle = particle;
 
         Map<String, Object> configuredStats = map(config.get("attributes"));
         for (Map.Entry<String, Object> entry : configuredStats.entrySet())
@@ -129,6 +192,17 @@ public final class PlayerClass {
     public String getActionBar() { return actionBarFormat; }
     public boolean hasActionBar() { return actionBarFormat != null; }
     public Map<String, Object> getRawConfig() { return raw; }
+    public ParticleInformation getCastParticle() { return castParticle; }
+    public List<PassiveSkill> getScripts() { return List.copyOf(classScripts); }
+    public Map<String, Object> getKeyCombos() { return keyCombos; }
+    public boolean hasKeyCombos() { return comboMap != null && !comboMap.isEmpty(); }
+    public ComboMap getComboMap() { return comboMap; }
+    public Set<String> getEventTriggers() { return Set.copyOf(eventTriggers.keySet()); }
+    public boolean hasEventTriggers(String name) { return eventTriggers.containsKey(eventKey(name)); }
+    public List<Trigger> getEventTriggers(String name) { return eventTriggers.getOrDefault(eventKey(name), List.of()); }
+    public void fireEventTriggers(String name, PlayerData player) {
+        for (Trigger trigger : getEventTriggers(name)) trigger.schedule(player);
+    }
 
     public void setOption(ClassOption option, boolean value) { options.put(option, value); }
     public boolean hasOption(ClassOption option) { return options.getOrDefault(option, option.getDefault()); }
@@ -202,6 +276,10 @@ public final class PlayerClass {
         }
         result.sort(Comparator.comparingInt(SkillSlotDefinition::slot));
         return List.copyOf(result);
+    }
+
+    private static String eventKey(String value) {
+        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT).replace('_', '-').replace(' ', '-');
     }
 
     private static Object findIgnoreCase(Map<String, Object> map, String key) {

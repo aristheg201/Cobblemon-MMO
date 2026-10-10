@@ -13,7 +13,9 @@
     "WorkbenchScreenMixin",
     "VanillaCraftingScreenMixin",
     "DisplayEntityAccessor",
-    "TextDisplayEntityAccessor"
+    "TextDisplayEntityAccessor",
+    "HeroEntranceFallMixin",
+    "HeroEntranceFloatingMixin"
   ],
   "injectors": {
     "defaultRequire": 1

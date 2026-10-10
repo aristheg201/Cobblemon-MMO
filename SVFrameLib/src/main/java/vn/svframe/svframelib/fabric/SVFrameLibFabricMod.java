@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,7 +31,7 @@ public final class SVFrameLibFabricMod implements ModInitializer {
     private static final Path ROOT = FabricLoader.getInstance().getConfigDir().resolve("SVFrameLib");
     private static final Map<String, LegacySkillDefinition> SKILLS = new ConcurrentHashMap<>();
     private static final Map<String, String> SCRIPT_IDS = new ConcurrentHashMap<>();
-    private static final ConcurrentLinkedQueue<Scheduled> SCHEDULED = new ConcurrentLinkedQueue<>();
+    private static final PriorityBlockingQueue<Scheduled> SCHEDULED = new PriorityBlockingQueue<>();
     private static volatile ScriptEngine scripts = new ScriptEngine(new FabricScriptPlatform());
     private static volatile SVFrameLibGeneralSettings settings;
     private static volatile int customTriggers;
@@ -40,6 +40,9 @@ public final class SVFrameLibFabricMod implements ModInitializer {
 
     @Override public void onInitialize() {
         try { SVFrameLibDefaultFiles.ensure(); } catch (IOException exception) { throw new IllegalStateException("Could not install SVFrameLib default configuration", exception); }
+        HeroEntranceRuntime.install();
+        ReferenceClassSkillRuntime.install();
+        NativeVisualRuntime.install();
         reload();
         FabricDamageBridge.reload();
         SVFrameLibIndicatorManager.reload();
@@ -77,7 +80,7 @@ public final class SVFrameLibFabricMod implements ModInitializer {
     private static boolean castResolved(LegacySkillDefinition definition, UUID caster, UUID target, Map<String,?> parameters, ScriptContext context) {
         String source=definition.source()==null?"":definition.source().trim();
         if(source.isEmpty()){String script=SCRIPT_IDS.get(norm(definition.id()));return script!=null&&scripts.cast(script,context);} int colon=source.indexOf(':'); String provider=colon<0?"default":source.substring(0,colon).trim().toLowerCase(Locale.ROOT); String sourceId=colon<0?source:source.substring(colon+1).trim();
-        return switch(provider){case "script","svframelib"->castScript(sourceId,context);case "default"->castDefault(sourceId,definition.id(),context);default->false;};
+        return switch(provider){case "native"->sourceId.equalsIgnoreCase("HERO_ENTRANCE") ? HeroEntranceRuntime.start(server == null ? null : server.getPlayerManager().getPlayer(caster), parameters) : ReferenceClassSkillRuntime.cast(sourceId,server == null ? null : server.getPlayerManager().getPlayer(caster),parameters);case "script","svframelib"->castScript(sourceId,context);case "default"->castDefault(sourceId,definition.id(),context);default->false;};
     }
     public static void schedule(int delayTicks,Runnable task){if(task==null)return;if(delayTicks<=0){MinecraftServer value=server;if(value!=null)value.execute(task);else task.run();return;}SCHEDULED.add(new Scheduled(tick+delayTicks,task));}
     private static boolean castDefault(String sourceId,String skillId,ScriptContext context){if(BuiltinSkillOwnership.isExternalProvider(sourceId))return false;if(!BuiltinSkillOwnership.isNative(sourceId))return false;String sourceScript=SCRIPT_IDS.get(norm(sourceId));if(sourceScript!=null)return scripts.cast(sourceScript,context);String skillScript=SCRIPT_IDS.get(norm(skillId));if(skillScript!=null)return scripts.cast(skillScript,context);if(NativeTargetStatusSkillRuntime.supports(sourceId))return NativeTargetStatusSkillRuntime.cast(sourceId,context);return NativeDefaultSkillRuntime.cast(sourceId,context);}
@@ -91,6 +94,6 @@ public final class SVFrameLibFabricMod implements ModInitializer {
     private static boolean bool(Object value,boolean fallback){if(value instanceof Boolean flag)return flag;return value==null?fallback:Boolean.parseBoolean(String.valueOf(value));}
     private static double number(Object value,double fallback){try{return value instanceof Number n?n.doubleValue():value==null?fallback:Double.parseDouble(String.valueOf(value));}catch(NumberFormatException ignored){return fallback;}}
     private static String norm(String value){return value==null?"":value.trim().toLowerCase(Locale.ROOT);} private static String normScriptId(String value){String normalized=norm(value);return normalized.startsWith("svframelib:")?normalized.substring("svframelib:".length()):normalized;}
-    private static void runScheduled(){int size=SCHEDULED.size();for(int i=0;i<size;i++){Scheduled scheduled=SCHEDULED.poll();if(scheduled==null)break;if(scheduled.tick<=tick){try{scheduled.task.run();}catch(Throwable throwable){LOG.log(Level.SEVERE,"Scheduled SVFrameLib task failed",throwable);}}else SCHEDULED.add(scheduled);}}
-    private record Scheduled(long tick,Runnable task){}
+    private static void runScheduled(){while(true){Scheduled scheduled=SCHEDULED.peek();if(scheduled==null||scheduled.tick>tick)return;scheduled=SCHEDULED.poll();if(scheduled==null)continue;try{scheduled.task.run();}catch(Throwable throwable){LOG.log(Level.SEVERE,"Scheduled SVFrameLib task failed",throwable);}}}
+    private record Scheduled(long tick,Runnable task) implements Comparable<Scheduled>{@Override public int compareTo(Scheduled other){return Long.compare(tick,other.tick);}}
 }

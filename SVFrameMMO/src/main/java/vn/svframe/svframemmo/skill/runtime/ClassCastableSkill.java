@@ -10,23 +10,34 @@ import vn.svframe.svframelib.skill.handler.SkillHandler;
 import vn.svframe.svframelib.skill.result.SkillResult;
 import vn.svframe.svframelib.skill.result.def.SimpleSkillResult;
 import vn.svframe.svframelib.skill.trigger.TriggerType;
+import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.PlayerData;
+import vn.svframe.svframemmo.player.AdminRuntimeState;
 import vn.svframe.svframemmo.skill.ClassSkill;
 
 import java.util.Objects;
 
-/** Executes a shared SVFrameLib skill handler with class-specific level/formula/cost semantics. */
+/** Executes a shared SVFrameLib skill handler with the correct class/external progression level and cost semantics. */
 public final class ClassCastableSkill extends Skill {
+    private static final String GLOBAL_COOLDOWN = "svframemmo_global_skill";
+
     private final ClassSkill classSkill;
     private final PlayerData caster;
+    private final boolean requireClassProgression;
 
     public ClassCastableSkill(ClassSkill classSkill, PlayerData caster) {
+        this(classSkill, caster, true);
+    }
+
+    ClassCastableSkill(ClassSkill classSkill, PlayerData caster, boolean requireClassProgression) {
         super(Objects.requireNonNull(classSkill, "classSkill").getSkill());
         this.classSkill = classSkill;
         this.caster = Objects.requireNonNull(caster, "caster");
+        this.requireClassProgression = requireClassProgression;
     }
 
     public ClassSkill getClassSkill() { return classSkill; }
+    public boolean requiresClassProgression() { return requireClassProgression; }
 
     @Override
     public TriggerType getTrigger() { return classSkill.getTrigger(); }
@@ -66,9 +77,13 @@ public final class ClassCastableSkill extends Skill {
 
     private boolean validate(SkillMetadata metadata) {
         if (!caster.isOnline()) return false;
-        if (!caster.canUseSkill(classSkill)) return false;
+        if (requireClassProgression && !caster.canUseSkill(classSkill)) return false;
         MMOPlayerData mmo = caster.getMMOPlayerData();
-        if (!getTrigger().isPassive() && mmo.getCooldownMap().isOnCooldown(this)) return false;
+        if (!getTrigger().isPassive()) {
+            int globalTicks = SVFrameMMO.config().globalSkillCooldownTicks();
+            if (globalTicks > 0 && mmo.getCooldownMap().isOnCooldown(GLOBAL_COOLDOWN)) return false;
+            if (mmo.getCooldownMap().isOnCooldown(this)) return false;
+        }
         double mana = Math.max(0d, metadata.getParameter("mana"));
         double stamina = Math.max(0d, metadata.getParameter("stamina"));
         return caster.getMana() >= mana && caster.getStamina() >= stamina;
@@ -77,6 +92,12 @@ public final class ClassCastableSkill extends Skill {
     private void applyCosts(SkillMetadata metadata) {
         if (getTrigger().isPassive()) return;
         MMOPlayerData mmo = caster.getMMOPlayerData();
+        int globalTicks = SVFrameMMO.config().globalSkillCooldownTicks();
+        if (globalTicks > 0) mmo.getCooldownMap().applyCooldown(GLOBAL_COOLDOWN, globalTicks / 20d);
+        if (AdminRuntimeState.isNoCooldown(caster.getUniqueId())) {
+            caster.markCombat();
+            return;
+        }
         double cooldown = Math.max(0d, metadata.getParameter("cooldown"));
         if (cooldown > 0d) {
             double reduction = Math.max(0d, Math.min(1d, mmo.getStatMap().getStat("COOLDOWN_REDUCTION") / 100d));
@@ -91,7 +112,14 @@ public final class ClassCastableSkill extends Skill {
 
     @Override
     public double getParameter(String parameter) {
-        return classSkill.getParameter(parameter, caster);
+        int level;
+        if (requireClassProgression) {
+            level = caster.getSkillLevel(classSkill.getSkill());
+        } else {
+            int externalLevel = SVFrameMMO.externalProgression().level(caster.getUniqueId(), classSkill.getSkill().getId());
+            level = externalLevel > 0 ? externalLevel : 1;
+        }
+        return classSkill.getParameter(parameter, level, caster);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

@@ -3,3 +3,14 @@
 **/build/
 SVFrameItems/run/
 SVFrameItems/build-native.log
+
+# Local Fabric/Gradle state and QA worlds
+**/.gradle/
+**/build/
+**/run/
+**/logs/
+**/crash-reports/
+*.hprof
+
+**/__pycache__/
+*.py[cod]

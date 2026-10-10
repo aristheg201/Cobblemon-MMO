@@ -1,0 +1,11 @@
+# Resource-pack item models rendered with vanilla display entities.
+# Install the optional SVFrameVisuals demo pack to see the custom soul blade.
+# These are native bones, not a ModelEngine configuration importer.
+soul_blade:
+  - item: minecraft:iron_sword
+    custom-model-data: 10001
+    scale: 0.25
+    end-scale: 4
+    y: 2
+    end-y: 3
+    spin: 3

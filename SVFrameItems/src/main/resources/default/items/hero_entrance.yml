@@ -1,0 +1,22 @@
+hero_entrance_focus:
+  type: staff
+  material: minecraft:blaze_rod
+  name: Hero's Entrance Focus
+  revision: 1
+  level: 1
+  min-level: 1
+  max-level: 1
+  rarity: rare
+  abilities:
+    - trigger: USE
+      skill: HERO_ENTRANCE
+      chance: 1
+      parameters:
+        cooldown: 20
+        range: 32
+        radius: 5
+        height: 12
+        damage: 12
+        knockup: 1.1
+        aim_ticks: 60
+        descent_ticks: 12

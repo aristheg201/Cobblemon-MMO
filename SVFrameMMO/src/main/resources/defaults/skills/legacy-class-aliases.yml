@@ -1,0 +1,170 @@
+CLS_ARCANE_MAGE_AMBERS:
+  name: 'Ambers'
+  icon: MAGMA_CREAM
+  source: default:AMBERS
+  trigger: CAST
+CLS_ARCANE_MAGE_FIRE_STORM:
+  name: 'Fire Storm'
+  icon: BLAZE_POWDER
+  source: default:FIRE_STORM
+  trigger: CAST
+CLS_ARCANE_MAGE_GREATER_HEALINGS:
+  name: 'Greater Healings'
+  icon: GOLDEN_APPLE
+  source: default:GREATER_HEALINGS
+  trigger: CAST
+CLS_ARCANE_MAGE_ICE_SPIKES:
+  name: 'Ice Spikes'
+  icon: BLUE_ICE
+  source: default:ICE_SPIKES
+  trigger: CAST
+CLS_ARCANE_MAGE_MINOR_HEALINGS:
+  name: 'Minor Healings'
+  icon: GLISTERING_MELON_SLICE
+  source: default:MINOR_HEALINGS
+  trigger: CAST
+CLS_ARCANE_MAGE_POWER_MARK:
+  name: 'Power Mark'
+  icon: REDSTONE_TORCH
+  source: default:POWER_MARK
+  trigger: CAST
+CLS_ARCANE_MAGE_WARP:
+  name: 'Warp'
+  icon: ENDER_PEARL
+  source: default:WARP
+  trigger: CAST
+CLS_ARCANE_MAGE_WEAKEN:
+  name: 'Weaken'
+  icon: FERMENTED_SPIDER_EYE
+  source: default:WEAKEN
+  trigger: CAST
+CLS_MAGE_AMBERS:
+  name: 'Ambers'
+  icon: MAGMA_CREAM
+  source: default:AMBERS
+  trigger: CAST
+CLS_MAGE_FIRE_STORM:
+  name: 'Fire Storm'
+  icon: BLAZE_POWDER
+  source: default:FIRE_STORM
+  trigger: CAST
+CLS_MAGE_GREATER_HEALINGS:
+  name: 'Greater Healings'
+  icon: GOLDEN_APPLE
+  source: default:GREATER_HEALINGS
+  trigger: CAST
+CLS_MAGE_ICE_SPIKES:
+  name: 'Ice Spikes'
+  icon: BLUE_ICE
+  source: default:ICE_SPIKES
+  trigger: CAST
+CLS_MAGE_MINOR_HEALINGS:
+  name: 'Minor Healings'
+  icon: GLISTERING_MELON_SLICE
+  source: default:MINOR_HEALINGS
+  trigger: CAST
+CLS_MAGE_POWER_MARK:
+  name: 'Power Mark'
+  icon: REDSTONE_TORCH
+  source: default:POWER_MARK
+  trigger: CAST
+CLS_MAGE_WARP:
+  name: 'Warp'
+  icon: ENDER_PEARL
+  source: default:WARP
+  trigger: CAST
+CLS_MAGE_WEAKEN:
+  name: 'Weaken'
+  icon: FERMENTED_SPIDER_EYE
+  source: default:WEAKEN
+  trigger: CAST
+CLS_MARKSMAN_COMBO_ATTACK:
+  name: 'Combo Attack'
+  icon: IRON_SWORD
+  source: default:COMBO_ATTACK
+  trigger: CAST
+CLS_MARKSMAN_EVADE:
+  name: 'Evade'
+  icon: FEATHER
+  source: default:EVADE
+  trigger: CAST
+CLS_MARKSMAN_MINOR_HEALINGS:
+  name: 'Minor Healings'
+  icon: GLISTERING_MELON_SLICE
+  source: default:MINOR_HEALINGS
+  trigger: CAST
+CLS_MARKSMAN_WEAKEN:
+  name: 'Weaken'
+  icon: FERMENTED_SPIDER_EYE
+  source: default:WEAKEN
+  trigger: CAST
+CLS_ROGUE_COMBO_ATTACK:
+  name: 'Combo Attack'
+  icon: IRON_SWORD
+  source: default:COMBO_ATTACK
+  trigger: CAST
+CLS_ROGUE_DEEP_WOUND:
+  name: 'Deep Wound'
+  icon: RED_DYE
+  source: default:DEEP_WOUND
+  trigger: CAST
+CLS_ROGUE_EMPOWERED_ATTACK:
+  name: 'Empowered Attack'
+  icon: BLAZE_POWDER
+  source: default:EMPOWERED_ATTACK
+  trigger: CAST
+CLS_ROGUE_EVADE:
+  name: 'Evade'
+  icon: FEATHER
+  source: default:EVADE
+  trigger: CAST
+CLS_ROGUE_FURTIVE_STRIKE:
+  name: 'Furtive Strike'
+  icon: IRON_SWORD
+  source: default:FURTIVE_STRIKE
+  trigger: CAST
+CLS_ROGUE_MINOR_HEALINGS:
+  name: 'Minor Healings'
+  icon: GLISTERING_MELON_SLICE
+  source: default:MINOR_HEALINGS
+  trigger: CAST
+CLS_ROGUE_SNEAKY_PICKY:
+  name: 'Sneaky Picky'
+  icon: CHEST
+  source: default:SNEAKY_PICKY
+  trigger: CAST
+CLS_ROGUE_WEAKEN:
+  name: 'Weaken'
+  icon: FERMENTED_SPIDER_EYE
+  source: default:WEAKEN
+  trigger: CAST
+CLS_WARRIOR_COMBO_ATTACK:
+  name: 'Combo Attack'
+  icon: IRON_SWORD
+  source: default:COMBO_ATTACK
+  trigger: CAST
+CLS_WARRIOR_DEEP_WOUND:
+  name: 'Deep Wound'
+  icon: RED_DYE
+  source: default:DEEP_WOUND
+  trigger: CAST
+CLS_WARRIOR_EMPOWERED_ATTACK:
+  name: 'Empowered Attack'
+  icon: BLAZE_POWDER
+  source: default:EMPOWERED_ATTACK
+  trigger: CAST
+CLS_WARRIOR_FIRE_BERSERKER:
+  name: 'Fire Berserker'
+  icon: FIRE_CHARGE
+  source: default:FIRE_BERSERKER
+  trigger: CAST
+CLS_WARRIOR_MINOR_HEALINGS:
+  name: 'Minor Healings'
+  icon: GLISTERING_MELON_SLICE
+  source: default:MINOR_HEALINGS
+  trigger: CAST
+CLS_WARRIOR_WEAKEN:
+  name: 'Weaken'
+  icon: FERMENTED_SPIDER_EYE
+  source: default:WEAKEN
+  trigger: CAST

@@ -7,8 +7,8 @@ public abstract class PhysicalItem<T extends GeneratedInventory> extends Invento
     public String getId(){return id;} public void preprocessMeta(T inv,int index,ItemStack item){} public void preprocessLore(T inv,int index,List<String> lore){} public String preprocessName(T inv,int index,String name){return name;}
     @Override public ItemStack getDisplayedItem(T inv,int index){return getDisplayedItem(inv,new ItemOptions(index,iconOptions));}
     public ItemStack getDisplayedItem(T inv,ItemOptions options){
-        ItemStack item=options.icon().combine(iconOptions).toItemStack();Placeholders p=getPlaceholders(inv,options.index());List<String> lines=new ArrayList<>();for(String s:lore)lines.add(p.apply(inv.getPlayer(),s));preprocessLore(inv,options.index(),lines);
-        ItemFactory f=ItemFactory.of(item);String n=p.apply(inv.getPlayer(),preprocessName(inv,options.index(),name));if(n!=null&&!n.isEmpty())f.name(n);f.lore(lines);item=f.build();preprocessMeta(inv,options.index(),item);return item;
+        ItemStack item=options.icon().combine(iconOptions).toItemStack();Placeholders p=getPlaceholders(inv,options.index());List<String> lines=new ArrayList<>(lore);preprocessLore(inv,options.index(),lines);List<String>baked=new ArrayList<>(lines.size());for(String s:lines)baked.add(p.apply(inv.getPlayer(),s));
+        ItemFactory f=ItemFactory.of(item);String n=p.apply(inv.getPlayer(),preprocessName(inv,options.index(),name));if(n!=null&&!n.isEmpty())f.name(n);f.lore(baked);item=f.build();preprocessMeta(inv,options.index(),item);return item;
     }
     public abstract Placeholders getPlaceholders(T inv,int index);
     private static String str(Map<String,?>m,String k,String f){Object v=m==null?null:m.get(k);return v==null?f:String.valueOf(v);}

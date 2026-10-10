@@ -1,0 +1,3 @@
+svframemobs reload Reload rejected; previous definitions retained: Broken: unsupported field BossBar
+svframemobs list Mobs: HeroTrainingDummy, StormSentinel; loaded entities=0
+svframemobs reload Loaded 2 mob definitions

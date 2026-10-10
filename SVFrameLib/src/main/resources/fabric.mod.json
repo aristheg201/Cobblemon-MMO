@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "SVFrameLib",
   "description": "Native Fabric 1.21.1 port of SVFrameLib 1.7.1.",
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
     "main": [
       "vn.svframe.svframelib.fabric.SVFrameLibBootstrap",
@@ -17,11 +17,17 @@
       "vn.svframe.svframelib.fabric.SVFrameLibCraftingBootstrap"
     ]
   },
-  "mixins": ["svframelibfabric.mixins.json"],
+  "mixins": [
+    "svframelibfabric.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.18.4",
-    "minecraft": "~1.21.1",
+    "minecraft": "1.21.1",
     "java": ">=21",
     "fabric-api": "*"
+  },
+  "suggests": {
+    "beconomy": "*",
+    "cobbledollars": "*"
   }
 }

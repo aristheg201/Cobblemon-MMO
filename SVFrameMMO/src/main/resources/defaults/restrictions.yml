@@ -1,0 +1,33 @@
+# Custom-mining tool permission tree.
+# A configured custom block only drops/regenerates when the held tool can mine it here
+# while custom-mining.enable-tool-restrictions is enabled.
+
+WOODEN_PICKAXE:
+  can-mine:
+    - vanilla{type=COAL_ORE}
+
+STONE_PICKAXE:
+  parent: WOODEN_PICKAXE
+  can-mine:
+    - vanilla{type=IRON_ORE}
+
+IRON_PICKAXE:
+  parent: STONE_PICKAXE
+  can-mine:
+    - vanilla{type=GOLD_ORE}
+
+GOLDEN_PICKAXE:
+  parent: IRON_PICKAXE
+  can-mine:
+    - vanilla{type=LAPIS_ORE}
+
+DIAMOND_PICKAXE:
+  parent: GOLDEN_PICKAXE
+  can-mine:
+    - vanilla{type=DIAMOND_ORE}
+    - vanilla{type=EMERALD_ORE}
+    - vanilla{type=REDSTONE_ORE}
+
+# Native 1.21.1 continuation of the original permission chain.
+NETHERITE_PICKAXE:
+  parent: DIAMOND_PICKAXE

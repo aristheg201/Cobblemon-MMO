@@ -47,8 +47,16 @@ public final class AttributeInstance {
         int effective = Math.max(0, value);
         if (effective == spent) return;
         spent = effective;
-        updateBaseModifier();
-        refreshBuffs();
+        if (owner.getPlayer() == null) return;
+
+        // MythicLib's original AttributeSource propagates StatProxy changes into the
+        // player stat map. The native Fabric port applies the equivalent modifiers
+        // directly, so it must explicitly release a buffered stat-map update here.
+        // Without this, attribute points are persisted but vanilla/native stats stay stale.
+        owner.getMMOPlayerData().getStatMap().bufferUpdates(() -> {
+            updateBaseModifier();
+            refreshBuffsInternal();
+        });
     }
 
     public void addBase(int value) { setBase(spent + value); }
@@ -57,8 +65,10 @@ public final class AttributeInstance {
 
     public void refresh() {
         if (owner.getPlayer() == null) return;
-        updateBaseModifier();
-        refreshBuffs();
+        owner.getMMOPlayerData().getStatMap().bufferUpdates(() -> {
+            updateBaseModifier();
+            refreshBuffsInternal();
+        });
     }
 
     private void updateBaseModifier() {
@@ -77,8 +87,13 @@ public final class AttributeInstance {
                 ModifierSource.OTHER));
     }
 
-    /** Apply configured attribute buffs as native stat modifiers. */
+    /** Apply configured attribute buffs as native stat modifiers and publish them immediately. */
     public void refreshBuffs() {
+        if (owner.getPlayer() == null) return;
+        owner.getMMOPlayerData().getStatMap().bufferUpdates(this::refreshBuffsInternal);
+    }
+
+    private void refreshBuffsInternal() {
         if (owner.getPlayer() == null) return;
         for (AppliedBuff old : appliedBuffs.values()) {
             owner.getMMOPlayerData().getStatMap().getInstance(old.stat()).removeModifier(old.id());

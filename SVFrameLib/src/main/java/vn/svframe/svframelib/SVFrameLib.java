@@ -1,5 +1,6 @@
 package vn.svframe.svframelib;
 
+import vn.svframe.svframelib.api.economy.CurrencyService;
 import vn.svframe.svframelib.comp.adventure.AdventureParser;
 import vn.svframe.svframelib.comp.flags.FlagHandler;
 import vn.svframe.svframelib.comp.flags.FlagPlugin;
@@ -44,6 +45,7 @@ public class SVFrameLib extends MMOPlugin {
     private final AdventureParser adventureParser = new AdventureParser();
     private final GlowModule glowModule = new GlowModule.Native();
     private final PlaceholderParser placeholderParser = NativePlaceholderRegistry::parse;
+    private final CurrencyService economy = CurrencyService.get();
     private final Logger logger = Logger.getLogger("SVFrameLib");
     private volatile ProfileMode profileMode = ProfileMode.NONE;
     private volatile ProfileHandler profileHandler = emptyProfileHandler();
@@ -55,7 +57,7 @@ public class SVFrameLib extends MMOPlugin {
     public static synchronized SVFrameLib bootstrap() { return plugin == null ? new SVFrameLib() : plugin; }
     public static SVFrameLib inst() { return bootstrap(); }
     public void onLoad() { plugin = this; }
-    public void onEnable() { version.validateMappings(); initializeProfiles(); glowModule.enable(); mitigationModule.reload(); onHitModule.reload(); }
+    public void onEnable() { version.validateMappings(); economy.initialize(); initializeProfiles(); glowModule.enable(); mitigationModule.reload(); onHitModule.reload(); }
     public void reload() { skillManager.reload(); NativeBuiltinSkillBootstrap.materializeDefaultHandlers(skillManager); elementManager.reset(); mitigationModule.reload(); onHitModule.reload(); }
     public void onDisable() { glowModule.disable(); }
     public Logger getLogger() { return logger; }
@@ -75,6 +77,7 @@ public class SVFrameLib extends MMOPlugin {
     public PlaceholderParser getPlaceholderParser() { return placeholderParser; }
     public AdventureParser getAdventureParser() { return adventureParser; }
     public GlowModule getGlowing() { return glowModule; }
+    public CurrencyService getEconomy() { return economy; }
     public MinecraftServer getServer() { return SVFrameLibFabricMod.server(); }
     public void handleFlags(FlagPlugin plugin) { flagHandler.registerPlugin(plugin); }
     public synchronized void useLegacyProfiles() { profileMode = ProfileMode.LEGACY; initializeProfiles(); }

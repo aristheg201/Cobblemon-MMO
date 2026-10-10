@@ -5,14 +5,23 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import vn.svframe.svframelib.SVFrameLib;
 import vn.svframe.svframelib.api.event.PlayerAttackEvent;
 import vn.svframe.svframelib.fabric.runtime.RpgProfileRegistry;
 import vn.svframe.svframelib.player.resource.ResourceUpdateReason;
 import vn.svframe.svframelib.rpg.ManaModule;
+import vn.svframe.svframemmo.api.event.PlayerClassChangeEvent;
+import vn.svframe.svframemmo.api.event.PlayerLevelChangeEvent;
+import vn.svframe.svframemmo.api.integration.SkillSourceBootstrap;
+import vn.svframe.svframemmo.command.RpgGuiCommands;
 import vn.svframe.svframemmo.command.SVFrameMMOCommands;
 import vn.svframe.svframemmo.config.DefaultFiles;
 import vn.svframe.svframemmo.config.SVFrameMMOConfig;
+import vn.svframe.svframemmo.experience.source.ExperienceSourceGroups;
+import vn.svframe.svframemmo.experience.source.ExperienceSourceRuntime;
+import vn.svframe.svframemmo.experience.source.NativeExperienceRuntime;
+import vn.svframe.svframemmo.gui.RpgGuiManager;
 import vn.svframe.svframemmo.manager.AttributeManager;
 import vn.svframe.svframemmo.manager.BoosterManager;
 import vn.svframe.svframemmo.manager.ClassManager;
@@ -21,10 +30,17 @@ import vn.svframe.svframemmo.manager.PermissionRegistry;
 import vn.svframe.svframemmo.manager.PlayerDataManager;
 import vn.svframe.svframemmo.manager.ProfessionManager;
 import vn.svframe.svframemmo.manager.SkillTreeManager;
+import vn.svframe.svframemmo.player.ClassSelectionRuntime;
 import vn.svframe.svframemmo.player.DelayedActionRuntime;
 import vn.svframe.svframemmo.player.ResourceRegenRuntime;
+import vn.svframe.svframemmo.placeholder.SVFrameMMOPlaceholders;
+import vn.svframe.svframemmo.skill.ExternalSkillProgression;
+import vn.svframe.svframemmo.skill.ExternalSkillRegistry;
 import vn.svframe.svframemmo.skill.SVFrameMMOSkillBootstrap;
+import vn.svframe.svframemmo.skill.runtime.SkillBarRuntime;
 import vn.svframe.svframemmo.skill.runtime.SkillRuntime;
+import vn.svframe.svframemmo.skill.runtime.TemporarySkillOverlayRuntime;
+import vn.svframe.svframemmo.trigger.ClassTriggerRuntime;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -37,9 +53,18 @@ public final class SVFrameMMO implements ModInitializer {
     private static final PlayerDataManager PLAYER_DATA = new PlayerDataManager();
     private static final ResourceRegenRuntime REGEN = new ResourceRegenRuntime();
     private static final DelayedActionRuntime DELAYED_ACTIONS = new DelayedActionRuntime();
+    private static final ClassSelectionRuntime CLASS_SELECTION = new ClassSelectionRuntime();
     private static final BoosterManager BOOSTERS = new BoosterManager();
     private static final PermissionRegistry PERMISSIONS = new PermissionRegistry();
     private static final SkillRuntime SKILL_RUNTIME = new SkillRuntime();
+    private static final SkillBarRuntime SKILL_BAR = new SkillBarRuntime();
+    private static final TemporarySkillOverlayRuntime TEMPORARY_SKILLS = new TemporarySkillOverlayRuntime();
+    private static final ExternalSkillRegistry EXTERNAL_SKILLS = new ExternalSkillRegistry();
+    private static final ExternalSkillProgression EXTERNAL_PROGRESSION = new ExternalSkillProgression();
+    private static final RpgGuiManager GUI = new RpgGuiManager();
+    private static final ExperienceSourceRuntime EXPERIENCE_SOURCES = new ExperienceSourceRuntime();
+    private static final NativeExperienceRuntime NATIVE_EXPERIENCE = new NativeExperienceRuntime(EXPERIENCE_SOURCES);
+    private static final ClassTriggerRuntime CLASS_TRIGGERS = new ClassTriggerRuntime();
 
     private static volatile ClassManager classes = new ClassManager();
     private static volatile AttributeManager attributes = new AttributeManager();
@@ -55,8 +80,20 @@ public final class SVFrameMMO implements ModInitializer {
         try {
             DefaultFiles.ensure();
             SVFrameLib.bootstrap();
+            for (SkillSourceBootstrap bootstrap : FabricLoader.getInstance().getEntrypoints("svframemmo-skill-source", SkillSourceBootstrap.class)) {
+                bootstrap.registerSkillSources();
+            }
             SVFrameMMOSkillBootstrap.register(DefaultFiles.ROOT.resolve("skills"));
             loadDefinitions();
+            SVFrameMMOPlaceholders.install();
+            SKILL_BAR.install();
+            GUI.reload();
+            NATIVE_EXPERIENCE.install();
+            vn.svframe.svframemmo.profession.mining.CustomMiningRuntime.instance();
+            vn.svframe.svframemmo.profession.fishing.CustomFishingRuntime.instance();
+            vn.svframe.svframemmo.experience.vanilla.VanillaProgressionRuntime.instance();
+            vn.svframe.svframemmo.pvp.PvpModeRuntime.instance();
+            vn.svframe.svframemmo.economy.EconomyRuntime.instance();
         } catch (Exception exception) {
             throw new IllegalStateException("Could not initialize SVFrameMMO native progression data", exception);
         }
@@ -75,30 +112,63 @@ public final class SVFrameMMO implements ModInitializer {
             }
         });
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> SVFrameMMOCommands.register(dispatcher));
+        PlayerClassChangeEvent.EVENT.register(CLASS_TRIGGERS::onClassChange);
+        PlayerLevelChangeEvent.EVENT.register(CLASS_TRIGGERS::onLevelChange);
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+            SVFrameMMOCommands.register(dispatcher);
+            RpgGuiCommands.register(dispatcher);
+            vn.svframe.svframemmo.pvp.PvpModeRuntime.instance().registerCommand(dispatcher);
+            vn.svframe.svframemmo.economy.EconomyRuntime.instance().registerCommand(dispatcher);
+        });
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             PLAYER_DATA.start(server);
+            CLASS_SELECTION.start(server, PLAYER_DATA.all());
+            EXTERNAL_PROGRESSION.start(server);
+            for (var data : PLAYER_DATA.online()) { CLASS_TRIGGERS.onJoin(data); CLASS_SELECTION.onJoin(data); }
             LOG.info("SVFrameMMO Fabric online; " + definitionSummary() + ",players=" + PLAYER_DATA.all().size());
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
-            PLAYER_DATA.save();
-            for (var data : PLAYER_DATA.all()) SKILL_RUNTIME.detach(data);
+            SKILL_BAR.clear();
+            TEMPORARY_SKILLS.clear();
+            NATIVE_EXPERIENCE.clear();
+            CLASS_TRIGGERS.clear();
+            CLASS_SELECTION.save();
+            for (var data : PLAYER_DATA.online()) SKILL_RUNTIME.detach(data);
+            PLAYER_DATA.close();
+            EXTERNAL_PROGRESSION.close();
             try { if (profileRegistration != null) profileRegistration.close(); }
             catch (Exception ignored) { }
         });
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> PLAYER_DATA.join(handler.player));
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PLAYER_DATA.quit(handler.player));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            var data = PLAYER_DATA.join(handler.player);
+            EXTERNAL_PROGRESSION.validateBindings(handler.player.getUuid());
+            CLASS_TRIGGERS.onJoin(data);
+            CLASS_SELECTION.onJoin(data);
+        });
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            SKILL_BAR.detach(handler.player.getUuid());
+            TEMPORARY_SKILLS.clear(handler.player.getUuid());
+            CLASS_TRIGGERS.detach(handler.player.getUuid());
+            PLAYER_DATA.quit(handler.player);
+            EXTERNAL_PROGRESSION.save();
+        });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             tick++;
             REGEN.tick(tick);
             DELAYED_ACTIONS.tick(tick);
+            CLASS_TRIGGERS.tick(tick);
+            SKILL_BAR.tick(tick);
+            NATIVE_EXPERIENCE.tick(server, tick);
             SVFrameMMOConfig live = config;
-            if (live.autosaveSeconds() > 0 && tick % (live.autosaveSeconds() * 20L) == 0) PLAYER_DATA.save();
+            if (live.autosaveSeconds() > 0 && tick % (live.autosaveSeconds() * 20L) == 0) {
+                PLAYER_DATA.saveOnline();
+                EXTERNAL_PROGRESSION.save();
+            }
         });
         PlayerAttackEvent.EVENT.register(event -> {
-            PLAYER_DATA.get(event.getPlayer()).markCombat();
-            var target = event.getAttack().getTarget();
-            if (target instanceof net.minecraft.server.network.ServerPlayerEntity player) PLAYER_DATA.get(player).markCombat();
+            if (event.isCancelled()) return;
+            CLASS_TRIGGERS.onAttack(event);
+            NATIVE_EXPERIENCE.onPlayerAttack(event);
         });
     }
 
@@ -107,13 +177,17 @@ public final class SVFrameMMO implements ModInitializer {
         try {
             for (var data : PLAYER_DATA.all()) data.prepareReload();
             loadDefinitions();
+            GUI.reload();
+            vn.svframe.svframemmo.pvp.PvpModeRuntime.instance().reload();
+            vn.svframe.svframemmo.economy.EconomyRuntime.instance().reload();
             for (var data : PLAYER_DATA.all()) data.reloadDefinitions();
+            SKILL_BAR.clear();
             PLAYER_DATA.save();
+            EXTERNAL_PROGRESSION.save();
             LOG.info("SVFrameMMO reloaded; " + definitionSummary());
             return true;
         } catch (Exception exception) {
             LOG.log(Level.SEVERE, "SVFrameMMO reload failed", exception);
-            // Existing registry objects are preserved because loadDefinitions swaps only after all validation succeeds.
             for (var data : PLAYER_DATA.all()) {
                 try { data.reloadDefinitions(); } catch (RuntimeException recovery) { LOG.log(Level.SEVERE, "Could not recover player runtime after failed reload", recovery); }
             }
@@ -135,6 +209,8 @@ public final class SVFrameMMO implements ModInitializer {
         nextProfessions.reload(DefaultFiles.ROOT.resolve("professions"), nextClasses.getCurves());
         nextExperienceTables.reload(DefaultFiles.ROOT.resolve("exp-tables"));
         nextSkillTrees.reload(DefaultFiles.ROOT.resolve("skill-trees"));
+        var sharedExperienceSources = ExperienceSourceGroups.load(DefaultFiles.ROOT.resolve("exp-sources.yml"));
+        EXPERIENCE_SOURCES.reload(nextClasses, nextProfessions, sharedExperienceSources);
 
         for (var playerClass : nextClasses.getAll()) {
             if (playerClass.hasExperienceTable()) nextExperienceTables.getOrThrow(playerClass.getExperienceTableId());
@@ -155,7 +231,8 @@ public final class SVFrameMMO implements ModInitializer {
     public static String definitionSummary() {
         return "classes=" + classes.size() + ",attributes=" + attributes.size() + ",professions=" + professions.size()
                 + ",expTables=" + experienceTables.size() + ",skillTrees=" + skillTrees.size()
-                + ",skills=" + SVFrameLib.inst().getSkills().getHandlers().size();
+                + ",expSources=" + EXPERIENCE_SOURCES.classSourceCount() + "/" + EXPERIENCE_SOURCES.professionSourceCount()
+                + ",skills=" + SVFrameLib.inst().getSkills().getHandlers().size() + ",externalSkills=" + EXTERNAL_SKILLS.size();
     }
 
     public static long currentTick() { return tick; }
@@ -173,5 +250,14 @@ public final class SVFrameMMO implements ModInitializer {
     public static PermissionRegistry permissions() { return PERMISSIONS; }
     public static SkillTreeManager skillTrees() { return skillTrees; }
     public static SkillRuntime skillRuntime() { return SKILL_RUNTIME; }
+    public static SkillBarRuntime skillBar() { return SKILL_BAR; }
+    public static TemporarySkillOverlayRuntime temporarySkills() { return TEMPORARY_SKILLS; }
+    public static ExternalSkillRegistry externalSkills() { return EXTERNAL_SKILLS; }
+    public static ExternalSkillProgression externalProgression() { return EXTERNAL_PROGRESSION; }
     public static DelayedActionRuntime delayedActions() { return DELAYED_ACTIONS; }
+    public static ClassSelectionRuntime classSelection() { return CLASS_SELECTION; }
+    public static RpgGuiManager gui() { return GUI; }
+    public static ExperienceSourceRuntime experienceSources() { return EXPERIENCE_SOURCES; }
+    public static NativeExperienceRuntime nativeExperience() { return NATIVE_EXPERIENCE; }
+    public static ClassTriggerRuntime classTriggers() { return CLASS_TRIGGERS; }
 }

@@ -4,13 +4,17 @@
   "version": "${version}",
   "name": "SVFrameItems",
   "description": "Native Fabric item, equipment, upgrade, socket and loot framework for SVFrame.",
-  "environment": "server",
-  "entrypoints": { "main": ["vn.svframe.svframeitems.SVFrameItems"] },
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "vn.svframe.svframeitems.SVFrameItems"
+    ]
+  },
   "depends": {
     "fabricloader": ">=0.18.4",
-    "minecraft": "~1.21.1",
+    "minecraft": "1.21.1",
     "java": ">=21",
     "fabric-api": "*",
-    "svframelib": ">=1.7.1-fabric"
+    "svframelib": ">=1.7.2-fabric"
   }
 }

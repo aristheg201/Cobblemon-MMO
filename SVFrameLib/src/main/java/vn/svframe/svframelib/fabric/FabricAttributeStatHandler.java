@@ -3,8 +3,8 @@ package vn.svframe.svframelib.fabric;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import vn.svframe.svframelib.fabric.runtime.NativeStatEngine;
@@ -68,9 +68,7 @@ public class FabricAttributeStatHandler extends NativeStatHandler {
     }
 
     protected ServerPlayerEntity requirePlayer(NativeStatEngine.StatInstance instance) {
-        MinecraftServer server = SVFrameLibFabricMod.server();
-        if (server == null) throw new IllegalStateException("Minecraft server is not available for stat " + stat());
-        ServerPlayerEntity player = server.getPlayerManager().getPlayer(instance.entityId());
+        ServerPlayerEntity player = SVFrameLibStatMod.onlinePlayer(instance.entityId());
         if (player == null) throw new IllegalStateException("Player " + instance.entityId() + " is not online for stat " + stat());
         return player;
     }
@@ -85,14 +83,34 @@ public class FabricAttributeStatHandler extends NativeStatHandler {
 
     private void updateAttributeModifierValue(NativeStatEngine.StatInstance instance) {
         EntityAttributeInstance vanilla = requireAttribute(instance);
+
+        // Replacing the MAX_HEALTH modifier is a two-step operation. Removing the old
+        // modifier can temporarily drop max health back to vanilla (usually 20), and
+        // Minecraft immediately clamps current health to that transient value. Preserve
+        // the absolute pre-update health and restore it only after the final modifier is
+        // installed. Other attributes stay on the allocation-free fast path.
+        boolean preserveHealth = attribute.equals(EntityAttributes.GENERIC_MAX_HEALTH);
+        ServerPlayerEntity player = preserveHealth ? requirePlayer(instance) : null;
+        float previousHealth = player == null ? 0.0F : player.getHealth();
+
         vanilla.removeModifier(ATTRIBUTE_KEY);
-        double total = instance.total(playerDefaultBase + configuredBaseValue(), NativeStatEngine.EquipmentSlot.MAIN_HAND);
-        double amount = total - playerDefaultBase;
+        double vanillaBase = vanilla.getBaseValue();
+        double total = instance.total(vanillaBase + configuredBaseValue(), NativeStatEngine.EquipmentSlot.MAIN_HAND);
+        double amount = total - vanillaBase;
         if (Math.abs(amount) > EPSILON) {
             vanilla.addTemporaryModifier(new EntityAttributeModifier(
                     ATTRIBUTE_KEY,
                     amount,
                     EntityAttributeModifier.Operation.ADD_VALUE));
+        }
+
+        if (player != null && previousHealth > 0.0F && player.isAlive()) {
+            float restoredHealth = Math.min(previousHealth, player.getMaxHealth());
+            // Correction is monotonic: it may undo a transient clamp, but it must
+            // never lower health if another legitimate heal happened in the same tick.
+            if (player.getHealth() < restoredHealth) {
+                player.setHealth(restoredHealth);
+            }
         }
     }
 }

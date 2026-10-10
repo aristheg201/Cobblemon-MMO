@@ -1,0 +1,37 @@
+[
+  {
+    "file": "SVFrameLib-1.7.2-fabric.jar",
+    "id": "svframelib",
+    "version": "1.7.2-fabric",
+    "sha256": "84b0e4555172643a583ba0cbc49aeda444ee820a0d344813d079b10c2bcfaf6f",
+    "bytes": 1506229
+  },
+  {
+    "file": "SVFrameMMO-1.13.2-fabric.jar",
+    "id": "svframemmo",
+    "version": "1.13.2-fabric",
+    "sha256": "3d6a0ea727f670645facb331bcafd0d8b7caa9787227b8c6beb5ae28c71ff0d4",
+    "bytes": 5154336
+  },
+  {
+    "file": "SVFrameItems-0.1.1-fabric.jar",
+    "id": "svframeitems",
+    "version": "0.1.1-fabric",
+    "sha256": "c6e116d8f81131a09ef59db5f010ca66e136077b5cc5267fe5417283ebb92c57",
+    "bytes": 188457
+  },
+  {
+    "file": "SVFrameMMO-Cobblemon-Integration-0.1.17.jar",
+    "id": "svframemmo_cobblemon",
+    "version": "0.1.17",
+    "sha256": "411c0402e832b59408069de8cc29a716c2badb7d86163051105b8cdb0d974dd0",
+    "bytes": 307573
+  },
+  {
+    "file": "SVFrameMobs-0.1.0-fabric.jar",
+    "id": "svframemobs",
+    "version": "0.1.0-fabric",
+    "sha256": "c8589ea3f79c7fba14b9166098fe3a6fa4f05010f169a3e872ded49f74375d91",
+    "bytes": 23954
+  }
+]
