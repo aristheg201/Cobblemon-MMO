@@ -1,0 +1,2 @@
+Real client right-click with hero_entrance_focus
+Server /svframelib hero status: View[phase=LAUNCH, target=null, age=1]

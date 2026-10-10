@@ -19,12 +19,14 @@
       "vn.svframe.svframemmo.runtime.PublicApiEventRuntime"
     ]
   },
-  "mixins": ["svframemmo.mixins.json"],
+  "mixins": [
+    "svframemmo.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.18.4",
-    "minecraft": "~1.21.1",
+    "minecraft": "1.21.1",
     "java": ">=21",
     "fabric-api": "*",
-    "svframelib": ">=1.7.1-fabric"
+    "svframelib": ">=1.7.2-fabric"
   }
 }

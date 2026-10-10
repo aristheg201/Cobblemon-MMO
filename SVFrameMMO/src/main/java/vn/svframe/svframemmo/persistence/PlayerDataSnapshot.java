@@ -1,6 +1,5 @@
 package vn.svframe.svframemmo.persistence;
 
-import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.api.player.profess.SavedClassState;
 
@@ -37,10 +36,11 @@ public record PlayerDataSnapshot(
     }
 
     public void apply(PlayerData value) {
-        double restoredHealth = health <= 0d ? SVFrameMMO.config().defaultHealth() : health;
+        // Preserve the stored value exactly. A non-positive value is interpreted later, after effective
+        // MAX_HEALTH is known, as "spawn/refill to the real max" rather than a hardcoded 20 HP.
         value.restore(playerClass, level, experience, classPoints, skillPoints, attributePoints,
                 attributeReallocationPoints, skillReallocationPoints, skillTreeReallocationPoints,
-                restoredHealth, mana, stamina, stellium, attributes, skills, bindings, unlockedItems, claims,
+                health, mana, stamina, stellium, attributes, skills, bindings, unlockedItems, claims,
                 professionLevels, professionExperience, skillTreePoints, skillTreeNodeLevels, classSlots);
     }
 }

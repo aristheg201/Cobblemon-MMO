@@ -74,10 +74,16 @@ public final class PlayerDataManager {
     }
 
     public PlayerData join(ServerPlayerEntity player) {
+        PlayerData value = data.computeIfAbsent(player.getUuid(), PlayerData::blank);
+
+        // Respawn/clone and fast reconnect replace ServerPlayerEntity while keeping the UUID.
+        // Snapshot the authoritative old entity before rebinding; never attach over a live reference.
+        ServerPlayerEntity previous = value.getPlayer();
+        if (previous != null && previous != player) value.detach();
+
         MMOPlayerData mmo = MMOPlayerData.getOrNull(player.getUuid());
         if (mmo != null && mmo.isOnline() && mmo.getPlayer() != player) mmo.updatePlayer(null);
-        PlayerData value = data.computeIfAbsent(player.getUuid(), PlayerData::blank);
-        if (!value.isOnline() || value.getPlayer() != player) value.attach(player);
+        if (!value.isOnline()) value.attach(player);
         online.put(player.getUuid(), value);
         return value;
     }
@@ -85,10 +91,15 @@ public final class PlayerDataManager {
     public void quit(ServerPlayerEntity player) {
         PlayerData value = data.get(player.getUuid());
         if (value == null) return;
+
+        // A stale disconnect from an old connection must never detach a newer reconnect/respawn
+        // which already owns the same UUID.
+        if (!value.isOnline() || value.getPlayer() != player) return;
+
         value.detach();
         online.remove(player.getUuid(), value);
         MMOPlayerData mmo = MMOPlayerData.getOrNull(player.getUuid());
-        if (mmo != null && mmo.isOnline()) mmo.updatePlayer(null);
+        if (mmo != null && mmo.isOnline() && mmo.getPlayer() == player) mmo.updatePlayer(null);
         savePlayer(value);
     }
 

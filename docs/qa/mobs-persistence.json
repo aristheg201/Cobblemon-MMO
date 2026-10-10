@@ -1,0 +1,6 @@
+{
+  "uuid": "a1a23323-0fdc-4665-bd91-8e8fda97cd1e",
+  "before_restart": "execute positioned 8 65 5 run svframemobs spawn HeroTrainingDummy Spawned HeroTrainingDummy uuid=a1a23323-0fdc-4665-bd91-8e8fda97cd1e health=100.0\ndamage a1a23323-0fdc-4665-bd91-8e8fda97cd1e 7 Applied 7.0 damage to \u00a76Hero Training Dummy\ndata get entity a1a23323-0fdc-4665-bd91-8e8fda97cd1e Health \u00a76Hero Training Dummy has the following entity data: 93.0f\nsave-all Saving the game (this may take a moment!)Saved the game\n",
+  "after_restart": "svframemobs list Mobs: HeroTrainingDummy, StormSentinel; loaded entities=1\ndata get entity a1a23323-0fdc-4665-bd91-8e8fda97cd1e Health \u00a76Hero Training Dummy has the following entity data: 93.0f\ndata get entity a1a23323-0fdc-4665-bd91-8e8fda97cd1e Tags \u00a76Hero Training Dummy has the following entity data: [\"svframemobs:HeroTrainingDummy\"]\n",
+  "passed": true
+}

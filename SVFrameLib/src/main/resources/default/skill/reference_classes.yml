@@ -1,0 +1,389 @@
+CLS_DEATH_KNIGHT_CURSED_SEAL:
+  source: native:DEATH_KNIGHT_CURSED_SEAL
+  name: Cursed Seal
+  icon: AMETHYST_SHARD
+  trigger: TIMER
+  parameters:
+    mana:
+      player:
+        base: 0
+        per-level: 0
+      item: 0
+    cooldown:
+      player:
+        base: 0
+        per-level: 0
+      item: 0
+    damage:
+      player:
+        base: 0
+        per-level: 0
+      item: 0
+    timer:
+      player:
+        base: 20
+        per-level: 0
+      item: 20
+CLS_DEATH_KNIGHT_DEATH_STRIKE_ST:
+  source: native:DEATH_KNIGHT_DEATH_STRIKE_ST
+  name: Death Strike
+  icon: STONE_SWORD
+  trigger: CAST
+  parameters:
+    mana:
+      player:
+        base: 10
+        per-level: 0
+      item: 10
+    cooldown:
+      player:
+        base: 1.5
+        per-level: 0
+      item: 1.5
+    damage:
+      player:
+        base: 3
+        per-level: 0
+      item: 3
+CLS_DEATH_KNIGHT_PHANTOM_CHARGE:
+  source: native:DEATH_KNIGHT_PHANTOM_CHARGE
+  name: Phantom Charge
+  icon: PHANTOM_MEMBRANE
+  trigger: CAST
+  parameters:
+    mana:
+      player:
+        base: 10
+        per-level: 0
+      item: 10
+    cooldown:
+      player:
+        base: 9
+        per-level: 0
+      item: 9
+    damage:
+      player:
+        base: 4
+        per-level: 0
+      item: 4
+CLS_DEATH_KNIGHT_WRAITHBOUND_CHAINS:
+  source: native:DEATH_KNIGHT_WRAITHBOUND_CHAINS
+  name: Wraithbound Chains
+  icon: CHAIN
+  trigger: CAST
+  parameters:
+    mana:
+      player:
+        base: 10
+        per-level: 0
+      item: 10
+    cooldown:
+      player:
+        base: 20
+        per-level: 0
+      item: 20
+    damage:
+      player:
+        base: 3
+        per-level: 0
+      item: 3
+    duration:
+      player:
+        base: 2.8
+        per-level: 0
+      item: 2.8
+CLS_DEATH_KNIGHT_SOUL_BARRIER:
+  source: native:DEATH_KNIGHT_SOUL_BARRIER
+  name: Soul Barrier
+  icon: SHIELD
+  trigger: CAST
+  parameters:
+    mana:
+      player:
+        base: 12
+        per-level: 0
+      item: 12
+    cooldown:
+      player:
+        base: 36
+        per-level: 0
+      item: 36
+    damage:
+      player:
+        base: 0
+        per-level: 0
+      item: 0
+    duration:
+      player:
+        base: 3
+        per-level: 0
+      item: 3
+    heal:
+      player:
+        base: 2.5
+        per-level: 0
+      item: 2.5
+CLS_DEATH_KNIGHT_NECROTIC_WHIRLWIND:
+  source: native:DEATH_KNIGHT_NECROTIC_WHIRLWIND
+  name: Necrotic Whirlwind
+  icon: ECHO_SHARD
+  trigger: CAST
+  parameters:
+    mana:
+      player:
+        base: 10
+        per-level: 0
+      item: 10
+    cooldown:
+      player:
+        base: 26
+        per-level: 0
+      item: 26
+    damage:
+      player:
+        base: 2.5
+        per-level: 0
+      item: 2.5
+    heal:
+      player:
+        base: 2
+        per-level: 0
+      item: 2
+CLS_DEATH_KNIGHT_DEATH_SENTENCE:
+  source: native:DEATH_KNIGHT_DEATH_SENTENCE
+  name: Death Sentence
+  icon: NETHERITE_SWORD
+  trigger: CAST
+  parameters:
+    mana:
+      player:
+        base: 10
+        per-level: 0
+      item: 10
+    cooldown:
+      player:
+        base: 48
+        per-level: 0
+      item: 48
+    damage:
+      player:
+        base: 8
+        per-level: 0
+      item: 8
+    range:
+      player:
+        base: 32
+        per-level: 0
+      item: 32
+    radius:
+      player:
+        base: 7
+        per-level: 0
+      item: 7
+CLS_ANTI_MAGE_KNIGHT_PASSIVE:
+  source: native:ANTI_MAGE_KNIGHT_PASSIVE
+  name: Anti Mage Seal
+  icon: AMETHYST_SHARD
+  trigger: TIMER
+  parameters:
+    mana:
+      player:
+        base: 0
+        per-level: 0
+      item: 0
+    cooldown:
+      player:
+        base: 0
+        per-level: 0
+      item: 0
+    damage:
+      player:
+        base: 0
+        per-level: 0
+      item: 0
+    timer:
+      player:
+        base: 20
+        per-level: 0
+      item: 20
+CLS_ANTI_MAGE_KNIGHT_NORTHERN_GUST:
+  source: native:ANTI_MAGE_KNIGHT_NORTHERN_GUST
+  name: Northern Gust
+  icon: BLUE_DYE
+  trigger: CAST
+  parameters:
+    mana:
+      player:
+        base: 5
+        per-level: 0
+      item: 5
+    cooldown:
+      player:
+        base: 15
+        per-level: 0
+      item: 15
+    damage:
+      player:
+        base: 4
+        per-level: 0
+      item: 4
+    range:
+      player:
+        base: 14
+        per-level: 0
+      item: 14
+    radius:
+      player:
+        base: 2.8
+        per-level: 0
+      item: 2.8
+CLS_ANTI_MAGE_KNIGHT_CLAP:
+  source: native:ANTI_MAGE_KNIGHT_CLAP
+  name: Heaven Shattering Clap
+  icon: IRON_INGOT
+  trigger: CAST
+  parameters:
+    mana:
+      player:
+        base: 15
+        per-level: 0
+      item: 15
+    cooldown:
+      player:
+        base: 20
+        per-level: 0
+      item: 20
+    damage:
+      player:
+        base: 7
+        per-level: 0
+      item: 7
+    range:
+      player:
+        base: 12
+        per-level: 0
+      item: 12
+    radius:
+      player:
+        base: 3
+        per-level: 0
+      item: 3
+CLS_ANTI_MAGE_KNIGHT_HEROIC_SURGE:
+  source: native:ANTI_MAGE_KNIGHT_HEROIC_SURGE
+  name: Heroic Surge
+  icon: RABBIT_FOOT
+  trigger: CAST
+  parameters:
+    mana:
+      player:
+        base: 10
+        per-level: 0
+      item: 10
+    cooldown:
+      player:
+        base: 25
+        per-level: 0
+      item: 25
+    damage:
+      player:
+        base: 8
+        per-level: 0
+      item: 8
+    range:
+      player:
+        base: 5
+        per-level: 0
+      item: 7
+CLS_ANTI_MAGE_KNIGHT_OVERLOAD:
+  source: native:ANTI_MAGE_KNIGHT_OVERLOAD
+  name: Hit Me / Anti Magic Overload
+  icon: SHIELD
+  trigger: CAST
+  parameters:
+    mana:
+      player:
+        base: 20
+        per-level: 0
+      item: 20
+    cooldown:
+      player:
+        base: 30
+        per-level: 0
+      item: 30
+    damage:
+      player:
+        base: 0
+        per-level: 0
+      item: 0
+    duration:
+      player:
+        base: 6
+        per-level: 0
+      item: 6
+    radius:
+      player:
+        base: 10
+        per-level: 0
+      item: 10
+CLS_ANTI_MAGE_KNIGHT_HIT_ME:
+  source: native:ANTI_MAGE_KNIGHT_HIT_ME
+  name: Indomitable Mockery
+  icon: ECHO_SHARD
+  trigger: CAST
+  parameters:
+    mana:
+      player:
+        base: 30
+        per-level: 0
+      item: 30
+    cooldown:
+      player:
+        base: 60
+        per-level: 0
+      item: 60
+    damage:
+      player:
+        base: 10
+        per-level: 0
+      item: 10
+    range:
+      player:
+        base: 22
+        per-level: 0
+      item: 22
+    radius:
+      player:
+        base: 10
+        per-level: 0
+      item: 10
+CLS_ANTI_MAGE_KNIGHT_METEOR_LANDING:
+  source: native:ANTI_MAGE_KNIGHT_METEOR_LANDING
+  name: Meteor Landing
+  icon: NETHERITE_AXE
+  trigger: CAST
+  parameters:
+    mana:
+      player:
+        base: 25
+        per-level: 0
+      item: 25
+    cooldown:
+      player:
+        base: 80
+        per-level: 0
+      item: 80
+    damage:
+      player:
+        base: 10
+        per-level: 0
+      item: 10
+    range:
+      player:
+        base: 22
+        per-level: 0
+      item: 22
+    radius:
+      player:
+        base: 10
+        per-level: 0
+      item: 10

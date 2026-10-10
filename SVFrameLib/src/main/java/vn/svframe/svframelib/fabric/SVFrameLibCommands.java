@@ -53,6 +53,22 @@ final class SVFrameLibCommands {
                         .then(argument("target", EntityArgumentType.entity())
                                 .then(argument("value", DoubleArgumentType.doubleArg(0.0d))
                                         .executes(ctx -> damage(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player"), EntityArgumentType.getEntity(ctx, "target"), DoubleArgumentType.getDouble(ctx, "value")))))));
+        root.then(literal("referenceqa").requires(source -> HeroEntranceRuntimeQa.enabled() && source.hasPermissionLevel(2)).executes(ctx -> ReferenceClassRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
+        root.then(literal("nativeqa").requires(source -> HeroEntranceRuntimeQa.enabled() && source.hasPermissionLevel(2)).executes(ctx -> NativeSkillRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
+        root.then(literal("hero")
+                .then(literal("qa").requires(source -> HeroEntranceRuntimeQa.enabled() && source.hasPermissionLevel(2))
+                        .executes(ctx -> HeroEntranceRuntimeQa.run(ctx.getSource().getPlayerOrThrow())))
+                .then(literal("confirm").executes(ctx -> HeroEntranceRuntime.confirm(ctx.getSource().getPlayerOrThrow()) ? 1 : 0))
+                .then(literal("cancel").executes(ctx -> HeroEntranceRuntime.cancel(ctx.getSource().getPlayerOrThrow()) ? 1 : 0))
+                .then(literal("status").executes(ctx -> {
+                    var view = HeroEntranceRuntime.view(ctx.getSource().getPlayerOrThrow());
+                    success(ctx.getSource(), view == null ? "Hero's Entrance: inactive" : view.toString());
+                    return 1;
+                })));
+        root.then(literal("visual").then(argument("model", StringArgumentType.word()).executes(ctx -> {
+            ServerPlayerEntity player=ctx.getSource().getPlayerOrThrow();
+            return NativeVisualRuntime.spawn(StringArgumentType.getString(ctx,"model"),player,player.getEyePos().add(player.getRotationVec(1).multiply(4)),100,false)?1:0;
+        })).then(literal("reload").executes(ctx -> { NativeVisualRuntime.reload(); return 1; })));
         root.then(statTree());
         root.then(cooldownTree());
         root.then(tempStatTree());

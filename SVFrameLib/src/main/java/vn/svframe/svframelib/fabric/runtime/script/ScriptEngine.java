@@ -35,7 +35,7 @@ public final class ScriptEngine {
             "cross_product", "dot_product", "hadamard_product", "multiply_vector", "normalize_vector",
             "orient_vector", "save_vector", "set_x", "set_y", "set_z", "subtract_vector", "increment",
             "set_boolean", "set_double", "set_integer", "set_string", "set_vector", "action_bar", "particle",
-            "sound", "player_sound", "tell");
+            "sound", "player_sound", "tell", "display_model");
 
     private final Map<String, Definition> defs = new HashMap<>();
     private final ExpressionRuntime expressions = new ExpressionRuntime();
@@ -156,7 +156,7 @@ public final class ScriptEngine {
             }
             case "set_velocity" -> platform.velocity(target(params, context), requireVector(context, firstRequired(params, "value", "val", "v", "vector", "vec", "velocity", "vel")));
             case "additive_damage_buff" -> additiveDamage(call, context);
-            case "damage" -> platform.damage(target(params, context), number(call, "amount", context.damage(), context), first(params, "", "damage_type", "dtype", "dt"));
+            case "damage" -> platform.damage(context.caster(), target(params, context), number(call, "amount", context.damage(), context), first(params, "", "damage_type", "dtype", "dt"));
             case "multiply_damage" -> multiplyDamage(call, context);
             case "potion" -> platform.potion(target(params, context), first(params, "SLOW", "effect", "eff", "e", "type", "pe"), (int) numberAny(call, 1, context, "level", "lvl", "l"), (int) numberAny(call, 20, context, "ticks", "t", "duration", "dur", "d", "time"), boolAny(call, false, "ambient", "amb"), boolAny(call, true, "particles", "part"), boolAny(call, true, "icon", "ic"));
             case "remove_potion" -> platform.removePotion(target(params, context), firstRequired(params, "effect", "type"));
@@ -198,6 +198,7 @@ public final class ScriptEngine {
             case "set_vector" -> setVector(call, context);
             case "action_bar" -> platform.actionBar(target(params, context), context.resolve(first(params, "", "m", "message")), (int) number(call, "priority", 0, context), (int) number(call, "duration", 20, context));
             case "particle" -> particle(call, context);
+            case "display_model" -> platform.displayModel(context.caster(), firstRequired(params,"model","m"),resolveTargetLocation(params,context),(int)numberAny(call,60,context,"ticks","duration"),boolAny(call,false,"follow"));
             case "sound" -> platform.sound(target(params, context), firstRequired(params, "sound", "s"), (float) numberAny(call, 1, context, "volume", "vol", "v"), (float) numberAny(call, 1, context, "pitch", "p"));
             case "player_sound" -> platform.playerSound(target(params, context), firstRequired(params, "sound", "s"), (float) numberAny(call, 1, context, "volume", "vol", "v"), (float) numberAny(call, 1, context, "pitch", "p"));
             case "tell" -> platform.message(target(params, context), context.resolve(first(params, "", "message", "msg", "m", "format", "fmt", "f", "text", "txt")));
@@ -268,7 +269,7 @@ public final class ScriptEngine {
         String particle = first(params, "CRIT", "particle", "p", "type");
         int amount = (int) numberAny(call, 1, context, "amount", "count", "a", "c");
         double dx = numberAny(call, 0, context, "x", "offset_x", "ox"), dy = numberAny(call, 0, context, "y", "offset_y", "oy"), dz = numberAny(call, 0, context, "z", "offset_z", "oz"), speed = numberAny(call, 0, context, "speed", "s");
-        if (context.targetLocation() != null) platform.particleAt(context.targetLocation(), particle, amount, dx, dy, dz, speed);
+        if (context.targetLocation() != null) platform.particleAt(context.caster(), context.targetLocation(), particle, amount, dx, dy, dz, speed);
         else platform.particle(target(params, context), particle, amount, dx, dy, dz, speed);
     }
 
@@ -283,7 +284,7 @@ public final class ScriptEngine {
         double speed = numberAny(call, 2, context, "speed", "velocity"), range = number(call, "range", number(call, "life_span", 20, context) * speed / 20d, context), size = numberAny(call, .2, context, "size", "hitbox");
         int life = (int) numberAny(call, 20, context, "life_span", "lifespan", "duration");
         String tick = first(params, "", "tick", "on_tick"), hit = first(params, "", "hit_entity", "on_hit", "hit"), end = first(params, "", "end", "hit_block", "on_end");
-        platform.projectile(new ScriptPlatform.ProjectileSpec(origin, direction, speed, range, size, life), location -> {
+        platform.projectile(context.caster(), new ScriptPlatform.ProjectileSpec(origin, direction, speed, range, size, life), location -> {
             if (!tick.isBlank()) { ScriptContext nested = context.copy(); nested.targetLocation(location); cast(tick, nested, depth + 1); }
         }, entity -> {
             if (!hit.isBlank()) { ScriptContext nested = context.copy(); nested.target(entity); cast(hit, nested, depth + 1); }
@@ -296,7 +297,7 @@ public final class ScriptEngine {
         int life = Math.max(1, (int) Math.ceil(range / step));
         String tick = params.getOrDefault("tick", ""), hit = params.getOrDefault("hit_block", "");
         Vector3 origin = context.sourceLocation() != null ? context.sourceLocation() : platform.location(context.caster());
-        platform.projectile(new ScriptPlatform.ProjectileSpec(origin, platform.eyeDirection(context.caster()).normalize(), step, range, .01, life), location -> {
+        platform.projectile(context.caster(), new ScriptPlatform.ProjectileSpec(origin, platform.eyeDirection(context.caster()).normalize(), step, range, .01, life), location -> {
             if (!tick.isBlank()) { ScriptContext nested = context.copy(); nested.targetLocation(location); cast(tick, nested, depth + 1); }
         }, entity -> { }, () -> { if (!hit.isBlank()) cast(hit, context.copy(), depth + 1); });
     }

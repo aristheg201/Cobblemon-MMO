@@ -43,8 +43,8 @@ dependencies {
     modImplementation "io.wispforest.endec:gson:0.1.5.1"
     modCompileOnly "maven.modrinth:placeholder-api:2.4.2+1.21"
     compileOnly "net.luckperms:api:5.4"
-    modImplementation files('../SVFrameLib/build/libs/SVFrameLib-1.7.1-fabric.jar')
-    modImplementation files('../SVFrameMMO/build/libs/SVFrameMMO-1.13.1-fabric.jar')
+    modImplementation files('../SVFrameLib/build/libs/SVFrameLib-1.7.2-fabric.jar')
+    modImplementation files('../SVFrameMMO/build/libs/SVFrameMMO-1.13.2-fabric.jar')
 
     productionRuntimeDeps "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     productionRuntimeDeps "maven.modrinth:MdwFAVRL:YgmyyFcs"
@@ -56,7 +56,9 @@ dependencies {
 }
 tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8' }
 java { sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21; withSourcesJar() }
-processResources { filesMatching('fabric.mod.json') { expand version: project.version } }
+processResources {
+    inputs.property("version", project.version)
+ filesMatching('fabric.mod.json') { expand version: project.version } }
 
 tasks.register('nativeIntegrationSmoke', JavaExec) {
     dependsOn classes

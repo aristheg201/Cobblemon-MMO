@@ -1,0 +1,22 @@
+{
+  "platform": {
+    "minecraft": "1.21.1",
+    "fabric_loader": "0.18.4",
+    "java": "21.0.2"
+  },
+  "mods": [
+    "svframelib",
+    "svframemmo",
+    "svframeitems",
+    "svframemmo_cobblemon",
+    "svframemobs",
+    "cobblemon"
+  ],
+  "dedicated_hero_checks": 18,
+  "dedicated_reference_checks": 21,
+  "singleplayer_reference_checks": 21,
+  "runtime_and_release_bytecode_identical": true,
+  "mage_legacy_particle_warnings_after_fix": 0,
+  "imported_model_rendering": "Original teal texture and different animation poses captured in 09, 10, 11; source pack selected in production client",
+  "singleplayer_hero_checks": 18
+}

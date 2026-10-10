@@ -49,6 +49,7 @@ public final class DefaultFiles {
         }
         migrateLegacyHealthCap();
         migrateLegacyHealthHudComment();
+        migrateVanillaXpDisplayMode();
     }
 
     /** Removes only the exact 20/0/40 MAX_HEALTH block shipped by the broken Fabric port. */
@@ -74,6 +75,29 @@ public final class DefaultFiles {
                 + "# Authoritative MAX_HEALTH/current health remain uncapped; the numeric HUD shows real values.\n"
                 + "# 40 visible HP = 20 hearts = at most two vanilla heart rows.\n";
         writeReplacing(config, text.replace(legacy, replacement), "config.yml");
+    }
+
+    /**
+     * Legacy builds used override-vanilla-exp, which could silently take ownership of Minecraft XP.
+     * The v13 contract is explicit: missing/newly migrated configs use VANILLA, while MMO takeover
+     * requires vanilla-exp-display.mode: MMO to be written intentionally after migration.
+     */
+    private static void migrateVanillaXpDisplayMode() throws IOException {
+        Path config = ROOT.resolve("config.yml");
+        if (!Files.isRegularFile(config)) return;
+        String text = Files.readString(config, StandardCharsets.UTF_8);
+        String migrated = text.replaceFirst("(?m)^config-version:\\s*\\d+\\s*$", "config-version: 13");
+
+        if (!migrated.contains("\nvanilla-exp-display:\n") && !migrated.startsWith("vanilla-exp-display:\n")) {
+            migrated = migrated.replace("override-vanilla-exp: true\n", "")
+                    .replace("override-vanilla-exp: false\n", "");
+            if (!migrated.endsWith("\n")) migrated += "\n";
+            migrated += "\n# VANILLA preserves normal Minecraft XP. Set MMO only for an intentional XP-bar takeover.\n"
+                    + "vanilla-exp-display:\n"
+                    + "  mode: VANILLA\n";
+        }
+
+        if (!migrated.equals(text)) writeReplacing(config, migrated, "config.yml");
     }
 
     private static void writeReplacing(Path target, String content, String prefix) throws IOException {

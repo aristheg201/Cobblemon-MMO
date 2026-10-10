@@ -1,0 +1,25 @@
+{
+  "SVFrameLib": {
+    "tests": 15,
+    "failures": 0,
+    "errors": 0
+  },
+  "SVFrameItems": {
+    "tests": 23,
+    "failures": 0,
+    "errors": 0
+  },
+  "SVFrameMobs": {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0
+  },
+  "visual_import": {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0
+  },
+  "SVFrameMMO": "SVFRAMEMMO_NATIVE_CORE=PASS",
+  "SVFrameItems_smoke": "SVFRAMEITEMS_NATIVE_CORE=PASS",
+  "Cobblemon": "SVFRAMEMMO_COBBLEMON_NATIVE=PASS"
+}

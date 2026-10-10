@@ -28,6 +28,16 @@ public final class SVFrameLibDefaultFiles {
 
     public static void ensure() throws IOException {
         Files.createDirectories(ROOT);
+        Path hero = ROOT.resolve("skill/hero_entrance.yml");
+        if (!Files.exists(hero)) {
+            Files.createDirectories(hero.getParent());
+            try (InputStream input = SVFrameLibDefaultFiles.class.getResourceAsStream("/default/skill/hero_entrance.yml")) {
+                if (input == null) throw new IOException("Missing Hero's Entrance definition");
+                Files.copy(input, hero);
+            }
+        }
+        Path reference=ROOT.resolve("skill/reference_classes.yml");
+        if(!Files.exists(reference))try(InputStream input=SVFrameLibDefaultFiles.class.getResourceAsStream("/default/skill/reference_classes.yml")){Files.copy(java.util.Objects.requireNonNull(input),reference);}
         byte[] archive = readArchive();
         verifyArchive(archive);
 
