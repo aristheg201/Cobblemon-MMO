@@ -52,7 +52,7 @@ public final class PokemonSkillCommands {
             return 0;
         }
         context.getSource().sendFeedback(() -> Text.literal(result.message()), true);
-        target.sendMessage(Text.literal("Admin granted Pokemon skill: " + result.skillName() + ". Use /mmo skills to bind it."), true);
+        target.sendMessage(Text.translatable("svframemmo_cobblemon.shop.admin_granted",result.skillName()), true);
         return 1;
     }
 

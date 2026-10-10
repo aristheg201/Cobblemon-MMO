@@ -1,5 +1,6 @@
 import base64
 import copy
+import json
 import unittest
 from import_blockbench_visuals import bake, sample
 
@@ -31,6 +32,17 @@ class VisualImportTest(unittest.TestCase):
         blueprint = self.blueprint(); blueprint['elements'][0]['type'] = 'mesh'
         with self.assertRaises(ValueError):
             bake(blueprint, 'test', 'model', 200000)
+
+    def test_untextured_anchor_keeps_pose_without_invalid_render_element(self):
+        blueprint = self.blueprint()
+        blueprint['outliner'][0]['name'] = 'p1'
+        blueprint['elements'][0]['faces']['up']['texture'] = None
+        models, files, overrides = bake(blueprint, 'test', 'model', 200000)
+        self.assertEqual(json.loads(files['assets/test/models/model/cube_0.json'])['elements'], [])
+        self.assertAlmostEqual(models['model@move'][0]['frames'][-1][12], -2)
+        self.assertEqual(len(overrides), 1)
+        anchors = json.loads(files['assets/test/anchors/model.json'])
+        self.assertEqual(len(anchors['model@move']['p1']), 21)
 
     def test_expression_rejected_instead_of_silent_static_pose(self):
         blueprint = self.blueprint()

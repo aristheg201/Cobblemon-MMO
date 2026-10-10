@@ -14,6 +14,12 @@ import java.util.UUID;
 public final class NativeIntegrationSmoke {
     public static void main(String[] args) {
         MoveSemanticRegistry registry = new MoveSemanticRegistry();
+        require(!vn.svframe.svframemmo.cobblemon.move.PlayerMoveCoverage.purchasable("metronome"),"An unimplemented move must never be sold as a functioning player skill");
+        require(vn.svframe.svframemmo.cobblemon.move.PlayerMoveCoverage.purchasable("recover"),"The explicit half-health recovery adapter must remain available");
+        String chart="";for(int i=0;i<18;i++)chart+="  type"+i+": {\n    damageTaken: {Fire: 1, Water: 2, Ground: 3, Normal: 0}\n  },\n";
+        var parsed=vn.svframe.svframemmo.cobblemon.integration.CobblemonTypeChart.parse(chart);
+        require(parsed.size()==18&&parsed.get("type0").get("ground")==3,"The installed Showdown type chart must retain immunity codes");
+        try{vn.svframe.svframemmo.cobblemon.integration.CobblemonTypeChart.parse("invalid");throw new IllegalStateException("Incomplete type charts must fail validation");}catch(IllegalArgumentException expected){}
         MoveSemantic swordsDance = registry.resolveKnown("swordsdance");
         require(swordsDance.stages().stream().anyMatch(c ->
                         c.target() == MoveSemantic.Target.SELF

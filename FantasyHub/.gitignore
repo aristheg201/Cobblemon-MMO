@@ -1,0 +1,6 @@
+.gradle/
+**/build/
+client/src/imported/
+core/src/imported/
+run/
+**/__pycache__/

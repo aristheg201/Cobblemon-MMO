@@ -92,6 +92,7 @@ public final class CobblemonMoveSkillAdapter {
     public static int size() { return DEFINITIONS.size(); }
     public static int providerSize() { return Moves.count(); }
     public static Map<String, ClassSkill> definitions() { return Map.copyOf(DEFINITIONS); }
+    public static ClassSkill definition(String moveId){return DEFINITIONS.get(id(moveId));}
 
     /** Snapshot exactly the Pokemon's current move slots at fusion start; normal global skill ownership is untouched. */
     public Overlay snapshot(Pokemon pokemon) {

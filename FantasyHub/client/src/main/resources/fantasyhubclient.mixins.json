@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "vn.svframe.fantasyhub.client.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "HealthHudMixin",
+    "DamageFeedbackQaMixin",
+    "HurtCameraQaMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

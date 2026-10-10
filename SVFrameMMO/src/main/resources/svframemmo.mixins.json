@@ -4,8 +4,6 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ServerPlayNetworkHandlerMixin",
-    "ServerCommonNetworkHandlerMixin",
-    "EntityAttributesS2CPacketInvoker",
     "BlockItemExperienceMixin",
     "FluidBlockExperienceMixin",
     "LivingEntityExperienceMixin",
@@ -29,7 +27,8 @@
     "DisplayEntityAccessor",
     "TextDisplayEntityAccessor",
     "CraftingScreenHandlerAccessor",
-    "EnchantmentScreenHandlerAccessor"
+    "EnchantmentScreenHandlerAccessor",
+    "PlayerManagerStatLoginMixin"
   ],
   "injectors": {
     "defaultRequire": 1

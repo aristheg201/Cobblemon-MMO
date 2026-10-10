@@ -34,7 +34,7 @@ import java.util.UUID;
 
 /** Galio-inspired launch, camera aim, committed descent and a single attributed impact. Server thread only. */
 public final class HeroEntranceRuntime {
-    public enum Phase { LAUNCH, AIM, DESCENT }
+    public enum Phase { WARMUP, LAUNCH, AIM, DESCENT }
     public record View(Phase phase, Vec3d target, int age) { }
     private static final int LAUNCH_TICKS = 12;
     private static final Map<UUID, Cast> CASTS = new HashMap<>();
@@ -69,12 +69,15 @@ public final class HeroEntranceRuntime {
             return false;
         Cast cast = new Cast(player, settings, apex);
         cast.cursedExecution=Boolean.TRUE.equals(parameters.get("cursed_execution"));
+        cast.deathSentence=Boolean.TRUE.equals(parameters.get("death_sentence"));
+        if (settings.warmupTicks()>0) cast.phase=Phase.WARMUP;
         CASTS.put(player.getUuid(), cast);
-        player.setNoGravity(true);
+        player.setNoGravity(settings.warmupTicks()==0 || cast.previousNoGravity);
         player.fallDistance = 0;
-        velocity(player, new Vec3d(0, settings.height() / LAUNCH_TICKS, 0));
-        player.sendMessage(Text.literal("Hero's Entrance — aim with your camera; sneak to land."), true);
-        world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.PLAYERS, 1, .6f);
+        if (settings.warmupTicks()==0) velocity(player, new Vec3d(0, settings.height() / settings.launchTicks(), 0));
+        player.sendMessage(Text.translatable(cast.deathSentence?"skill.svframelib.death_sentence.aim":"skill.svframelib.hero_entrance.aim"), true);
+        if (cast.deathSentence) DeathSentencePresentation.started(player);
+        else world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK, SoundCategory.PLAYERS, 1, .6f);
         return true;
     }
 
@@ -92,11 +95,12 @@ public final class HeroEntranceRuntime {
         Cast cast = CASTS.get(player.getUuid());
         if (cast == null || cast.player != player || cast.phase != Phase.AIM || cast.target == null
                 || !safe(player, cast.target)) return false;
+        if(cast.deathSentence&&cast.age<cast.settings.warmupTicks()+cast.settings.launchTicks()+cast.settings.aimTicks())return false;
         cast.phase = Phase.DESCENT;
         cast.descentStart = player.getPos();
         cast.descentAge = 0;
-        cast.world.playSound(null, BlockPos.ofFloored(cast.target), SoundEvents.ENTITY_GENERIC_EXPLODE.value(),
-                SoundCategory.PLAYERS, .6f, 1.8f);
+        if (cast.deathSentence) DeathSentencePresentation.descending(player);
+        else cast.world.playSound(null, BlockPos.ofFloored(cast.target), SoundEvents.ENTITY_GENERIC_EXPLODE.value(), SoundCategory.PLAYERS, .6f, 1.8f);
         return true;
     }
 
@@ -139,19 +143,33 @@ public final class HeroEntranceRuntime {
         ServerPlayerEntity player = cast.player;
         player.fallDistance = 0;
         cast.age++;
+        if(cast.deathSentence) DeathSentencePresentation.tick(player,cast.age);
+        if(cast.phase==Phase.WARMUP) {
+            if(cast.age<cast.settings.warmupTicks())return;
+            cast.origin=player.getPos();cast.apex=cast.origin.add(0,cast.settings.height(),0);
+            if(cast.world.raycast(new RaycastContext(player.getEyePos(),cast.apex.add(0,player.getStandingEyeHeight(),0),
+                    RaycastContext.ShapeType.COLLIDER,RaycastContext.FluidHandling.NONE,player)).getType()!=HitResult.Type.MISS){cancel(player);return;}
+            player.setNoGravity(true);cast.phase=Phase.LAUNCH;
+            if(cast.deathSentence)DeathSentencePresentation.launched(player,cast.origin);
+        }
         if (cast.phase == Phase.LAUNCH) {
-            Vec3d next = cast.origin.lerp(cast.apex, Math.min(1d, cast.age / (double) LAUNCH_TICKS));
+            int launchAge=cast.age-cast.settings.warmupTicks();
+            Vec3d next = cast.origin.lerp(cast.apex, Math.min(1d, launchAge / (double) cast.settings.launchTicks()));
             if (!clearPath(player, next)) { cancel(player); return; }
             move(player, next);
-            if (cast.age >= LAUNCH_TICKS) cast.phase = Phase.AIM;
+            if (launchAge >= cast.settings.launchTicks()) {
+                cast.phase = Phase.AIM;
+                if(cast.deathSentence)DeathSentencePresentation.hovering(player);
+            }
         }
         if (cast.phase == Phase.AIM) {
             move(player, cast.apex);
             cast.target = aimedGround(cast);
             if ((cast.age & 1) == 0) ring(cast, cast.target == null ? cast.origin : cast.target,
-                    cast.target == null ? RED : GOLD);
-            if (player.isSneaking() || cast.age >= LAUNCH_TICKS + cast.settings.aimTicks()) {
-                if (!confirm(player) && cast.age >= LAUNCH_TICKS + cast.settings.aimTicks()) cancel(player);
+                    cast.target == null ? RED : cast.deathSentence?DeathSentencePresentation.TARGET:GOLD);
+            int endAim=cast.settings.warmupTicks()+cast.settings.launchTicks()+cast.settings.aimTicks();
+            if ((!cast.deathSentence&&player.isSneaking()) || cast.age >= endAim) {
+                if (!confirm(player) && cast.age >= endAim) cancel(player);
             }
         } else if (cast.phase == Phase.DESCENT) {
             if (!safe(player, cast.target)) { cancel(player); return; }
@@ -160,8 +178,8 @@ public final class HeroEntranceRuntime {
             Vec3d next = cast.descentStart.lerp(cast.target, fraction * fraction);
             if (!clearPath(player, next)) { cancel(player); return; }
             move(player, next);
-            if ((cast.age & 1) == 0) ring(cast, cast.target, GOLD);
-            particles(cast, ParticleTypes.END_ROD, player.getPos().add(0, 1, 0));
+            if ((cast.age & 1) == 0) ring(cast, cast.target, cast.deathSentence?DeathSentencePresentation.TARGET:GOLD);
+            if(!cast.deathSentence) particles(cast, ParticleTypes.END_ROD, player.getPos().add(0, 1, 0));
             if (fraction >= 1d) {
                 CASTS.remove(player.getUuid()); // Exactly one impact, including reentrant callbacks.
                 restore(cast);
@@ -245,6 +263,7 @@ public final class HeroEntranceRuntime {
                 entity -> entity != cast.player && entity.isAlive() && !entity.isSpectator())) {
             double dx = target.getX() - cast.target.x, dz = target.getZ() - cast.target.z;
             if (dx * dx + dz * dz > radius * radius || Math.abs(target.getY() - cast.target.y) > 3) continue;
+            if(!vn.svframe.svframelib.entity.RpgEntityAdapters.allows(cast.player,target,vn.svframe.svframelib.entity.RpgEntityAdapters.Effect.DAMAGE))continue;
             if (target instanceof ServerPlayerEntity other && (!cast.world.getServer().isPvpEnabled()
                     || other.getAbilities().creativeMode || cast.player.isTeammate(other))) continue;
             boolean applied = cast.settings.damage() <= 0 || SVFrameLib.inst().getDamage().registerAttack(
@@ -253,6 +272,7 @@ public final class HeroEntranceRuntime {
             if (applied && target.isAlive()) velocity(target, new Vec3d(target.getVelocity().x,
                     Math.max(target.getVelocity().y, cast.settings.knockup()), target.getVelocity().z));
         }
+        if(cast.deathSentence){DeathSentencePresentation.impacted(cast.player,cast.target);return;}
         ring(cast, cast.target, GOLD);
         cast.world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, cast.target.x, cast.target.y + .3,
                 cast.target.z, 1, 0, 0, 0, 0);
@@ -260,8 +280,9 @@ public final class HeroEntranceRuntime {
     }
 
     private static void ring(Cast cast, Vec3d center, ParticleEffect particle) {
-        for (int i = 0; i < 64; i++) {
-            double angle = i * Math.PI * 2 / 64;
+        int points=cast.deathSentence?80:64;
+        for (int i = 0; i < points; i++) {
+            double angle = i * Math.PI * 2 / points;
             particles(cast, particle, center.add(Math.cos(angle) * cast.settings.radius(), .12,
                     Math.sin(angle) * cast.settings.radius()));
         }
@@ -276,13 +297,13 @@ public final class HeroEntranceRuntime {
     private static final class Cast {
         final ServerPlayerEntity player;
         final ServerWorld world;
-        final Vec3d origin, apex;
+        Vec3d origin, apex;
         final boolean previousNoGravity;
         final HeroEntranceSettings settings;
         Phase phase = Phase.LAUNCH;
         Vec3d target, descentStart;
         int age, descentAge;
-        boolean cursedExecution;
+        boolean cursedExecution,deathSentence;
         Cast(ServerPlayerEntity player, HeroEntranceSettings settings, Vec3d apex) {
             this.player = player; this.world = player.getServerWorld(); this.origin = player.getPos();
             this.apex = apex; this.settings = settings; this.previousNoGravity = player.hasNoGravity();

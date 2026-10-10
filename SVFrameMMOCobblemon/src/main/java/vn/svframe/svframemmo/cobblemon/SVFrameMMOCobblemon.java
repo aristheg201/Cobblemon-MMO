@@ -65,6 +65,24 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
         }
 
         SnowstormPackService.install();
+        vn.svframe.svframelib.skill.PlayerAbilityShop.install(POKEMON_SKILLS);
+        vn.svframe.svframelib.entity.RpgEntityAdapters.register(ID,vn.svframe.svframemmo.cobblemon.integration.CobblemonEntityAdapter.INSTANCE);
+        vn.svframe.svframelib.entity.NativeMobFactories.register("cobblemon:pokemon",new vn.svframe.svframelib.entity.NativeMobFactories.Factory(){
+            private com.cobblemon.mod.common.api.pokemon.PokemonProperties properties(String text){
+                if(text==null||text.isBlank()||text.length()>1024)throw new IllegalArgumentException("Pokemon requires explicit Cobblemon properties");
+                var properties=com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse(text);
+                if(!properties.hasSpecies()||com.cobblemon.mod.common.api.pokemon.PokemonSpecies.getByName(properties.getSpecies())==null)throw new IllegalArgumentException("Unknown Pokemon species: "+properties.getSpecies());
+                if(properties.getLevel()!=null&&(properties.getLevel()<1||properties.getLevel()>100))throw new IllegalArgumentException("Pokemon level must be 1..100");return properties;
+            }
+            @Override public void validate(String text){properties(text);}
+            @Override public net.minecraft.entity.mob.MobEntity create(net.minecraft.server.world.ServerWorld world,String text){
+                var entity=properties(text).createEntity(world);
+                // Initialize intrinsic Cobblemon stats before RPG encounter modifiers
+                // are calculated. Its delegate owns these base values.
+                if(entity.getDelegate() instanceof com.cobblemon.mod.common.entity.pokemon.PokemonServerDelegate delegate)delegate.updateAttributes(entity.getPokemon());
+                return entity;
+            }
+        });
         CobblemonMoveSkillAdapter.registerSkillSource();
         LuckPermsIntegration.initialize();
         PlaceholderIntegration.registerIfPresent();
@@ -95,9 +113,15 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             PotaraCommands.register(dispatcher);
             PokemonSkillCommands.register(dispatcher, POKEMON_SKILLS);
             CosmeticCommands.register(dispatcher, COSMETICS);
+            if("1".equals(System.getenv("SVFRAME_RUNTIME_QA"))){
+                dispatcher.register(net.minecraft.server.command.CommandManager.literal("cobblemonentityqa").requires(s->s.hasPermissionLevel(2)).executes(ctx->vn.svframe.svframemmo.cobblemon.validation.CobblemonEntityRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
+                dispatcher.register(net.minecraft.server.command.CommandManager.literal("cobblemonshopqa").requires(s->s.hasPermissionLevel(2)).executes(ctx->vn.svframe.svframemmo.cobblemon.validation.CobblemonShopRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
+            }
         });
 
-        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !FUSIONS.blocksDamage(entity));
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !FUSIONS.blocksDamage(entity)
+                && (!(entity instanceof com.cobblemon.mod.common.entity.pokemon.PokemonEntity)||source.getAttacker()==null
+                || vn.svframe.svframelib.entity.RpgEntityAdapters.allows(source.getAttacker(),entity,vn.svframe.svframelib.entity.RpgEntityAdapters.Effect.DAMAGE)));
         ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) -> {
             if (blocked || damageTaken <= 0.0F) return;
             if (source.getAttacker() instanceof ServerPlayerEntity attacker && source.getSource() == attacker
@@ -120,6 +144,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             }
         });
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            vn.svframe.svframemmo.cobblemon.integration.CobblemonTypeChart.load();
             verifyPotaraCommand(server);
             FUSIONS.cooldowns().start(server);
             COSMETICS.start(server);

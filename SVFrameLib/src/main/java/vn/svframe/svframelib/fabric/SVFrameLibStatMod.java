@@ -47,6 +47,7 @@ public final class SVFrameLibStatMod implements ModInitializer {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayerEntity player = handler.player;
             UUID playerId = player.getUuid();
+            if (ONLINE_PLAYERS.get(playerId) == player) return; // Already bound before initial attribute sync.
             ONLINE_PLAYERS.put(playerId, player);
             boolean opened = false;
             try {
@@ -66,6 +67,8 @@ public final class SVFrameLibStatMod implements ModInitializer {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ServerPlayerEntity player = handler.player;
             UUID playerId = player.getUuid();
+            // A superseded connection must not clear the replacement player's engine state.
+            if (ONLINE_PLAYERS.get(playerId) != player) return;
             try {
                 ENGINE.onSessionClose(playerId);
                 ENGINE.clear(playerId);
@@ -85,6 +88,11 @@ public final class SVFrameLibStatMod implements ModInitializer {
 
     public static NativeStatEngine engine() {
         return ENGINE;
+    }
+
+    /** Called by the progression owner after vanilla NBT loading and before login packets. */
+    public static void bindPlayer(ServerPlayerEntity player) {
+        if (ONLINE_PLAYERS.put(player.getUuid(), player) != player) ENGINE.onSessionOpen(player.getUuid());
     }
 
     public static SVFrameLibStatSettings settings() {

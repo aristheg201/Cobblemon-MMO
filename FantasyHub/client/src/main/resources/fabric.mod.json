@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "fantasyhubclient",
+  "version": "${version}",
+  "name": "Fantasy Hub Client",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "vn.svframe.fantasyhub.client.FantasyHubClient"
+    ]
+  },
+  "depends": {
+    "minecraft": "1.21.1",
+    "fabricloader": ">=0.18.4",
+    "java": ">=21",
+    "fabric-api": "*",
+    "fantasyhubprotocol": "0.1.0"
+  },
+  "mixins": [
+    "fantasyhubclient.mixins.json"
+  ]
+}

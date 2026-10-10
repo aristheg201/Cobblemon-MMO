@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1, "id": "fantasyhubcore", "version": "${version}",
+  "name": "Fantasy Hub Core", "environment": "*",
+  "entrypoints": {"main": ["vn.svframe.fantasyhub.core.FantasyHubCore"]},
+  "depends": {"minecraft": "1.21.1", "fabricloader": ">=0.18.4", "java": ">=21", "fabric-api": "*", "fantasyhubprotocol": "0.1.0", "svframelib": ">=1.7.2-fabric", "svframemmo": ">=1.13.2-fabric"}
+}

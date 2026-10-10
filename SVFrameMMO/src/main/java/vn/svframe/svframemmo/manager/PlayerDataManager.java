@@ -200,7 +200,8 @@ public final class PlayerDataManager {
         if (failure != null) throw failure;
     }
 
-    private void savePlayer(PlayerData value) {
+    /** Capture the canonical player state on the server thread; queue its persistence write. */
+    public void savePlayer(PlayerData value) {
         if (value == null || store == null || closing) return;
         UUID id = value.getUniqueId();
         PlayerDataSnapshot captured = PlayerDataSnapshot.capture(value);

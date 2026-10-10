@@ -20,6 +20,10 @@ import vn.svframe.svframelib.util.configobject.ConfigObject;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.cobblemon.SVFrameMMOCobblemon;
 import vn.svframe.svframemmo.cobblemon.fusion.FusionService;
+import vn.svframe.svframelib.entity.RpgEntityAdapters;
+import vn.svframe.svframemmo.cobblemon.integration.CobblemonEntityAdapter;
+import vn.svframe.svframemmo.cobblemon.integration.CobblemonTypeChart;
+import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 
 import java.util.Comparator;
 import java.util.List;
@@ -84,7 +88,7 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
             case HEAL -> {
                 double healing = Math.max(0d, metadata.getParameter("healing"));
                 if (healing <= 0d) healing = Math.max(0d, profile.healBase());
-                player.heal((float) healing);
+                if(semantic.healFraction()<=0)player.heal((float) healing);
                 if (profile.cleanse()) cleanse(player);
                 applySelfSemantic(player, semantic, 0d);
             }
@@ -109,7 +113,7 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
             case AOE -> executeAoe(player, move, profile, semantic, metadata);
             case SELF_BUFF -> applySelfSemantic(player, semantic, 0d);
             case TARGET_DEBUFF -> {
-                if (result.target != null) applyTargetSemantic(result.target, semantic);
+                if (result.target != null&&RpgEntityAdapters.allows(player,result.target,RpgEntityAdapters.Effect.STATUS)) applyTargetSemantic(player,result.target, semantic);
             }
             case TARGET, PROJECTILE -> executeDamage(player, result.target, move, profile, semantic, metadata);
         }
@@ -119,7 +123,7 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
                             MoveSemantic semantic, SkillMetadata metadata) {
         Box box = player.getBoundingBox().expand(profile.radius());
         List<LivingEntity> targets = player.getServerWorld().getEntitiesByClass(LivingEntity.class, box,
-                living -> living.isAlive() && living != player && !fusions.isVisualEntityOf(player.getUuid(), living.getUuid()));
+                living -> living.isAlive() && living != player && living.squaredDistanceTo(player)<=profile.radius()*profile.radius() && player.canSee(living) && RpgEntityAdapters.allows(player,living,RpgEntityAdapters.Effect.DAMAGE) && !fusions.isVisualEntityOf(player.getUuid(), living.getUuid()));
         for (LivingEntity target : targets) {
             executeDamage(player, target, move, profile, semantic, metadata);
             SVFrameMMOCobblemon.moveVfx().renderImpact(player, move, target.getBoundingBox().getCenter());
@@ -128,16 +132,22 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
 
     private void executeDamage(ServerPlayerEntity player, LivingEntity target, MoveTemplate move,
                                CobblemonMoveProfile profile, MoveSemantic semantic, SkillMetadata metadata) {
-        if (target == null || !rollAccuracy(move)) return;
+        if (target == null || !RpgEntityAdapters.allows(player,target,RpgEntityAdapters.Effect.DAMAGE) || !rollAccuracy(move)) return;
         int hits = semantic.multiHitMin() == semantic.multiHitMax() ? semantic.multiHitMin()
                 : ThreadLocalRandom.current().nextInt(semantic.multiHitMin(), semantic.multiHitMax() + 1);
         double configuredDamage = Math.max(0d, metadata.getParameter("damage"));
         double perHit = Math.max(1d, configuredDamage > 0d ? configuredDamage : profile.baseDamage());
         double dealt = perHit * Math.max(1, hits);
+        if(target instanceof PokemonEntity pokemon){
+            if(!CobblemonTypeChart.ready())return;
+            double effectiveness=CobblemonTypeChart.effectiveness(move.getElementalType().getName(),pokemon.getPokemon().getForm().getTypes());
+            if(effectiveness<=0)return;dealt*=effectiveness;
+        }
         DamageType category = profile.damageCategory().equals("physical") ? DamageType.PHYSICAL : DamageType.MAGIC;
-        metadata.attack(target, dealt, DamageType.SKILL, category);
-        applyTargetSemantic(target, semantic);
-        applySelfSemantic(player, semantic, dealt);
+        var attack=metadata.attack(target, dealt, DamageType.SKILL, category);
+        if(!attack.wasApplied())return;
+        applyTargetSemantic(player,target, semantic);
+        applySelfSemantic(player, semantic, attack.getAppliedDamage());
     }
 
     private void applySelfSemantic(ServerPlayerEntity player, MoveSemantic semantic, double dealt) {
@@ -147,16 +157,17 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
         if (semantic.healFraction() > 0d) player.heal((float) (player.getMaxHealth() * semantic.healFraction()));
         if (dealt > 0d && semantic.drainFraction() > 0d) player.heal((float) (dealt * semantic.drainFraction()));
         if (dealt > 0d && semantic.recoilFraction() > 0d)
-            player.setHealth(Math.max(0f, player.getHealth() - (float) (dealt * semantic.recoilFraction())));
+            player.damage(player.getDamageSources().generic(),(float)(dealt*semantic.recoilFraction()));
         if (semantic.protect()) fusions.grantProtection(player, 20L);
     }
 
-    private void applyTargetSemantic(LivingEntity target, MoveSemantic semantic) {
+    private void applyTargetSemantic(ServerPlayerEntity actor,LivingEntity target, MoveSemantic semantic) {
+        if(!RpgEntityAdapters.allows(actor,target,RpgEntityAdapters.Effect.STATUS))return;
         for (MoveSemantic.StageChange change : semantic.stages()) {
             if (change.target() == MoveSemantic.Target.TARGET) applyStage(target, change.stat(), change.stages());
         }
         if (semantic.status() != MoveSemantic.Status.NONE && ThreadLocalRandom.current().nextDouble() < semantic.statusChance())
-            applyStatus(target, semantic.status());
+            applyStatus(actor,target, semantic.status());
     }
 
     private static void applyStage(LivingEntity entity, BattleStat stat, int stages) {
@@ -171,7 +182,11 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
         entity.addStatusEffect(new StatusEffectInstance(effect, 600, amplifier, false, false));
     }
 
-    private static void applyStatus(LivingEntity target, MoveSemantic.Status status) {
+    private static void applyStatus(ServerPlayerEntity actor,LivingEntity target, MoveSemantic.Status status) {
+        if(target instanceof PokemonEntity pokemon){
+            String id=switch(status){case PARALYSIS->"paralysis";case BURN->"burn";case POISON->"poison";case BAD_POISON->"poisonbadly";case SLEEP->"sleep";case FREEZE->"frozen";default->"";};
+            if(!id.isEmpty()){CobblemonEntityAdapter.INSTANCE.status(actor,pokemon,id);return;}
+        }
         switch (status) {
             case PARALYSIS -> target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 2));
             case BURN -> target.setOnFireFor(4f);
@@ -238,7 +253,7 @@ public final class CobblemonMoveSkill extends SkillHandler<CobblemonMoveSkill.Re
                 entity instanceof LivingEntity living && living.isAlive() && (excludedEntity == null || !entity.getUuid().equals(excludedEntity)));
         return candidates.stream().map(entity -> (LivingEntity) entity).filter(entity -> {
                     Vec3d delta = entity.getBoundingBox().getCenter().subtract(eye);
-                    return delta.lengthSquared() > 0.0001d && delta.normalize().dotProduct(look) >= 0.92d;
+                    return delta.lengthSquared() > 0.0001d && delta.lengthSquared()<=actualRange*actualRange && player.canSee(entity) && RpgEntityAdapters.allows(player,entity,RpgEntityAdapters.Effect.DAMAGE) && delta.normalize().dotProduct(look) >= 0.92d;
                 }).min(Comparator.comparingDouble(entity -> entity.squaredDistanceTo(player))).orElse(null);
     }
 

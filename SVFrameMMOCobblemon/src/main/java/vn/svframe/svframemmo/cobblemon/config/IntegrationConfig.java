@@ -26,6 +26,10 @@ public final class IntegrationConfig {
     public PotaraConfig potara = new PotaraConfig();
     public FusionConfig fusion = new FusionConfig();
     public VfxConfig vfx = new VfxConfig();
+    public CombatConfig combat = new CombatConfig();
+    public static final class CombatConfig {
+        @SerializedName("allow-owned-pokemon-targets") public boolean allowOwnedPokemonTargets=false;
+    }
     @SerializedName("pokemon-skills") public PokemonSkillShopConfig pokemonSkills = new PokemonSkillShopConfig();
 
     public static final class PotaraConfig {
@@ -119,6 +123,7 @@ public final class IntegrationConfig {
         if (fusion == null) fusion = new FusionConfig();
         if (fusion.statConversion == null) fusion.statConversion = new StatConversion();
         if (vfx == null) vfx = new VfxConfig();
+        if (combat == null) combat = new CombatConfig();
         if (pokemonSkills == null) pokemonSkills = new PokemonSkillShopConfig();
         if (pokemonSkills.prices == null) pokemonSkills.prices = new LinkedHashMap<>();
         if (fusion.potaraActionCooldownSeconds != 10) throw new IllegalArgumentException("potara-action-cooldown-seconds is fixed at 10");

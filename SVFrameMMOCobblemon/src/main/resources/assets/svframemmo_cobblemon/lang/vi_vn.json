@@ -1,0 +1,14 @@
+{
+  "svframemmo_cobblemon.shop.unsupported": "Chiêu này chưa có bộ thi triển cho người chơi đã được kiểm chứng và chưa thể mua.",
+  "svframemmo_cobblemon.shop.purchased": "Đã mua %s với giá %s %s. Kỹ năng người chơi đã được lưu.",
+  "svframemmo_cobblemon.shop.disabled": "Cửa hàng kỹ năng Pokémon đang tắt.",
+  "svframemmo_cobblemon.shop.not_ready": "Danh mục chiêu Pokémon chưa sẵn sàng.",
+  "svframemmo_cobblemon.shop.unknown": "Không tìm thấy kỹ năng Pokémon: %s",
+  "svframemmo_cobblemon.shop.already_owned": "Bạn đã sở hữu %s.",
+  "svframemmo_cobblemon.shop.processing": "Giao dịch mua kỹ năng đang được xử lý.",
+  "svframemmo_cobblemon.shop.insufficient": "Bạn không đủ tiền để mua kỹ năng này.",
+  "svframemmo_cobblemon.shop.payment_failed": "Thanh toán thất bại. Chưa cấp kỹ năng.",
+  "svframemmo_cobblemon.shop.refunded": "Không thể cấp kỹ năng. Bạn đã được hoàn tiền.",
+  "svframemmo_cobblemon.shop.refund_failed": "Giao dịch mua và hoàn tiền thất bại. Vui lòng liên hệ quản trị viên.",
+  "svframemmo_cobblemon.shop.admin_granted": "Quản trị viên đã cấp %s. Mở menu Kỹ năng để trang bị."
+}

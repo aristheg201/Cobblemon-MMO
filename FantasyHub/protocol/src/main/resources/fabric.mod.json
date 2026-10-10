@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1, "id": "fantasyhubprotocol", "version": "${version}",
+  "name": "Fantasy Hub Protocol", "environment": "*",
+  "entrypoints": {"main": ["vn.svframe.fantasyhub.protocol.Protocol"]},
+  "depends": {"minecraft": "1.21.1", "fabricloader": ">=0.18.4", "java": ">=21", "fabric-api": "*"}
+}

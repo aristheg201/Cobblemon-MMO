@@ -6,6 +6,7 @@ import vn.svframe.svframelib.api.stat.api.ModifiedInstance;
 import vn.svframe.svframelib.api.stat.modifier.StatModifier;
 import vn.svframe.svframelib.fabric.SVFrameLibStatMod;
 import vn.svframe.svframelib.fabric.runtime.NativeStatEngine;
+import vn.svframe.svframelib.fabric.runtime.NativeStatReference;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,31 +23,27 @@ import java.util.function.Predicate;
 public final class StatInstance extends ModifiedInstance<StatModifier> {
     private final StatMap map;
     private final String stat;
-    private final NativeStatEngine.StatInstance nativeInstance;
+    private final NativeStatReference nativeReference;
     private final AtomicBoolean updatePending = new AtomicBoolean(false);
 
     StatInstance(StatMap map, String stat) {
-        this(map, stat, SVFrameLibStatMod.engine().instance(map.getData().getUniqueId(), stat));
-    }
-
-    StatInstance(StatMap map, String stat, NativeStatEngine.StatInstance nativeInstance) {
         this.map = Objects.requireNonNull(map);
         this.stat = Objects.requireNonNull(stat);
-        this.nativeInstance = Objects.requireNonNull(nativeInstance);
+        this.nativeReference = new NativeStatReference(SVFrameLibStatMod.engine(), map.getData().getUniqueId(), stat);
     }
 
     public StatMap getMap() { return map; }
     public String getStat() { return stat; }
-    public double getBase() { return nativeInstance.base(); }
-    public double getDefaultBase() { return nativeInstance.defaultBase(); }
+    public double getBase() { return nativeInstance().base(); }
+    public double getDefaultBase() { return nativeInstance().defaultBase(); }
     public double getFinal() { return getFinal(EquipmentSlot.MAIN_HAND); }
-    public double getFinal(EquipmentSlot slot) { return nativeInstance.finalValue(NativeStatEngine.EquipmentSlot.valueOf(slot.name())); }
-    public String formatFinal() { return nativeInstance.formatFinal(); }
-    public String format(double value) { return nativeInstance.format(value); }
+    public double getFinal(EquipmentSlot slot) { return nativeInstance().finalValue(NativeStatEngine.EquipmentSlot.valueOf(slot.name())); }
+    public String formatFinal() { return nativeInstance().formatFinal(); }
+    public String format(double value) { return nativeInstance().format(value); }
 
     @Override
     public StatModifier getModifier(UUID id) {
-        NativeStatEngine.Modifier nativeModifier = nativeInstance.modifier(id);
+        NativeStatEngine.Modifier nativeModifier = nativeInstance().modifier(id);
         return nativeModifier == null ? null : StatModifier.fromNative(stat, nativeModifier);
     }
 
@@ -60,14 +57,14 @@ public final class StatInstance extends ModifiedInstance<StatModifier> {
     @Override
     public Collection<StatModifier> getModifiers() {
         List<StatModifier> out = new ArrayList<>();
-        for (NativeStatEngine.Modifier modifier : nativeInstance.modifiers())
+        for (NativeStatEngine.Modifier modifier : nativeInstance().modifiers())
             out.add(StatModifier.fromNative(stat, modifier));
         return List.copyOf(out);
     }
 
     @Override
     public Set<UUID> getIds() {
-        return Set.copyOf(nativeInstance.modifierIds());
+        return Set.copyOf(nativeInstance().modifierIds());
     }
 
     @Override
@@ -77,14 +74,14 @@ public final class StatInstance extends ModifiedInstance<StatModifier> {
         return keys;
     }
 
-    public double getTotal() { return nativeInstance.total(); }
-    public double getTotal(EquipmentSlot slot) { return nativeInstance.total(NativeStatEngine.EquipmentSlot.valueOf(slot.name())); }
-    public double getTotal(double base) { return nativeInstance.total(base, NativeStatEngine.EquipmentSlot.MAIN_HAND); }
-    public double getTotal(double base, EquipmentSlot slot) { return nativeInstance.total(base, NativeStatEngine.EquipmentSlot.valueOf(slot.name())); }
+    public double getTotal() { return nativeInstance().total(); }
+    public double getTotal(EquipmentSlot slot) { return nativeInstance().total(NativeStatEngine.EquipmentSlot.valueOf(slot.name())); }
+    public double getTotal(double base) { return nativeInstance().total(base, NativeStatEngine.EquipmentSlot.MAIN_HAND); }
+    public double getTotal(double base, EquipmentSlot slot) { return nativeInstance().total(base, NativeStatEngine.EquipmentSlot.valueOf(slot.name())); }
 
     @Override
     public void registerModifier(StatModifier modifier) {
-        nativeInstance.register(modifier.toNative());
+        nativeInstance().register(modifier.toNative());
         update();
     }
 
@@ -96,26 +93,32 @@ public final class StatInstance extends ModifiedInstance<StatModifier> {
 
     @Override
     public void removeModifier(UUID id) {
-        if (nativeInstance.remove(id) != null) update();
+        if (nativeInstance().remove(id) != null) update();
     }
 
     @Override
     public void remove(String key) {
-        if (nativeInstance.removeIf(modifier -> Objects.equals(modifier.key(), key)) > 0) update();
+        if (nativeInstance().removeIf(modifier -> Objects.equals(modifier.key(), key)) > 0) update();
     }
 
     @Override
     public void removeIf(Predicate<String> predicate) {
-        if (nativeInstance.removeIf(modifier -> predicate.test(modifier.key())) > 0) update();
+        if (nativeInstance().removeIf(modifier -> predicate.test(modifier.key())) > 0) update();
     }
 
     @Override
-    public boolean isEmpty() { return nativeInstance.isEmpty(); }
+    public boolean isEmpty() { return nativeInstance().isEmpty(); }
 
     @Override
     public boolean contains(String key) { return getModifier(key) != null; }
 
-    public void invalidateReferences() { }
+    /** Resolve against the current engine generation after logout cleared native state.
+     * Public StatMaps survive reconnect; their old native instances do not. */
+    private NativeStatEngine.StatInstance nativeInstance() {
+        return nativeReference.resolve();
+    }
+
+    public void invalidateReferences() { nativeInstance(); }
 
     /**
      * Mirrors the 1.7.1 pending-update contract for public stat listeners. The

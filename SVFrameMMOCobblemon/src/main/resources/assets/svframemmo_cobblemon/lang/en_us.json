@@ -1,0 +1,14 @@
+{
+  "svframemmo_cobblemon.shop.unsupported": "This move has no validated player-casting adapter and cannot be purchased.",
+  "svframemmo_cobblemon.shop.purchased": "Purchased %s for %s %s. The player skill has been saved.",
+  "svframemmo_cobblemon.shop.disabled": "The Pokémon skill shop is disabled.",
+  "svframemmo_cobblemon.shop.not_ready": "The Pokémon move catalog is not ready.",
+  "svframemmo_cobblemon.shop.unknown": "Unknown Pokémon skill: %s",
+  "svframemmo_cobblemon.shop.already_owned": "You already own %s.",
+  "svframemmo_cobblemon.shop.processing": "Your skill purchase is being processed.",
+  "svframemmo_cobblemon.shop.insufficient": "You do not have enough currency to purchase this skill.",
+  "svframemmo_cobblemon.shop.payment_failed": "Payment failed. No skill was granted.",
+  "svframemmo_cobblemon.shop.refunded": "The skill could not be granted. Your payment has been refunded.",
+  "svframemmo_cobblemon.shop.refund_failed": "The skill purchase and refund failed. Please contact an administrator.",
+  "svframemmo_cobblemon.shop.admin_granted": "An administrator granted %s. Open the Skills menu to equip it."
+}

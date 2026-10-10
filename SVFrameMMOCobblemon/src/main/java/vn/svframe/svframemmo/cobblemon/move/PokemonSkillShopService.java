@@ -18,9 +18,23 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** Persistent Pokemon-move ownership shop backed by SVFrameMMO ExternalSkillProgression. */
-public final class PokemonSkillShopService {
+public final class PokemonSkillShopService implements vn.svframe.svframelib.skill.PlayerAbilityShop {
     private final PokemonSkillEconomy economy = new PokemonSkillEconomy();
     private final Set<UUID> purchasing = ConcurrentHashMap.newKeySet();
+    public boolean isProcessing(UUID player){return purchasing.contains(player);}
+    @Override public void purchase(ServerPlayerEntity player,String id){purchase(player,id,-1);}
+    @Override public List<Map<String,Object>> catalog(ServerPlayerEntity player){
+        List<Map<String,Object>> rows=new ArrayList<>();
+        for(var offer:offers(player.getUuid())){
+            var definition=CobblemonMoveSkillAdapter.definition(offer.moveId());var move=com.cobblemon.mod.common.api.moves.Moves.getByName(offer.moveId());if(move==null||definition==null)continue;
+            var profile=CobblemonMoveProfile.of(move);var data=SVFrameMMO.playerData().get(player);int level=Math.max(1,SVFrameMMO.externalProgression().level(player.getUuid(),offer.skillId()));
+            var row=new java.util.LinkedHashMap<String,Object>();row.put("id",offer.moveId());row.put("skillId",offer.skillId());row.put("name",offer.name());
+            row.put("nameKey",translation(move.getDisplayName()));row.put("description",move.getDescription().getString());row.put("descriptionKey",translation(move.getDescription()));
+            row.put("type",move.getElementalType().getName());row.put("category",profile.isHeal()?"healing":profile.damageCategory());row.put("owned",offer.owned());row.put("price",offer.price().toPlainString());row.put("currency",economy.displayCurrency(SVFrameMMOCobblemon.config().pokemonSkills.normalizedProvider(),SVFrameMMOCobblemon.config().pokemonSkills.currency));
+            row.put("mana",definition.getParameter("mana",level,data));row.put("stamina",definition.getParameter("stamina",level,data));row.put("cooldown",definition.getParameter("cooldown",level,data));row.put("range",profile.range());row.put("radius",profile.radius());row.put("level",level);row.put("requiredLevel",definition.getUnlockLevel());rows.add(Map.copyOf(row));
+        }return List.copyOf(rows);
+    }
+    private static String translation(Text text){return text.getContent() instanceof net.minecraft.text.TranslatableTextContent translated?translated.getKey():"";}
 
     public void open(ServerPlayerEntity player) { open(player, 0); }
 
@@ -28,12 +42,12 @@ public final class PokemonSkillShopService {
         if (player == null) return;
         IntegrationConfig.PokemonSkillShopConfig config = SVFrameMMOCobblemon.config().pokemonSkills;
         if (!config.enabled) {
-            player.sendMessage(Text.literal("Pokemon skill shop is disabled."), true);
+            player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.disabled"), true);
             return;
         }
         List<Offer> offers = offers(player.getUuid());
         if (offers.isEmpty()) {
-            player.sendMessage(Text.literal("Pokemon move catalog is not loaded yet."), true);
+            player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.not_ready"), true);
             return;
         }
         int last = Math.max(0, (offers.size() - 1) / PokemonSkillShopGui.PAGE_SIZE);
@@ -41,11 +55,12 @@ public final class PokemonSkillShopService {
     }
 
     public List<Offer> offers(UUID player) {
+        if(!SVFrameMMOCobblemon.config().pokemonSkills.enabled)return List.of();
         ArrayList<Offer> result = new ArrayList<>();
-        for (Map.Entry<String, ClassSkill> entry : CobblemonMoveSkillAdapter.definitions().entrySet()) {
-            String moveId = entry.getKey();
-            ClassSkill definition = entry.getValue();
+        for (String moveId : PlayerMoveCoverage.purchaseAdapters()) {
+            ClassSkill definition = CobblemonMoveSkillAdapter.definition(moveId);
             if (definition == null || definition.getSkill() == null) continue;
+            if(!PlayerMoveCoverage.purchasable(moveId))continue;
             String skillId = definition.getSkill().getId();
             String name = definition.getSkill().getName();
             if (name == null || name.isBlank()) name = moveId;
@@ -57,30 +72,33 @@ public final class PokemonSkillShopService {
     }
 
     public List<String> moveIds() {
-        return CobblemonMoveSkillAdapter.definitions().keySet().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList();
+        return CobblemonMoveSkillAdapter.definitions().keySet().stream().filter(PlayerMoveCoverage::purchasable).sorted(String.CASE_INSENSITIVE_ORDER).toList();
     }
 
     public void purchase(ServerPlayerEntity player, String rawMoveId, int returnPage) {
         if (player == null) return;
         IntegrationConfig.PokemonSkillShopConfig config = SVFrameMMOCobblemon.config().pokemonSkills;
         if (!config.enabled) {
-            player.sendMessage(Text.literal("Pokemon skill shop is disabled."), true);
+            player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.disabled"), true);
             return;
         }
 
         ResolvedSkill resolved = resolve(rawMoveId);
         if (resolved == null) {
-            player.sendMessage(Text.literal("Unknown Pokemon skill: " + rawMoveId), true);
+            player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.unknown",rawMoveId), true);
             return;
+        }
+        if(!PlayerMoveCoverage.purchasable(resolved.moveId)){
+            player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.unsupported"),true);return;
         }
         UUID playerId = player.getUuid();
         if (SVFrameMMO.externalProgression().isLearned(playerId, resolved.skillId)) {
-            player.sendMessage(Text.literal(resolved.name + " is already owned."), true);
-            open(player, returnPage);
+            player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.already_owned",resolved.name), true);
+            if(returnPage>=0)open(player, returnPage);
             return;
         }
         if (!purchasing.add(playerId)) {
-            player.sendMessage(Text.literal("A Pokemon skill purchase is already being processed."), true);
+            player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.processing"), true);
             return;
         }
 
@@ -104,7 +122,8 @@ public final class PokemonSkillShopService {
             purchasing.remove(playerId);
             if (failure != null) SVFrameMMOCobblemon.LOG.error("Pokemon skill charge failed for {}", playerId, failure);
             String message = charge == null ? "Economy transaction failed. No skill was granted." : charge.message();
-            player.sendMessage(Text.literal(message == null || message.isBlank() ? "Economy transaction failed. No skill was granted." : message), true);
+            if(message!=null&&!message.isBlank())SVFrameMMOCobblemon.LOG.warn("Skill payment rejected for {}: {}",playerId,message);
+            player.sendMessage(Text.translatable(charge!=null&&charge.insufficient()?"svframemmo_cobblemon.shop.insufficient":"svframemmo_cobblemon.shop.payment_failed"), true);
             return;
         }
 
@@ -123,7 +142,14 @@ public final class PokemonSkillShopService {
                         "SVFrameMMO rejected the skill grant; the purchase was refunded.", returnPage);
                 return;
             }
-            SVFrameMMO.externalProgression().save();
+            SVFrameMMO.externalProgression().saveDurably().whenComplete((ignored,persistFailure)->{
+                var server=player.getServer();if(server==null){purchasing.remove(playerId);return;}
+                server.execute(()->{
+                    if(persistFailure!=null){rollbackLearn(playerId,resolved.skillId);refundAndFinish(player,price,provider,currency,"The skill could not be saved; the purchase was refunded.",returnPage);return;}
+                    purchasing.remove(playerId);
+                    var online=server.getPlayerManager().getPlayer(playerId);if(online!=null){online.sendMessage(Text.translatable("svframemmo_cobblemon.shop.purchased",resolved.name,format(price),economy.displayCurrency(provider,currency)),true);if(returnPage>=0)open(online,returnPage);}
+                });
+            });
         } catch (Throwable error) {
             SVFrameMMOCobblemon.LOG.error("Could not persist purchased Pokemon skill {} for {}", resolved.skillId, playerId, error);
             if (learned) rollbackLearn(playerId, resolved.skillId);
@@ -132,10 +158,6 @@ public final class PokemonSkillShopService {
             return;
         }
 
-        purchasing.remove(playerId);
-        player.sendMessage(Text.literal("Purchased " + resolved.name + " for " + format(price) + " "
-                + economy.displayCurrency(provider, currency) + ". The skill is now owned in SVFrameMMO."), true);
-        open(player, returnPage);
     }
 
     private void rollbackLearn(UUID playerId, String skillId) {
@@ -159,13 +181,13 @@ public final class PokemonSkillShopService {
             server.execute(() -> {
                 purchasing.remove(playerId);
                 if (failure == null && Boolean.TRUE.equals(refunded)) {
-                    player.sendMessage(Text.literal(successMessage), true);
+                    player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.refunded"), true);
                 } else {
-                    player.sendMessage(Text.literal("CRITICAL: the skill grant failed after payment and the economy refund also failed. Contact an administrator."), false);
+                    player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.refund_failed"), false);
                     SVFrameMMOCobblemon.LOG.error("Pokemon skill refund failed for player {}, provider {}, currency {}, amount {}",
                             playerId, provider, currency, amount, failure);
                 }
-                open(player, returnPage);
+                if(returnPage>=0&&!player.isDisconnected())open(player, returnPage);
             });
         });
     }

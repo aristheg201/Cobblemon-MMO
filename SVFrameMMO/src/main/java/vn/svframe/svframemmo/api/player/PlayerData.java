@@ -347,6 +347,8 @@ public final class PlayerData {
         if (!slotDefinition.canManuallyBind() && slotDefinition.hardset() == null) throw new IllegalStateException("Skill slot cannot be manually bound: " + slot);
         if (slotDefinition.hardset() != null && !slotDefinition.hardset().equals(skill.getSkill().getId()))
             throw new IllegalStateException("Skill slot " + slot + " is hard-bound to " + slotDefinition.hardset());
+        if (!vn.svframe.svframemmo.trigger.NativeTriggerRegistry.evaluateSkillFormula(skill.getSkill(),slotDefinition.formula()))
+            throw new IllegalArgumentException("Skill does not match slot " + slot + ": " + skill.getSkill().getId());
         skillBindings.put(slot, skill.getSkill().getId());
         if (isOnline()) SVFrameMMO.skillRuntime().refresh(this);
     }

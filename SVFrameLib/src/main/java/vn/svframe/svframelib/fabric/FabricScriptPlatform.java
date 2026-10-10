@@ -46,6 +46,7 @@ final class FabricScriptPlatform implements ScriptPlatform {
     public boolean canTarget(UUID source, UUID target, String mode) {
         Entity entity = entity(target);
         if (!(entity instanceof LivingEntity living) || !living.isAlive()) return false;
+        if(!vn.svframe.svframelib.entity.RpgEntityAdapters.allows(entity(source),living,vn.svframe.svframelib.entity.RpgEntityAdapters.Effect.STATUS))return false;
         return source == null || !source.equals(target) || mode == null || !mode.toLowerCase(Locale.ROOT).contains("other");
     }
 
@@ -125,7 +126,7 @@ final class FabricScriptPlatform implements ScriptPlatform {
     @Override
     public void heal(UUID target, double amount) {
         Entity entity = entity(target);
-        if (entity instanceof LivingEntity living && amount > 0) living.heal((float) amount);
+        if (entity instanceof LivingEntity living) vn.svframe.svframelib.entity.RpgEntityAdapters.heal(null,living,amount);
     }
 
     @Override
