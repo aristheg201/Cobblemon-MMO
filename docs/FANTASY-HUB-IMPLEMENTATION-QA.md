@@ -1,10 +1,12 @@
 # Current delivery — Dragonborn priority, 2026-10-11
 
-**The project is not production-complete.** The current implementation, exact source coverage, local builds, 68 Dragonborn checks, continuous-server 137.35 health regression, original base armor and standalone presentation-client evidence are recorded in [DRAGONBORN-IMPLEMENTATION-QA.md](DRAGONBORN-IMPLEMENTATION-QA.md). This supersedes the baseline coverage counts below. All 36 source class definitions now register; a bounded native Mythic graph engine accepts 793 definitions and disables 3749 with explicit diagnostics. Native Skript and complete source boss encounters remain unimplemented.
+**The project is not production-complete.** The current implementation, exact source coverage, local builds, 68 Dragonborn checks, continuous-server 137.35 health regression, original base armor and standalone presentation-client evidence are recorded in [DRAGONBORN-IMPLEMENTATION-QA.md](DRAGONBORN-IMPLEMENTATION-QA.md). This supersedes the baseline coverage counts below. All 36 source class definitions now register; a bounded native Mythic graph engine accepts 793 definitions and disables 3749 with explicit diagnostics. Complete source boss encounters remain unimplemented. A later native Skript milestone now executes the three required class/dash source files; see [SKRIPT-IMPLEMENTATION-QA.md](SKRIPT-IMPLEMENTATION-QA.md) for exact evidence and limits.
 
-The requested deliverables include the five separate framework JARs, a GUI client, a required Core bridge/default-source installer and Config. A functional Skript Fabric JAR is not claimed or supplied. Source is pushed to the five existing authorized branches with `[skip ci]`; builds run locally.
+The requested deliverables include the five separate framework JARs, a GUI client, a required Core bridge/default-source installer and Config. SVFrameSkript-0.1.0 is now supplied for the reduced class/dash scope; broad Skript compatibility is not claimed. Source is pushed to the five existing authorized branches with `[skip ci]`; builds run locally.
 
 ## Historical baseline evidence — 2026-10-10
+
+The following records predate the native Skript milestone and BEconomy runtime test; historical counts and absent-provider statements must not be interpreted as current delivery state.
 
 # Fantasy Hub implementation candidate — 2026-10-10
 

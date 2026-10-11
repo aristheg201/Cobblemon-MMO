@@ -1,0 +1,74 @@
+[
+  {
+    "case": "walking-forward",
+    "before": 100.0,
+    "after": 92.0,
+    "netStaminaDecreaseWithRegeneration": 8.0,
+    "actualSkillStaminaDebited": 8.0,
+    "expectedSkillDebit": 8,
+    "passed": true
+  },
+  {
+    "case": "walking-back",
+    "before": 100.0,
+    "after": 93.036,
+    "netStaminaDecreaseWithRegeneration": 6.963999999999999,
+    "actualSkillStaminaDebited": 8.0,
+    "expectedSkillDebit": 8,
+    "passed": true
+  },
+  {
+    "case": "walking-left",
+    "before": 100.0,
+    "after": 93.036,
+    "netStaminaDecreaseWithRegeneration": 6.963999999999999,
+    "actualSkillStaminaDebited": 8.0,
+    "expectedSkillDebit": 8,
+    "passed": true
+  },
+  {
+    "case": "walking-right",
+    "before": 100.0,
+    "after": 92.0,
+    "netStaminaDecreaseWithRegeneration": 8.0,
+    "actualSkillStaminaDebited": 8.0,
+    "expectedSkillDebit": 8,
+    "passed": true
+  },
+  {
+    "case": "sprint",
+    "before": 100.0,
+    "after": 100.0,
+    "netStaminaDecreaseWithRegeneration": 0.0,
+    "actualSkillStaminaDebited": 0.0,
+    "expectedSkillDebit": 0,
+    "passed": true
+  },
+  {
+    "case": "crouch",
+    "before": 100.0,
+    "after": 100.0,
+    "netStaminaDecreaseWithRegeneration": 0.0,
+    "actualSkillStaminaDebited": 0.0,
+    "expectedSkillDebit": 0,
+    "passed": true
+  },
+  {
+    "case": "standing",
+    "before": 100.0,
+    "after": 100.0,
+    "netStaminaDecreaseWithRegeneration": 0.0,
+    "actualSkillStaminaDebited": 0.0,
+    "expectedSkillDebit": 0,
+    "passed": true
+  },
+  {
+    "case": "insufficient",
+    "before": 0.0,
+    "after": 1.036,
+    "netStaminaDecreaseWithRegeneration": -1.036,
+    "actualSkillStaminaDebited": 0.0,
+    "expectedSkillDebit": 0,
+    "passed": true
+  }
+]

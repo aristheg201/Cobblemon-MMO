@@ -60,7 +60,8 @@ public final class FantasyHubClient implements ClientModInitializer {
             if(context.client().currentScreen instanceof ClassSelectionScreen screen)screen.refresh();
         });
         ClientPlayNetworking.registerGlobalReceiver(Protocol.Open.ID,(payload,context)->{
-            if(payload.screen().equals("classes"))context.client().setScreen(new ClassSelectionScreen());
+            if(payload.screen().equals("close")){var screen=context.client().currentScreen;if(screen instanceof HubScreen||screen instanceof ClassSelectionScreen||screen instanceof PokemonShopScreen)context.client().setScreen(null);}
+            else if(payload.screen().equals("classes"))context.client().setScreen(new ClassSelectionScreen());
             else if(payload.screen().equals("pokemon_shop"))context.client().setScreen(new PokemonShopScreen());
             else try{context.client().setScreen(new HubScreen(HubScreen.View.valueOf(payload.screen().toUpperCase(java.util.Locale.ROOT))));}catch(IllegalArgumentException ignored){}
         });

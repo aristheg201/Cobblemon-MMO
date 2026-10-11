@@ -1,0 +1,27 @@
+{
+  "providerForQA": "cobbledollars",
+  "feeFromOriginalScript": 100000,
+  "insufficientFundsBalance": 17500,
+  "qaGrant": 150000,
+  "beforeBalance": 167500,
+  "afterBalance": 67500,
+  "afterBlockedBalance": 67500,
+  "beforeClass": "DRAGONBORN",
+  "afterClass": "PALADIN",
+  "checks": {
+    "exactOriginalFee": true,
+    "originalCommandChangedClass": true,
+    "originalCooldownApplied": true,
+    "duplicateRejectedWithoutFee": true,
+    "lockCleared": true
+  },
+  "policy": {
+    "fee": "100000",
+    "cooldownSeconds": 3600,
+    "availableAt": 1791728221872,
+    "remainingSeconds": 3600,
+    "currency": "cobbledollars:cobbledollars",
+    "economyAvailable": true,
+    "busy": false
+  }
+}

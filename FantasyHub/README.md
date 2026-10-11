@@ -1,6 +1,6 @@
 # Fantasy Hub (Fabric 1.21.1)
 
-This is an implementation candidate, not a production-complete migration of the supplied plugin pack. The retained audit discovers 36 classes and 28 enabled Skript scripts. The current runtime does not implement their full behavior. Read the migration and QA reports before deploying.
+This is an implementation candidate, not a production-complete migration of the supplied plugin pack. The retained audit discovers 36 classes and 28 enabled Skript scripts; the user subsequently reduced the scripting scope to three class/dash files. The current runtime does not implement their full behavior. Read the migration and QA reports before deploying.
 
 The Core bridge uses SVFrameMMO/SVFrameLib as the single owner of stats, resources, progression, cooldowns and loadouts. The Client provides packaged assets, a HUD, character/attribute/skill/settings screens, and a separate Cobblemon player-skill shop. Requests are validated by server APIs; client health observations exist only in the explicitly enabled QA mode.
 
@@ -49,6 +49,8 @@ Use `--catalog` with a high-level DK account that has purchased Cut to verify cl
 
 `SVFRAME_RUNTIME_QA=1` enables administrator-only lifecycle and Cobblemon tests plus actual client damage-packet/hurt-camera observations. Do not enable this on a public production server.
 
-Only 15 explicit single-hit/half-heal move adapters are currently offered for purchase. The complete move registry remains available to fusion and existing saves; registration is not a claim of behavioral coverage. Economy/provider crash recovery, exhaustive class/boss/asset migration, the supplied Skript language/addons and the complete requested UI suite remain unfinished.
+Only 15 explicit single-hit/half-heal move adapters are currently offered for purchase. The complete move registry remains available to fusion and existing saves; registration is not a claim of behavioral coverage. Economy/provider crash recovery, exhaustive class/boss/asset migration, full Skript language/addon compatibility and the complete requested UI suite remain unfinished. The native [SVFrameSkript module](skript/README.md) now executes the three required original class/dash scripts; consult its runtime report for tested behavior and remaining gaps.
 
 Dragonborn priority implementation and its 68 live checks, continuous-server reconnect/respawn regressions, client-only proof and remaining compatibility gaps are documented in [`docs/DRAGONBORN-IMPLEMENTATION-QA.md`](../docs/DRAGONBORN-IMPLEMENTATION-QA.md). Run `tools/prepare_source_pack.py` with the retained inventory and extracted original inputs before building. The importer is not a repeated audit. `tools/run_dragonborn_qa.py` provides the real seven-skill/base-armor runtime suite.
+
+The compact HUD now places HP at vanilla hearts, stamina above HP, mana above food, and RPG level at the vanilla experience-level position. See [compact HUD runtime proof](../docs/COMPACT-HUD-QA.md).

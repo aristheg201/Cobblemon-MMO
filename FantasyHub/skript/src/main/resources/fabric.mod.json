@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "svframeskript",
+  "version": "${version}",
+  "name": "SVFrameSkript",
+  "description": "Fabric-native Skript language execution and RPG platform adapters.",
+  "environment": "*",
+  "entrypoints": { "main": ["vn.svframe.skript.fabric.SVFrameSkript"] },
+  "depends": {
+    "minecraft": "1.21.1", "fabricloader": ">=0.18.4", "java": ">=21",
+    "fabric-api": "*", "svframelib": ">=1.7.2-fabric", "svframemmo": ">=1.13.2-fabric"
+  },
+  "mixins": ["svframeskript.mixins.json"]
+}

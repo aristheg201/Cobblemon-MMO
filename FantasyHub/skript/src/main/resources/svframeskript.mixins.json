@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "package": "vn.svframe.skript.fabric.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CommandMixin",
+    "InventoryMixin",
+    "PlayerMixin",
+    "DamageMixin",
+    "MovementMixin",
+    "JumpMixin",
+    "DeathStateMixin",
+    "InventoryDeathMixin",
+    "RespawnInventoryMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -34,7 +34,7 @@ final class ClassSwitchService {
     }
     private static String text(String key){return Objects.toString(config.get(key),"");}
     private static boolean permission(ServerPlayerEntity player,String key){return SVFrameMMO.permissions().has(player,key);}
-    static boolean selectable(String id){return list("selectable-classes").contains(id)||list("additional-native-classes").contains(id);}
+    static boolean selectable(String id){var script=vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.classPolicy();return script!=null?script.selectable(id):list("selectable-classes").contains(id)||list("additional-native-classes").contains(id);}
     static boolean unlocked(ServerPlayerEntity player,String id) {
         if(!selectable(id))return false;
         if(id.equals("HUNTER"))return permission(player,text("hunter-permission"));
@@ -49,9 +49,11 @@ final class ClassSwitchService {
         out.put("fee",text("fee"));out.put("cooldownSeconds",Long.parseLong(text("cooldown-seconds")));
         out.put("availableAt",data.getClassSwitchAvailableAt());out.put("remainingSeconds",Math.max(0,(data.getClassSwitchAvailableAt()-System.currentTimeMillis()+999)/1000));
         out.put("currency",key.serialized());out.put("economyAvailable",service.isAvailable(key));out.put("busy",pending.contains(data.getUniqueId()));
+        var script=vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.classPolicy();if(script!=null&&data.isOnline())out.putAll(script.details(data.getPlayer()));
         return out;
     }
     static boolean request(ServerPlayerEntity player,String id,Runnable invalidate) {
+        var script=vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.classPolicy();if(script!=null){boolean result=script.request(player,id);invalidate.run();return result;}
         PlayerData data=SVFrameMMO.playerData().get(player);PlayerClass target=SVFrameMMO.classes().get(id);
         if(target==null||!selectable(target.getId()))return reject(player,"invalid");
         if(!unlocked(player,target.getId()))return reject(player,"locked");

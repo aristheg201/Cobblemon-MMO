@@ -1,0 +1,62 @@
+[
+  {
+    "skill": "CLS_ANTI_MAGE_KNIGHT_NORTHERN_GUST",
+    "beforeMana": 84.8,
+    "targetBefore": "Cow has the following entity data: 100.0f",
+    "command": "",
+    "immediateMana": 79.8,
+    "targetAfter": "Cow has the following entity data: 95.0f",
+    "afterClass": "ANTI_MAGE_KNIGHT",
+    "runtimeErrors": []
+  },
+  {
+    "skill": "CLS_ANTI_MAGE_KNIGHT_CLAP",
+    "beforeMana": 84.8,
+    "targetBefore": "Cow has the following entity data: 100.0f",
+    "command": "",
+    "immediateMana": 69.8,
+    "targetAfter": "Cow has the following entity data: 93.0f",
+    "afterClass": "ANTI_MAGE_KNIGHT",
+    "runtimeErrors": []
+  },
+  {
+    "skill": "CLS_ANTI_MAGE_KNIGHT_HEROIC_SURGE",
+    "beforeMana": 84.8,
+    "targetBefore": "Cow has the following entity data: 100.0f",
+    "command": "",
+    "immediateMana": 74.8,
+    "targetAfter": "Cow has the following entity data: 92.0f",
+    "afterClass": "ANTI_MAGE_KNIGHT",
+    "runtimeErrors": []
+  },
+  {
+    "skill": "CLS_ANTI_MAGE_KNIGHT_OVERLOAD",
+    "beforeMana": 84.8,
+    "targetBefore": "Cow has the following entity data: 100.0f",
+    "command": "",
+    "immediateMana": 64.8,
+    "targetAfter": "Cow has the following entity data: 94.0f",
+    "afterClass": "ANTI_MAGE_KNIGHT",
+    "runtimeErrors": []
+  },
+  {
+    "skill": "CLS_ANTI_MAGE_KNIGHT_HIT_ME",
+    "beforeMana": 84.8,
+    "targetBefore": "Cow has the following entity data: 100.0f",
+    "command": "",
+    "immediateMana": 54.8,
+    "targetAfter": "Cow has the following entity data: 90.0f",
+    "afterClass": "ANTI_MAGE_KNIGHT",
+    "runtimeErrors": []
+  },
+  {
+    "skill": "CLS_ANTI_MAGE_KNIGHT_METEOR_LANDING",
+    "beforeMana": 84.8,
+    "targetBefore": "Cow has the following entity data: 100.0f",
+    "command": "",
+    "immediateMana": 59.8,
+    "targetAfter": "Cow has the following entity data: 90.0f",
+    "afterClass": "ANTI_MAGE_KNIGHT",
+    "runtimeErrors": []
+  }
+]

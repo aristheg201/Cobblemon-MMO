@@ -1,0 +1,17 @@
+[
+  {
+    "file": "config2/sv_class_switch.sk",
+    "sha256": "83c38c37bfcdfc156d743cab01645ee19916270b456d587d7405b8223209be8f",
+    "originalBytesUnchanged": true
+  },
+  {
+    "file": "config2/sv_dash_mmocore.sk",
+    "sha256": "cd46757df2c596d47d9c3e86c96d4811eaa384b64fcac63098cf099fdb52f146",
+    "originalBytesUnchanged": true
+  },
+  {
+    "file": "amk/sv_anti_mage_knight.sk",
+    "sha256": "ad024a1bd5b37b4d3ed8250a6af83ee8fab00f64cc9b4e83ed61528aaad60e97",
+    "originalBytesUnchanged": true
+  }
+]

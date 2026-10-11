@@ -32,6 +32,8 @@ public final class FantasyHubCore implements ModInitializer {
     private long tick;
     @Override public void onInitialize(){
         Protocol.install();
+        vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.registerMenu("svframe_class_switch",player->{snapshots.remove(player.getUuid());ServerPlayNetworking.send(player,new Protocol.Open("classes"));});
+        vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.registerMenu("svframe_close",player->ServerPlayNetworking.send(player,new Protocol.Open("close")));
         ServerLifecycleEvents.SERVER_STARTING.register(server->{
             Path root=net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir().resolve("SVFrameLib");
             try{

@@ -34,6 +34,10 @@ import java.util.*;
 /** Native class behaviors ported from the supplied Death Knight YAML and AMK v17 Skript.
  * This is an explicit class adapter, not an interpreter for arbitrary MythicMobs/Skript files. */
 public final class ReferenceClassSkillRuntime {
+    /** A source interpreter may take ownership without registering a second combat/resource owner. */
+    public interface ScriptAdapter {boolean owns(String behavior);boolean canCast(String behavior,ServerPlayerEntity player);boolean cast(String behavior,ServerPlayerEntity player);}
+    private static ScriptAdapter scriptAdapter;
+    public static void scriptAdapter(ScriptAdapter adapter){scriptAdapter=adapter;if(adapter!=null&&adapter.owns("ANTI_MAGE_KNIGHT_PASSIVE"))for(State state:STATES.values()){state.amkUntil=0;state.guardUntil=0;state.shield=0;state.stored=0;}}
     private static final Set<String> DEATH=Set.of("CURSED_SEAL","DEATH_STRIKE_ST","PHANTOM_CHARGE","WRAITHBOUND_CHAINS","SOUL_BARRIER","NECROTIC_WHIRLWIND","DEATH_SENTENCE");
     private static final Set<String> AMK=Set.of("PASSIVE","NORTHERN_GUST","CLAP","HEROIC_SURGE","OVERLOAD","HIT_ME","METEOR_LANDING");
     private static final Map<ServerPlayerEntity,State> STATES=new IdentityHashMap<>();
@@ -67,6 +71,7 @@ public final class ReferenceClassSkillRuntime {
     public static boolean canCast(String id,ServerPlayerEntity player) {
         if(!supports(id)||player==null||!player.isAlive()||player.isSpectator())return false;
         String key=normalize(id);
+        if(scriptAdapter!=null&&scriptAdapter.owns(key))return scriptAdapter.canCast(key,player);
         if(key.endsWith("DEATH_SENTENCE")||key.endsWith("METEOR_LANDING")||key.endsWith("HIT_ME"))return HeroEntranceRuntime.canStart(player);
         if(key.endsWith("PHANTOM_CHARGE")||key.endsWith("HEROIC_SURGE"))return player.isOnGround()&&state(player).busyUntil<=SVFrameLibFabricMod.currentTick();
         if(key.endsWith("OVERLOAD"))return state(player).guardUntil<=SVFrameLibFabricMod.currentTick();
@@ -74,7 +79,8 @@ public final class ReferenceClassSkillRuntime {
     }
     public static boolean cast(String id,ServerPlayerEntity player,Map<String,?> parameters) {
         if(!canCast(id,player))return false;
-        String key=normalize(id);State state=state(player);long now=SVFrameLibFabricMod.currentTick();
+        String key=normalize(id);if(scriptAdapter!=null&&scriptAdapter.owns(key))return scriptAdapter.cast(key,player);
+        State state=state(player);long now=SVFrameLibFabricMod.currentTick();
         switch(key) {
             case "DEATH_KNIGHT_CURSED_SEAL" -> state.curseUntil=now+40;
             case "ANTI_MAGE_KNIGHT_PASSIVE" -> state.amkUntil=now+40;

@@ -1,0 +1,40 @@
+{
+  "format": 1,
+  "active": true,
+  "sourceFiles": 3,
+  "compiledFiles": 3,
+  "pendingTasks": 0,
+  "executedStatements": {
+    "amk/sv_anti_mage_knight.sk": 25451,
+    "config2/sv_dash_mmocore.sk": 4961,
+    "<loop>": 2812,
+    "config2/sv_class_switch.sk": 51
+  },
+  "runtimeErrors": [],
+  "files": [
+    {
+      "file": "amk/sv_anti_mage_knight.sk",
+      "compiled": true,
+      "functions": 12,
+      "commands": 1,
+      "triggers": 4,
+      "diagnostics": []
+    },
+    {
+      "file": "config2/sv_class_switch.sk",
+      "compiled": true,
+      "functions": 7,
+      "commands": 4,
+      "triggers": 0,
+      "diagnostics": []
+    },
+    {
+      "file": "config2/sv_dash_mmocore.sk",
+      "compiled": true,
+      "functions": 0,
+      "commands": 1,
+      "triggers": 8,
+      "diagnostics": []
+    }
+  ]
+}

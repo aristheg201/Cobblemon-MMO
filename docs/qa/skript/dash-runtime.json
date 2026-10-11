@@ -1,0 +1,66 @@
+{
+  "runtime": {
+    "format": 1,
+    "active": true,
+    "sourceFiles": 3,
+    "compiledFiles": 3,
+    "pendingTasks": 0,
+    "executedStatements": {
+      "amk/sv_anti_mage_knight.sk": 8827,
+      "config2/sv_dash_mmocore.sk": 1321,
+      "<loop>": 912
+    },
+    "runtimeErrors": [],
+    "files": [
+      {
+        "file": "amk/sv_anti_mage_knight.sk",
+        "compiled": true,
+        "functions": 12,
+        "commands": 1,
+        "triggers": 4,
+        "diagnostics": []
+      },
+      {
+        "file": "config2/sv_class_switch.sk",
+        "compiled": true,
+        "functions": 7,
+        "commands": 4,
+        "triggers": 0,
+        "diagnostics": []
+      },
+      {
+        "file": "config2/sv_dash_mmocore.sk",
+        "compiled": true,
+        "functions": 0,
+        "commands": 1,
+        "triggers": 8,
+        "diagnostics": []
+      }
+    ]
+  },
+  "checks": {
+    "snapshot": {
+      "class": "DRAGONBORN",
+      "stamina": 92.0,
+      "maxStamina": 100.0,
+      "casting": true,
+      "health": 137.35,
+      "maxHealth": 137.35,
+      "hurtTime": 0,
+      "velocity": [
+        0.0,
+        -0.37663049823865513,
+        0.449303209216201
+      ]
+    },
+    "originalDodgeWindowExpired": true,
+    "legitimateDamageAfterDash": true,
+    "realDamageCancelledDuringDash": true,
+    "dashTestHealth": 137.35,
+    "dashTestStamina": 92.0
+  },
+  "player": "QAPlayer",
+  "staminaBefore": 100,
+  "staminaAfter": 92.0,
+  "staminaSpent": 8.0
+}

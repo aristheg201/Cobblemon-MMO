@@ -39,9 +39,21 @@ project(':client') {
     // Owned/generated assets are supplied locally; source archives are not a CI dependency.
     sourceSets.main.resources.srcDir('src/imported/resources')
     processResources {
+        from(rootProject.file('skript/src/main/resources')) { include 'assets/**/lang/*.json' }
         for(String module:['SVFrameLib','SVFrameMMO','SVFrameMMOCobblemon']) {
             from(rootProject.file('../'+module+'/src/main/resources')) { include 'assets/**/lang/*.json' }
         }
     }
 }
 project(':protocol') { base.archivesName='FantasyHubProtocol' }
+project(':skript') {
+    base.archivesName='SVFrameSkript'
+    dependencies {
+        modImplementation files(rootProject.file('../SVFrameLib/build/libs/SVFrameLib-1.7.2-fabric.jar'))
+        modImplementation files(rootProject.file('../SVFrameMMO/build/libs/SVFrameMMO-1.13.2-fabric.jar'))
+        testImplementation platform('org.junit:junit-bom:5.11.4')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+    tasks.withType(Test).configureEach { useJUnitPlatform(); if(rootProject.hasProperty("suppliedScripts"))systemProperty "suppliedScripts",rootProject.property("suppliedScripts") }
+}

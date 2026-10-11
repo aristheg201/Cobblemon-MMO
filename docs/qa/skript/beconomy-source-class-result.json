@@ -1,0 +1,15 @@
+{
+  "classId": "PALADIN",
+  "policy": {
+    "fee": "100000",
+    "cooldownSeconds": 3600,
+    "availableAt": 1791730217090,
+    "remainingSeconds": 3600,
+    "currency": "beconomy:primary",
+    "economyAvailable": true,
+    "busy": false
+  },
+  "provider": "beconomy:primary",
+  "qaCredit": 200000,
+  "thirdPartyDependencyRequired": "Text Placeholder API 2.4.2+1.21"
+}
