@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "vn.svframe.svframemobs.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ChunkTrackingAccessor",
+    "EntityTrackingAccessor",
+    "EntityVisibilityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

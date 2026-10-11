@@ -4,6 +4,7 @@ version = '0.1.0-fabric'
 base { archivesName = 'SVFrameMobs' }
 repositories { mavenCentral(); maven { url = 'https://maven.fabricmc.net/' } }
 dependencies {
+    runtimeOnly "org.yaml:snakeyaml:2.3"
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"

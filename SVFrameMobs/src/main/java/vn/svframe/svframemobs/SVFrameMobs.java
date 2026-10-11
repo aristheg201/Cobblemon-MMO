@@ -39,6 +39,7 @@ public final class SVFrameMobs implements ModInitializer {
     private int triggerDepth;
 
     @Override public void onInitialize() {
+        vn.svframe.svframemobs.mythic.MythicRuntime.instance().install();
         folder = FabricLoader.getInstance().getConfigDir().resolve("SVFrameMobs/mobs");
         try {
             Files.createDirectories(folder);
@@ -101,7 +102,8 @@ public final class SVFrameMobs implements ModInitializer {
     }
     private static void validateSkill(SkillLine skill) {
         if (skill.mechanic().equals("effect:particles")) NativeParticles.effect(skill.value("particle",skill.value("p","end_rod")),color(skill),1,skill.value("material","stone"));
-        if (skill.mechanic().equals("skill") && !SVFrameLibFabricMod.hasSkill(skill.value("s", skill.value("skill", "")))) throw new IllegalArgumentException("Unknown SVFrameLib skill in " + skill);
+        if (skill.mechanic().equals("skill") && !SVFrameLibFabricMod.hasSkill(skill.value("s", skill.value("skill", "")))
+                && !vn.svframe.svframemobs.mythic.MythicRuntime.instance().available(skill.value("s",skill.value("skill","")))) throw new IllegalArgumentException("Unknown/unavailable native skill in " + skill);
         if (skill.mechanic().equals("potion") && !Registries.STATUS_EFFECT.containsId(identifier(skill.value("type", "slowness")))) throw new IllegalArgumentException("Unknown potion in " + skill);
     }
     private MobEntity spawn(String key, ServerWorld world, Vec3d position) {
@@ -163,7 +165,12 @@ public final class SVFrameMobs implements ModInitializer {
             case "potion" -> { if (target instanceof LivingEntity living) Registries.STATUS_EFFECT.getEntry(identifier(skill.value("type","slowness"))).ifPresent(effect -> living.addStatusEffect(new StatusEffectInstance(effect,(int)bounded(skill.number("duration",60),1,72000),(int)bounded(skill.number("level",0),0,255)),mob)); }
             case "message" -> { if (target instanceof ServerPlayerEntity player) player.sendMessage(Text.literal(colors(skill.value("m",skill.value("message","")))),false); }
             case "effect:particles" -> ((ServerWorld)mob.getWorld()).spawnParticles(NativeParticles.effect(skill.value("particle",skill.value("p","end_rod")),color(skill),(float)skill.number("size",1),skill.value("material","stone")),target.getX(),target.getY()+1,target.getZ(),(int)bounded(skill.number("amount",10),1,100),0.3,0.3,0.3,0.02);
-            case "skill" -> SVFrameLibFabricMod.castSkill(skill.value("s",skill.value("skill","")),mob.getUuid(),target.getUuid(),skill.parameters());
+            case "skill" -> {
+                String name=skill.value("s",skill.value("skill",""));
+                var runtime=vn.svframe.svframemobs.mythic.MythicRuntime.instance();
+                if(runtime.available(name))runtime.cast(name,mob.getUuid(),target.getUuid(),skill.parameters());
+                else SVFrameLibFabricMod.castSkill(name,mob.getUuid(),target.getUuid(),skill.parameters());
+            }
         }
     }
     private static int color(SkillLine skill) { String raw = skill.value("color", "a83cff").replace("#", ""); return Integer.parseInt(raw,16) & 0xffffff; }
