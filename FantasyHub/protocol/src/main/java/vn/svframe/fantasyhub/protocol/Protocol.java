@@ -22,6 +22,12 @@ public final class Protocol implements ModInitializer {
         public static final PacketCodec<RegistryByteBuf,State> CODEC=PacketCodec.of((p,b)->b.writeString(p.json,262144),b->new State(b.readString(262144)));
         @Override public Id<State> getId(){return ID;}
     }
+    /** Small authoritative casting updates are independent from the GUI catalog snapshot. */
+    public record Casting(String json) implements CustomPayload {
+        public static final Id<Casting> ID=new Id<>(Identifier.of("fantasyhub","casting_v1"));
+        public static final PacketCodec<RegistryByteBuf,Casting> CODEC=PacketCodec.of((p,b)->b.writeString(p.json,16384),b->new Casting(b.readString(16384)));
+        @Override public Id<Casting> getId(){return ID;}
+    }
     public record Action(String action,String id,int slot) implements CustomPayload {
         public static final Id<Action> ID=new Id<>(Identifier.of("fantasyhub","action_v1"));
         public static final PacketCodec<RegistryByteBuf,Action> CODEC=PacketCodec.of((p,b)->{b.writeString(p.action,32);b.writeString(p.id,128);b.writeVarInt(p.slot);},b->new Action(b.readString(32),b.readString(128),b.readVarInt()));
@@ -44,6 +50,7 @@ public final class Protocol implements ModInitializer {
         visualBone=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","visual_bone"),new Item(new Item.Settings()));
         dragonbornHat=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","dragonborn_hat"),new net.minecraft.item.ArmorItem(net.minecraft.item.ArmorMaterials.LEATHER,net.minecraft.item.ArmorItem.Type.HELMET,new Item.Settings().maxCount(1)));
         PayloadTypeRegistry.playS2C().register(State.ID,State.CODEC);
+        PayloadTypeRegistry.playS2C().register(Casting.ID,Casting.CODEC);
         PayloadTypeRegistry.playS2C().register(Open.ID,Open.CODEC);
         PayloadTypeRegistry.playC2S().register(Action.ID,Action.CODEC);
         PayloadTypeRegistry.playC2S().register(Observation.ID,Observation.CODEC);

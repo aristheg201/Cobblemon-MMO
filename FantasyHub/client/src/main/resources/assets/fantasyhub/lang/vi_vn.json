@@ -35,7 +35,7 @@
   "fantasyhub.hud.position": "Đổi HUD trái / phải",
   "fantasyhub.hud.compact": "Đổi bố cục thu gọn",
   "fantasyhub.skill.unavailable": "Kỹ năng không khả dụng",
-  "fantasyhub.connection.incompatible": "Fantasy Hub cần FantasyHubClient 0.1.0 cho Minecraft 1.21.1. Cài JAR máy khách tương ứng rồi kết nối lại.",
+  "fantasyhub.connection.incompatible": "Fantasy Hub cần FantasyHubClient 0.1.1 cho Minecraft 1.21.1. Cài JAR máy khách tương ứng rồi kết nối lại.",
   "fantasyhub.skill.details": "Cấp kỹ năng %s\nYêu cầu cấp nhân vật %s\nNăng lượng %s · Thể lực %s\nHồi chiêu %s giây\nCòn %s giây",
   "fantasyhub.shop.title": "Cửa hàng kỹ năng Cobblemon",
   "fantasyhub.shop.all": "Tất cả",

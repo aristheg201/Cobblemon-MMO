@@ -35,7 +35,7 @@
   "fantasyhub.hud.position": "Move HUD left / right",
   "fantasyhub.hud.compact": "Toggle compact layout",
   "fantasyhub.skill.unavailable": "Unavailable skill",
-  "fantasyhub.connection.incompatible": "Fantasy Hub requires FantasyHubClient 0.1.0 for Minecraft 1.21.1. Install the matching client JAR and reconnect.",
+  "fantasyhub.connection.incompatible": "Fantasy Hub requires FantasyHubClient 0.1.1 for Minecraft 1.21.1. Install the matching client JAR and reconnect.",
   "fantasyhub.skill.details": "Level %s\nRequired character level %s\nMana %s · Stamina %s\nCooldown %ss\nRemaining %ss",
   "fantasyhub.shop.title": "Cobblemon Skill Shop",
   "fantasyhub.shop.all": "All",

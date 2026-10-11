@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 public final class FantasyHubClient implements ClientModInitializer {
     private static JsonObject state=new JsonObject();
+    private static final CastingState castingState=new CastingState();
     public static boolean hudEnabled=true;
     public static float hudScale=1;
     static PresentationOptions options;
@@ -54,10 +55,13 @@ public final class FantasyHubClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(Protocol.State.ID,(payload,context)->{
             JsonObject next=JsonParser.parseString(payload.json()).getAsJsonObject();
             if(next.get("schema").getAsInt()!=Protocol.VERSION)return;
-            state=next;observed=false;
+            castingState.mergeInto(next);state=next;observed=false;
             if(context.client().currentScreen instanceof HubScreen screen)screen.refresh();
             if(context.client().currentScreen instanceof PokemonShopScreen screen)screen.refresh();
             if(context.client().currentScreen instanceof ClassSelectionScreen screen)screen.refresh();
+        });
+        ClientPlayNetworking.registerGlobalReceiver(Protocol.Casting.ID,(payload,context)->{
+            castingState.accept(JsonParser.parseString(payload.json()).getAsJsonObject());castingState.mergeInto(state);observed=false;
         });
         ClientPlayNetworking.registerGlobalReceiver(Protocol.Open.ID,(payload,context)->{
             if(payload.screen().equals("close")){var screen=context.client().currentScreen;if(screen instanceof HubScreen||screen instanceof ClassSelectionScreen||screen instanceof PokemonShopScreen)context.client().setScreen(null);}
@@ -65,7 +69,7 @@ public final class FantasyHubClient implements ClientModInitializer {
             else if(payload.screen().equals("pokemon_shop"))context.client().setScreen(new PokemonShopScreen());
             else try{context.client().setScreen(new HubScreen(HubScreen.View.valueOf(payload.screen().toUpperCase(java.util.Locale.ROOT))));}catch(IllegalArgumentException ignored){}
         });
-        ClientPlayConnectionEvents.DISCONNECT.register((handler,client)->state=new JsonObject());
+        ClientPlayConnectionEvents.DISCONNECT.register((handler,client)->{state=new JsonObject();castingState.reset();});
         var menu=KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fantasyhub.menu",InputUtil.Type.KEYSYM,GLFW.GLFW_KEY_F8,"category.fantasyhub"));
         ClientTickEvents.END_CLIENT_TICK.register(client->{
             ticks++;
@@ -77,6 +81,7 @@ public final class FantasyHubClient implements ClientModInitializer {
                 com.google.gson.JsonArray players=new com.google.gson.JsonArray();for(var tracked:client.world.getPlayers())players.add(tracked.getName().getString());o.add("trackedPlayers",players);
                 if(state.has("casting"))o.add("clientCasting",state.get("casting").deepCopy());
                 o.add("displayedSkillSlots",SkillBarPresentation.slots(state).deepCopy());
+                o.addProperty("renderedSkillSlots",AbilityHud.lastRenderedSlots);
                 o.addProperty("damagePackets",ClientFeedbackQa.damagePackets);o.addProperty("hurtCameraFrames",ClientFeedbackQa.hurtCameraFrames);
                 if(ClientPlayNetworking.canSend(Protocol.Observation.ID))ClientPlayNetworking.send(new Protocol.Observation(o.toString()));
                 observed=true;
@@ -84,7 +89,8 @@ public final class FantasyHubClient implements ClientModInitializer {
         });
         HudRenderCallback.EVENT.register((context,counter)->{
             var client=MinecraftClient.getInstance();
-            if(!hudEnabled||client.player==null||client.options.hudHidden||client.currentScreen!=null||!state.has("schema"))return;
+            AbilityHud.lastRenderedSlots=0;
+            if(!hudEnabled||client.player==null||client.options.hudHidden||(client.currentScreen!=null&&!(client.currentScreen instanceof net.minecraft.client.gui.screen.ChatScreen))||!state.has("schema"))return;
             AbilityHud.render(context);
         });
     }

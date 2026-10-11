@@ -15,6 +15,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 final class AbilityHud {
+   static int lastRenderedSlots;
    private static final Set<String> ICONS = Set.of(
       "death_sentence", "death_strike", "phantom_charge", "cursed_seal", "necrotic_whirlwind", "wraithbound_chains"
    );
@@ -89,6 +90,7 @@ final class AbilityHud {
 
             context.drawText(client.textRenderer, Text.literal(key), left + 1, y + 1, -2112631, true);
          }
+         lastRenderedSlots=count;
       }
    }
 }

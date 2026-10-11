@@ -30,6 +30,7 @@ public final class FantasyHubCore implements ModInitializer {
     private static final Gson GSON=new Gson();
     private final Map<UUID,String> snapshots=new HashMap<>();
     private final Map<UUID,String> castingModes=new HashMap<>();
+    private final Map<UUID,String> hudSnapshots=new HashMap<>();
     private final Map<UUID,Long> nextAction=new HashMap<>();
     private final Map<UUID,Long> nextObservation=new HashMap<>();
     private ExecutorService qaWriter;
@@ -71,7 +72,7 @@ public final class FantasyHubCore implements ModInitializer {
         ServerLoginNetworking.registerGlobalReceiver(Protocol.LOGIN,(server,handler,understood,buf,sync,sender)->{
             boolean valid=false;
             try{valid=understood&&buf.readVarInt()==Protocol.VERSION&&Protocol.ASSET_REVISION.equals(buf.readString(128))&&buf.readableBytes()==0;}catch(RuntimeException ignored){}
-            if(!valid)handler.disconnect(Text.translatableWithFallback("fantasyhub.connection.incompatible", "Fantasy Hub requires FantasyHubClient 0.1.0 for Minecraft 1.21.1. Install the matching client JAR and reconnect."));
+            if(!valid)handler.disconnect(Text.translatableWithFallback("fantasyhub.connection.incompatible", "Fantasy Hub requires FantasyHubClient 0.1.1 for Minecraft 1.21.1. Install the matching client JAR and reconnect."));
         });
         ServerLoginConnectionEvents.QUERY_START.register((handler,server,sender,sync)->{
             PacketByteBuf buf=new PacketByteBuf(Unpooled.buffer());buf.writeVarInt(Protocol.VERSION);buf.writeString(Protocol.ASSET_REVISION,128);
@@ -116,10 +117,10 @@ public final class FantasyHubCore implements ModInitializer {
             });
         });
         ServerLifecycleEvents.SERVER_STARTED.register(server->{if("1".equals(System.getenv("SVFRAME_RUNTIME_QA")))qaWriter=new ThreadPoolExecutor(1,1,0,TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(512),r->{Thread t=new Thread(r,"FantasyHub-QA");t.setDaemon(true);return t;},new ThreadPoolExecutor.DiscardPolicy());});
-        ServerLifecycleEvents.SERVER_STOPPING.register(server->{snapshots.clear();castingModes.clear();nextAction.clear();nextObservation.clear();if(qaWriter!=null)qaWriter.shutdown();});
+        ServerLifecycleEvents.SERVER_STOPPING.register(server->{snapshots.clear();castingModes.clear();hudSnapshots.clear();nextAction.clear();nextObservation.clear();if(qaWriter!=null)qaWriter.shutdown();});
         ServerLifecycleEvents.SERVER_STOPPED.register(server->{if(qaWriter!=null)try{if(!qaWriter.awaitTermination(5,TimeUnit.SECONDS))qaWriter.shutdownNow();}catch(InterruptedException interrupted){Thread.currentThread().interrupt();}});
         ServerPlayConnectionEvents.JOIN.register((handler,sender,server)->PersistentHudRuntime.setPresentationOwner(handler.player.getUuid(),true));
-        ServerPlayConnectionEvents.DISCONNECT.register((handler,server)->{snapshots.remove(handler.player.getUuid());castingModes.remove(handler.player.getUuid());nextAction.remove(handler.player.getUuid());nextObservation.remove(handler.player.getUuid());PersistentHudRuntime.setPresentationOwner(handler.player.getUuid(),false);});
+        ServerPlayConnectionEvents.DISCONNECT.register((handler,server)->{snapshots.remove(handler.player.getUuid());castingModes.remove(handler.player.getUuid());hudSnapshots.remove(handler.player.getUuid());nextAction.remove(handler.player.getUuid());nextObservation.remove(handler.player.getUuid());PersistentHudRuntime.setPresentationOwner(handler.player.getUuid(),false);});
         ServerTickEvents.END_SERVER_TICK.register(server->{
             ++tick;
             for(var player:server.getPlayerManager().getPlayerList()){
@@ -127,6 +128,8 @@ public final class FantasyHubCore implements ModInitializer {
                 String mode=Objects.requireNonNullElse(SVFrameMMO.skillBar().mode(player.getUuid()),"");
                 if(tick%5!=0&&mode.equals(castingModes.get(player.getUuid())))continue;
                 castingModes.put(player.getUuid(),mode);
+                String hud=GSON.toJson(hudState(player));
+                if(ServerPlayNetworking.canSend(player,Protocol.Casting.ID)&&!hud.equals(hudSnapshots.put(player.getUuid(),hud)))ServerPlayNetworking.send(player,new Protocol.Casting(hud));
                 String state=state(player);
                 if(!state.equals(snapshots.put(player.getUuid(),state)))ServerPlayNetworking.send(player,new Protocol.State(state));
             }
@@ -153,6 +156,10 @@ public final class FantasyHubCore implements ModInitializer {
                         for(var row:snapshot.getAsJsonArray("skills"))row.getAsJsonObject().remove("parameters");
                         ctx.getSource().sendFeedback(()->Text.literal(snapshot.toString()),false);return 1;
                     })))
+                .then(literal("hudstatus").executes(ctx->{
+                    var player=ctx.getSource().getPlayerOrThrow();Map<String,Object> status=new LinkedHashMap<>();status.put("build","0.1.1-f-hud-hotfix");status.put("castingChannel",ServerPlayNetworking.canSend(player,Protocol.Casting.ID));status.put("casting",castingState(player));
+                    ctx.getSource().sendFeedback(()->Text.literal(GSON.toJson(status)),false);return 1;
+                }))
                 .then(literal("resync").requires(s->s.hasPermissionLevel(2)).executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();SVFrameMMO.playerData().get(player).refreshClassStats();snapshots.remove(player.getUuid());return 1;})));
         });
     }
@@ -206,6 +213,14 @@ public final class FantasyHubCore implements ModInitializer {
         }
         out.put("skills",skills);
         out.put("loadoutSlots",PlayerSkillCatalog.slots(data));
+        out.put("casting",castingState(player));
+        var shop=vn.svframe.svframelib.skill.PlayerAbilityShop.get();out.put("pokemonShop",shop==null?List.of():shop.catalog(player));
+        Map<Integer,String> loadout=new TreeMap<>();PlayerSkillCatalog.bindings(data).forEach((slot,entry)->loadout.put(slot,entry.id()));out.put("loadout",loadout);
+        Map<String,Double> stats=new TreeMap<>();for(String id:List.of("MAX_HEALTH","ARMOR","ARMOR_TOUGHNESS","ATTACK_DAMAGE","SKILL_DAMAGE","MOVEMENT_SPEED"))stats.put(id,MMOPlayerData.setup(player).getStatMap().getStat(id));out.put("stats",stats);
+        return GSON.toJson(out);
+    }
+    private static Map<String,Object> castingState(ServerPlayerEntity player){
+        var data=SVFrameMMO.playerData().get(player);
       Map<String, Object> casting = new LinkedHashMap<>();
       casting.put("active", SVFrameMMO.skillBar().isCasting(player.getUuid()));
       casting.put("mode", Objects.requireNonNullElse(SVFrameMMO.skillBar().mode(player.getUuid()), ""));
@@ -230,11 +245,17 @@ public final class FantasyHubCore implements ModInitializer {
       }
 
       casting.put("slots", castingSlots);
-      out.put("casting", casting);
-        var shop=vn.svframe.svframelib.skill.PlayerAbilityShop.get();out.put("pokemonShop",shop==null?List.of():shop.catalog(player));
-        Map<Integer,String> loadout=new TreeMap<>();PlayerSkillCatalog.bindings(data).forEach((slot,entry)->loadout.put(slot,entry.id()));out.put("loadout",loadout);
-        Map<String,Double> stats=new TreeMap<>();for(String id:List.of("MAX_HEALTH","ARMOR","ARMOR_TOUGHNESS","ATTACK_DAMAGE","SKILL_DAMAGE","MOVEMENT_SPEED"))stats.put(id,MMOPlayerData.setup(player).getStatMap().getStat(id));out.put("stats",stats);
-        return GSON.toJson(out);
+      return casting;
+    }
+    private static Map<String,Object> hudState(ServerPlayerEntity player){
+        var data=SVFrameMMO.playerData().get(player);Map<String,Object> out=new LinkedHashMap<>();
+        out.put("schema",Protocol.VERSION);out.put("casting",castingState(player));
+        out.put("level",data.getLevel());out.put("experience",data.getExperience());out.put("nextLevel",data.getProfess().getExpCurve().getExperience(data,data.getLevel()));
+        for(var resource:PlayerResource.values()){
+            String name=resource==PlayerResource.STELLIUM?"magic":resource.name().toLowerCase(Locale.ROOT);
+            out.put(name,data.getResource(resource));out.put(name+"Max",data.getMaxResource(resource));
+        }
+        return out;
     }
     private static void skillSupport(Map<String,Object> row,vn.svframe.svframelib.skill.handler.SkillHandler<?> handler) {
         if(handler instanceof vn.svframe.svframelib.skill.NativeSkillProviders.BackedHandler backed) {
