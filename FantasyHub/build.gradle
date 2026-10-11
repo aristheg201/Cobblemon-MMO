@@ -22,6 +22,7 @@ project(':core') {
         include project(':protocol')
         modImplementation files(rootProject.file('../SVFrameLib/build/libs/SVFrameLib-1.7.2-fabric.jar'))
         modImplementation files(rootProject.file('../SVFrameMMO/build/libs/SVFrameMMO-1.13.2-fabric.jar'))
+        modImplementation files(rootProject.file('../../items/SVFrameItems/build/libs/SVFrameItems-0.1.1-fabric.jar'))
         if(rootProject.hasProperty('frameworkBundle')){
             include 'vn.svframe.local:SVFrameLib:1.7.2-fabric'
             include 'vn.svframe.local:SVFrameMMO:1.13.2-fabric'

@@ -1,0 +1,1865 @@
+{
+  "runtimeImplemented": false,
+  "nativeConformancePassed": 0,
+  "scripts": [
+    {
+      "source": "amk/Skript/scripts/sv_anti_mage_knight.sk",
+      "enabled": true,
+      "sha256": "ad024a1bd5b37b4d3ed8250a6af83ee8fab00f64cc9b4e83ed61528aaad60e97",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 4,
+          "syntax": "options:"
+        },
+        {
+          "line": 37,
+          "syntax": "import:"
+        },
+        {
+          "line": 41,
+          "syntax": "function svamk_raw_class(p: player) :: text:"
+        },
+        {
+          "line": 48,
+          "syntax": "function svamk_norm_text(t: text) :: text:"
+        },
+        {
+          "line": 57,
+          "syntax": "function svamk_placeholder_has_real_class(p: player) :: boolean:"
+        },
+        {
+          "line": 74,
+          "syntax": "function svamk_mmocore_active(p: player) :: boolean:"
+        },
+        {
+          "line": 84,
+          "syntax": "function svamk_active(p: player) :: boolean:"
+        },
+        {
+          "line": 91,
+          "syntax": "function svamk_pay_mana(p: player, cost: number) :: boolean:"
+        },
+        {
+          "line": 96,
+          "syntax": "function svamk_deal_damage(p: player, e: living entity, amount: number):"
+        },
+        {
+          "line": 112,
+          "syntax": "function svamk_particle(loc: location, kind: text, amount: number, spread: number):"
+        },
+        {
+          "line": 124,
+          "syntax": "function svamk_ring(center: location, radius: number, kind: text):"
+        },
+        {
+          "line": 140,
+          "syntax": "function svamk_line(a: location, b: location, points: number, kind: text):"
+        },
+        {
+          "line": 153,
+          "syntax": "function svamk_target_ground(p: player, range: number) :: location:"
+        },
+        {
+          "line": 166,
+          "syntax": "function svamk_delete_wave(id: number):"
+        },
+        {
+          "line": 177,
+          "syntax": "on load:"
+        },
+        {
+          "line": 186,
+          "syntax": "command /svamk <text> <player>:"
+        },
+        {
+          "line": 394,
+          "syntax": "every 2 ticks:"
+        },
+        {
+          "line": 474,
+          "syntax": "every 5 ticks:"
+        },
+        {
+          "line": 624,
+          "syntax": "on damage:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/-examples/chest menus.sk",
+      "enabled": false,
+      "sha256": "4c34c57ab64f075db07611d35351cb88661da9a8f38e00700c533900b440cfd4",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 7,
+          "syntax": "command /simplechest:"
+        },
+        {
+          "line": 19,
+          "syntax": "command /chestmenu:"
+        },
+        {
+          "line": 26,
+          "syntax": "on inventory click: # Listen for players clicking in an inventory."
+        },
+        {
+          "line": 39,
+          "syntax": "aliases:"
+        },
+        {
+          "line": 42,
+          "syntax": "function make_menu(name: text, rows: number) :: inventory:"
+        },
+        {
+          "line": 48,
+          "syntax": "command /fancymenu:"
+        },
+        {
+          "line": 55,
+          "syntax": "on inventory click: # Listen for players clicking in any inventory."
+        },
+        {
+          "line": 60,
+          "syntax": "on inventory close: # No longer need to listen to this inventory."
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/-examples/commands.sk",
+      "enabled": false,
+      "sha256": "5d2d7006dc4d0593954d63d84a442b79ac45b2176caba2ce609b41acbf0ed4e5",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 7,
+          "syntax": "command /broadcast <text>:"
+        },
+        {
+          "line": 19,
+          "syntax": "command /home <text> [<text>]:"
+        },
+        {
+          "line": 50,
+          "syntax": "aliases:"
+        },
+        {
+          "line": 54,
+          "syntax": "command /item <items>:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/-examples/events.sk",
+      "enabled": false,
+      "sha256": "dc78db649f823310415f316e27a1abb708f06a475a770f7ca3833121cb60d1b7",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 7,
+          "syntax": "on join:"
+        },
+        {
+          "line": 10,
+          "syntax": "on quit:"
+        },
+        {
+          "line": 18,
+          "syntax": "on damage:"
+        },
+        {
+          "line": 33,
+          "syntax": "aliases: # An alias for our allowed hat items."
+        },
+        {
+          "line": 36,
+          "syntax": "on inventory click:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/-examples/experimental features/for loops.sk",
+      "enabled": false,
+      "sha256": "8aaf0542e15fb8fe4ee47c093536bcdf1987bfe35db9a940ee7bb7239e80e621",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 1,
+          "syntax": "using examples"
+        },
+        {
+          "line": 4,
+          "syntax": "using for loops"
+        },
+        {
+          "line": 7,
+          "syntax": "example: # A simple loop"
+        },
+        {
+          "line": 18,
+          "syntax": "example: # Nested loops"
+        },
+        {
+          "line": 31,
+          "syntax": "example: # Keeping the last value"
+        },
+        {
+          "line": 42,
+          "syntax": "example: # Index and value"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/-examples/experimental features/queues.sk",
+      "enabled": false,
+      "sha256": "9a30e6f057f5b9eee8f3e53c3c1ae0754dc2c86c67b93a650404a96540273907",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 1,
+          "syntax": "using examples"
+        },
+        {
+          "line": 4,
+          "syntax": "using queues"
+        },
+        {
+          "line": 6,
+          "syntax": "example: # Creating queues"
+        },
+        {
+          "line": 25,
+          "syntax": "example: # Taking items from a queue"
+        },
+        {
+          "line": 39,
+          "syntax": "example: # Taking items from the end of a queue"
+        },
+        {
+          "line": 52,
+          "syntax": "example: # Processing a queue"
+        },
+        {
+          "line": 68,
+          "syntax": "example: # Looping a queue"
+        },
+        {
+          "line": 99,
+          "syntax": "example: # Turning a queue into a list"
+        },
+        {
+          "line": 112,
+          "syntax": "example: # Peeking at a queue without removing items"
+        },
+        {
+          "line": 132,
+          "syntax": "using for loops"
+        },
+        {
+          "line": 133,
+          "syntax": "example: # Continuous processing of a queue"
+        },
+        {
+          "line": 159,
+          "syntax": "on script load:"
+        },
+        {
+          "line": 169,
+          "syntax": "every 3 minutes:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/-examples/experimental features/script reflection.sk",
+      "enabled": false,
+      "sha256": "326df85e44b80c2aa720c1c53dfbf5f305a6137118680388beaff53caba63e9d",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 1,
+          "syntax": "using examples"
+        },
+        {
+          "line": 5,
+          "syntax": "using script reflection"
+        },
+        {
+          "line": 9,
+          "syntax": "THE BASICS"
+        },
+        {
+          "line": 10,
+          "syntax": "====="
+        },
+        {
+          "line": 12,
+          "syntax": "'Reflection' is for something to look at itself (like in a mirror)."
+        },
+        {
+          "line": 14,
+          "syntax": "Script reflection is a collection of powerful tools for scripts to inspect themselves."
+        },
+        {
+          "line": 16,
+          "syntax": "We can start with basic access to scripts."
+        },
+        {
+          "line": 20,
+          "syntax": "example: # Getting a script"
+        },
+        {
+          "line": 36,
+          "syntax": "example: # Looping scripts"
+        },
+        {
+          "line": 47,
+          "syntax": "example: # The name and path of a script"
+        },
+        {
+          "line": 62,
+          "syntax": "example: # Enabling, disabling and loading scripts"
+        },
+        {
+          "line": 87,
+          "syntax": "CONFIGS"
+        },
+        {
+          "line": 88,
+          "syntax": "====="
+        },
+        {
+          "line": 90,
+          "syntax": "There are also tools provided for reading Skript's built-in configuration files."
+        },
+        {
+          "line": 91,
+          "syntax": "These allow you to check values from these files."
+        },
+        {
+          "line": 93,
+          "syntax": "Configs are arranged as a tree of 'nodes', which have values:"
+        },
+        {
+          "line": 95,
+          "syntax": "regular node: value"
+        },
+        {
+          "line": 96,
+          "syntax": "regular node: value"
+        },
+        {
+          "line": 97,
+          "syntax": "section node: # This node contains more nodes!"
+        },
+        {
+          "line": 105,
+          "syntax": "example: # Get the Skript config"
+        },
+        {
+          "line": 111,
+          "syntax": "example: # Reading a simple node value"
+        },
+        {
+          "line": 127,
+          "syntax": "example: # Value conversion"
+        },
+        {
+          "line": 147,
+          "syntax": "example: # Looping nodes"
+        },
+        {
+          "line": 158,
+          "syntax": "MORE CONFIGS"
+        },
+        {
+          "line": 159,
+          "syntax": "====="
+        },
+        {
+          "line": 161,
+          "syntax": "Scripts themselves are stored as configs, where each line is a node."
+        },
+        {
+          "line": 162,
+          "syntax": "This means that you are able to read the content of a script."
+        },
+        {
+          "line": 164,
+          "syntax": "The examples in this section will use a 'my script.sk' which has the following code:"
+        },
+        {
+          "line": 166,
+          "syntax": "on first join:"
+        },
+        {
+          "line": 169,
+          "syntax": "on damage:"
+        },
+        {
+          "line": 175,
+          "syntax": "example: # Reading a script"
+        },
+        {
+          "line": 199,
+          "syntax": "FUNCTIONS"
+        },
+        {
+          "line": 200,
+          "syntax": "====="
+        },
+        {
+          "line": 202,
+          "syntax": "The final part of script reflection is the ability to find and run a function."
+        },
+        {
+          "line": 205,
+          "syntax": "example: # Finding a function"
+        },
+        {
+          "line": 218,
+          "syntax": "example: # Running a function"
+        },
+        {
+          "line": 228,
+          "syntax": "example: # The result of a function"
+        },
+        {
+          "line": 240,
+          "syntax": "command /func <text>:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/-examples/functions.sk",
+      "enabled": false,
+      "sha256": "77d6c44e174f2bc8a4fc1781b3cb6a1a566bb8208b74c8ed9739b1a9d04b2bf9",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 7,
+          "syntax": "function say_message(message: text):"
+        },
+        {
+          "line": 10,
+          "syntax": "on first join:"
+        },
+        {
+          "line": 19,
+          "syntax": "function give_apple(name: text, amount: number) :: item:"
+        },
+        {
+          "line": 25,
+          "syntax": "command /appleexample:"
+        },
+        {
+          "line": 37,
+          "syntax": "function destroy_gold(source: block) :: blocks:"
+        },
+        {
+          "line": 47,
+          "syntax": "command /oreexample:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/-examples/loops.sk",
+      "enabled": false,
+      "sha256": "8408155c1c53f3e8055099ddef8d883eae09cb58deb2799017aa6e165cf53e0c",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 7,
+          "syntax": "command /loopexample:"
+        },
+        {
+          "line": 23,
+          "syntax": "command /whileexample:"
+        },
+        {
+          "line": 38,
+          "syntax": "command /dowhileexample:"
+        },
+        {
+          "line": 55,
+          "syntax": "command /anotherloopexample:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/-examples/options and meta.sk",
+      "enabled": false,
+      "sha256": "8cccb6c04710592e8b5a3b8bbbc036273b9495646b73cdd9c6bcb85b1dd5dc73",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 6,
+          "syntax": "options:"
+        },
+        {
+          "line": 11,
+          "syntax": "on join:"
+        },
+        {
+          "line": 22,
+          "syntax": "aliases:"
+        },
+        {
+          "line": 25,
+          "syntax": "on join:"
+        },
+        {
+          "line": 35,
+          "syntax": "variables:"
+        },
+        {
+          "line": 39,
+          "syntax": "command /variabletest:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/-examples/text formatting.sk",
+      "enabled": false,
+      "sha256": "5174f09f02f62af9977bb4719ef36cd5bd4bd534205a9c694b3a64ac2049dd46",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 10,
+          "syntax": "command /color:"
+        },
+        {
+          "line": 22,
+          "syntax": "command /forum:"
+        },
+        {
+          "line": 27,
+          "syntax": "command /copy <text>:"
+        },
+        {
+          "line": 34,
+          "syntax": "command /suggest:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/-examples/timings.sk",
+      "enabled": false,
+      "sha256": "3f5f254265dbba535638d8cf77db87abf71bf7205656e94b6f615874d7d30a10",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 6,
+          "syntax": "at 18:00:"
+        },
+        {
+          "line": 14,
+          "syntax": "every 5 minutes:"
+        },
+        {
+          "line": 24,
+          "syntax": "command /waitexample:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/-examples/variables.sk",
+      "enabled": false,
+      "sha256": "c42c707f280b0555b392104c9e6ffcf7ef50031d44aab47a6c1c49a16b116296",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 9,
+          "syntax": "command /timer:"
+        },
+        {
+          "line": 23,
+          "syntax": "on join:"
+        },
+        {
+          "line": 28,
+          "syntax": "command /outfit:"
+        },
+        {
+          "line": 41,
+          "syntax": "command /shoppinglist:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_ashes_boss_controller.sk",
+      "enabled": true,
+      "sha256": "488d56b8a2d838934eaefd771a681bc3c8d80f6c7ff1f97ed029c4fedd63275b",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 5,
+          "syntax": "options:"
+        },
+        {
+          "line": 8,
+          "syntax": "function svboss_radius(preset: text) :: number:"
+        },
+        {
+          "line": 25,
+          "syntax": "function svboss_event(key: text) :: text:"
+        },
+        {
+          "line": 78,
+          "syntax": "function svboss_is_registered(key: text) :: boolean:"
+        },
+        {
+          "line": 84,
+          "syntax": "function svboss_spawn(key: text, forced: boolean):"
+        },
+        {
+          "line": 111,
+          "syntax": "function svboss_check(key: text):"
+        },
+        {
+          "line": 143,
+          "syntax": "command /skboss [<text>] [<text>] [<text>] [<text>]:"
+        },
+        {
+          "line": 280,
+          "syntax": "every 20 seconds:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_ashes_no_vanilla.sk",
+      "enabled": true,
+      "sha256": "e6f0e3a166ffac18deddbd6f7b760ac3823c883b4b993971d6f43535d898ce8f",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": []
+    },
+    {
+      "source": "config2/Skript/scripts/sv_ashes_spawner.sk",
+      "enabled": true,
+      "sha256": "27395827a7ace9fbc39a707a11e42fc7bb86f790e7754a6c7809ed4afc23c7c7",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 14,
+          "syntax": "options:"
+        },
+        {
+          "line": 17,
+          "syntax": "function svashes_apply_spawner_preset(name: text, max: number, per: number, cooldown: number, activation: number, leash: number, radius: number, radiusy: number):"
+        },
+        {
+          "line": 30,
+          "syntax": "function svashes_preset_values(preset: text) :: texts:"
+        },
+        {
+          "line": 55,
+          "syntax": "function svashes_send_help(p: player):"
+        },
+        {
+          "line": 67,
+          "syntax": "command /skspawner [<text>] [<text>] [<text>]:"
+        },
+        {
+          "line": 105,
+          "syntax": "command /skspawnerset [<text>] [<text>]:"
+        },
+        {
+          "line": 134,
+          "syntax": "command /skspawnerhelp:"
+        },
+        {
+          "line": 139,
+          "syntax": "command /skvanilla [<text>]:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_clan_policy.sk",
+      "enabled": true,
+      "sha256": "447865c8ead0b8d909143b39d468b75a934882d4f1b88c2af086ec1f56c076cf",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 5,
+          "syntax": "options:"
+        },
+        {
+          "line": 12,
+          "syntax": "function svcpRaw(p: player, id: text) :: text:"
+        },
+        {
+          "line": 18,
+          "syntax": "function svcpClean(raw: text) :: text:"
+        },
+        {
+          "line": 44,
+          "syntax": "function svcpNumber(raw: text) :: number:"
+        },
+        {
+          "line": 58,
+          "syntax": "function svcpYes(raw: text) :: boolean:"
+        },
+        {
+          "line": 74,
+          "syntax": "function svcpClanTag(p: player) :: text:"
+        },
+        {
+          "line": 91,
+          "syntax": "function svcpInClan(p: player) :: boolean:"
+        },
+        {
+          "line": 96,
+          "syntax": "function svcpClanSize(p: player) :: number:"
+        },
+        {
+          "line": 99,
+          "syntax": "function svcpBalance(p: player) :: number:"
+        },
+        {
+          "line": 102,
+          "syntax": "function svcpRequired(p: player) :: number:"
+        },
+        {
+          "line": 108,
+          "syntax": "function svcpIsLeaderOrTrusted(p: player) :: boolean:"
+        },
+        {
+          "line": 115,
+          "syntax": "function svcpIsVerified(p: player) :: boolean:"
+        },
+        {
+          "line": 118,
+          "syntax": "function svcpMeetsStandard(p: player) :: boolean:"
+        },
+        {
+          "line": 127,
+          "syntax": "function svcpClanReady(p: player) :: boolean:"
+        },
+        {
+          "line": 134,
+          "syntax": "function svcpWarnNotReady(p: player, feature: text):"
+        },
+        {
+          "line": 149,
+          "syntax": "function svcpWarnUnverified(p: player, feature: text):"
+        },
+        {
+          "line": 156,
+          "syntax": "function svcpClearPersonalClaims(p: player, reason: text):"
+        },
+        {
+          "line": 162,
+          "syntax": "function svcpWarnNotLandManager(p: player):"
+        },
+        {
+          "line": 166,
+          "syntax": "function svcpClanBaseClaimed(p: player) :: boolean:"
+        },
+        {
+          "line": 174,
+          "syntax": "function svcpMarkClanBaseClaimed(p: player):"
+        },
+        {
+          "line": 179,
+          "syntax": "function svcpClearClanBaseFlag(p: player):"
+        },
+        {
+          "line": 184,
+          "syntax": "function svcpWarnBaseAlreadyClaimed(p: player):"
+        },
+        {
+          "line": 188,
+          "syntax": "function svcpTrackClanTransition(p: player):"
+        },
+        {
+          "line": 199,
+          "syntax": "function svcpRegisterClan(p: player):"
+        },
+        {
+          "line": 204,
+          "syntax": "function svcpUpdateOne(p: player, silent: boolean):"
+        },
+        {
+          "line": 237,
+          "syntax": "command /svclanstatus:"
+        },
+        {
+          "line": 264,
+          "syntax": "command /svclanverify:"
+        },
+        {
+          "line": 293,
+          "syntax": "command /svclancheck:"
+        },
+        {
+          "line": 304,
+          "syntax": "on join:"
+        },
+        {
+          "line": 312,
+          "syntax": "every 15 seconds:"
+        },
+        {
+          "line": 317,
+          "syntax": "every 60 seconds:"
+        },
+        {
+          "line": 328,
+          "syntax": "at 1:45:"
+        },
+        {
+          "line": 336,
+          "syntax": "function svcpClaimCommand(cmd: text) :: boolean:"
+        },
+        {
+          "line": 364,
+          "syntax": "function svcpClaimCreateCommand(cmd: text) :: boolean:"
+        },
+        {
+          "line": 380,
+          "syntax": "function svcpClaimAbandonCommand(cmd: text) :: boolean:"
+        },
+        {
+          "line": 402,
+          "syntax": "function svcpClanHomeCommand(cmd: text) :: boolean:"
+        },
+        {
+          "line": 416,
+          "syntax": "function svcpClanEntryCommand(cmd: text) :: boolean:"
+        },
+        {
+          "line": 432,
+          "syntax": "on command:"
+        },
+        {
+          "line": 482,
+          "syntax": "on right click:"
+        },
+        {
+          "line": 498,
+          "syntax": "on left click:"
+        },
+        {
+          "line": 514,
+          "syntax": "command /svclanbasereset <text>:"
+        },
+        {
+          "line": 524,
+          "syntax": "command /svclancreate <text>:"
+        },
+        {
+          "line": 549,
+          "syntax": "command /svclanadmin:"
+        },
+        {
+          "line": 561,
+          "syntax": "command /svclanlist:"
+        },
+        {
+          "line": 567,
+          "syntax": "command /svclanprofile:"
+        },
+        {
+          "line": 579,
+          "syntax": "command /svclanroster:"
+        },
+        {
+          "line": 591,
+          "syntax": "command /svclanbank:"
+        },
+        {
+          "line": 611,
+          "syntax": "command /svclandeposit <number>:"
+        },
+        {
+          "line": 620,
+          "syntax": "command /svclandepositall:"
+        },
+        {
+          "line": 626,
+          "syntax": "command /svclanchat:"
+        },
+        {
+          "line": 635,
+          "syntax": "command /svclanhome:"
+        },
+        {
+          "line": 647,
+          "syntax": "command /svclanaccept:"
+        },
+        {
+          "line": 658,
+          "syntax": "command /svclandeny:"
+        },
+        {
+          "line": 664,
+          "syntax": "command /svclanhelp:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_class_switch.sk",
+      "enabled": true,
+      "sha256": "83c38c37bfcdfc156d743cab01645ee19916270b456d587d7405b8223209be8f",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 5,
+          "syntax": "options:"
+        },
+        {
+          "line": 10,
+          "syntax": "function svclass_name(id: text) :: text:"
+        },
+        {
+          "line": 77,
+          "syntax": "function svclass_valid(id: text) :: boolean:"
+        },
+        {
+          "line": 144,
+          "syntax": "function svclass_supporter(p: player) :: boolean:"
+        },
+        {
+          "line": 169,
+          "syntax": "function svclass_skyrim_complete(p: player) :: boolean:"
+        },
+        {
+          "line": 212,
+          "syntax": "function svclass_unlocked(p: player, id: text) :: boolean:"
+        },
+        {
+          "line": 233,
+          "syntax": "function svclass_begin(p: player) :: boolean:"
+        },
+        {
+          "line": 240,
+          "syntax": "function svclass_end(p: player):"
+        },
+        {
+          "line": 243,
+          "syntax": "command /classmenu [<text>]:"
+        },
+        {
+          "line": 247,
+          "syntax": "command /classes [<text>]:"
+        },
+        {
+          "line": 251,
+          "syntax": "command /doiclass [<text>]:"
+        },
+        {
+          "line": 255,
+          "syntax": "command /svclass [<text>] [<text>]:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_commandblock_tp_bridge.sk",
+      "enabled": true,
+      "sha256": "bf67639aa80495eaab4689fe3570ddfe6d5a06fdcb8b9b98c69ef8d83e699c70",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 5,
+          "syntax": "options:"
+        },
+        {
+          "line": 8,
+          "syntax": "function svNearestPlayerInWorld(src: location) :: player:"
+        },
+        {
+          "line": 18,
+          "syntax": "on command:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_daedric_model_cosmetic.sk",
+      "enabled": true,
+      "sha256": "ecced83182d75e120c082aa16cf6945cf52d6d0e2db6252b2d2370ece5cbf6dc",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 5,
+          "syntax": "options:"
+        },
+        {
+          "line": 8,
+          "syntax": "function sv_daedric_run(p: player, cmd: text):"
+        },
+        {
+          "line": 13,
+          "syntax": "command /svdaedric [<text>]:"
+        },
+        {
+          "line": 77,
+          "syntax": "on quit:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_dash_mmocore.sk",
+      "enabled": true,
+      "sha256": "cd46757df2c596d47d9c3e86c96d4811eaa384b64fcac63098cf099fdb52f146",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 16,
+          "syntax": "options:"
+        },
+        {
+          "line": 33,
+          "syntax": "import:"
+        },
+        {
+          "line": 42,
+          "syntax": "on load:"
+        },
+        {
+          "line": 49,
+          "syntax": "on quit:"
+        },
+        {
+          "line": 56,
+          "syntax": "on death of player:"
+        },
+        {
+          "line": 63,
+          "syntax": "on PlayerEnterCastingModeEvent:"
+        },
+        {
+          "line": 77,
+          "syntax": "on PlayerExitCastingModeEvent:"
+        },
+        {
+          "line": 84,
+          "syntax": "on PlayerMoveEvent:"
+        },
+        {
+          "line": 103,
+          "syntax": "on PlayerJumpEvent:"
+        },
+        {
+          "line": 206,
+          "syntax": "on damage of player:"
+        },
+        {
+          "line": 210,
+          "syntax": "command /svdashdebug:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_death_penalty.sk",
+      "enabled": true,
+      "sha256": "dfae4a9c0565fa0ac945024e0529e28d8c246faf7725cd369a2986b16296d489",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 1,
+          "syntax": "options:"
+        },
+        {
+          "line": 11,
+          "syntax": "function svdeathIsRPGWorld(w: text) :: boolean:"
+        },
+        {
+          "line": 23,
+          "syntax": "function svdeathForceSpawn(w: text) :: boolean:"
+        },
+        {
+          "line": 47,
+          "syntax": "function svdeathClearVanillaExp(p: player):"
+        },
+        {
+          "line": 51,
+          "syntax": "on death of player:"
+        },
+        {
+          "line": 63,
+          "syntax": "on respawn:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_dungeon_policy.sk",
+      "enabled": true,
+      "sha256": "27ab63d2f3449996576317e582b98994e166439720099047e95360ef8c90f276",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 9,
+          "syntax": "options:"
+        },
+        {
+          "line": 19,
+          "syntax": "function svdRaw(p: player, id: text) :: text:"
+        },
+        {
+          "line": 25,
+          "syntax": "function svdClean(raw: text) :: text:"
+        },
+        {
+          "line": 53,
+          "syntax": "function svdMeaningful(raw: text) :: boolean:"
+        },
+        {
+          "line": 74,
+          "syntax": "function svdNumber(raw: text) :: number:"
+        },
+        {
+          "line": 85,
+          "syntax": "function svdYes(raw: text) :: boolean:"
+        },
+        {
+          "line": 101,
+          "syntax": "function svdClanSize(p: player) :: number:"
+        },
+        {
+          "line": 104,
+          "syntax": "function svdClanBalance(p: player) :: number:"
+        },
+        {
+          "line": 107,
+          "syntax": "function svdClanRequired(p: player) :: number:"
+        },
+        {
+          "line": 113,
+          "syntax": "function svdClanVerified(p: player) :: boolean:"
+        },
+        {
+          "line": 116,
+          "syntax": "function svdHasClan(p: player) :: boolean:"
+        },
+        {
+          "line": 123,
+          "syntax": "function svdHasReadyClan(p: player) :: boolean:"
+        },
+        {
+          "line": 134,
+          "syntax": "function svdHasParty(p: player) :: boolean:"
+        },
+        {
+          "line": 141,
+          "syntax": "function svdGetDaily(p: player) :: number:"
+        },
+        {
+          "line": 149,
+          "syntax": "function svdSetDaily(p: player, n: number):"
+        },
+        {
+          "line": 152,
+          "syntax": "function svdEnsureDaily(p: player):"
+        },
+        {
+          "line": 163,
+          "syntax": "function svdIsDungeonWorldName(w: text) :: boolean:"
+        },
+        {
+          "line": 177,
+          "syntax": "function svdEndRun(p: player, reason: text):"
+        },
+        {
+          "line": 192,
+          "syntax": "function svdRankKey(p: player) :: text:"
+        },
+        {
+          "line": 201,
+          "syntax": "function svdCooldownMinutes(p: player) :: number:"
+        },
+        {
+          "line": 229,
+          "syntax": "function svdRunMinutes(p: player) :: number:"
+        },
+        {
+          "line": 257,
+          "syntax": "function svdCooldownReady(p: player, minutes: number) :: boolean:"
+        },
+        {
+          "line": 301,
+          "syntax": "function svdWaitDungeonTimeout(p: player, run: number, minutes: number):"
+        },
+        {
+          "line": 333,
+          "syntax": "function svdEnter(p: player, dungeon: number):"
+        },
+        {
+          "line": 407,
+          "syntax": "function svdDirectWarpTarget(cmd: text) :: number:"
+        },
+        {
+          "line": 443,
+          "syntax": "command /svdungeon [<number>]:"
+        },
+        {
+          "line": 450,
+          "syntax": "command /svdungeon1:"
+        },
+        {
+          "line": 454,
+          "syntax": "command /svdungeon2:"
+        },
+        {
+          "line": 458,
+          "syntax": "command /svdungeon3:"
+        },
+        {
+          "line": 462,
+          "syntax": "command /svdungeon4:"
+        },
+        {
+          "line": 466,
+          "syntax": "command /svdungeon5:"
+        },
+        {
+          "line": 470,
+          "syntax": "command /svdungeonexit:"
+        },
+        {
+          "line": 478,
+          "syntax": "command /svdungeonreset [<offlineplayer>]:"
+        },
+        {
+          "line": 500,
+          "syntax": "on command:"
+        },
+        {
+          "line": 532,
+          "syntax": "on world change:"
+        },
+        {
+          "line": 540,
+          "syntax": "on teleport:"
+        },
+        {
+          "line": 552,
+          "syntax": "every 2 seconds:"
+        },
+        {
+          "line": 568,
+          "syntax": "on quit:"
+        },
+        {
+          "line": 573,
+          "syntax": "command /svdungeondebug [<offlineplayer>]:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_essence_normalizer.sk",
+      "enabled": true,
+      "sha256": "7c26fb105a84d866e32f142894e7cd523f741ef433286cad33cb8250500263a1",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 4,
+          "syntax": "command /svfixdragonessence:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_giftcode.sk",
+      "enabled": true,
+      "sha256": "1f0b8d9abb5f7d79fa838fd19f4e50c3e24e3c3bf113cdc792885a0a51ca470f",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 5,
+          "syntax": "options:"
+        },
+        {
+          "line": 10,
+          "syntax": "function svgift_normalize(code: text) :: text:"
+        },
+        {
+          "line": 17,
+          "syntax": "function svgift_give_dragonborn_pack(p: player):"
+        },
+        {
+          "line": 26,
+          "syntax": "command /giftcode [<text>]:"
+        },
+        {
+          "line": 43,
+          "syntax": "command /svgiftreset <offlineplayer> [<text>]:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_gui_exploit_guard.sk",
+      "enabled": true,
+      "sha256": "a13462e68ff7ebc20535b3b50d556aa1c928ee6b58d1fdd3a430d63fa5d1b645",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 5,
+          "syntax": "options:"
+        },
+        {
+          "line": 8,
+          "syntax": "function svguiSanitize(p: player):"
+        },
+        {
+          "line": 43,
+          "syntax": "function svguiLockedTitle(t: text) :: boolean:"
+        },
+        {
+          "line": 55,
+          "syntax": "on inventory click:"
+        },
+        {
+          "line": 66,
+          "syntax": "on inventory drag:"
+        },
+        {
+          "line": 77,
+          "syntax": "on inventory close:"
+        },
+        {
+          "line": 81,
+          "syntax": "on join:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_hat_equip.sk",
+      "enabled": true,
+      "sha256": "5f20d6b98e3a5919455faa9b7bce28d20de640979af31a316f3d16d8de46a90c",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 5,
+          "syntax": "options:"
+        },
+        {
+          "line": 8,
+          "syntax": "command /svhat:"
+        },
+        {
+          "line": 31,
+          "syntax": "command /svunhat:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_menu_wrappers.sk",
+      "enabled": true,
+      "sha256": "38503764d84a7867dfb9df36d6f45c953cefc10acfdd0e8d6ff925b686c7a69c",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 5,
+          "syntax": "command /clanparty [<text>]:"
+        },
+        {
+          "line": 9,
+          "syntax": "command /banghoimenu [<text>]:"
+        },
+        {
+          "line": 13,
+          "syntax": "command /clanmenu [<text>]:"
+        },
+        {
+          "line": 17,
+          "syntax": "command /partymenu [<text>]:"
+        },
+        {
+          "line": 21,
+          "syntax": "command /partyui [<text>]:"
+        },
+        {
+          "line": 27,
+          "syntax": "command /dungeonmenu [<text>]:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_new_player_spawn_fix.sk",
+      "enabled": true,
+      "sha256": "6c49bcbf1f7f046afa5a1a79f932174ea8eda37897fcb1a409180144f0cca02d",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 5,
+          "syntax": "options:"
+        },
+        {
+          "line": 10,
+          "syntax": "on first join:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_point_exchange.sk",
+      "enabled": true,
+      "sha256": "2d9f60d25f45c8f9c450257d969fce0ff499bf2a4a14014bf700ba3d82cbcebc",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 8,
+          "syntax": "options:"
+        },
+        {
+          "line": 14,
+          "syntax": "import:"
+        },
+        {
+          "line": 17,
+          "syntax": "function svpp_api() :: object:"
+        },
+        {
+          "line": 20,
+          "syntax": "function svpp_points(p: player) :: number:"
+        },
+        {
+          "line": 26,
+          "syntax": "function svpp_take(p: player, amount: number) :: boolean:"
+        },
+        {
+          "line": 32,
+          "syntax": "function svpp_give(p: player, amount: number) :: boolean:"
+        },
+        {
+          "line": 38,
+          "syntax": "function svcoins2points_used(p: player) :: number:"
+        },
+        {
+          "line": 50,
+          "syntax": "command /svpoints2coins [<number>]:"
+        },
+        {
+          "line": 86,
+          "syntax": "command /svcoins2points [<number>]:"
+        },
+        {
+          "line": 130,
+          "syntax": "command /svpointshopdebug:"
+        },
+        {
+          "line": 138,
+          "syntax": "on quit:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_rpg_world_lock.sk",
+      "enabled": true,
+      "sha256": "0b4d543e80df70616044e3b1d48b742bd7830595634af503f23a95b9a34ee37b",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 4,
+          "syntax": "options:"
+        },
+        {
+          "line": 7,
+          "syntax": "function svrpgNoFlyWorld(w: text) :: boolean:"
+        },
+        {
+          "line": 14,
+          "syntax": "function svrpgClampFlight(p: player):"
+        },
+        {
+          "line": 28,
+          "syntax": "on join:"
+        },
+        {
+          "line": 32,
+          "syntax": "on world change:"
+        },
+        {
+          "line": 36,
+          "syntax": "on teleport:"
+        },
+        {
+          "line": 40,
+          "syntax": "on inventory click:"
+        },
+        {
+          "line": 45,
+          "syntax": "every 5 seconds:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_security_command_guard.sk",
+      "enabled": true,
+      "sha256": "53fe1966be339f731bceb9ec1cc67de3579234e076292b33b4e25b4807759c02",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 5,
+          "syntax": "options:"
+        },
+        {
+          "line": 8,
+          "syntax": "function svsecBase(cmd: text) :: text:"
+        },
+        {
+          "line": 14,
+          "syntax": "function svsecDeny(p: player, reason: text):"
+        },
+        {
+          "line": 17,
+          "syntax": "function svsecIsBlockedNamespace(base: text) :: boolean:"
+        },
+        {
+          "line": 30,
+          "syntax": "function svsecIsDirectTeleport(base: text) :: boolean:"
+        },
+        {
+          "line": 36,
+          "syntax": "function svsecIsMultiverseAdmin(base: text) :: boolean:"
+        },
+        {
+          "line": 42,
+          "syntax": "function svsecIsPluginInfo(base: text) :: boolean:"
+        },
+        {
+          "line": 48,
+          "syntax": "function svsecIsRPGNoFlyWorld(w: text) :: boolean:"
+        },
+        {
+          "line": 55,
+          "syntax": "on command:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_shop_sell_limit.sk",
+      "enabled": true,
+      "sha256": "55b7f0612bdc130bc1c9331fcff4efbe8227cce82733258a65e3f6806913ad76",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 6,
+          "syntax": "import:"
+        },
+        {
+          "line": 10,
+          "syntax": "options:"
+        },
+        {
+          "line": 15,
+          "syntax": "function svshopSellReset(p: player):"
+        },
+        {
+          "line": 24,
+          "syntax": "function svshopSellCount(p: player) :: number:"
+        },
+        {
+          "line": 30,
+          "syntax": "function svshopSellRemaining(p: player) :: number:"
+        },
+        {
+          "line": 37,
+          "syntax": "on ShopPreTransactionEvent:"
+        },
+        {
+          "line": 54,
+          "syntax": "on ShopPostTransactionEvent:"
+        },
+        {
+          "line": 75,
+          "syntax": "command /svselllimit [<offlineplayer>]:"
+        },
+        {
+          "line": 92,
+          "syntax": "command /svselllimitreset <offlineplayer>:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_skyrim_portal.sk",
+      "enabled": true,
+      "sha256": "e9edf72419b14acbeaae3b48a1a0f00c6a89a1fd371d048e6a0f4a66a9029213",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 7,
+          "syntax": "options:"
+        },
+        {
+          "line": 15,
+          "syntax": "function svskyrimSave(p: player):"
+        },
+        {
+          "line": 20,
+          "syntax": "function svskyrimGetEntry() :: location:"
+        },
+        {
+          "line": 25,
+          "syntax": "function svskyrimGo(p: player):"
+        },
+        {
+          "line": 33,
+          "syntax": "on load:"
+        },
+        {
+          "line": 39,
+          "syntax": "every {@autosave-interval}:"
+        },
+        {
+          "line": 44,
+          "syntax": "on quit:"
+        },
+        {
+          "line": 49,
+          "syntax": "command /skyrim:"
+        },
+        {
+          "line": 56,
+          "syntax": "command /svskyrimloc [<text>] [<player>]:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_stable_routes.sk",
+      "enabled": true,
+      "sha256": "6eaa158ad8683abc93bb651982f4b3a653e3e5015ee4f3d144c13fd64df7aa9a",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 1,
+          "syntax": "options:"
+        },
+        {
+          "line": 5,
+          "syntax": "function sv_stable_waypoint_id(city: text) :: text:"
+        },
+        {
+          "line": 26,
+          "syntax": "function sv_stable_city_name(city: text) :: text:"
+        },
+        {
+          "line": 47,
+          "syntax": "command /svstablepath <text>:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_testdungeon_return.sk",
+      "enabled": true,
+      "sha256": "7218d0db97f17da85e8e3b2f7b1f745183c791186848276f857ee16a079b980f",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 1,
+          "syntax": "options:"
+        },
+        {
+          "line": 7,
+          "syntax": "function svtdSaveSkyrimLocation(p: player):"
+        },
+        {
+          "line": 13,
+          "syntax": "every 1 second:"
+        },
+        {
+          "line": 18,
+          "syntax": "on teleport:"
+        },
+        {
+          "line": 21,
+          "syntax": "on quit:"
+        },
+        {
+          "line": 24,
+          "syntax": "on death of player:"
+        },
+        {
+          "line": 27,
+          "syntax": "command /svreturntestdungeon:"
+        },
+        {
+          "line": 38,
+          "syntax": "command /svskyrimreturninfo [<player>]:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_transactions.sk",
+      "enabled": true,
+      "sha256": "1ff329b4472b5cc864c8489fbaeb433f636cfa3e786562816f4484b6ca16dc3c",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 5,
+          "syntax": "options:"
+        },
+        {
+          "line": 9,
+          "syntax": "import:"
+        },
+        {
+          "line": 12,
+          "syntax": "function svtx_api() :: object:"
+        },
+        {
+          "line": 15,
+          "syntax": "function svtx_points(p: player) :: number:"
+        },
+        {
+          "line": 21,
+          "syntax": "function svtx_take_points(p: player, amount: number) :: boolean:"
+        },
+        {
+          "line": 27,
+          "syntax": "function svtx_give_points(p: player, amount: number) :: boolean:"
+        },
+        {
+          "line": 33,
+          "syntax": "function svtx_begin(p: player) :: boolean:"
+        },
+        {
+          "line": 40,
+          "syntax": "function svtx_end(p: player):"
+        },
+        {
+          "line": 43,
+          "syntax": "function svtx_buy_points_item(p: player, cost: number) :: boolean:"
+        },
+        {
+          "line": 57,
+          "syntax": "command /svbuyblock [<number>]:"
+        },
+        {
+          "line": 86,
+          "syntax": "command /svbuykey [<text>]:"
+        },
+        {
+          "line": 118,
+          "syntax": "command /svbuybp [<text>]:"
+        },
+        {
+          "line": 159,
+          "syntax": "command /svbossreset:"
+        },
+        {
+          "line": 174,
+          "syntax": "command /svbuyrank [<text>]:"
+        },
+        {
+          "line": 296,
+          "syntax": "function svtx_cosmetic_cost(id: text) :: number:"
+        },
+        {
+          "line": 352,
+          "syntax": "command /svbuycosmetic [<text>]:"
+        },
+        {
+          "line": 391,
+          "syntax": "on quit:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_wardrobe_exit.sk",
+      "enabled": true,
+      "sha256": "a366a67fff161dd11b23421deca5d71f36e5498c57714947c15810cb8642fefd",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 4,
+          "syntax": "options:"
+        },
+        {
+          "line": 14,
+          "syntax": "command /thoatwardrobe:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_wolven_set_bonus.sk",
+      "enabled": true,
+      "sha256": "074156fcbb1be87d885249130769a7f619f08668e0cc3a5c637b05d965a86024",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 3,
+          "syntax": "every 5 seconds:"
+        }
+      ]
+    },
+    {
+      "source": "config2/Skript/scripts/sv_worldboss_season1.sk",
+      "enabled": true,
+      "sha256": "0e7c9c80979bf36416acba037e59139c44ba9cccdc772fbcecd3df248c5b598a",
+      "status": "Not executed by a native Skript runtime",
+      "syntaxHeaders": [
+        {
+          "line": 6,
+          "syntax": "options:"
+        },
+        {
+          "line": 9,
+          "syntax": "function svwbMobId(id: text) :: text:"
+        },
+        {
+          "line": 27,
+          "syntax": "function svwbValid(id: text) :: boolean:"
+        },
+        {
+          "line": 41,
+          "syntax": "function svwbBossName(id: text) :: text:"
+        },
+        {
+          "line": 55,
+          "syntax": "function svwbMythicMob(id: text) :: text:"
+        },
+        {
+          "line": 69,
+          "syntax": "function svwbDailyKey(key: text) :: text:"
+        },
+        {
+          "line": 73,
+          "syntax": "function svwbRunOnce(key: text) :: boolean:"
+        },
+        {
+          "line": 80,
+          "syntax": "function svwbNotice(key: text, msg: text):"
+        },
+        {
+          "line": 85,
+          "syntax": "function svwbSpawn(id: text):"
+        },
+        {
+          "line": 117,
+          "syntax": "function svwbTimedSpawn(key: text, id: text):"
+        },
+        {
+          "line": 122,
+          "syntax": "function svwbClockTick():"
+        },
+        {
+          "line": 161,
+          "syntax": "every 30 seconds:"
+        },
+        {
+          "line": 164,
+          "syntax": "command /svwbset <text>:"
+        },
+        {
+          "line": 174,
+          "syntax": "command /svwbspawn <text>:"
+        },
+        {
+          "line": 183,
+          "syntax": "command /svwbclear <text>:"
+        },
+        {
+          "line": 193,
+          "syntax": "command /svwblockclearall:"
+        },
+        {
+          "line": 199,
+          "syntax": "command /svwbdailyclear:"
+        },
+        {
+          "line": 205,
+          "syntax": "command /svwbnow:"
+        }
+      ]
+    }
+  ]
+}

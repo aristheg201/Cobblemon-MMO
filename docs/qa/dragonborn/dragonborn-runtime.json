@@ -1,0 +1,117 @@
+{
+  "seven_source_wrappers_available": true,
+  "class_skill_count": 7,
+  "automatic_dragon_slayer": true,
+  "armor_legacy": {
+    "four_original_base_pieces": true,
+    "original_stat_precision": true,
+    "cumulative_original_set_bonus": true,
+    "set_health_bonus": 55.0,
+    "actual_max_health": 99.85,
+    "idempotent_max_health": 99.85,
+    "manual_drop_prevented": true,
+    "enchanting_prevented": true,
+    "unbreakable": true,
+    "no_vanilla_material_bonus": true
+  },
+  "armor_helmet": {
+    "four_original_base_pieces": true,
+    "original_stat_precision": true,
+    "cumulative_original_set_bonus": true,
+    "set_health_bonus": 65.0,
+    "actual_max_health": 137.35,
+    "idempotent_max_health": 137.35,
+    "manual_drop_prevented": true,
+    "enchanting_prevented": true,
+    "unbreakable": true,
+    "no_vanilla_material_bonus": true
+  },
+  "armor": {
+    "four_original_base_pieces": true,
+    "original_stat_precision": true,
+    "cumulative_original_set_bonus": true,
+    "set_health_bonus": 65.0,
+    "actual_max_health": 137.35,
+    "idempotent_max_health": 137.35,
+    "manual_drop_prevented": true,
+    "enchanting_prevented": true,
+    "unbreakable": true,
+    "no_vanilla_material_bonus": true
+  },
+  "force": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "repeat_rejected": true,
+    "all_source_targets_damaged": true,
+    "target_health": [
+      479.9176
+    ],
+    "throw_actual": true,
+    "completed": true
+  },
+  "fire": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "repeat_rejected": true,
+    "all_source_targets_damaged": true,
+    "target_health": [
+      489.7312
+    ],
+    "burn_actual": true,
+    "completed": true
+  },
+  "sprint": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "repeat_rejected": true,
+    "all_source_targets_damaged": true,
+    "target_health": [
+      491.276
+    ],
+    "dash_actual": true,
+    "burn_actual": true,
+    "distance": 12.295255902624035,
+    "completed": true
+  },
+  "storm": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "repeat_rejected": true,
+    "all_source_targets_damaged": true,
+    "target_health": [
+      469.104,
+      469.104,
+      469.104,
+      469.104,
+      484.552,
+      484.552,
+      484.552
+    ],
+    "seven_distinct_strike_targets": true,
+    "completed": true
+  },
+  "battlecry": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "repeat_rejected": true,
+    "source_buff_package": true,
+    "absorption_actual": true,
+    "completed": true
+  },
+  "ethereal": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "repeat_rejected": true,
+    "damage_cancelled": true,
+    "invisibility_present": true,
+    "completed": true,
+    "damage_returns_after_expiry": true,
+    "invisibility_expired": true
+  }
+}

@@ -1,6 +1,6 @@
 # Fantasy Hub (Fabric 1.21.1)
 
-This is an implementation candidate, not a production-complete migration of the supplied plugin pack. The audit discovers 36 classes and 28 enabled Skript scripts. The current runtime does not implement their full behavior. Read the migration and QA reports before deploying.
+This is an implementation candidate, not a production-complete migration of the supplied plugin pack. The retained audit discovers 36 classes and 28 enabled Skript scripts. The current runtime does not implement their full behavior. Read the migration and QA reports before deploying.
 
 The Core bridge uses SVFrameMMO/SVFrameLib as the single owner of stats, resources, progression, cooldowns and loadouts. The Client provides packaged assets, a HUD, character/attribute/skill/settings screens, and a separate Cobblemon player-skill shop. Requests are validated by server APIs; client health observations exist only in the explicitly enabled QA mode.
 
@@ -33,7 +33,7 @@ F8 opens the character menu. Skill keys are configurable through Minecraft Contr
 
 Client settings are stored atomically in `config/fantasyhub-client.json`. The default HUD uses four distinct authoritative resources (health, mana, stamina and MMO stellium presented as configurable magic). It does not alter health packets. The presentation carrier has its own item namespace and does not replace Minecraft's paper models.
 
-The local asset pipeline also packages the supplied DK and AMK class configurations. Core installs them only when absent, reloads definitions before saved characters attach, and preserves existing server edits. This makes the candidate's nine class definitions available on a fresh installation; it does not establish full behavioral compatibility for the 36 source classes.
+The local asset pipeline also packages the supplied class configurations and the Dragonborn source models, armor, icons and sounds. Core installs them only when absent, reloads definitions before saved characters attach, and preserves existing server edits. The retained inventory importer installs all 36 source class definitions (37 registry entries including the existing Arcane Mage), 223 additional class wrappers, source XP/mastery data and the original Dragonborn base items. Unsupported skill graphs stay disabled with precise diagnostics; registry entries do not establish all-class behavioral parity.
 
 `/fantasyhub inspect <player>` is an administrator-only inspection of the actual server snapshot, catalog, allowed slots, attributes and loadout. The skill catalog includes declared current-class skills and explicitly granted/owned skills. Class slot category formulas are enforced by the server; passive slots can equip their configured passives, which execute through the existing native trigger engine.
 
@@ -50,3 +50,5 @@ Use `--catalog` with a high-level DK account that has purchased Cut to verify cl
 `SVFRAME_RUNTIME_QA=1` enables administrator-only lifecycle and Cobblemon tests plus actual client damage-packet/hurt-camera observations. Do not enable this on a public production server.
 
 Only 15 explicit single-hit/half-heal move adapters are currently offered for purchase. The complete move registry remains available to fusion and existing saves; registration is not a claim of behavioral coverage. Economy/provider crash recovery, exhaustive class/boss/asset migration, the supplied Skript language/addons and the complete requested UI suite remain unfinished.
+
+Dragonborn priority implementation and its 68 live checks, continuous-server reconnect/respawn regressions, client-only proof and remaining compatibility gaps are documented in [`docs/DRAGONBORN-IMPLEMENTATION-QA.md`](../docs/DRAGONBORN-IMPLEMENTATION-QA.md). Run `tools/prepare_source_pack.py` with the retained inventory and extracted original inputs before building. The importer is not a repeated audit. `tools/run_dragonborn_qa.py` provides the real seven-skill/base-armor runtime suite.

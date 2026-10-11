@@ -29,6 +29,10 @@ final class AbilityHud {
             if(!id.isEmpty())for(var raw:skills){var skill=raw.getAsJsonObject();if(!id.equals(skill.get("id").getAsString()))continue;
                 var icon=icon(id);
                 if(icon!=null)context.drawTexture(icon,left+3,y+3,16,16,0f,0f,64,64,64,64);
+                else if(skill.has("iconMaterial")){
+                    var material=Identifier.tryParse(skill.get("iconMaterial").getAsString());
+                    if(material!=null){var stack=new net.minecraft.item.ItemStack(net.minecraft.registry.Registries.ITEM.get(material));if(skill.has("iconCustomModelData")&&!skill.get("iconCustomModelData").isJsonNull())stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_MODEL_DATA,new net.minecraft.component.type.CustomModelDataComponent(skill.get("iconCustomModelData").getAsInt()));context.drawItem(stack,left+3,y+3);}
+                }
                 else {String name=FantasyHubClient.name(skill.get("name").getAsString()).getString();context.drawCenteredTextWithShadow(client.textRenderer,Text.literal(client.textRenderer.trimToWidth(name,16)),left+11,y+7,0xffe8d39a);}
                 double remaining=skill.get("cooldownRemaining").getAsDouble();
                 if(remaining>0){context.fill(left+2,y+2,left+size-2,y+size-2,0xb5000000);context.drawCenteredTextWithShadow(client.textRenderer,Text.literal(String.format(java.util.Locale.ROOT,"%.0f",Math.ceil(remaining))),left+11,y+7,0xfff2ddbd);}

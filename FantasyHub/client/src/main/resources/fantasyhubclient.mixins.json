@@ -5,7 +5,9 @@
   "client": [
     "HealthHudMixin",
     "DamageFeedbackQaMixin",
-    "HurtCameraQaMixin"
+    "HurtCameraQaMixin",
+    "ClassArmorMixin",
+    "ClassItemModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

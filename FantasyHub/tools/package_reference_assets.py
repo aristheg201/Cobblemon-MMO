@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Build local presentation assets from the user's audited source folders; no downloads."""
+from dragonborn_sources import package_assets
 import argparse, pathlib, json, zipfile, shutil, subprocess, tempfile, sys, hashlib
 p=argparse.ArgumentParser();p.add_argument('--references',type=pathlib.Path,required=True);p.add_argument('--client-output',type=pathlib.Path);p.add_argument('--server-config',type=pathlib.Path)
 a=p.parse_args();hub=pathlib.Path(__file__).resolve().parents[1];out=a.client_output or hub/'client/src/imported/resources';converter=hub.parent/'SVFrameLib/tools/import_blockbench_visuals.py';blueprints=a.references/'config2/ModelEngine/blueprints'
@@ -34,12 +35,19 @@ with tempfile.TemporaryDirectory(prefix='fantasyhub-assets-') as temporary:
  for source in sources.rglob('*'):
   if source.is_file() and (source.name=='sounds.json' or source.suffix=='.ogg' or (source.suffix=='.png' and source.name.startswith('icon_'))):
    target=out/'assets'/source.relative_to(sources);target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
+ # Dragonborn uses the original authored shout sounds. Package their native
+ # namespace directly so semantic server sound events resolve without a pack.
+ dragonborn=a.references/'config1/ItemsAdder/contents/dragonborn/resourcepack/assets'
+ for source in dragonborn.rglob('*'):
+  if source.is_file() and (source.name=='sounds.json' or source.suffix=='.ogg'):
+   target=out/'assets'/source.relative_to(dragonborn);target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
  serverResources=hub/'core/src/imported/resources/default/presentation';serverResources.mkdir(parents=True,exist_ok=True);(serverResources/'reference-models.json').write_text(json.dumps(models,separators=(',',':')));shutil.copy2(built/'reference-anchors.json',serverResources/'visual-anchors.json')
  for name,relative in {'death_knight':'config2/MMOCore/classes/death_knight.yml','anti_mage_knight':'amk/MMOCore/classes/anti_mage_knight.yml'}.items():
   source=a.references/relative;target=serverResources/'classes'/(name+'.yml');target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target);choices['class:'+name]=relative
  if a.server_config:
   target=a.server_config/'visual-models';target.mkdir(parents=True,exist_ok=True);(target/'reference-models.json').write_text(json.dumps(models,separators=(',',':')));shutil.copy2(built/'reference-anchors.json',a.server_config/'visual-anchors.json')
  (out/'assets/fantasyhub/source-choices.json').parent.mkdir(parents=True,exist_ok=True);(out/'assets/fantasyhub/source-choices.json').write_text(json.dumps(choices,indent=2)+'\n')
+ package_assets(a.references,out)
  index={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdigest() for path in (out/'assets').rglob('*') if path.is_file() and path.name!='asset-index.json'}
  (out/'assets/fantasyhub/asset-index.json').write_text(json.dumps(index,sort_keys=True,indent=2)+'\n')
 print('Packaged',len(names),'authored blueprints and',len(models),'model/animation IDs. Source material remains local.')

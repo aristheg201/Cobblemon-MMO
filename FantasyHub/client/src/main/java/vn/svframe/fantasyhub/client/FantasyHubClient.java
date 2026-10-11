@@ -28,6 +28,16 @@ public final class FantasyHubClient implements ClientModInitializer {
     private boolean observed;
     @Override public void onInitializeClient(){
         Protocol.install();
+        net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin.register(context->{
+            try(var input=FantasyHubClient.class.getResourceAsStream("/assets/fantasyhub/dragonborn-models.json")){
+                if(input==null)throw new IllegalStateException("Missing Dragonborn model manifest");
+                var models=JsonParser.parseString(new String(input.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8)).getAsJsonArray();
+                for(var model:models)context.addModels(net.minecraft.util.Identifier.of(model.getAsString()));
+            }catch(java.io.IOException failure){throw new IllegalStateException("Cannot load authored Dragonborn models",failure);}
+        });
+        net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback.EVENT.register((type,renderer,helper,context)->{
+            if(renderer instanceof net.minecraft.client.render.entity.PlayerEntityRenderer player)helper.register(new DragonbornHatFeature(player));
+        });
         options=PresentationOptions.load();hudEnabled=options.enabled;hudScale=options.scale;
         net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry.ITEM.register((stack,tint)->net.minecraft.component.type.DyedColorComponent.getColor(stack,0xffffff),Protocol.visualBone);
         ClientLoginNetworking.registerGlobalReceiver(Protocol.LOGIN,(client,handler,buf,callbacks)->{
@@ -47,9 +57,11 @@ public final class FantasyHubClient implements ClientModInitializer {
             state=next;observed=false;
             if(context.client().currentScreen instanceof HubScreen screen)screen.refresh();
             if(context.client().currentScreen instanceof PokemonShopScreen screen)screen.refresh();
+            if(context.client().currentScreen instanceof ClassSelectionScreen screen)screen.refresh();
         });
         ClientPlayNetworking.registerGlobalReceiver(Protocol.Open.ID,(payload,context)->{
-            if(payload.screen().equals("pokemon_shop"))context.client().setScreen(new PokemonShopScreen());
+            if(payload.screen().equals("classes"))context.client().setScreen(new ClassSelectionScreen());
+            else if(payload.screen().equals("pokemon_shop"))context.client().setScreen(new PokemonShopScreen());
             else try{context.client().setScreen(new HubScreen(HubScreen.View.valueOf(payload.screen().toUpperCase(java.util.Locale.ROOT))));}catch(IllegalArgumentException ignored){}
         });
         ClientPlayConnectionEvents.DISCONNECT.register((handler,client)->state=new JsonObject());
@@ -60,10 +72,11 @@ public final class FantasyHubClient implements ClientModInitializer {
             ticks++;
             while(menu.wasPressed())if(client.player!=null&&state.has("schema"))client.setScreen(new HubScreen(HubScreen.View.PROFILE));
             for(int i=0;i<abilities.length;i++)while(abilities[i].wasPressed())if(client.currentScreen==null)send("cast","",i+1);
-            if(!observed&&ticks%10==0&&client.player!=null&&state.has("schema")&&"1".equals(System.getenv("SVFRAME_RUNTIME_QA"))){
+            if(ticks%10==0&&client.player!=null&&state.has("schema")&&"1".equals(System.getenv("SVFRAME_RUNTIME_QA"))){
                 JsonObject o=new JsonObject();o.addProperty("clientHealth",client.player.getHealth());o.addProperty("clientMaxHealth",client.player.getMaxHealth());
                 o.addProperty("hurtTime",client.player.hurtTime);o.addProperty("maxHurtTime",client.player.maxHurtTime);
                 o.addProperty("stateHealth",number("health"));o.addProperty("stateMaxHealth",number("healthMax"));o.addProperty("clientTick",ticks);
+                com.google.gson.JsonArray players=new com.google.gson.JsonArray();for(var tracked:client.world.getPlayers())players.add(tracked.getName().getString());o.add("trackedPlayers",players);
                 o.addProperty("damagePackets",ClientFeedbackQa.damagePackets);o.addProperty("hurtCameraFrames",ClientFeedbackQa.hurtCameraFrames);
                 if(ClientPlayNetworking.canSend(Protocol.Observation.ID))ClientPlayNetworking.send(new Protocol.Observation(o.toString()));
                 observed=true;

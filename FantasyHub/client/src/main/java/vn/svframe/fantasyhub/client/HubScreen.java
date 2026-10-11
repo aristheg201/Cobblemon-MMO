@@ -42,12 +42,16 @@ public final class HubScreen extends Screen {
             var rows=FantasyHubClient.state().getAsJsonArray("skills");int visible=Math.max(1,(panelHeight-138)/22);
             if(rows!=null)for(int i=0;i<visible&&page*visible+i<rows.size();i++){
                 var row=rows.get(page*visible+i).getAsJsonObject();String id=row.get("id").getAsString();
-                var b=FantasyButton.builder(FantasyHubClient.name(row.get("name").getAsString()),button->{selection=id;clearAndInit();}).dimensions(left+12,top+63+i*22,panelWidth-102,20).build();
+                var b=FantasyButton.builder(FantasyHubClient.name(row.get("name").getAsString()),button->{selection=id;clearAndInit();}).dimensions(left+33,top+63+i*22,panelWidth-123,20).build();
                 var parameters=row.getAsJsonObject("parameters");
-                if(parameters!=null)b.setTooltip(net.minecraft.client.gui.tooltip.Tooltip.of(Text.translatable("fantasyhub.skill.details",row.get("level").getAsInt(),row.has("requiredLevel")?row.get("requiredLevel").getAsInt():1,parameter(parameters,"mana"),parameter(parameters,"stamina"),parameter(parameters,"cooldown"),row.get("cooldownRemaining").getAsDouble())));
+                if(parameters!=null){
+                    var details=Text.translatable("fantasyhub.skill.details",row.get("level").getAsInt(),row.has("requiredLevel")?row.get("requiredLevel").getAsInt():1,parameter(parameters,"mana"),parameter(parameters,"stamina"),parameter(parameters,"cooldown"),row.get("cooldownRemaining").getAsDouble());
+                    if(row.has("lore"))for(var raw:row.getAsJsonArray("lore")){String line=raw.getAsString();for(var value:parameters.entrySet())line=line.replace("{"+value.getKey()+"}",parameter(parameters,value.getKey()));details.append("\n").append(FantasyHubClient.name(line));}
+                    b.setTooltip(net.minecraft.client.gui.tooltip.Tooltip.of(details));
+                }
                 addDrawableChild(b);
                 var upgrade=FantasyButton.builder(Text.translatable("fantasyhub.upgrade"),button->FantasyHubClient.send("upgrade",id,1)).dimensions(left+panelWidth-84,top+63+i*22,72,20).build();
-                upgrade.active=row.get("owned").getAsBoolean()&&FantasyHubClient.number("skillPoints")>0
+                upgrade.active=(!row.has("available")||row.get("available").getAsBoolean())&&row.get("owned").getAsBoolean()&&FantasyHubClient.number("skillPoints")>0
                         &&(!row.has("upgradable")||row.get("upgradable").getAsBoolean())
                         &&(!row.has("maxLevel")||row.get("maxLevel").getAsInt()==0||row.get("level").getAsInt()<row.get("maxLevel").getAsInt());addDrawableChild(upgrade);
             }
@@ -70,10 +74,11 @@ public final class HubScreen extends Screen {
             }
             addDrawableChild(FantasyButton.builder(Text.translatable("options.controls"),b->client.setScreen(new net.minecraft.client.gui.screen.option.ControlsOptionsScreen(this,client.options))).dimensions(left+12,top+panelHeight-29,panelWidth-112,20).build());
         }
+        if(view==View.PROFILE)addDrawableChild(FantasyButton.builder(Text.translatable("fantasyhub.classes.title"),b->client.setScreen(new ClassSelectionScreen())).dimensions(left+12,top+panelHeight-53,panelWidth-112,20).build());
         if(view==View.PROFILE&&FantasyHubClient.state().has("pokemonShop")&&!FantasyHubClient.state().getAsJsonArray("pokemonShop").isEmpty())addDrawableChild(FantasyButton.builder(Text.translatable("fantasyhub.shop.title"),b->client.setScreen(new PokemonShopScreen())).dimensions(left+12,top+panelHeight-29,panelWidth-112,20).build());
         addDrawableChild(FantasyButton.builder(Text.translatable("gui.done"),b->close()).dimensions(left+panelWidth-84,top+panelHeight-28,72,20).build());
     }
-    private static boolean bindable(com.google.gson.JsonArray rows,String id,int slot){if(rows==null)return false;for(var raw:rows){var r=raw.getAsJsonObject();if(r.get("id").getAsString().equals(id)){boolean allowed=!r.has("slots");if(r.has("slots"))for(var value:r.getAsJsonArray("slots"))if(value.getAsInt()==slot)allowed=true;return allowed&&r.get("owned").getAsBoolean()&&r.get("bindable").getAsBoolean();}}return false;}
+    private static boolean bindable(com.google.gson.JsonArray rows,String id,int slot){if(rows==null)return false;for(var raw:rows){var r=raw.getAsJsonObject();if(r.get("id").getAsString().equals(id)){boolean allowed=!r.has("slots");if(r.has("slots"))for(var value:r.getAsJsonArray("slots"))if(value.getAsInt()==slot)allowed=true;return (!r.has("available")||r.get("available").getAsBoolean())&&allowed&&r.get("owned").getAsBoolean()&&r.get("bindable").getAsBoolean();}}return false;}
     private static String parameter(JsonObject parameters,String key){return String.format(java.util.Locale.ROOT,"%.1f",parameters.has(key)?parameters.get(key).getAsDouble():0);}
     @Override public void render(DrawContext context,int mouseX,int mouseY,float delta){
         renderBackground(context,mouseX,mouseY,delta);FantasyPanel.frame(context,left,top,panelWidth,panelHeight);
@@ -82,8 +87,8 @@ public final class HubScreen extends Screen {
         if(view==View.PROFILE){
             context.drawText(textRenderer,FantasyHubClient.name(FantasyHubClient.string("className")),left+16,top+65,0xffe7c37d,false);
             context.drawText(textRenderer,Text.translatable("fantasyhub.hud.level",(int)FantasyHubClient.number("level")),left+16,top+84,0xffeee2c8,false);
-            int y=top+110;for(String resource:new String[]{"health","mana","stamina","magic"}){
-                FantasyPanel.bar(context,left+16,y,panelWidth-32,15,FantasyHubClient.number(resource),FantasyHubClient.number(resource+"Max"),0xff6e4740,resource);y+=21;
+            int rowHeight=Math.max(12,Math.min(21,(panelHeight-153)/4));int y=top+102;for(String resource:new String[]{"health","mana","stamina","magic"}){
+                FantasyPanel.bar(context,left+16,y,panelWidth-32,Math.max(10,rowHeight-4),FantasyHubClient.number(resource),FantasyHubClient.number(resource+"Max"),0xff6e4740,resource);y+=rowHeight;
             }
         }else if(view==View.ATTRIBUTES){
             var rows=FantasyHubClient.state().getAsJsonArray("attributes");int visible=attributeRows();if(rows!=null)for(int i=0;i<visible&&page*visible+i<rows.size();i++){
@@ -92,6 +97,14 @@ public final class HubScreen extends Screen {
             }
             context.drawText(textRenderer,Text.translatable("fantasyhub.points",(int)FantasyHubClient.number("attributePoints")),left+14,top+54,0xffd5ae66,false);
         }else if(view==View.SKILLS){
+            var rows=FantasyHubClient.state().getAsJsonArray("skills");int visible=Math.max(1,(panelHeight-138)/22);
+            if(rows!=null)for(int i=0;i<visible&&page*visible+i<rows.size();i++){
+                var row=rows.get(page*visible+i).getAsJsonObject();if(!row.has("iconMaterial"))continue;
+                var item=net.minecraft.util.Identifier.tryParse(row.get("iconMaterial").getAsString());if(item==null)continue;
+                var stack=new net.minecraft.item.ItemStack(net.minecraft.registry.Registries.ITEM.get(item));
+                if(row.has("iconCustomModelData")&&!row.get("iconCustomModelData").isJsonNull())stack.set(net.minecraft.component.DataComponentTypes.CUSTOM_MODEL_DATA,new net.minecraft.component.type.CustomModelDataComponent(row.get("iconCustomModelData").getAsInt()));
+                context.drawItem(stack,left+13,top+65+i*22);
+            }
             var loadout=FantasyHubClient.state().getAsJsonObject("loadout");String equipped=loadout!=null&&loadout.has(String.valueOf(selectedSlot))?loadout.get(String.valueOf(selectedSlot)).getAsString():"";
             Text loadoutText=Text.translatable("fantasyhub.loadout",selectedSlot,equipped.isEmpty()?Text.translatable("fantasyhub.empty"):FantasyHubClient.skillName(equipped));
             context.drawText(textRenderer,textRenderer.trimToWidth(loadoutText.getString(),Math.max(20,panelWidth-110)),left+14,top+panelHeight-38,0xffd5ae66,false);

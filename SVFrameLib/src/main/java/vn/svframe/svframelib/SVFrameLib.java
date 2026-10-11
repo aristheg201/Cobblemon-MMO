@@ -58,7 +58,7 @@ public class SVFrameLib extends MMOPlugin {
     public static SVFrameLib inst() { return bootstrap(); }
     public void onLoad() { plugin = this; }
     public void onEnable() { version.validateMappings(); economy.initialize(); initializeProfiles(); glowModule.enable(); mitigationModule.reload(); onHitModule.reload(); }
-    public void reload() { skillManager.reload(); NativeBuiltinSkillBootstrap.materializeDefaultHandlers(skillManager); elementManager.reset(); mitigationModule.reload(); onHitModule.reload(); }
+    public void reload() { skillManager.reload(); NativeBuiltinSkillBootstrap.materializeDefaultHandlers(skillManager); vn.svframe.svframelib.skill.NativeSkillProviders.materialize(); elementManager.reset(); mitigationModule.reload(); onHitModule.reload(); }
     public void onDisable() { glowModule.disable(); }
     public Logger getLogger() { return logger; }
     public DamageManager getDamage() { return damageManager; }

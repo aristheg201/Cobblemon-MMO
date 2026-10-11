@@ -23,7 +23,7 @@ public final class PersistenceBootstrap implements ModInitializer {
         PlayerDataSnapshot probe = new PlayerDataSnapshot("WARRIOR", 9, 42.25d, 1, 2, 3, 4, 5, 6,
                 17d, 30d, 40d, 50d, Map.of("STRENGTH", 3), Map.of("SLASH", 4), Map.of(2, "SLASH"),
                 Set.of("slot:2", "skill:slash"), Map.of("class_warrior.reward", 1), Map.of("mining", 5),
-                Map.of("mining", 9.5d), Map.of("general", 3), Map.of("general_root", 2), Map.of("WARRIOR", slot));
+                Map.of("mining", 9.5d), Map.of("general", 3), Map.of("general_root", 2), Map.of("WARRIOR", slot), 1770000000000L);
         YamlSnapshotCodec codec = new YamlSnapshotCodec();
         PlayerDataSnapshot restored = codec.decode(codec.encode(probe));
         if (!probe.equals(restored)) throw new IllegalStateException("Native YAML userdata codec failed round-trip self-check");

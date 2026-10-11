@@ -52,11 +52,21 @@ def command(host, port, password, text):
         else:
             raise ConnectionError("No RCON authentication response")
         send(connection, 2, 2, text)
+        # Wait for the first reply before sending the boundary command. Sending
+        # both requests together lets TCP coalesce them; vanilla RCON treats
+        # that as a malformed packet and can close without executing either.
+        request, _, first = receive(connection)
+        if request != 2:
+            raise ConnectionError("Unexpected RCON command response")
+        if text.strip().lower() == "stop":
+            return first
         # Minecraft fragments long responses into multiple packets with the
-        # same request ID. A second, empty command provides an ordered boundary
+        # same request ID. A second, deliberately invalid command provides an ordered boundary
         # so a large catalog is read completely without waiting for a timeout.
-        send(connection, 3, 2, "")
-        responses = []
+        # Vanilla's empty RCON command can reuse the preceding response buffer.
+        # A nonempty unknown command has its own unambiguous response ID.
+        send(connection, 3, 2, "__fantasyhub_rcon_response_boundary__")
+        responses = [first]
         for _ in range(64):
             request, _, response = receive(connection)
             if request == 3:

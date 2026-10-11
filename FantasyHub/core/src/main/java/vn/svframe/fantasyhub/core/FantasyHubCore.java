@@ -35,6 +35,7 @@ public final class FantasyHubCore implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(server->{
             Path root=net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir().resolve("SVFrameLib");
             try{
+                boolean installedSource=SourcePackInstaller.install();
                 for(String name:List.of("reference-models.json","visual-anchors.json")){
                     Path target=name.equals("reference-models.json")?root.resolve("visual-models").resolve(name):root.resolve(name);
                     if(Files.exists(target))continue;
@@ -53,8 +54,12 @@ public final class FantasyHubCore implements ModInitializer {
                     }
                 }
                 // Definitions must exist before saved characters attach at SERVER_STARTED.
-                if(installedClass&&!SVFrameMMO.reload())throw new IllegalStateException("Cannot load newly installed reference class definitions");
+                if(!vn.svframe.svframelib.fabric.SVFrameLibFabricMod.reloadAll())throw new IllegalStateException("Cannot load authored source skill definitions");
+                vn.svframe.svframelib.skill.NativeSkillProviders.reloadDefinitions();
+                if(!SVFrameMMO.reload())throw new IllegalStateException("Cannot load authored class definitions");
                 vn.svframe.svframelib.fabric.NativeVisualRuntime.reload();
+                ClassSwitchService.reload();
+                if(!vn.svframe.svframeitems.SVFrameItems.reload())throw new IllegalStateException("Cannot load source Dragonborn equipment definitions");
             }catch(java.io.IOException failure){throw new IllegalStateException("Cannot initialize Fantasy Hub presentation configuration",failure);}
         });
         ServerLoginNetworking.registerGlobalReceiver(Protocol.LOGIN,(server,handler,understood,buf,sync,sender)->{
@@ -71,8 +76,10 @@ public final class FantasyHubCore implements ModInitializer {
             if(now<nextAction.getOrDefault(player.getUuid(),-1L))return;
             nextAction.put(player.getUuid(),now+2);
             var data=SVFrameMMO.playerData().get(player);
+            if(Boolean.TRUE.equals(ClassSwitchService.policy(data).get("busy"))&&!request.action().equals("refresh"))return;
             try{
                 switch(request.action()){
+                    case "switch_class" -> {ClassSwitchService.request(player,request.id(),()->snapshots.remove(player.getUuid()));return;}
                     case "allocate" -> {if(request.slot()!=1)return;data.spendAttributePoints(request.id(),1);}
                     case "respec" -> data.reallocateAttributes();
                     case "bind" -> {if(request.slot()<1||request.slot()>9)return;PlayerSkillCatalog.bind(data,request.slot(),request.id());}
@@ -117,8 +124,16 @@ public final class FantasyHubCore implements ModInitializer {
         });
         CommandRegistrationCallback.EVENT.register((dispatcher,access,environment)->{
             RpgLifecycleQa.register(dispatcher);
+            for(String alias:List.of("classmenu","classes","doiclass"))dispatcher.register(literal(alias).executes(ctx->{
+                var player=ctx.getSource().getPlayerOrThrow();snapshots.remove(player.getUuid());ServerPlayNetworking.send(player,new Protocol.Open("classes"));return 1;
+            }));
+            dispatcher.register(literal("svclass").then(literal("switch").then(net.minecraft.server.command.CommandManager.argument("class",com.mojang.brigadier.arguments.StringArgumentType.word()).executes(ctx->{
+                var player=ctx.getSource().getPlayerOrThrow();String id=com.mojang.brigadier.arguments.StringArgumentType.getString(ctx,"class").toUpperCase(Locale.ROOT);
+                return ClassSwitchService.request(player,id,()->snapshots.remove(player.getUuid()))?1:0;
+            }))));
             dispatcher.register(literal("fantasyhub")
                 .executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();snapshots.remove(player.getUuid());ServerPlayNetworking.send(player,new Protocol.Open("profile"));return 1;})
+                .then(literal("classes").executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();ServerPlayNetworking.send(player,new Protocol.Open("classes"));return 1;}))
                 .then(literal("shop").executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();ServerPlayNetworking.send(player,new Protocol.Open("pokemon_shop"));return 1;}))
                 .then(literal("attributes").executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();ServerPlayNetworking.send(player,new Protocol.Open("attributes"));return 1;}))
                 .then(literal("skills").executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();ServerPlayNetworking.send(player,new Protocol.Open("skills"));return 1;}))
@@ -148,9 +163,27 @@ public final class FantasyHubCore implements ModInitializer {
             row.put("id",attr.getId());row.put("name",attr.getName());row.put("base",instance.getBase());row.put("total",instance.getTotal());row.put("max",attr.hasMax()?attr.getMax():-1);attributes.add(row);
         }
         out.put("attributes",attributes);
+        out.put("classSwitch",ClassSwitchService.policy(data));
+        List<Map<String,Object>> roster=new ArrayList<>();
+        for(var type:SVFrameMMO.classes().getAll()) {
+            Map<String,Object> row=new LinkedHashMap<>();row.put("id",type.getId());row.put("name",type.getName());
+            row.put("description",type.getDescription());row.put("attributeDescription",type.getAttributeDescription());row.put("maxLevel",type.getMaxLevel());
+            row.put("selectable",ClassSwitchService.selectable(type.getId()));row.put("unlocked",ClassSwitchService.unlocked(player,type.getId()));
+            row.put("current",data.getClassId().equals(type.getId()));
+            Map<String,Double> baseStats=new TreeMap<>();for(String stat:type.getStats())baseStats.put(stat,type.calculateBaseStat(stat,1,data));row.put("baseStats",baseStats);
+            List<Map<String,Object>> classSkills=new ArrayList<>();
+            for(var skill:type.getConfiguredSkills()) {
+                Map<String,Object> sr=new LinkedHashMap<>();sr.put("id",skill.getSkill().getId());sr.put("name",skill.getSkill().getName());
+                sr.put("passive",skill.getTrigger().isPassive());sr.put("requiredLevel",skill.getUnlockLevel());skillSupport(sr,skill.getSkill());classSkills.add(sr);
+            }
+            row.put("skills",classSkills);roster.add(row);
+        }
+        out.put("classRoster",roster);
+        out.put("classPreviews",ClassEquipmentPreviews.snapshots(player));
         List<Map<String,Object>> skills=new ArrayList<>();
         for(var entry:PlayerSkillCatalog.entries(data)){
             var skill=entry.skill();Map<String,Object> row=new LinkedHashMap<>();
+            skillSupport(row,skill.getSkill());
             row.put("id",entry.id());row.put("name",skill.getSkill().getName());row.put("owned",entry.learned());row.put("level",entry.level());row.put("bindable",entry.bindable());
             row.put("slots",PlayerSkillCatalog.allowedSlots(data,entry));
             row.put("passive",skill.getTrigger().isPassive());skills.add(row);
@@ -158,6 +191,9 @@ public final class FantasyHubCore implements ModInitializer {
             int level=Math.max(1,entry.level());
             Map<String,Double> parameters=new TreeMap<>();skill.getParameters().keySet().forEach(key->parameters.put(key,skill.getParameter(key,level,data)));
             row.put("parameters",parameters);row.put("cooldownRemaining",MMOPlayerData.setup(player).getCooldownMap().getCooldown(skill.getCooldownPath()));
+            row.put("lore",skill.getSkill().getUiLore());
+            row.put("iconMaterial",net.minecraft.registry.Registries.ITEM.getId(skill.getSkill().getIcon().getMaterialElse(net.minecraft.item.Items.PAPER)).toString());
+            row.put("iconCustomModelData",skill.getSkill().getIcon().getCustomModelDataInt());
         }
         out.put("skills",skills);
         out.put("loadoutSlots",PlayerSkillCatalog.slots(data));
@@ -166,4 +202,11 @@ public final class FantasyHubCore implements ModInitializer {
         Map<String,Double> stats=new TreeMap<>();for(String id:List.of("MAX_HEALTH","ARMOR","ARMOR_TOUGHNESS","ATTACK_DAMAGE","SKILL_DAMAGE","MOVEMENT_SPEED"))stats.put(id,MMOPlayerData.setup(player).getStatMap().getStat(id));out.put("stats",stats);
         return GSON.toJson(out);
     }
+    private static void skillSupport(Map<String,Object> row,vn.svframe.svframelib.skill.handler.SkillHandler<?> handler) {
+        if(handler instanceof vn.svframe.svframelib.skill.NativeSkillProviders.BackedHandler backed) {
+            boolean available=vn.svframe.svframelib.skill.NativeSkillProviders.available(backed.providerNamespace(),backed.sourceSkill());
+            row.put("available",available);row.put("issues",available?List.of():vn.svframe.svframelib.skill.NativeSkillProviders.issues(backed.providerNamespace(),backed.sourceSkill()));
+        } else {row.put("available",true);row.put("issues",List.of());}
+    }
+
 }

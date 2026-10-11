@@ -14,9 +14,9 @@ import net.minecraft.registry.Registries;
 public final class Protocol implements ModInitializer {
     private static boolean installed;
     public static final int VERSION=1;
-    public static final String ASSET_REVISION="reference-classes-v3";
+    public static final String ASSET_REVISION="reference-dragonborn-v4";
     public static final Identifier LOGIN=Identifier.of("fantasyhub","login_v1");
-    public static Item visualBone;
+    public static Item visualBone,dragonbornHat;
     public record State(String json) implements CustomPayload {
         public static final Id<State> ID=new Id<>(Identifier.of("fantasyhub","state_v1"));
         public static final PacketCodec<RegistryByteBuf,State> CODEC=PacketCodec.of((p,b)->b.writeString(p.json,262144),b->new State(b.readString(262144)));
@@ -42,6 +42,7 @@ public final class Protocol implements ModInitializer {
     public static synchronized void install(){
         if(installed)return;
         visualBone=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","visual_bone"),new Item(new Item.Settings()));
+        dragonbornHat=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","dragonborn_hat"),new net.minecraft.item.ArmorItem(net.minecraft.item.ArmorMaterials.LEATHER,net.minecraft.item.ArmorItem.Type.HELMET,new Item.Settings().maxCount(1)));
         PayloadTypeRegistry.playS2C().register(State.ID,State.CODEC);
         PayloadTypeRegistry.playS2C().register(Open.ID,Open.CODEC);
         PayloadTypeRegistry.playC2S().register(Action.ID,Action.CODEC);

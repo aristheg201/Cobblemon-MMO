@@ -1,0 +1,22 @@
+{
+  "serverPid": 49705,
+  "clientPid": 51927,
+  "noCoreOrFrameworkMods": true,
+  "clientMods": [
+    "accessories-fabric-1.1.0-beta.52+1.21.1.jar",
+    "FantasyHubClient-0.1.0.jar",
+    "polymer-reg-sync-manipulator-0.9.19+1.21.1.jar",
+    "owo-lib-0.12.15.4+1.21.jar",
+    "polymer-common-0.9.19+1.21.1.jar",
+    "MdwFAVRL-YgmyyFcs.jar",
+    "polymer-resource-pack-0.9.19+1.21.1.jar",
+    "architectury-fabric-13.0.8.jar",
+    "fabric-api-0.116.9+1.21.1.jar",
+    "CobbleDollars-fabric-2.0.0+Beta-6.1+1.21.1.jar",
+    "packet-tweaker-0.5.6+1.21.jar",
+    "polymer-networking-0.9.19+1.21.1.jar",
+    "polymer-core-0.9.19+1.21.1.jar"
+  ],
+  "clientPresentationInstalled": true,
+  "runtimeScreenshot": "class-selection-client-only-vi.png"
+}

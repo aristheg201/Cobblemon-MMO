@@ -21,7 +21,8 @@ public record PlayerDataSnapshot(
         Map<String, Double> professionExperience,
         Map<String, Integer> skillTreePoints,
         Map<String, Integer> skillTreeNodeLevels,
-        Map<String, SavedClassState> classSlots) {
+        Map<String, SavedClassState> classSlots,
+        long classSwitchAvailableAt) {
 
     public static PlayerDataSnapshot capture(PlayerData value) {
         return new PlayerDataSnapshot(
@@ -32,7 +33,7 @@ public record PlayerDataSnapshot(
                 value.getAttributes().mapPoints(), value.getSkillLevels(), value.getSkillBindings(),
                 value.getUnlockedItems(), value.getClaimCounts(),
                 value.getProfessions().levelMap(), value.getProfessions().experienceMap(),
-                value.getSkillTrees().pointMap(), value.getSkillTrees().nodeLevelMap(), value.getClassSlots());
+                value.getSkillTrees().pointMap(), value.getSkillTrees().nodeLevelMap(), value.getClassSlots(), value.getClassSwitchAvailableAt());
     }
 
     public void apply(PlayerData value) {
@@ -42,5 +43,6 @@ public record PlayerDataSnapshot(
                 attributeReallocationPoints, skillReallocationPoints, skillTreeReallocationPoints,
                 health, mana, stamina, stellium, attributes, skills, bindings, unlockedItems, claims,
                 professionLevels, professionExperience, skillTreePoints, skillTreeNodeLevels, classSlots);
+        value.setClassSwitchAvailableAt(classSwitchAvailableAt);
     }
 }
