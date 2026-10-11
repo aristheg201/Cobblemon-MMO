@@ -22,6 +22,7 @@ import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
 import vn.svframe.svframemmo.experience.EXPSource;
 import vn.svframe.svframemmo.experience.PlayerProfessions;
 import vn.svframe.svframemmo.skill.ClassSkill;
+import vn.svframe.svframemmo.skill.PlayerSkillCatalog;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -313,7 +314,12 @@ public final class PlayerData {
     public PlayerProfessions getCollectionSkills() { return professions; }
 
     public int getSkillLevel(SkillHandler<?> skill) { return getSkillLevel(skill.getId()); }
-    public int getSkillLevel(String skill) { return skillLevels.getOrDefault(normalizeEnum(skill), 1); }
+    public int getSkillLevel(String skill) {
+        String skillId = normalizeEnum(skill);
+        if (SVFrameMMO.externalProgression().isLearned(id, skillId))
+            return Math.max(1, SVFrameMMO.externalProgression().level(id, skillId));
+        return skillLevels.getOrDefault(skillId, 1);
+    }
     public void setSkillLevel(SkillHandler<?> skill, int value) { setSkillLevel(skill.getId(), value); }
     public void setSkillLevel(String skill, int value) {
         String skillId = normalizeEnum(skill);
@@ -330,26 +336,18 @@ public final class PlayerData {
     public boolean canUseSkill(ClassSkill skill) { return skill != null && hasUnlockedLevel(skill) && hasUnlocked(skill.getUnlockNamespacedKey()); }
 
     public boolean upgradeSkill(String skillId) {
-        ClassSkill skill = requireClassSkill(skillId);
-        if (!canUseSkill(skill) || !skill.isUpgradable()) return false;
-        int current = getSkillLevel(skill.getSkill());
-        if (skill.hasMaxLevel() && current >= skill.getMaxLevel()) return false;
-        if (skillPoints <= 0) return false;
-        setSkillLevel(skill.getSkill(), current + 1);
-        setSkillPoints(skillPoints - 1);
-        return true;
+        return PlayerSkillCatalog.upgrade(this, PlayerSkillCatalog.owned(this, skillId), 1) > 0;
     }
 
     public boolean downgradeSkill(String skillId) {
-        ClassSkill skill = requireClassSkill(skillId);
-        int current = getSkillLevel(skill.getSkill());
-        if (current <= 1) return false;
-        setSkillLevel(skill.getSkill(), current - 1);
-        giveSkillPoints(1);
-        return true;
+        return PlayerSkillCatalog.downgrade(this, PlayerSkillCatalog.owned(this, skillId));
     }
 
-    public void bindSkill(int slot, String skillId) {
+    /** Public binding API accepts both class skills and purchased external skills. */
+    public void bindSkill(int slot, String skillId) { PlayerSkillCatalog.bind(this, slot, skillId); }
+
+    /** Class-scoped primitive used by the unified catalog; it must not mutate external bindings. */
+    public void bindClassSkill(int slot, String skillId) {
         if (slot <= 0) throw new IllegalArgumentException("Skill slot must be positive");
         var slotDefinition = getProfess().getSkillSlot(slot);
         if (slotDefinition == null) throw new IllegalArgumentException("Class '" + getClassId() + "' has no skill slot " + slot);
@@ -366,7 +364,9 @@ public final class PlayerData {
         if (isOnline()) SVFrameMMO.skillRuntime().refresh(this);
     }
     public void bindSkill(int slot, ClassSkill skill) { bindSkill(slot, skill.getSkill().getId()); }
-    public String unbindSkill(int slot) { String removed = skillBindings.remove(slot); if (removed != null && isOnline()) SVFrameMMO.skillRuntime().refresh(this); return removed; }
+    public String unbindSkill(int slot) { return PlayerSkillCatalog.unbind(this, slot); }
+    /** Class-scoped primitive used when replacing a slot with an external skill. */
+    public String unbindClassSkill(int slot) { String removed = skillBindings.remove(slot); if (removed != null && isOnline()) SVFrameMMO.skillRuntime().refresh(this); return removed; }
     public boolean hasSkillBound(int slot) { return skillBindings.containsKey(slot); }
     public ClassSkill getBoundSkill(int slot) {
         String id = skillBindings.get(slot);

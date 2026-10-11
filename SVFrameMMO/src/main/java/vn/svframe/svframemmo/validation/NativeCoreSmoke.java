@@ -52,6 +52,15 @@ public final class NativeCoreSmoke {
         try { state.attributes().put("illegal", 1); throw new AssertionError("saved class maps must be immutable"); }
         catch (UnsupportedOperationException expected) { }
 
+        for (int held = 0; held < 9; held++) {
+            java.util.Set<Integer> displayed = new java.util.HashSet<>();
+            for (int castSlot = 1; castSlot <= 8; castSlot++) {
+                int input = vn.svframe.svframemmo.skill.runtime.SkillBarSlotMapping.displayedSlot(castSlot, held);
+                if (input < 1 || input > 9 || input == held + 1 || !displayed.add(input))
+                    throw new AssertionError("Native skill bar must skip the held slot and retain unique vanilla inputs");
+            }
+        }
+        System.out.println("SVFRAMEMMO_SKILL_BAR_MAPPING=PASS cases=72");
         System.out.println("SVFRAMEMMO_NATIVE_CORE=PASS");
     }
 }

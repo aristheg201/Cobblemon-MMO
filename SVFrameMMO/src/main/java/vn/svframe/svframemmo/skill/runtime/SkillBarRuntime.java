@@ -117,6 +117,25 @@ public final class SkillBarRuntime {
     public boolean isCasting(UUID player) { return sessions.containsKey(player); }
     public String mode(UUID player) { Session session = sessions.get(player); return session == null ? null : session.mode; }
 
+   public List<SkillBarRuntime.SkillBarBinding> skillBarBindings(PlayerData data) {
+      SVFrameMMOConfig.SkillCasting config = SVFrameMMO.config().skillCasting();
+      if (data.isOnline() && config.skillBarMode() && "SKILL_BAR".equals(this.mode(data.getUniqueId()))) {
+         int heldSlot = data.getPlayer().getInventory().selectedSlot;
+         return activeSkills(data, config)
+            .stream()
+            .map(
+               binding -> new SkillBarRuntime.SkillBarBinding(
+                  binding.boundSlot(), SkillBarSlotMapping.displayedSlot(binding.castSlot(), heldSlot), binding.skill(), binding.temporary()
+               )
+            )
+            .filter(binding -> binding.inputSlot() >= 1 && binding.inputSlot() <= 9)
+            .toList();
+      } else {
+         return List.of();
+      }
+   }
+
+
     public boolean leave(PlayerData data) { return leave(data, false); }
     public boolean leave(PlayerData data, boolean skipEvent) {
         if (data == null) return false;
@@ -383,7 +402,7 @@ public final class SkillBarRuntime {
     private static CastBinding skillForClickedSlot(PlayerData data, SVFrameMMOConfig.SkillCasting config, int currentSlot, int clickedSlot) {
         for (CastBinding binding : activeSkills(data, config)) {
             int castSlot = binding.castSlot();
-            int displayedIndex = castSlot + (currentSlot < castSlot ? 1 : 0);
+            int displayedIndex = SkillBarSlotMapping.displayedSlot(castSlot, currentSlot);
             if (displayedIndex == clickedSlot + 1) return binding;
         }
         return null;
@@ -425,6 +444,10 @@ public final class SkillBarRuntime {
 
     private static void showSkillBar(PlayerData data, SVFrameMMOConfig.SkillCasting config) {
         if (!data.isOnline()) return;
+        if (PersistentHudRuntime.hasPresentationOwner(data.getUniqueId())) {
+            data.getMMOPlayerData().getActionBar().reset(CASTING_BAR_PRIORITY);
+            return;
+        }
         List<CastBinding> active = activeSkills(data, config);
         if (active.isEmpty()) return;
         int currentSlot = data.getPlayer().getInventory().selectedSlot;
@@ -440,7 +463,7 @@ public final class SkillBarRuntime {
             else if (parameter(skill, "mana", data) > data.getMana()) format = options.noMana();
             else if (parameter(skill, "stamina", data) > data.getStamina()) format = options.noStamina();
             else format = options.ready();
-            int displayedIndex = binding.castSlot() + (currentSlot < binding.castSlot() ? 1 : 0);
+            int displayedIndex = SkillBarSlotMapping.displayedSlot(binding.castSlot(), currentSlot);
             out.append(format.replace("{index}", Integer.toString(displayedIndex)).replace("{skill}", skill.getSkill().getName()));
         }
         data.getMMOPlayerData().getActionBar().show(CASTING_BAR_PRIORITY, 30L, SVFrameLib.inst().parseColors(out.toString()));
@@ -580,6 +603,8 @@ public final class SkillBarRuntime {
         int result = value % size;
         return result < 0 ? result + size : result;
     }
+
+    public record SkillBarBinding(int boundSlot, int inputSlot, ClassSkill skill, boolean temporary) { }
 
     private record CastBinding(int boundSlot, int castSlot, ClassSkill skill, boolean temporary) { }
     private record LastKey(long tick, PlayerKey key) { }

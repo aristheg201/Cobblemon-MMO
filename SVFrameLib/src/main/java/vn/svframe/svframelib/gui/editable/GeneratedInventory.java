@@ -7,7 +7,13 @@ public abstract class GeneratedInventory extends PluginInventory {
     public List<InventoryItem<?>> getLoaded(){return List.copyOf(loaded);} public EditableInventory getEditable(){return editable;} protected void enablePagination(int perPage){this.perPage=Math.max(1,perPage);} public boolean hasPagination(){return perPage>0;}
     public int getMaxPage(){return computeMaxPage(loaded.size());} public int getPageIndex(int index){return perPage<=0?index:index+page*perPage;} public int computeMaxPage(int amount){return perPage<=0?0:Math.max(0,(amount-1)/perPage);}
     public InventoryItem<?> getByFunction(String f){InventoryItem<?> i=loaded.stream().filter(x->f.equalsIgnoreCase(x.getFunction())).findFirst().orElse(null);return i==null?editable.getByFunction(f):i;}
-    public InventoryItem<?> getBySlot(int slot){for(InventoryItem<?> i:loaded)if(i.getSlots().contains(slot))return i;for(InventoryItem<?> i:editable.getItems())if(i.getSlots().contains(slot))return i;return null;}
+    /** Hit testing follows the same overlay order as getInventory: last rendered visible item wins. */
+    @SuppressWarnings({"rawtypes","unchecked"})
+    public InventoryItem<?> getBySlot(int slot) {
+        Predicate<InventoryItem<?>> matches = item -> item.getSlots().contains(slot) && ((InventoryItem)item).isDisplayed(this);
+        InventoryItem<?> top = InventoryLayers.topmost(loaded, matches);
+        return top == null ? InventoryLayers.topmost(editable.getItems(), matches) : top;
+    }
     public void addLoaded(InventoryItem<?> item){if(item!=null)loaded.add(item);}
     @Override public Inventory getInventory(){int size=Math.max(9,Math.min(54,((editable.getVanillaSlots()+8)/9)*9));SimpleInventory inv=new SimpleInventory(size);for(InventoryItem<?> i:editable.getItems())displayItem(inv,i);for(InventoryItem<?> i:loaded)displayItem(inv,i);lastOpened=inv;return inv;}
     @SuppressWarnings({"rawtypes","unchecked"}) public void displayItem(Inventory inv,InventoryItem item){if(!item.isDisplayed(this))return;int idx=0;for(int slot:(List<Integer>)item.getSlots())if(slot>=0&&slot<inv.size())inv.setStack(slot,item.getDisplayedItem(this,idx++));}
