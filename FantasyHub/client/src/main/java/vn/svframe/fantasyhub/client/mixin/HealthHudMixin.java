@@ -20,11 +20,18 @@ public abstract class HealthHudMixin {
     private void fantasyhub$customHealthPresentation(CallbackInfo ci){
         if(CompactHud.visible("health"))ci.cancel();
     }
+    @Inject(method="renderStatusBars",at=@At("TAIL"))
+    private void fantasyhub$resources(DrawContext context,CallbackInfo ci){
+        // Render with vanilla status bars so chat and menus keep the same HUD
+        // visibility and foreground ordering as hearts and food.
+        if(CompactHud.active())CompactHud.render(context);
+    }
     @ModifyArgs(method="renderStatusBars",at=@At(value="INVOKE",target="Lnet/minecraft/client/gui/hud/InGameHud;renderArmor(Lnet/minecraft/client/gui/DrawContext;Lnet/minecraft/entity/player/PlayerEntity;IIII)V"))
     private void fantasyhub$armorLayout(Args args){
         // Hidden vanilla hearts must not reserve seven empty rows for a
         // high-health character and push armor into the ability bar.
-        if(CompactHud.visible("health")){args.set(3,1);if(CompactHud.visible("stamina"))args.set(2,(int)args.get(2)-10);}
+        if(CompactHud.visible("health"))args.set(3,1);
+        if(CompactHud.visible("stamina"))args.set(2,(int)args.get(2)-10);
     }
     @Inject(method="renderExperienceBar",at=@At("HEAD"),cancellable=true)
     private void fantasyhub$experience(DrawContext context,int x,CallbackInfo ci){if(CompactHud.active()){CompactHud.experience(context,x);ci.cancel();}}

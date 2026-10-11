@@ -19,7 +19,7 @@ final class PresentationOptions {
             if(!Files.exists(path()))return new PresentationOptions();
             var options=new com.google.gson.Gson().fromJson(Files.readString(path()),PresentationOptions.class);
             if(options==null)return new PresentationOptions();
-            options.scale=Float.isFinite(options.scale)?Math.max(.5f,Math.min(2,options.scale)):1;
+            options.scale=Float.isFinite(options.scale)?Math.max(.5f,Math.min(1,options.scale)):.8f;
             return options;
         }catch(IOException|RuntimeException failure){Logger.getLogger("FantasyHub-Client").log(Level.WARNING,"Could not load presentation options",failure);return new PresentationOptions();}
     }

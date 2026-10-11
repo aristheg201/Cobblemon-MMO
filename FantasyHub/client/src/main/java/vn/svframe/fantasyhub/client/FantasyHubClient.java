@@ -85,7 +85,6 @@ public final class FantasyHubClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register((context,counter)->{
             var client=MinecraftClient.getInstance();
             if(!hudEnabled||client.player==null||client.options.hudHidden||client.currentScreen!=null||!state.has("schema"))return;
-            CompactHud.render(context);
             AbilityHud.render(context);
         });
     }

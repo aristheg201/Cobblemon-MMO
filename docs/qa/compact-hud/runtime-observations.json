@@ -1,0 +1,43 @@
+{
+  "clientJarSha256": "7fbdd6358ce774d084181641b75e85712c83719b1a3366e011f76e70f3bcd907",
+  "serverPid": 60892,
+  "clientPids": [
+    63005,
+    63007
+  ],
+  "minecraft": "1.21.1",
+  "loader": "0.18.4",
+  "cobblemon": "1.8.0",
+  "healthObservations": [
+    {
+      "clientHealth": 137.35,
+      "clientMaxHealth": 137.35,
+      "hurtTime": 0,
+      "maxHurtTime": 0,
+      "stateHealth": 137.35000610351562,
+      "stateMaxHealth": 137.35000610351562,
+      "clientTick": 6960,
+      "damagePackets": 0,
+      "hurtCameraFrames": 0,
+      "serverMaxHealth": 137.35,
+      "serverHealth": 137.35,
+      "serverTick": 59196,
+      "scenario": "snapshot"
+    },
+    {
+      "clientHealth": 123.1697,
+      "clientMaxHealth": 137.35,
+      "hurtTime": 0,
+      "maxHurtTime": 10,
+      "stateHealth": 123.1697006225586,
+      "stateMaxHealth": 137.35000610351562,
+      "clientTick": 6900,
+      "damagePackets": 30,
+      "hurtCameraFrames": 348,
+      "serverMaxHealth": 137.35,
+      "serverHealth": 123.1697,
+      "serverTick": 59206,
+      "scenario": "snapshot"
+    }
+  ]
+}

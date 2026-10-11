@@ -22,6 +22,7 @@ final class AbilityHud {
         var slots=state.getAsJsonArray("loadoutSlots");int count=slots==null?6:slots.size();if(count==0)return;
         var client=MinecraftClient.getInstance();int size=22,gap=3,width=count*(size+gap)-gap;
         int x=(context.getScaledWindowWidth()-width)/2,y=context.getScaledWindowHeight()-91;
+        if(CompactHud.visible("stamina"))y=Math.min(y,context.getScaledWindowHeight()-39-CompactHud.staminaOffset()-32);
         for(int index=0;index<count;index++){
             int slot=slots==null?index+1:slots.get(index).getAsInt();
             int left=x+index*(size+gap);FantasyPanel.frame(context,left,y,size,size);

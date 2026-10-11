@@ -66,7 +66,7 @@ public final class HubScreen extends Screen {
         if(view==View.SETTINGS){
             addDrawableChild(FantasyButton.builder(Text.translatable("fantasyhub.hud.toggle"),b->{FantasyHubClient.hudEnabled=!FantasyHubClient.hudEnabled;FantasyHubClient.saveOptions();}).dimensions(left+12,top+66,160,20).build());
             addDrawableChild(FantasyButton.builder(Text.translatable("fantasyhub.hud.scale.down"),b->{FantasyHubClient.hudScale=Math.max(.5f,FantasyHubClient.hudScale-.1f);FantasyHubClient.saveOptions();}).dimensions(left+12,top+94,78,20).build());
-            addDrawableChild(FantasyButton.builder(Text.translatable("fantasyhub.hud.scale.up"),b->{FantasyHubClient.hudScale=Math.min(2f,FantasyHubClient.hudScale+.1f);FantasyHubClient.saveOptions();}).dimensions(left+96,top+94,78,20).build());
+            addDrawableChild(FantasyButton.builder(Text.translatable("fantasyhub.hud.scale.up"),b->{FantasyHubClient.hudScale=Math.min(1f,FantasyHubClient.hudScale+.1f);FantasyHubClient.saveOptions();}).dimensions(left+96,top+94,78,20).build());
             addDrawableChild(FantasyButton.builder(Text.translatable("fantasyhub.hud.compact"),b->{FantasyHubClient.options.compact=!FantasyHubClient.options.compact;FantasyHubClient.saveOptions();}).dimensions(left+12,top+150,160,20).build());
             String[] components={"health","mana","stamina","magic"};for(int i=0;i<components.length;i++){
                 String component=components[i];addDrawableChild(FantasyButton.builder(Text.translatable("fantasyhub.hud.component",Text.translatable("fantasyhub.resource."+component)),b->FantasyHubClient.options.toggle(component)).dimensions(left+panelWidth/2+8,top+66+i*28,panelWidth/2-20,20).build());
