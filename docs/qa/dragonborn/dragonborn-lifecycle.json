@@ -1,64 +1,64 @@
 {
   "baseline": {
-    "server_pid": 49705,
+    "server_pid": 53556,
     "class": "DRAGONBORN",
-    "health": 137.35000610351562,
+    "health": 50.54973220825195,
     "max_health": 137.35000610351562,
     "armor_uuids": [
-      "61bfba98-e997-a450-029b-d28e11babafb",
-      "de57bbc1-b4e0-86c0-3896-4deed6f11e55",
-      "f1455894-fcdc-bd4d-b67c-975e4290fbd7",
-      "66e7b583-d5de-cb77-4ca6-933aa3a6cd68"
+      "421a2193-0aa4-6fcf-6657-ae45c28f30ed",
+      "4bd64705-1a8e-2e29-34f7-800dbde90ec1",
+      "57ae350d-80a4-4418-87e6-d326809d710a",
+      "b06392a3-e3c6-1ef0-a632-4199699f8711"
     ],
     "client": {
-      "clientHealth": 137.35,
+      "clientHealth": 50.549732,
       "clientMaxHealth": 137.35,
       "hurtTime": 0,
       "maxHurtTime": 0,
-      "stateHealth": 137.35000610351562,
+      "stateHealth": 50.54973220825195,
       "stateMaxHealth": 137.35000610351562,
-      "clientTick": 7670,
+      "clientTick": 189350,
       "trackedPlayers": [
         "QAPlayer",
         "QAPlayerTwo"
       ],
-      "damagePackets": 2,
-      "hurtCameraFrames": 22,
+      "damagePackets": 9,
+      "hurtCameraFrames": 82,
       "serverMaxHealth": 137.35,
-      "serverHealth": 137.35,
-      "serverTick": 7446,
+      "serverHealth": 50.549732,
+      "serverTick": 1571,
       "scenario": "snapshot"
     }
   },
   "reconnects": [
     {
-      "server_pid": 49705,
+      "server_pid": 53556,
       "class": "DRAGONBORN",
-      "health": 137.35000610351562,
+      "health": 50.64973068237305,
       "max_health": 137.35000610351562,
       "armor_uuids": [
-        "61bfba98-e997-a450-029b-d28e11babafb",
-        "de57bbc1-b4e0-86c0-3896-4deed6f11e55",
-        "f1455894-fcdc-bd4d-b67c-975e4290fbd7",
-        "66e7b583-d5de-cb77-4ca6-933aa3a6cd68"
+        "421a2193-0aa4-6fcf-6657-ae45c28f30ed",
+        "4bd64705-1a8e-2e29-34f7-800dbde90ec1",
+        "57ae350d-80a4-4418-87e6-d326809d710a",
+        "b06392a3-e3c6-1ef0-a632-4199699f8711"
       ],
       "client": {
-        "clientHealth": 137.35,
+        "clientHealth": 50.64973,
         "clientMaxHealth": 137.35,
         "hurtTime": 0,
         "maxHurtTime": 0,
-        "stateHealth": 137.35000610351562,
+        "stateHealth": 50.64973068237305,
         "stateMaxHealth": 137.35000610351562,
-        "clientTick": 7760,
+        "clientTick": 189440,
         "trackedPlayers": [
           "QAPlayer",
           "QAPlayerTwo"
         ],
-        "damagePackets": 2,
-        "hurtCameraFrames": 22,
+        "damagePackets": 9,
+        "hurtCameraFrames": 82,
         "serverMaxHealth": 137.35,
-        "serverHealth": 137.35,
-        "serverTick": 7655,
+        "serverHealth": 50.64973,
+        "serverTick": 1714,
         "scenario": "snapshot"
       },
       "same_continuous_server": true,
@@ -66,33 +66,33 @@
       "max_health_restored": true
     },
     {
-      "server_pid": 49705,
+      "server_pid": 53556,
       "class": "DRAGONBORN",
-      "health": 137.35000610351562,
+      "health": 50.74972915649414,
       "max_health": 137.35000610351562,
       "armor_uuids": [
-        "61bfba98-e997-a450-029b-d28e11babafb",
-        "de57bbc1-b4e0-86c0-3896-4deed6f11e55",
-        "f1455894-fcdc-bd4d-b67c-975e4290fbd7",
-        "66e7b583-d5de-cb77-4ca6-933aa3a6cd68"
+        "421a2193-0aa4-6fcf-6657-ae45c28f30ed",
+        "4bd64705-1a8e-2e29-34f7-800dbde90ec1",
+        "57ae350d-80a4-4418-87e6-d326809d710a",
+        "b06392a3-e3c6-1ef0-a632-4199699f8711"
       ],
       "client": {
-        "clientHealth": 137.35,
+        "clientHealth": 50.74973,
         "clientMaxHealth": 137.35,
         "hurtTime": 0,
         "maxHurtTime": 0,
-        "stateHealth": 137.35000610351562,
+        "stateHealth": 50.74972915649414,
         "stateMaxHealth": 137.35000610351562,
-        "clientTick": 7860,
+        "clientTick": 189520,
         "trackedPlayers": [
           "QAPlayer",
           "QAPlayerTwo"
         ],
-        "damagePackets": 2,
-        "hurtCameraFrames": 22,
+        "damagePackets": 9,
+        "hurtCameraFrames": 82,
         "serverMaxHealth": 137.35,
-        "serverHealth": 137.35,
-        "serverTick": 7859,
+        "serverHealth": 50.74973,
+        "serverTick": 1832,
         "scenario": "snapshot"
       },
       "same_continuous_server": true,
@@ -100,33 +100,33 @@
       "max_health_restored": true
     },
     {
-      "server_pid": 49705,
+      "server_pid": 53556,
       "class": "DRAGONBORN",
-      "health": 137.35000610351562,
+      "health": 50.849727630615234,
       "max_health": 137.35000610351562,
       "armor_uuids": [
-        "61bfba98-e997-a450-029b-d28e11babafb",
-        "de57bbc1-b4e0-86c0-3896-4deed6f11e55",
-        "f1455894-fcdc-bd4d-b67c-975e4290fbd7",
-        "66e7b583-d5de-cb77-4ca6-933aa3a6cd68"
+        "421a2193-0aa4-6fcf-6657-ae45c28f30ed",
+        "4bd64705-1a8e-2e29-34f7-800dbde90ec1",
+        "57ae350d-80a4-4418-87e6-d326809d710a",
+        "b06392a3-e3c6-1ef0-a632-4199699f8711"
       ],
       "client": {
-        "clientHealth": 137.35,
+        "clientHealth": 50.849728,
         "clientMaxHealth": 137.35,
         "hurtTime": 0,
         "maxHurtTime": 0,
-        "stateHealth": 137.35000610351562,
+        "stateHealth": 50.849727630615234,
         "stateMaxHealth": 137.35000610351562,
-        "clientTick": 7870,
+        "clientTick": 189610,
         "trackedPlayers": [
           "QAPlayer",
           "QAPlayerTwo"
         ],
-        "damagePackets": 2,
-        "hurtCameraFrames": 22,
+        "damagePackets": 9,
+        "hurtCameraFrames": 82,
         "serverMaxHealth": 137.35,
-        "serverHealth": 137.35,
-        "serverTick": 7870,
+        "serverHealth": 50.849728,
+        "serverTick": 1969,
         "scenario": "snapshot"
       },
       "same_continuous_server": true,
@@ -135,15 +135,15 @@
     }
   ],
   "respawn": {
-    "server_pid": 49705,
+    "server_pid": 53556,
     "class": "DRAGONBORN",
     "health": 137.35000610351562,
     "max_health": 137.35000610351562,
     "armor_uuids": [
-      "61bfba98-e997-a450-029b-d28e11babafb",
-      "de57bbc1-b4e0-86c0-3896-4deed6f11e55",
-      "f1455894-fcdc-bd4d-b67c-975e4290fbd7",
-      "66e7b583-d5de-cb77-4ca6-933aa3a6cd68"
+      "421a2193-0aa4-6fcf-6657-ae45c28f30ed",
+      "4bd64705-1a8e-2e29-34f7-800dbde90ec1",
+      "57ae350d-80a4-4418-87e6-d326809d710a",
+      "b06392a3-e3c6-1ef0-a632-4199699f8711"
     ],
     "client": {
       "clientHealth": 137.35,
@@ -152,15 +152,15 @@
       "maxHurtTime": 0,
       "stateHealth": 137.35000610351562,
       "stateMaxHealth": 137.35000610351562,
-      "clientTick": 7990,
+      "clientTick": 189650,
       "trackedPlayers": [
         "QAPlayer"
       ],
-      "damagePackets": 3,
-      "hurtCameraFrames": 22,
+      "damagePackets": 10,
+      "hurtCameraFrames": 84,
       "serverMaxHealth": 137.35,
       "serverHealth": 137.35,
-      "serverTick": 8103,
+      "serverTick": 2010,
       "scenario": "snapshot"
     },
     "same_original_armor": true,
@@ -170,32 +170,32 @@
   "healing": {
     "direct": {
       "samples": 10,
-      "health_before": 121.55,
-      "health_after": 130.05003,
+      "health_before": 121.450005,
+      "health_after": 129.95003,
       "hurt_camera_frames_added": 0,
       "damage_packets_added": 0,
       "any_hurt_timer": false,
-      "server_pid": 49705,
+      "server_pid": 53556,
       "passed": true
     },
     "skill": {
-      "samples": 10,
-      "health_before": 121.55,
+      "samples": 11,
+      "health_before": 121.450005,
       "health_after": 130.05002,
       "hurt_camera_frames_added": 0,
       "damage_packets_added": 0,
       "any_hurt_timer": false,
-      "server_pid": 49705,
+      "server_pid": 53556,
       "passed": true
     },
     "potion": {
-      "samples": 11,
+      "samples": 10,
       "health_before": 121.55,
       "health_after": 130.05003,
       "hurt_camera_frames_added": 0,
       "damage_packets_added": 0,
       "any_hurt_timer": false,
-      "server_pid": 49705,
+      "server_pid": 53556,
       "passed": true
     },
     "group": {
@@ -205,7 +205,7 @@
       "hurt_camera_frames_added": 0,
       "damage_packets_added": 0,
       "any_hurt_timer": false,
-      "server_pid": 49705,
+      "server_pid": 53556,
       "passed": true
     },
     "regeneration": {
@@ -215,17 +215,17 @@
       "hurt_camera_frames_added": 0,
       "damage_packets_added": 0,
       "any_hurt_timer": false,
-      "server_pid": 49705,
+      "server_pid": 53556,
       "passed": true
     },
     "damage": {
       "samples": 14,
       "health_before": 124.34999,
-      "health_after": 123.20598,
-      "hurt_camera_frames_added": 4,
+      "health_after": 123.10598,
+      "hurt_camera_frames_added": 20,
       "damage_packets_added": 1,
       "any_hurt_timer": true,
-      "server_pid": 49705,
+      "server_pid": 53556,
       "passed": true
     }
   }

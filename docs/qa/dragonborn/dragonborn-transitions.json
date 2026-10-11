@@ -1,0 +1,95 @@
+{
+  "temporaryHealthBuff": {
+    "serverAndClient157_35": true,
+    "expiredTo137_35": true
+  },
+  "nether": {
+    "class": "DRAGONBORN",
+    "level": 30,
+    "health": 46.74979019165039,
+    "maxHealth": 137.35000610351562,
+    "stats": {
+      "ARMOR": 30.0,
+      "ARMOR_TOUGHNESS": 20.0,
+      "ATTACK_DAMAGE": 7.74,
+      "MAX_HEALTH": 137.35000000000002,
+      "MOVEMENT_SPEED": 0.10000000149011612,
+      "SKILL_DAMAGE": 54.480000000000004
+    },
+    "clientMaxHealth": 137.35,
+    "serverPid": 53556
+  },
+  "overworld": {
+    "class": "DRAGONBORN",
+    "level": 30,
+    "health": 46.94978713989258,
+    "maxHealth": 137.35000610351562,
+    "stats": {
+      "ARMOR": 30.0,
+      "ARMOR_TOUGHNESS": 20.0,
+      "ATTACK_DAMAGE": 7.74,
+      "MAX_HEALTH": 137.35000000000002,
+      "MOVEMENT_SPEED": 0.10000000149011612,
+      "SKILL_DAMAGE": 54.480000000000004
+    },
+    "clientMaxHealth": 137.35,
+    "serverPid": 53556
+  },
+  "beforeClassSwitch": {
+    "class": "DRAGONBORN",
+    "level": 30,
+    "health": 47.04978561401367,
+    "maxHealth": 137.35000610351562,
+    "stats": {
+      "ARMOR": 30.0,
+      "ARMOR_TOUGHNESS": 20.0,
+      "ATTACK_DAMAGE": 7.74,
+      "MAX_HEALTH": 137.35000000000002,
+      "MOVEMENT_SPEED": 0.10000000149011612,
+      "SKILL_DAMAGE": 54.480000000000004
+    },
+    "clientMaxHealth": 137.35,
+    "serverPid": 53556
+  },
+  "differentClassWithOriginalArmor": {
+    "class": "DEATH_KNIGHT",
+    "level": 100,
+    "health": 43.278499603271484,
+    "maxHealth": 43.278499603271484,
+    "stats": {
+      "ARMOR": 7.47,
+      "ARMOR_TOUGHNESS": 3.485,
+      "ATTACK_DAMAGE": 6.875,
+      "MAX_HEALTH": 43.2785,
+      "MOVEMENT_SPEED": 0.10000000149011612,
+      "SKILL_DAMAGE": 8.254999999999999
+    },
+    "clientMaxHealth": 43.2785,
+    "serverPid": 53556
+  },
+  "dragonbornRestored": {
+    "class": "DRAGONBORN",
+    "level": 30,
+    "health": 47.149784088134766,
+    "maxHealth": 137.35000610351562,
+    "stats": {
+      "ARMOR": 30.0,
+      "ARMOR_TOUGHNESS": 20.0,
+      "ATTACK_DAMAGE": 7.74,
+      "MAX_HEALTH": 137.35000000000002,
+      "MOVEMENT_SPEED": 0.10000000149011612,
+      "SKILL_DAMAGE": 54.480000000000004
+    },
+    "clientMaxHealth": 137.35,
+    "serverPid": 53556
+  },
+  "checks": {
+    "netherActual137_35": true,
+    "overworldActual137_35": true,
+    "classRestrictionRemovesArmorHealthBonus": true,
+    "returnToDragonbornRestoresOriginalSet": true,
+    "classSwitchPreservesSavedCurrentHealth": true,
+    "serverAndClient157_35": true,
+    "expiredTo137_35": true
+  }
+}

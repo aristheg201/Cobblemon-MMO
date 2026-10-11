@@ -18,7 +18,7 @@ The original old four-piece set and the newer five-piece collection (hat **or** 
 
 The Items runtime preserves source class restrictions, dye/model metadata, unbreakability and disabled drop/death-drop/enchant/crafting/smelting/smithing/repair policies. The 2-piece and 4-piece thresholds **add together**: the old set contributes 55 flat health and the new set 65. Stable modifier IDs make repeated equipment refresh idempotent. Source stat precision is retained, including 0.024 knockback resistance. Imported equipment suppresses vanilla leather attribute bonuses so they cannot duplicate the authoritative RPG stats. Tooltips now use native styled text and English/Vietnamese stat labels.
 
-Retained death inventory is transferred and equipped before MMO's respawn attribute attachment. Pending retained inventory is also restored during early login. This fixes the intermediate low-current-health respawn caused by applying set bonuses only on a later tick.
+Retained death inventory is transferred and equipped before MMO's respawn attribute attachment. Pending retained inventory is also restored during early login. This fixes the intermediate low-current-health respawn caused by applying set bonuses only on a later tick. The same equipment restoration now precedes current-health clamping on class changes and live definition reloads. A late transition test exposed that saved Dragonborn health was clamped to its class-only base during a return from DK; the new callback restores the complete maximum before restoring saved current health.
 
 ## Verification
 
@@ -31,9 +31,10 @@ Java 21, Minecraft 1.21.1, Fabric Loader 0.18.4 and actual Cobblemon 1.8.0 were 
 | Costs/cooldowns | Six active source casts retain zero mana/stamina costs, establish real cooldowns and reject immediate repeat casts. |
 | Ethereal | Real damage is cancelled, invisibility is present, both expire, and damage becomes effective again. A second real client records removal/restoration of the actor and armor. |
 | Original base armor | Three combinations apply exact cumulative bonuses; native material modifiers are absent; drop/enchant restrictions and unbreakability pass. Actual models are captured in inventory and class-preview screenshots. |
-| Continuous-server reconnect | Three actual logout/rejoin cycles on the **same PID 49705** retain actual server/client maximum health **137.35** and the same four item instance UUIDs. No server restart is used. |
+| Continuous-server reconnect | Three actual logout/rejoin cycles on the **same PID 53556** retain actual server/client maximum health **137.35** and the same four item instance UUIDs. No server restart is used. |
 | Death/respawn, keepInventory=false | Four original item UUIDs survive exactly once; actual maximum and current health are both **137.35** before normal post-respawn gameplay. |
-| Healing regression | Direct, native skill, potion, group and regeneration paths all increase actual health with **zero** added damage packets and hurt-camera frames. Actual damage adds one damage packet and four hurt-camera frames. |
+| Dimension / class / temporary buff | Actual server/client maximum remains 137.35 through Nether and Overworld travel. A temporary modifier raises both to 157.35 and expires to 137.35. Switching to DK removes the Dragonborn armor bonus; returning restores it and the saved current health (47.05 → 47.15 with normal regeneration). Seven transition checks pass. |
+| Healing regression | Direct, native skill, potion, group and regeneration paths all increase actual health with **zero** added damage packets and hurt-camera frames. Actual damage adds one damage packet and legitimate hurt-camera frames. |
 | Dedicated presentation client | A real second client connects with **FantasyHubClient only**, no Core or raw SVFrame framework JARs; its Vietnamese GUI, source armor preview and HUD render. |
 | Existing framework regression | Death Sentence 11, DK/AMK adapters 21 and Cobblemon entity/battle integration 17 checks pass again on the updated server. Earlier catalog/shop evidence remains separately identified. |
 | Unit tests | Lib **21**, Items **24**, Mobs **17**: zero failures. MMO native core smoke and Cobblemon Integration local build pass. |
