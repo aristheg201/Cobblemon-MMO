@@ -56,6 +56,11 @@ public class DamageManager extends Module {
      * for every attack after attack reconstruction and combat modifiers.
      */
     public boolean registerAttack(AttackMetadata attack, boolean knockback, boolean ignoreImmunity) {
+        return registerAttack(attack,knockback,ignoreImmunity,null);
+    }
+
+    /** Preserves the registered RPG attack while honoring a native configured damage cause. */
+    public boolean registerAttack(AttackMetadata attack, boolean knockback, boolean ignoreImmunity, DamageSource configuredSource) {
         Objects.requireNonNull(attack, "Attack cannot be null");
         if (attack.getTarget() == null) throw new IllegalArgumentException("Target cannot be null");
         LivingEntity attacker = attack.hasAttacker() ? attack.getAttacker().getEntity() : null;
@@ -63,7 +68,7 @@ public class DamageManager extends Module {
         double before=attack.getTarget().getHealth()+attack.getTarget().getAbsorptionAmount();
         markAsMetadata(attack);
         try {
-            boolean accepted=applyDamage(attack.getDamage().getDamage(), attack.getTarget(), attacker, knockback, ignoreImmunity);
+            boolean accepted=applyDamage(attack.getDamage().getDamage(), attack.getTarget(), attacker, knockback, ignoreImmunity, configuredSource);
             attack.recordApplication(accepted,before-attack.getTarget().getHealth()-attack.getTarget().getAbsorptionAmount());
             return accepted;
         } finally {
@@ -72,7 +77,7 @@ public class DamageManager extends Module {
     }
 
     private boolean applyDamage(double amount, LivingEntity target, LivingEntity attacker,
-                                boolean knockback, boolean ignoreImmunity) {
+                                boolean knockback, boolean ignoreImmunity, DamageSource configuredSource) {
         if (!Double.isFinite(amount) || amount <= 0d) throw new IllegalArgumentException("Damage must be strictly positive");
         Objects.requireNonNull(target, "Target cannot be null");
 
@@ -83,7 +88,7 @@ public class DamageManager extends Module {
                 if (previous != null) resistance.removeModifier(NO_KNOCKBACK_ID);
                 resistance.addTemporaryModifier(NO_KNOCKBACK);
                 try {
-                    return applyDamage(amount, target, attacker, true, ignoreImmunity);
+                    return applyDamage(amount, target, attacker, true, ignoreImmunity, configuredSource);
                 } finally {
                     resistance.removeModifier(NO_KNOCKBACK_ID);
                     if (previous != null) resistance.addTemporaryModifier(previous);
@@ -95,14 +100,15 @@ public class DamageManager extends Module {
             int previous = target.timeUntilRegen;
             try {
                 target.timeUntilRegen = 0;
-                return applyDamage(amount, target, attacker, true, false);
+                return applyDamage(amount, target, attacker, true, false, configuredSource);
             } finally {
                 target.timeUntilRegen = previous;
             }
         }
 
         DamageSource source;
-        if (attacker instanceof ServerPlayerEntity player) source = target.getDamageSources().playerAttack(player);
+        if (configuredSource != null) source = configuredSource;
+        else if (attacker instanceof ServerPlayerEntity player) source = target.getDamageSources().playerAttack(player);
         else if (attacker != null) source = target.getDamageSources().mobAttack(attacker);
         else source = target.getDamageSources().generic();
         return target.damage(source, (float) Math.min(Float.MAX_VALUE, amount));

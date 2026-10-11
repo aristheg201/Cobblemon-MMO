@@ -208,6 +208,30 @@ public final class PlayerDataManager {
         submit("userdata save for " + id, target -> target.saveOne(id, captured));
     }
 
+    /** Completes only after the canonical snapshot was saved by the configured backend. */
+    public java.util.concurrent.CompletableFuture<Void> savePlayerDurably(PlayerData value) {
+        var result = new java.util.concurrent.CompletableFuture<Void>();
+        ExecutorService currentWriter = writer;
+        PlayerDataStore currentStore = store;
+        if (value == null || currentWriter == null || currentStore == null || closing) {
+            result.completeExceptionally(new IllegalStateException("Player data writer is unavailable"));
+            return result;
+        }
+        UUID id = value.getUniqueId();
+        PlayerDataSnapshot captured = PlayerDataSnapshot.capture(value);
+        try {
+            currentWriter.execute(() -> {
+                try { currentStore.saveOne(id, captured); result.complete(null); }
+                catch (Throwable failure) {
+                    asyncFailure.compareAndSet(null, failure);
+                    LOG.log(Level.SEVERE, "Durable userdata save failed for " + id, failure);
+                    result.completeExceptionally(failure);
+                }
+            });
+        } catch (RejectedExecutionException failure) { result.completeExceptionally(failure); }
+        return result;
+    }
+
     private void submit(String description, StoreWrite write) {
         ExecutorService currentWriter = writer;
         PlayerDataStore currentStore = store;
