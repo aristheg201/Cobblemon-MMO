@@ -108,6 +108,7 @@ public final class PlayerData {
     }
 
     public void reloadDefinitions() {
+        double requestedHealth = isOnline() ? player.getHealth() : health;
         if (SVFrameMMO.classes().get(playerClass) == null) playerClass = SVFrameMMO.classes().getDefaultClass().getId();
         skillLevels.entrySet().removeIf(entry -> getProfess().getSkill(entry.getKey()) == null);
         skillBindings.entrySet().removeIf(entry -> getProfess().getSkillSlot(entry.getKey()) == null || getProfess().getSkill(entry.getValue()) == null);
@@ -117,8 +118,12 @@ public final class PlayerData {
         refreshClassStats();
         applyTemporaryProgression();
         skillTrees.applyTemporary();
+        if (isOnline()) vn.svframe.svframelib.fabric.runtime.PlayerStatInitialization.restoreEquipment(player);
         clampAll();
-        if (isOnline()) SVFrameMMO.skillRuntime().attach(this);
+        if (isOnline()) {
+            setResource(PlayerResource.HEALTH, requestedHealth, ResourceUpdateReason.CHOOSE_CLASS);
+            SVFrameMMO.skillRuntime().attach(this);
+        }
     }
 
     public long getClassSwitchAvailableAt() { return classSwitchAvailableAt; }
@@ -174,6 +179,7 @@ public final class PlayerData {
         skillTrees.resolveClassTrees();
         applyTemporaryProgression();
         skillTrees.applyTemporary();
+        if (isOnline()) vn.svframe.svframelib.fabric.runtime.PlayerStatInitialization.restoreEquipment(player);
         clampAll();
         if (isOnline()) {
             setResource(PlayerResource.HEALTH,
