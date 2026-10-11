@@ -49,6 +49,9 @@ public final class SVFrameItemsRegistry {
         Map<String,RecipeDefinition> nextRecipes = parse(root.resolve("recipes.yml"), DefinitionParser::recipe); nextRecipes.putAll(externalRecipes);
         Map<String,LootTableDefinition> nextLoot = parse(root.resolve("loot.yml"), DefinitionParser::loot); nextLoot.putAll(externalLootTables);
         Map<String,ItemDefinition> nextItems = parseDirectory(root.resolve("items"), DefinitionParser::item); nextItems.putAll(externalItems);
+        nextRarities.putAll(parse(root.resolve("source/rarities.yml"), DefinitionParser::rarity));
+        nextSets.putAll(parse(root.resolve("source/sets.yml"), DefinitionParser::set));
+        nextUpgrades.putAll(parse(root.resolve("source/upgrades.yml"), DefinitionParser::upgrade));
         validate(nextTypes, nextRarities, nextItems, nextSets, nextUpgrades, nextRecipes, nextLoot);
         types = Map.copyOf(nextTypes); rarities = Map.copyOf(nextRarities); items = Map.copyOf(nextItems); sets = Map.copyOf(nextSets); upgrades = Map.copyOf(nextUpgrades); recipes = Map.copyOf(nextRecipes); lootTables = Map.copyOf(nextLoot); revision++;
     }

@@ -13,6 +13,24 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EquipmentModifierLifecycleTest {
+    @Test void cumulativeSetThresholdsShareStatsWithoutOverwritingEarlierBonus(){
+        var registry=new SVFrameItemsRegistry();
+        registry.registerExternal(new ItemType("armor",NativeStatEngine.ModifierSource.ARMOR,Set.of(NativeStatEngine.EquipmentSlot.HEAD,NativeStatEngine.EquipmentSlot.CHEST,NativeStatEngine.EquipmentSlot.LEGS,NativeStatEngine.EquipmentSlot.FEET),1));
+        registry.registerExternal(new ItemRarity("common","Common",1,0));
+        var slots=List.of(NativeStatEngine.EquipmentSlot.HEAD,NativeStatEngine.EquipmentSlot.CHEST,NativeStatEngine.EquipmentSlot.LEGS,NativeStatEngine.EquipmentSlot.FEET);
+        var equipped=new ArrayList<EquipmentModifierService.Equipped>();
+        for(int i=0;i<4;i++){
+            String id="piece"+i;
+            registry.registerExternal(new ItemDefinition(id,"armor","minecraft:leather_helmet",id,1,1,1,1,Map.of("common",1),List.of(),List.of(),"dragonborn",null,List.of(),null));
+            equipped.add(new EquipmentModifierService.Equipped(item(id,"armor",stat("MAX_HEALTH",1)),slots.get(i)));
+        }
+        var bonuses=new TreeMap<Integer,List<ItemStat>>();bonuses.put(2,List.of(stat("MAX_HEALTH",20)));bonuses.put(4,List.of(stat("MAX_HEALTH",45)));
+        registry.registerExternal(new ItemSetDefinition("dragonborn","Dragonborn",Set.of("piece0","piece1","piece2","piece3"),bonuses));registry.validateSnapshot();
+        var upgrades=new UpgradeService(registry,new ItemGenerator(registry,new ItemFormatter()));var engine=new NativeStatEngine();var service=new EquipmentModifierService(registry,upgrades,engine);UUID player=UUID.randomUUID();
+        service.replace(player,equipped);assertEquals(69,engine.finalValue(player,"MAX_HEALTH",NativeStatEngine.EquipmentSlot.MAIN_HAND),1e-9);
+        service.replace(player,equipped);assertEquals(69,engine.finalValue(player,"MAX_HEALTH",NativeStatEngine.EquipmentSlot.MAIN_HAND),1e-9);
+        service.replace(player,equipped.subList(0,2));assertEquals(22,engine.finalValue(player,"MAX_HEALTH",NativeStatEngine.EquipmentSlot.MAIN_HAND),1e-9);
+    }
     @Test void replacementIsAtomicDeduplicatedAndRemovesSetBonuses(){
         SVFrameItemsRegistry registry=new SVFrameItemsRegistry();
         registry.registerExternal(new ItemType("sword",NativeStatEngine.ModifierSource.MELEE_WEAPON,Set.of(NativeStatEngine.EquipmentSlot.MAIN_HAND),1));

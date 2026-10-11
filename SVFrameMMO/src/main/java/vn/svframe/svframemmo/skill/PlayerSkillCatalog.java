@@ -82,7 +82,7 @@ public final class PlayerSkillCatalog {
         });
         SVFrameMMO.externalProgression().bindings(data.getUniqueId()).entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
             ClassSkill skill = SVFrameMMO.externalSkills().get(entry.getValue());
-            if (skill != null && SVFrameMMO.externalProgression().isLearned(data.getUniqueId(), skill.getSkill().getId()))
+            if (skill != null && SVFrameMMO.externalProgression().isLearned(data.getUniqueId(), skill.getSkill().getId())&&allowedSlots(data,new Entry(skill,Origin.EXTERNAL,true,1)).contains(entry.getKey()))
                 result.put(entry.getKey(), new Entry(skill, Origin.EXTERNAL, true,
                         Math.max(1, SVFrameMMO.externalProgression().level(data.getUniqueId(), skill.getSkill().getId()))));
         });
@@ -100,7 +100,10 @@ public final class PlayerSkillCatalog {
     /** Server-owned slot rules exposed to presentation and binding validation. */
     public static List<Integer> allowedSlots(PlayerData data,Entry entry) {
         if (!entry.bindable()) return List.of();
-        if (entry.origin()==Origin.EXTERNAL) return java.util.stream.IntStream.rangeClosed(1,ExternalSkillProgression.LOADOUT_SIZE).boxed().toList();
+        if (entry.origin()==Origin.EXTERNAL) return java.util.stream.IntStream.rangeClosed(1,ExternalSkillProgression.LOADOUT_SIZE).filter(number->{
+            var slot=data.getProfess().getSkillSlot(number);return slot==null||data.hasUnlocked("slot:"+number)&&slot.canManuallyBind()&&slot.hardset()==null
+                    &&vn.svframe.svframemmo.trigger.NativeTriggerRegistry.evaluateSkillFormula(entry.skill().getSkill(),slot.formula());
+        }).boxed().toList();
         return data.getProfess().getSlots().stream().filter(slot -> data.hasUnlocked("slot:"+slot.slot())
                 &&(slot.canManuallyBind()||entry.id().equals(slot.hardset()))
                 &&(slot.hardset()==null||entry.id().equals(slot.hardset()))
@@ -112,6 +115,7 @@ public final class PlayerSkillCatalog {
         Entry entry = owned(data, skillId);
         if (entry == null) throw new IllegalStateException("Skill is locked or not learned: " + skillId);
         if (!entry.bindable()) throw new IllegalArgumentException("Permanent skill cannot be bound: " + entry.id());
+        if(!allowedSlots(data,entry).contains(slot))throw new IllegalArgumentException("Skill is not allowed in slot "+slot);
         if (entry.origin() == Origin.EXTERNAL) {
             SVFrameMMO.externalProgression().bind(data.getUniqueId(), slot, entry.id());
             data.unbindSkill(slot);

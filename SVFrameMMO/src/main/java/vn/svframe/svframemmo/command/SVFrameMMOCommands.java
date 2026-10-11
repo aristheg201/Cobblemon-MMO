@@ -54,6 +54,7 @@ public final class SVFrameMMOCommands {
                                 .then(argument("amount", IntegerArgumentType.integer(1))
                                         .executes(ctx -> spendAttribute(ctx.getSource(), StringArgumentType.getString(ctx, "attribute"), IntegerArgumentType.getInteger(ctx, "amount")))))))
                 .then(adminTree()));
+        dispatcher.register(literal("mmocore").redirect(dispatcher.getRoot().getChild("svframemmo")));
     }
 
     private static com.mojang.brigadier.builder.LiteralArgumentBuilder<ServerCommandSource> skillTree() {
@@ -107,6 +108,10 @@ public final class SVFrameMMOCommands {
 
     private static com.mojang.brigadier.builder.LiteralArgumentBuilder<ServerCommandSource> adminTree() {
         return literal("admin").requires(source -> source.hasPermissionLevel(2))
+                .then(legacyPoints("skill-points","skill"))
+                .then(legacyPoints("attribute-points","attribute"))
+                .then(legacyPoints("class-points","class"))
+                .then(literal("skill-tree-points").then(literal("give").then(argument("player",EntityArgumentType.player()).then(argument("amount",IntegerArgumentType.integer(0)).then(argument("tree",StringArgumentType.word()).executes(ctx->treePoints(ctx.getSource(),EntityArgumentType.getPlayer(ctx,"player"),StringArgumentType.getString(ctx,"tree"),IntegerArgumentType.getInteger(ctx,"amount"))))))))
                 .then(literal("reload").executes(ctx -> reload(ctx.getSource())))
                 .then(literal("class").then(argument("player", EntityArgumentType.player())
                         .then(argument("class", StringArgumentType.word())
@@ -137,6 +142,10 @@ public final class SVFrameMMOCommands {
                                         SVFrameMMO.skillTrees().getAll().stream().map(tree -> tree.getId()).toList()))
                                 .then(argument("amount", IntegerArgumentType.integer())
                                         .executes(ctx -> treePoints(ctx.getSource(), EntityArgumentType.getPlayer(ctx, "player"), StringArgumentType.getString(ctx, "tree"), IntegerArgumentType.getInteger(ctx, "amount")))))));
+    }
+
+    private static com.mojang.brigadier.builder.LiteralArgumentBuilder<ServerCommandSource> legacyPoints(String name,String type) {
+        return literal(name).then(literal("give").then(argument("player",EntityArgumentType.player()).then(argument("amount",IntegerArgumentType.integer(0)).executes(ctx->points(ctx.getSource(),EntityArgumentType.getPlayer(ctx,"player"),type,IntegerArgumentType.getInteger(ctx,"amount"))))));
     }
 
     private static CompletableFuture<Suggestions> suggestOwnSkills(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder,

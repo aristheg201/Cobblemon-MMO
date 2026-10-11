@@ -31,9 +31,9 @@ public final class EquipmentRuntime {
         Map<String,Set<String>> pieces=new LinkedHashMap<>();
         for(EquipmentProvider.EquippedItem equippedItem:collect(player)){
             Optional<ItemInstance> decoded=ItemCodec.read(equippedItem.stack());if(decoded.isEmpty())continue;
-            ItemInstance instance=decoded.get();ItemDefinition definition=registry.item(instance.definitionId());if(definition==null)continue;
+            ItemInstance instance=decoded.get();ItemDefinition definition=registry.item(instance.definitionId());if(definition==null||!SourceItemRules.eligible(player,definition))continue;
             ItemType type=registry.type(definition.typeId());if(type==null||!type.canEquip(equippedItem.slot()))continue;
-            List<ItemStat> effective=instance.effectiveStats(upgrades.statMultiplier(instance),upgrades::statMultiplier);
+            List<ItemStat> effective=SourceItemRules.upgrades(instance,instance.effectiveStats(upgrades.statMultiplier(instance),upgrades::statMultiplier));
             EquippedView view=new EquippedView(equippedItem.key(),equippedItem.slot(),instance,definition,type,effective);
             if(unique.putIfAbsent(instance.instanceId(),view)!=null)continue;
             if(definition.setId()!=null){ItemSetDefinition set=registry.set(definition.setId());if(set!=null&&set.pieces().contains(definition.id()))pieces.computeIfAbsent(set.id(),ignored->new LinkedHashSet<>()).add(definition.id());}
@@ -50,9 +50,9 @@ public final class EquipmentRuntime {
     /** Force re-applies the stat snapshot while still only firing ability transitions for real location changes. */
     public void refresh(ServerPlayerEntity player,boolean force){
         Objects.requireNonNull(player,"player");
-        List<EquipmentProvider.EquippedItem> collected=collect(player);String fingerprint=fingerprint(collected,registry.revision());PlayerState previous=states.get(player.getUuid());if(!force&&previous!=null&&previous.fingerprint.equals(fingerprint))return;
+        List<EquipmentProvider.EquippedItem> collected=collect(player);String fingerprint=fingerprint(collected,registry.revision())+"profile:"+SourceItemRules.profileKey(player);PlayerState previous=states.get(player.getUuid());if(!force&&previous!=null&&previous.fingerprint.equals(fingerprint))return;
         LinkedHashMap<UUID,ItemStackRef> currentItems=new LinkedHashMap<>();List<EquipmentModifierService.Equipped> equipped=new ArrayList<>();
-        for(EquipmentProvider.EquippedItem equippedItem:collected){Optional<ItemInstance> decoded=ItemCodec.read(equippedItem.stack());if(decoded.isEmpty())continue;ItemInstance instance=decoded.get();ItemDefinition definition=registry.item(instance.definitionId());if(definition==null)continue;ItemType type=registry.type(definition.typeId());if(type==null||!type.canEquip(equippedItem.slot()))continue;ItemStackRef ref=new ItemStackRef(equippedItem.stack().copy(),equippedItem.key(),equippedItem.slot());if(currentItems.putIfAbsent(instance.instanceId(),ref)!=null)continue;equipped.add(new EquipmentModifierService.Equipped(instance,equippedItem.slot()));}
+        for(EquipmentProvider.EquippedItem equippedItem:collected){Optional<ItemInstance> decoded=ItemCodec.read(equippedItem.stack());if(decoded.isEmpty())continue;ItemInstance instance=decoded.get();ItemDefinition definition=registry.item(instance.definitionId());if(definition==null||!SourceItemRules.eligible(player,definition))continue;ItemType type=registry.type(definition.typeId());if(type==null||!type.canEquip(equippedItem.slot()))continue;ItemStackRef ref=new ItemStackRef(equippedItem.stack().copy(),equippedItem.key(),equippedItem.slot());if(currentItems.putIfAbsent(instance.instanceId(),ref)!=null)continue;equipped.add(new EquipmentModifierService.Equipped(instance,equippedItem.slot()));}
         Map<UUID,ItemStackRef> previousItems=previous==null?Map.of():previous.items;
         Map<UUID,EquipmentTransitionPlanner.Location> previousLocations=locations(previousItems),currentLocations=locations(currentItems);
         EquipmentTransitionPlanner.Transitions transitions=EquipmentTransitionPlanner.plan(previousLocations,currentLocations);

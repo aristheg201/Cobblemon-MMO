@@ -31,16 +31,19 @@ public final class EquipmentModifierService {
                 ItemInstance instance=value.instance();ItemDefinition definition=registry.item(instance.definitionId());if(definition==null)continue;
                 ItemType type=registry.type(definition.typeId());if(type==null||!type.canEquip(value.slot()))continue;
                 if(definition.setId()!=null){ItemSetDefinition set=registry.set(definition.setId());if(set!=null&&set.pieces().contains(definition.id()))setPieces.computeIfAbsent(set.id(),ignored->new LinkedHashSet<>()).add(definition.id());}
-                for(ItemStat stat:instance.effectiveStats(upgrades.statMultiplier(instance),upgrades::statMultiplier)){
+                for(ItemStat stat:SourceItemRules.upgrades(instance,instance.effectiveStats(upgrades.statMultiplier(instance),upgrades::statMultiplier))){
                     UUID modifier=engine.register(playerId,stat.stat(),"svframeitems:"+instance.instanceId(),stat.value(),stat.type(),value.slot(),type.modifierSource());
                     next.add(new ModifierRef(stat.stat(),modifier));
                 }
             }
             for(Map.Entry<String,Set<String>> entry:setPieces.entrySet()){
                 ItemSetDefinition set=registry.set(entry.getKey());if(set==null)continue;
-                for(ItemStat stat:set.activeBonuses(entry.getValue().size())){
-                    UUID modifier=engine.register(playerId,stat.stat(),"svframeitems:set:"+set.id(),stat.value(),stat.type(),NativeStatEngine.EquipmentSlot.OTHER,NativeStatEngine.ModifierSource.OTHER);
-                    next.add(new ModifierRef(stat.stat(),modifier));
+                record SetStat(String name,NativeStatEngine.ModifierType type){}
+                Map<SetStat,Double> totals=new LinkedHashMap<>();
+                for(ItemStat stat:set.activeBonuses(entry.getValue().size()))totals.merge(new SetStat(stat.stat(),stat.type()),stat.value(),Double::sum);
+                for(var total:totals.entrySet()){
+                    var stat=total.getKey();UUID modifier=engine.register(playerId,stat.name(),"svframeitems:set:"+set.id()+":"+stat.type(),total.getValue(),stat.type(),NativeStatEngine.EquipmentSlot.OTHER,NativeStatEngine.ModifierSource.OTHER);
+                    next.add(new ModifierRef(stat.name(),modifier));
                 }
             }
         });

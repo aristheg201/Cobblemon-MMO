@@ -32,8 +32,17 @@ public final class SVFrameItems implements ModInitializer {
     private static volatile MinecraftServer server;
 
     @Override public void onInitialize(){
-        try{DefaultFiles.ensure();REGISTRY.reload(DefaultFiles.root());}catch(IOException|RuntimeException exception){throw new IllegalStateException("Could not initialize SVFrameItems definitions",exception);}
+        try{DefaultFiles.ensure();REGISTRY.reload(DefaultFiles.root());SourceItemRules.reload(DefaultFiles.root());}catch(IOException|RuntimeException exception){throw new IllegalStateException("Could not initialize SVFrameItems definitions",exception);}
         ABILITIES.initialize();
+        vn.svframe.svframelib.fabric.runtime.PlayerStatInitialization.registerEquipment(player -> {RetainedInventory.restore(player);EQUIPMENT.refresh(player,true);});
+        net.fabricmc.fabric.api.event.player.UseItemCallback.EVENT.register((player,world,hand)->{
+            var stack=player.getStackInHand(hand);
+            if(player instanceof net.minecraft.server.network.ServerPlayerEntity user&&!SourceItemRules.eligible(user,stack)){
+                user.sendMessage(net.minecraft.text.Text.translatable("svframeitems.restriction.class"),true);return net.minecraft.util.TypedActionResult.fail(stack);
+            }
+            return net.minecraft.util.TypedActionResult.pass(stack);
+        });
+        ServerTickEvents.END_SERVER_TICK.register(value->{for(var player:value.getPlayerManager().getPlayerList())RetainedInventory.restore(player);});
         ServerTickEvents.END_SERVER_TICK.register(value->EQUIPMENT.tick(value));
         ServerPlayConnectionEvents.DISCONNECT.register((handler,value)->EQUIPMENT.clear(handler.player));
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer,newPlayer,alive)->EQUIPMENT.refresh(newPlayer,true));
@@ -43,13 +52,13 @@ public final class SVFrameItems implements ModInitializer {
     }
 
     public static synchronized boolean reload(){
-        SVFrameItemsRegistry.Snapshot before=REGISTRY.snapshot(); MinecraftServer current=server;
+        var oldRules=SourceItemRules.snapshot();SVFrameItemsRegistry.Snapshot before=REGISTRY.snapshot(); MinecraftServer current=server;
         try{
-            REGISTRY.reload(DefaultFiles.root()); RuntimeDefinitionValidator.validate(REGISTRY,UPGRADES,LOOT);
+            REGISTRY.reload(DefaultFiles.root()); SourceItemRules.reload(DefaultFiles.root()); RuntimeDefinitionValidator.validate(REGISTRY,UPGRADES,LOOT);
             if(current!=null)for(var player:current.getPlayerManager().getPlayerList())EQUIPMENT.refresh(player,true);
             return true;
         }catch(Exception exception){
-            REGISTRY.restore(before);
+            REGISTRY.restore(before);SourceItemRules.restore(oldRules);
             if(current!=null)for(var player:current.getPlayerManager().getPlayerList())try{EQUIPMENT.refresh(player,true);}catch(RuntimeException rollback){exception.addSuppressed(rollback);}
             LOG.log(Level.SEVERE,"SVFrameItems reload failed; restored previous registry snapshot",exception);return false;
         }

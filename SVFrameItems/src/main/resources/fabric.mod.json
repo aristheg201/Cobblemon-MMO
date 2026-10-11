@@ -16,5 +16,8 @@
     "java": ">=21",
     "fabric-api": "*",
     "svframelib": ">=1.7.2-fabric"
-  }
+  },
+  "mixins": [
+    "svframeitems.mixins.json"
+  ]
 }

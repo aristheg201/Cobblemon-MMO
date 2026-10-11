@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "vn.svframe.svframeitems.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ItemRulesMixin",
+    "IngredientRulesMixin",
+    "InventoryRulesMixin",
+    "PlayerItemRetentionMixin",
+    "ServerItemRetentionMixin",
+    "ScreenItemRulesMixin",
+    "AnvilItemRulesMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

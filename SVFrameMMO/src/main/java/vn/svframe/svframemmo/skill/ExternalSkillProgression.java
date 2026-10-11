@@ -55,6 +55,8 @@ public final class ExternalSkillProgression {
     }
 
     /** Captures the immutable state on the server thread, then performs JSON/disk work off-thread. */
+    public boolean isStarted() { return file != null && writer != null && !closing; }
+
     public void save() {
         saveDurably().exceptionally(exception->{LOG.log(Level.SEVERE,"Could not asynchronously save SVFrameMMO external skill progression",exception);return null;});
     }
@@ -160,6 +162,8 @@ public final class ExternalSkillProgression {
         Profile profile = profile(playerId);
         if (!profile.learned.containsKey(id)) throw new IllegalStateException("External skill is not learned: " + id);
         if (skill.isPermanent() || skill.getTrigger().isPassive()) throw new IllegalArgumentException("Passive/permanent external skill cannot be bound: " + id);
+        var data=SVFrameMMO.playerData().get(playerId);
+        if(!PlayerSkillCatalog.allowedSlots(data,new PlayerSkillCatalog.Entry(skill,PlayerSkillCatalog.Origin.EXTERNAL,true,profile.learned.get(id))).contains(slot))throw new IllegalArgumentException("Class slot rejects external skill: "+slot);
         profile.bindings.put(slot, id);
         refreshOnline(playerId);
     }

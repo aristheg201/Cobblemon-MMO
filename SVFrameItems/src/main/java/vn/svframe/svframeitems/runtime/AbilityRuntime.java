@@ -30,7 +30,7 @@ public final class AbilityRuntime {
     public int trigger(ServerPlayerEntity player,ItemStack stack,ItemAbility.Trigger trigger,Entity target){return trigger(player,stack,trigger,target,ThreadLocalRandom.current());}
     public int trigger(ServerPlayerEntity player,ItemStack stack,ItemAbility.Trigger trigger,Entity target,RandomGenerator random){
         Objects.requireNonNull(player);Objects.requireNonNull(trigger);Objects.requireNonNull(random);
-        Optional<ItemInstance> read=ItemCodec.read(stack);if(read.isEmpty())return 0;ItemInstance instance=read.get();ItemDefinition definition=registry.item(instance.definitionId());if(definition==null)return 0;
+        Optional<ItemInstance> read=ItemCodec.read(stack);if(read.isEmpty())return 0;ItemInstance instance=read.get();ItemDefinition definition=registry.item(instance.definitionId());if(definition==null||!SourceItemRules.eligible(player,definition))return 0;
         int casts=0;
         for(ResolvedAbility ability:resolve(instance,definition,trigger,random))if(ItemSkillRuntime.cast(ability.skill(),player,target,ability.parameters()))casts++;
         return casts;

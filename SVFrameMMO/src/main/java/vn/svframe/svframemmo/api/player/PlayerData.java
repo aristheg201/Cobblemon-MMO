@@ -44,6 +44,7 @@ public final class PlayerData {
     private int attributeReallocationPoints, skillReallocationPoints, skillTreeReallocationPoints;
     private double experience, health, mana, stamina, stellium;
     private long combatUntilTick;
+    private long classSwitchAvailableAt;
     private final PlayerAttributes attributes = new PlayerAttributes(this);
     private final PlayerProfessions professions = new PlayerProfessions(this);
     private final PlayerSkillTrees skillTrees = new PlayerSkillTrees(this);
@@ -85,6 +86,9 @@ public final class PlayerData {
         skillTrees.resolveClassTrees();
         applyTemporaryProgression();
         skillTrees.applyTemporary();
+        // Equipment must contribute before restoring current health: clamping
+        // against class-only maximum would discard saved health on reconnect.
+        vn.svframe.svframelib.fabric.runtime.PlayerStatInitialization.restoreEquipment(player);
         clampAll();
         setResource(PlayerResource.HEALTH,
                 requestedHealth <= 0d ? getMaxResource(PlayerResource.HEALTH) : requestedHealth,
@@ -116,6 +120,9 @@ public final class PlayerData {
         clampAll();
         if (isOnline()) SVFrameMMO.skillRuntime().attach(this);
     }
+
+    public long getClassSwitchAvailableAt() { return classSwitchAvailableAt; }
+    public void setClassSwitchAvailableAt(long value) { classSwitchAvailableAt = Math.max(0L, value); }
 
     public String getClassId() { return playerClass; }
     public PlayerClass getProfess() {

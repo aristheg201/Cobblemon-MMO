@@ -183,7 +183,7 @@ public final class SVFrameMMO implements ModInitializer {
             for (var data : PLAYER_DATA.all()) data.reloadDefinitions();
             SKILL_BAR.clear();
             PLAYER_DATA.save();
-            EXTERNAL_PROGRESSION.save();
+            if (EXTERNAL_PROGRESSION.isStarted()) EXTERNAL_PROGRESSION.save();
             LOG.info("SVFrameMMO reloaded; " + definitionSummary());
             return true;
         } catch (Exception exception) {
@@ -196,6 +196,7 @@ public final class SVFrameMMO implements ModInitializer {
     }
 
     private static void loadDefinitions() throws IOException {
+        vn.svframe.svframelib.skill.NativeSkillProviders.materialize();
         SVFrameMMOConfig nextConfig = SVFrameMMOConfig.load(DefaultFiles.ROOT.resolve("config.yml"));
         ClassManager nextClasses = new ClassManager();
         AttributeManager nextAttributes = new AttributeManager();

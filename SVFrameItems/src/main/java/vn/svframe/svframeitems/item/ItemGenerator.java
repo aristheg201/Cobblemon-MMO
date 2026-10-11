@@ -60,12 +60,13 @@ public final class ItemGenerator {
         if (stack.getCount() > type.maxStackSize()) stack.setCount(type.maxStackSize());
         ItemCodec.write(stack, instance);
         formatter.apply(stack, definition, instance, rarity, effectiveStats(instance));
+        vn.svframe.svframeitems.runtime.SourceItemRules.present(stack,definition,instance);
         for (Mechanic mechanic : mechanics) mechanic.apply(stack, definition, instance, phase);
         return stack;
     }
 
     private List<ItemStat> effectiveStats(ItemInstance instance) {
-        return instance.effectiveStats(upgradeMultiplier(instance), this::upgradeMultiplier);
+        return vn.svframe.svframeitems.runtime.SourceItemRules.upgrades(instance,instance.effectiveStats(upgradeMultiplier(instance), this::upgradeMultiplier));
     }
 
     private double upgradeMultiplier(ItemInstance instance) {

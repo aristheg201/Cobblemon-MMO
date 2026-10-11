@@ -197,6 +197,8 @@ registerNativeBuiltins();
 registration = false;
 }
 public synchronized void reload() { handlers.clear(); scripts.clear(); registration = true; }
+/** Native providers replace their own compiled handler objects before classes reload. */
+public synchronized void replaceSkillHandler(SkillHandler<?> handler) { handlers.put(norm(handler.getId()), Objects.requireNonNull(handler)); }
 public boolean isRegistrationOpen() { return registration; }
 private void registerNativeBuiltins() {
 registerCondition("boolean", BooleanCondition::new);

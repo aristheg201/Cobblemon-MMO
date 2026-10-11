@@ -94,11 +94,9 @@ public final class SkillRuntime {
     }
 
     public SkillResult castBound(PlayerData data, int slot) {
-        ClassSkill external = SVFrameMMO.externalProgression().boundSkill(data.getUniqueId(), slot);
-        if (external != null) return cast(data, external);
-        ClassSkill skill = data.getBoundSkill(slot);
-        if (skill == null) throw new IllegalArgumentException("No skill bound to slot " + slot);
-        return cast(data, skill);
+        var entry=vn.svframe.svframemmo.skill.PlayerSkillCatalog.bindings(data).get(slot);
+        if(entry==null)throw new IllegalArgumentException("No eligible skill bound to slot "+slot);
+        return cast(data,entry.skill());
     }
 
     public SkillResult cast(PlayerData data, String skillId) {
