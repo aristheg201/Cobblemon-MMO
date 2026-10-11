@@ -19,6 +19,7 @@ import vn.svframe.svframemmo.api.event.PlayerClassChangeEvent;
 import vn.svframe.svframemmo.api.player.PlayerData;
 import vn.svframe.svframemmo.experience.EXPSource;
 import vn.svframe.svframemmo.skill.ClassSkill;
+import vn.svframe.svframemmo.skill.PlayerSkillCatalog;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -152,7 +153,7 @@ public final class SVFrameMMOCommands {
                                                                     Predicate<ClassSkill> predicate) {
         try {
             PlayerData data = SVFrameMMO.playerData().get(ctx.getSource().getPlayerOrThrow());
-            return suggestValues(builder, configuredSkillIds(data, predicate));
+            return suggestValues(builder, PlayerSkillCatalog.entries(data).stream().filter(entry -> entry.learned() && predicate.test(entry.skill())).map(PlayerSkillCatalog.Entry::id).toList());
         } catch (Exception ignored) { return builder.buildFuture(); }
     }
 
@@ -181,14 +182,14 @@ public final class SVFrameMMOCommands {
     private static CompletableFuture<Suggestions> suggestOwnSlots(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder) {
         try {
             PlayerData data = SVFrameMMO.playerData().get(ctx.getSource().getPlayerOrThrow());
-            return suggestValues(builder, data.getProfess().getSlots().stream().map(slot -> Integer.toString(slot.slot())).toList());
+            return suggestValues(builder, PlayerSkillCatalog.slots(data).stream().map(String::valueOf).toList());
         } catch (Exception ignored) { return builder.buildFuture(); }
     }
 
     private static CompletableFuture<Suggestions> suggestOwnBoundSlots(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder) {
         try {
             PlayerData data = SVFrameMMO.playerData().get(ctx.getSource().getPlayerOrThrow());
-            return suggestValues(builder, data.getSkillBindings().keySet().stream().sorted().map(String::valueOf).toList());
+            return suggestValues(builder, PlayerSkillCatalog.bindings(data).keySet().stream().sorted().map(String::valueOf).toList());
         } catch (Exception ignored) { return builder.buildFuture(); }
     }
 
@@ -224,8 +225,8 @@ public final class SVFrameMMOCommands {
 
     private static int skills(ServerCommandSource source, ServerPlayerEntity player) {
         PlayerData data = SVFrameMMO.playerData().get(player);
-        String text = configuredSkillIds(data, data::canUseSkill).stream()
-                .map(id -> id + "@" + data.getSkillLevel(id)).collect(Collectors.joining("&7, &6"));
+        String text = PlayerSkillCatalog.entries(data).stream().filter(PlayerSkillCatalog.Entry::learned)
+                .map(entry -> entry.id() + "@" + entry.level()).collect(Collectors.joining("&7, &6"));
         success(source, text.isBlank() ? "&cNo unlocked skills." : "&eSkills: &6" + text);
         return 1;
     }

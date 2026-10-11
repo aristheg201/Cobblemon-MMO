@@ -21,7 +21,9 @@ public record MoveSemantic(
     }
 
     public static MoveSemantic plain() { return new MoveSemantic(List.of(), Status.NONE, 0, 0, 0, 0, 1, 1, false); }
-    public record StageChange(Target target, BattleStat stat, int stages) { }
+    public record StageChange(Target target, BattleStat stat, int stages, double chance) {
+        public StageChange(Target target, BattleStat stat, int stages) { this(target,stat,stages,1d); }
+    }
     public enum Target { SELF, TARGET }
     public enum Status { NONE, PARALYSIS, BURN, POISON, BAD_POISON, SLEEP, FREEZE, CONFUSION, FLINCH }
 }

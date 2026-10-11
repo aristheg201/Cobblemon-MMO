@@ -35,6 +35,8 @@ project(':core') {
 }
 project(':client') {
     base.archivesName='FantasyHubClient'
+    dependencies { testImplementation platform('org.junit:junit-bom:5.11.4'); testImplementation 'org.junit.jupiter:junit-jupiter'; testRuntimeOnly 'org.junit.platform:junit-platform-launcher' }
+    tasks.withType(Test).configureEach { useJUnitPlatform() }
     dependencies { implementation project(path: ':protocol', configuration: 'namedElements'); include project(':protocol') }
     // Owned/generated assets are supplied locally; source archives are not a CI dependency.
     sourceSets.main.resources.srcDir('src/imported/resources')

@@ -6,7 +6,7 @@ The user now explicitly requests packaging existing JARs, pushing source, and ha
 
 Target: Minecraft 1.21.1 only, Fabric Loader >=0.18.4, Java 21, Cobblemon 1.8.x. Server owns gameplay; client owns presentation. MMO/Lib remain the single stat/progression authority. No Bukkit/Paper runtime. No separately installed resource pack.
 
-User priorities retained: all source classes eventually; Dragonborn before other class expansion; original base armor is required, armor upgrades are unnecessary. Keep original Death Sentence launch/hover/crash timings and mint/white-green colors. Skript scope is only class/dash and related AMK behavior; item/shop/unrelated scripts are unnecessary. Desired workflow: copy original `.sk` into mod config unchanged. HUD: HP at hearts, stamina above HP, mana above food, RPG level at vanilla level position.
+User priorities retained: all source classes eventually; Dragonborn before other class expansion; original base armor is required, armor upgrades are unnecessary. Keep original Death Sentence launch/hover/crash timings and mint/white-green colors. Skript scope is only class/dash and related AMK behavior; item/shop/unrelated scripts are unnecessary. Desired workflow: copy original `.sk` into mod config unchanged. HUD: HP at hearts, stamina above HP, mana above food, RPG level at vanilla level position. F is the native offhand-swap casting toggle; client skill slots only display the server casting state. Purchased skills share native `/skills`, client UI, binding and progression APIs.
 
 ## Source locations and branches
 
@@ -28,7 +28,7 @@ Retained original inputs: `/workspace/references/user-packs/{config1,config2,amk
 - Healing uses native heal paths; direct, skill, potion, group and regeneration windows produce no new damage packet, hurt timers or camera shake. Actual damage retains hurt feedback.
 - Dragonborn: seven distinct original abilities through source graph execution, nine original base armor definitions, source models/icons/sounds, additive set bonuses and item restrictions. 68 live checks plus seven transition checks. Equipment restoration precedes health clamping at respawn/login/class transitions.
 - Death Sentence: source warmup 28 ticks, launch 15, hover 60, descent 8; camera-directed landing ring, original mint/green-white particle colors, real damage and knockup. Dedicated and singleplayer runtime evidence.
-- Cobblemon: reusable entity adapter, ownership/capture/faint/battle safeguards, actual Pokémon entities from native Mythic-style definitions; real timer mechanic damages Pokémon. Fifteen player-purchasable move adapters have actual purchase/equip/cast evidence. Formal battles remain controlled by Cobblemon.
+- Cobblemon: reusable entity adapter, ownership/capture/faint/battle safeguards, actual Pokémon entities from native Mythic-style definitions; real timer mechanic damages Pokémon. The recovered expansion supplies 155 curated player-move adapters across 18 types and 14 families, verified against the installed provider data; the prior fifteen retain historical live evidence. New Lick/Bite purchase, casting, native VFX, GUI/command upgrades, binding and continuous-reconnect QA pass and are tracked separately in `EXPANDED-SKILLS-QA.md`. Formal battles remain controlled by Cobblemon.
 - Core bridge and separate Client: versioned handshake, packaged source visual subset, server-backed character/attributes/skills/settings/class screens and separate Pokémon shop. English/Vietnamese. Presentation-only real client verified.
 - Compact HUD at requested vanilla positions; armor/oxygen layer correctly, chat and high-health vanilla toggle verified at two real-client scales.
 - Native Skript: three unchanged required source files compile (19 functions, 6 commands, 12 triggers). Eight real-client dash scenarios pass; actual dodge damage cancellation/expiry. Six AMK active casts delegate to original script. Original class fee/cooldown exercised with exact CobbleDollars balances and a narrower actual BEconomy provider test. Persistent source cooldown survived restart. See `SKRIPT-IMPLEMENTATION-QA.md` and `FantasyHub/skript/README.md`.
@@ -41,7 +41,7 @@ Retained original inputs: `/workspace/references/user-packs/{config1,config2,amk
 | Class skills | 237 IDs | 21 distinct DK/AMK/Dragonborn behaviors; seven AMK behaviors now use source Skript. Other class skills remain incomplete. |
 | Mythic meta-skills | 4542 unique / 4955 definitions | 4259 parsed, 793 accepted/executable, 3749 unavailable. Accepted is not runtime-tested coverage. |
 | Mob definitions | 1079 unique / 1132 definitions | Zero complete original boss encounters; phases, AI, models, loot and spawners unfinished. |
-| Cobblemon moves | 936 | 15 validated purchasable player adapters, 921 not certified as working player abilities. |
+| Cobblemon moves | 936 | 155 curated adapters have provider/model checks; 781 are not offered as functioning player skills. Historical live coverage: 15; current Lick/Bite live regressions pass (see separate report). All 155 have not received live gameplay certification. |
 | Scripts | Historical 40 / 28 enabled; current required scope 3 | Three unchanged compile and targeted live cases pass; no full Skript/addon or original-Paper behavioral certification. |
 | Models | 685 authored blueprints | 235 selected converted model/animation resources in DK/AMK/Dragonborn subset; full class/boss/NPC coverage unfinished. |
 
@@ -51,7 +51,7 @@ Genuine retained source gaps: `NinjaDamageEvent` is referenced by `config2/Mythi
 
 ## Build, tests and API boundaries
 
-Local tools: `/workspace/tools/jdk-21.0.2`, `/workspace/tools/gradle-8.8/bin/gradle`. Latest Lib 21 and Skript 24 tests pass. Earlier Items 24 and Mobs 17 pass; converter 5 pass. No full production certification.
+Local tools: `/workspace/tools/jdk-21.0.2`, Gradle 8.8 for the framework/FantasyHub, Gradle 9.2.1 for Cobblemon Integration (Loom 1.14.10). Latest Lib 25, Client 4 and Skript 24 tests pass; Lib includes four regression cases for inventory overlay click order. Earlier Items 24 and Mobs 17 pass; converter 5 pass. No full production certification.
 
 Build matching Lib first, copy its JAR into the integration dependency path, build MMO/Items/Mobs/Cobblemon integration, then:
 
@@ -74,3 +74,11 @@ Evidence: `/workspace/qa-evidence/{dragonborn,compact-hud,skript}`, committed `d
 ## Next API turn
 
 Read this handoff and current branch status, verify artifact hashes, then test the final source class filtering/close-screen paths against the continuously running server after deploying the matching new Lib/Core/Skript. Preserve current stats and source behavior. Continue the outstanding implementation without re-auditing the source. Do not claim 1:1 Skript/Mythic compatibility before actual conformance passes.
+
+## Expanded skill and upgrade continuation
+
+The uploaded Windows ZIPs contain artifacts and config but no source. Their own mod classes were remapped and recovered from bytecode, reconciled with this workspace source, then rebuilt locally. The installed Cobblemon moves.js matches the uploaded provider audit SHA256 `7f3ffc8ace9de6dc86048006c29c9ae2dc891b3a83afa8b9e7d682b192f2fbae`. Do not replace the current source with the older artifact-only ZIPs.
+
+Three upgrade defects were identified: GeneratedInventory displayed the last overlapping item but dispatched clicks to the first (native skill-list slot 15 is both a level preview and upgrade button); PlayerData's public upgrade/bind APIs and command suggestions still excluded learned external skills; the client upgrade handler resolved an unowned class fallback instead of the purchased external definition. Owned definitions now take priority, including parameter/lore level lookup. Click dispatch now resolves the top visible overlay; public progression/binding and native command listings use PlayerSkillCatalog while explicitly named class-scoped primitives avoid recursion and accidental external unbinding. Successful upgrades save the point balance and external level, preserve configured maximum levels and reject unowned skills or insufficient points. Client upgrade controls show current skill points and localized rejection reasons.
+
+All visuals remain presentation-only; the server owns F casting mode, slot/input mapping, damage, costs, cooldowns, purchases and levels. Cobblemon action-effect plans and native Snowstorm packets supply move VFX; Bite/Lick additionally have bounded Minecraft particle accents. RPG adaptations do not claim formal turn-based move parity.

@@ -88,5 +88,13 @@
   "svframeitems.stat.cooldown_reduction": "Giảm hồi chiêu",
   "svframeitems.stat.movement_speed": "Tốc độ di chuyển",
   "svframeitems.stat.armor_toughness": "Độ cứng giáp",
-  "svframeitems.stat.pvp_damage_reduction": "Giảm sát thương PvP"
+  "svframeitems.stat.pvp_damage_reduction": "Giảm sát thương PvP",
+  "fantasyhub.shop.search": "Tìm chiêu…",
+  "fantasyhub.skill_points": "Điểm kỹ năng: %s",
+  "fantasyhub.upgrade.locked": "Mở khóa kỹ năng trước khi nâng cấp.",
+  "fantasyhub.upgrade.unavailable": "Kỹ năng này chưa thể thi triển trên máy chủ.",
+  "fantasyhub.upgrade.fixed": "Kỹ năng này không hỗ trợ nâng cấp.",
+  "fantasyhub.upgrade.max": "Kỹ năng đã đạt cấp tối đa.",
+  "fantasyhub.upgrade.points": "Bạn cần một điểm kỹ năng.",
+  "fantasyhub.upgrade.cost": "Nâng một cấp bằng một điểm kỹ năng."
 }

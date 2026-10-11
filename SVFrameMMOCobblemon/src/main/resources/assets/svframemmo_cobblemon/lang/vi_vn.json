@@ -1,5 +1,5 @@
 {
-  "svframemmo_cobblemon.shop.unsupported": "Chiêu này chưa có bộ thi triển cho người chơi đã được kiểm chứng và chưa thể mua.",
+  "svframemmo_cobblemon.shop.unsupported": "Chiêu này chưa có kỹ năng người chơi tương ứng trong thế giới mở.",
   "svframemmo_cobblemon.shop.purchased": "Đã mua %s với giá %s %s. Kỹ năng người chơi đã được lưu.",
   "svframemmo_cobblemon.shop.disabled": "Cửa hàng kỹ năng Pokémon đang tắt.",
   "svframemmo_cobblemon.shop.not_ready": "Danh mục chiêu Pokémon chưa sẵn sàng.",
@@ -10,5 +10,20 @@
   "svframemmo_cobblemon.shop.payment_failed": "Thanh toán thất bại. Chưa cấp kỹ năng.",
   "svframemmo_cobblemon.shop.refunded": "Không thể cấp kỹ năng. Bạn đã được hoàn tiền.",
   "svframemmo_cobblemon.shop.refund_failed": "Giao dịch mua và hoàn tiền thất bại. Vui lòng liên hệ quản trị viên.",
-  "svframemmo_cobblemon.shop.admin_granted": "Quản trị viên đã cấp %s. Mở menu Kỹ năng để trang bị."
+  "svframemmo_cobblemon.shop.admin_granted": "Quản trị viên đã cấp %s. Mở menu Kỹ năng để trang bị.",
+  "svframemmo_cobblemon.effect.bite": "Cắn tầm gần: 30% làm mục tiêu khựng lại trong chốc lát.",
+  "svframemmo_cobblemon.effect.lick": "Đòn liếm: 30% gây tê liệt. Sinh vật khác bị làm chậm trong chốc lát.",
+  "svframemmo_cobblemon.effect.strike": "Sát thương theo sức mạnh chiêu. Nhắm mục tiêu, trừ các chiêu diện rộng.",
+  "svframemmo_cobblemon.effect.secondary": "Gây sát thương và có thể áp dụng hiệu ứng phụ của chiêu.",
+  "svframemmo_cobblemon.effect.area": "Tác động lên các mục tiêu hợp lệ ở gần trong bán kính 5 khối.",
+  "svframemmo_cobblemon.effect.dash": "Lướt theo hướng nhìn; gây sát thương nếu có mục tiêu được nhắm tới.",
+  "svframemmo_cobblemon.effect.heal": "Hồi nửa máu tối đa ở cấp 1; nâng cấp tăng lượng hồi phục.",
+  "svframemmo_cobblemon.effect.drain": "Hồi máu theo lượng sát thương thực tế gây ra.",
+  "svframemmo_cobblemon.effect.recoil": "Đòn mạnh gây sát thương phản lại bản thân theo sát thương gây ra.",
+  "svframemmo_cobblemon.effect.multi_hit": "Đánh nhiều lần; tổng sát thương được áp dụng trong một đòn.",
+  "svframemmo_cobblemon.effect.buff": "Tăng chỉ số chiêu Pokémon trong 30 giây. Bậc tốc độ cũng tăng tốc di chuyển.",
+  "svframemmo_cobblemon.effect.debuff": "Giảm chỉ số chiêu Pokémon của mục tiêu trong 30 giây.",
+  "svframemmo_cobblemon.effect.status": "Gây trạng thái; sinh vật khác nhận hiệu ứng khống chế ngắn.",
+  "svframemmo_cobblemon.effect.guard": "Chặn sát thương nhận vào trong 1 giây.",
+  "svframemmo_cobblemon.effect.teleport": "Dịch chuyển tối đa 12 khối về phía trước tới nơi thoáng, có nền chắc."
 }

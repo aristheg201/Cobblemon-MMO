@@ -16,6 +16,9 @@ import vn.svframe.svframelib.api.player.MMOPlayerData;
 import vn.svframe.svframemmo.SVFrameMMO;
 import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
 import vn.svframe.svframemmo.skill.PlayerSkillCatalog;
+import vn.svframe.svframemmo.skill.ClassSkill;
+import net.minecraft.registry.Registries;
+import net.minecraft.item.Items;
 import vn.svframe.svframemmo.runtime.PersistentHudRuntime;
 import java.nio.file.*;
 import java.util.*;
@@ -26,6 +29,7 @@ import static net.minecraft.server.command.CommandManager.literal;
 public final class FantasyHubCore implements ModInitializer {
     private static final Gson GSON=new Gson();
     private final Map<UUID,String> snapshots=new HashMap<>();
+    private final Map<UUID,String> castingModes=new HashMap<>();
     private final Map<UUID,Long> nextAction=new HashMap<>();
     private final Map<UUID,Long> nextObservation=new HashMap<>();
     private ExecutorService qaWriter;
@@ -86,7 +90,7 @@ public final class FantasyHubCore implements ModInitializer {
                     case "respec" -> data.reallocateAttributes();
                     case "bind" -> {if(request.slot()<1||request.slot()>9)return;PlayerSkillCatalog.bind(data,request.slot(),request.id());}
                     case "unbind" -> {if(request.slot()<1||request.slot()>9)return;PlayerSkillCatalog.unbind(data,request.slot());}
-                    case "upgrade" -> {var entry=PlayerSkillCatalog.definition(data,request.id());if(entry!=null)PlayerSkillCatalog.upgrade(data,entry,1);}
+                    case "upgrade" -> {var entry=PlayerSkillCatalog.owned(data,request.id());if(entry!=null)PlayerSkillCatalog.upgrade(data,entry,1);}
                     case "cast" -> {if(request.slot()<1||request.slot()>9)return;SVFrameMMO.skillRuntime().castBound(data,request.slot());}
                     case "cast_id" -> SVFrameMMO.skillRuntime().cast(data,request.id());
                     case "purchase" -> {var shop=vn.svframe.svframelib.skill.PlayerAbilityShop.get();if(shop==null)return;shop.purchase(player,request.id());}
@@ -112,14 +116,17 @@ public final class FantasyHubCore implements ModInitializer {
             });
         });
         ServerLifecycleEvents.SERVER_STARTED.register(server->{if("1".equals(System.getenv("SVFRAME_RUNTIME_QA")))qaWriter=new ThreadPoolExecutor(1,1,0,TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(512),r->{Thread t=new Thread(r,"FantasyHub-QA");t.setDaemon(true);return t;},new ThreadPoolExecutor.DiscardPolicy());});
-        ServerLifecycleEvents.SERVER_STOPPING.register(server->{snapshots.clear();nextAction.clear();nextObservation.clear();if(qaWriter!=null)qaWriter.shutdown();});
+        ServerLifecycleEvents.SERVER_STOPPING.register(server->{snapshots.clear();castingModes.clear();nextAction.clear();nextObservation.clear();if(qaWriter!=null)qaWriter.shutdown();});
         ServerLifecycleEvents.SERVER_STOPPED.register(server->{if(qaWriter!=null)try{if(!qaWriter.awaitTermination(5,TimeUnit.SECONDS))qaWriter.shutdownNow();}catch(InterruptedException interrupted){Thread.currentThread().interrupt();}});
         ServerPlayConnectionEvents.JOIN.register((handler,sender,server)->PersistentHudRuntime.setPresentationOwner(handler.player.getUuid(),true));
-        ServerPlayConnectionEvents.DISCONNECT.register((handler,server)->{snapshots.remove(handler.player.getUuid());nextAction.remove(handler.player.getUuid());nextObservation.remove(handler.player.getUuid());PersistentHudRuntime.setPresentationOwner(handler.player.getUuid(),false);});
+        ServerPlayConnectionEvents.DISCONNECT.register((handler,server)->{snapshots.remove(handler.player.getUuid());castingModes.remove(handler.player.getUuid());nextAction.remove(handler.player.getUuid());nextObservation.remove(handler.player.getUuid());PersistentHudRuntime.setPresentationOwner(handler.player.getUuid(),false);});
         ServerTickEvents.END_SERVER_TICK.register(server->{
-            if(++tick%5!=0)return;
+            ++tick;
             for(var player:server.getPlayerManager().getPlayerList()){
                 if(!ServerPlayNetworking.canSend(player,Protocol.State.ID))continue;
+                String mode=Objects.requireNonNullElse(SVFrameMMO.skillBar().mode(player.getUuid()),"");
+                if(tick%5!=0&&mode.equals(castingModes.get(player.getUuid())))continue;
+                castingModes.put(player.getUuid(),mode);
                 String state=state(player);
                 if(!state.equals(snapshots.put(player.getUuid(),state)))ServerPlayNetworking.send(player,new Protocol.State(state));
             }
@@ -199,6 +206,31 @@ public final class FantasyHubCore implements ModInitializer {
         }
         out.put("skills",skills);
         out.put("loadoutSlots",PlayerSkillCatalog.slots(data));
+      Map<String, Object> casting = new LinkedHashMap<>();
+      casting.put("active", SVFrameMMO.skillBar().isCasting(player.getUuid()));
+      casting.put("mode", Objects.requireNonNullElse(SVFrameMMO.skillBar().mode(player.getUuid()), ""));
+      List<Map<String, Object>> castingSlots = new ArrayList<>();
+
+      for (vn.svframe.svframemmo.skill.runtime.SkillBarRuntime.SkillBarBinding binding : SVFrameMMO.skillBar().skillBarBindings(data)) {
+         ClassSkill skill = binding.skill();
+         Map<String, Object> row = new LinkedHashMap<>();
+         row.put("boundSlot", binding.boundSlot());
+         row.put("inputSlot", binding.inputSlot());
+         row.put("temporary", binding.temporary());
+         row.put("id", skill.getSkill().getId());
+         row.put("name", skill.getSkill().getName());
+         int level = PlayerSkillCatalog.level(data, skill);
+         Map<String, Double> parameters = new TreeMap<>();
+         skill.getParameters().keySet().forEach(key -> parameters.put(key, skill.getParameter(key, level, data)));
+         row.put("parameters", parameters);
+         row.put("cooldownRemaining", data.getMMOPlayerData().getCooldownMap().getCooldown(skill.getCooldownPath()));
+         row.put("iconMaterial", Registries.ITEM.getId(skill.getSkill().getIcon().getMaterialElse(Items.PAPER)).toString());
+         row.put("iconCustomModelData", skill.getSkill().getIcon().getCustomModelDataInt());
+         castingSlots.add(row);
+      }
+
+      casting.put("slots", castingSlots);
+      out.put("casting", casting);
         var shop=vn.svframe.svframelib.skill.PlayerAbilityShop.get();out.put("pokemonShop",shop==null?List.of():shop.catalog(player));
         Map<Integer,String> loadout=new TreeMap<>();PlayerSkillCatalog.bindings(data).forEach((slot,entry)->loadout.put(slot,entry.id()));out.put("loadout",loadout);
         Map<String,Double> stats=new TreeMap<>();for(String id:List.of("MAX_HEALTH","ARMOR","ARMOR_TOUGHNESS","ATTACK_DAMAGE","SKILL_DAMAGE","MOVEMENT_SPEED"))stats.put(id,MMOPlayerData.setup(player).getStatMap().getStat(id));out.put("stats",stats);

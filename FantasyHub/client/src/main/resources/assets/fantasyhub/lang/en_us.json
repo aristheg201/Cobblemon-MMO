@@ -88,5 +88,13 @@
   "svframeitems.stat.cooldown_reduction": "Cooldown reduction",
   "svframeitems.stat.movement_speed": "Movement speed",
   "svframeitems.stat.armor_toughness": "Armor toughness",
-  "svframeitems.stat.pvp_damage_reduction": "PvP damage reduction"
+  "svframeitems.stat.pvp_damage_reduction": "PvP damage reduction",
+  "fantasyhub.shop.search": "Search moves…",
+  "fantasyhub.skill_points": "Skill points: %s",
+  "fantasyhub.upgrade.locked": "Unlock this skill before upgrading.",
+  "fantasyhub.upgrade.unavailable": "This skill cannot execute on this server.",
+  "fantasyhub.upgrade.fixed": "This skill does not support upgrades.",
+  "fantasyhub.upgrade.max": "Maximum skill level reached.",
+  "fantasyhub.upgrade.points": "You need one skill point.",
+  "fantasyhub.upgrade.cost": "Upgrade one level for one skill point."
 }

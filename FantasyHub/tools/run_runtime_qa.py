@@ -79,7 +79,7 @@ def command(host, port, password, text):
 
 def checks_pass(report, name):
     if name == "shop":
-        return report.get("finished") is True and report.get("count") == 15 and len(report.get("offers", [])) == 15 and report.get("unsupported_not_sold") is True and all(
+        return report.get("finished") is True and report.get("count") == report.get("expected_offer_count") == 155 and len(report.get("offers", [])) == 155 and report.get("unsupported_not_sold") is True and all(
             all(row.get(key) is True for key in ("purchase_correct", "duplicate_no_charge", "equipped", "castSuccessful", "actual_effect", "cooldown_rejects_repeat"))
             for row in report.get("offers", [])
         )
@@ -111,7 +111,7 @@ def main():
         ("pokemon", "cobblemonentityqa", "cobblemon-entity-runtime.json", 60),
     ]
     if args.shop:
-        scenarios.append(("shop", "cobblemonshopqa", "cobblemon-shop-runtime.json", 180))
+        scenarios.append(("shop", "cobblemonshopqa", "cobblemon-shop-runtime.json", 900))
     if args.catalog:
         scenarios.append(("catalog", "fantasyhubqa catalog", "skill-catalog-runtime.json", 30))
     args.output.mkdir(parents=True, exist_ok=True)

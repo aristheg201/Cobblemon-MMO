@@ -53,7 +53,14 @@ public final class HubScreen extends Screen {
                 var upgrade=FantasyButton.builder(Text.translatable("fantasyhub.upgrade"),button->FantasyHubClient.send("upgrade",id,1)).dimensions(left+panelWidth-84,top+63+i*22,72,20).build();
                 upgrade.active=(!row.has("available")||row.get("available").getAsBoolean())&&row.get("owned").getAsBoolean()&&FantasyHubClient.number("skillPoints")>0
                         &&(!row.has("upgradable")||row.get("upgradable").getAsBoolean())
-                        &&(!row.has("maxLevel")||row.get("maxLevel").getAsInt()==0||row.get("level").getAsInt()<row.get("maxLevel").getAsInt());addDrawableChild(upgrade);
+                        &&(!row.has("maxLevel")||row.get("maxLevel").getAsInt()==0||row.get("level").getAsInt()<row.get("maxLevel").getAsInt());
+                String reason = !row.get("owned").getAsBoolean() ? "locked"
+                        : row.has("available") && !row.get("available").getAsBoolean() ? "unavailable"
+                        : row.has("upgradable") && !row.get("upgradable").getAsBoolean() ? "fixed"
+                        : row.has("maxLevel") && row.get("maxLevel").getAsInt()>0 && row.get("level").getAsInt()>=row.get("maxLevel").getAsInt() ? "max"
+                        : FantasyHubClient.number("skillPoints")<=0 ? "points" : "cost";
+                upgrade.setTooltip(net.minecraft.client.gui.tooltip.Tooltip.of(Text.translatable("fantasyhub.upgrade."+reason)));
+                addDrawableChild(upgrade);
             }
             int bottom=top+panelHeight-62;
             addDrawableChild(FantasyButton.builder(Text.literal("‹"),b->{page=Math.max(0,page-1);clearAndInit();}).dimensions(left+12,bottom,22,20).build());
@@ -96,6 +103,7 @@ public final class HubScreen extends Screen {
             }
             context.drawText(textRenderer,Text.translatable("fantasyhub.points",(int)FantasyHubClient.number("attributePoints")),left+14,top+54,0xffd5ae66,false);
         }else if(view==View.SKILLS){
+            context.drawText(textRenderer,Text.translatable("fantasyhub.skill_points",(int)FantasyHubClient.number("skillPoints")),left+14,top+54,0xffd5ae66,false);
             var rows=FantasyHubClient.state().getAsJsonArray("skills");int visible=Math.max(1,(panelHeight-138)/22);
             if(rows!=null)for(int i=0;i<visible&&page*visible+i<rows.size();i++){
                 var row=rows.get(page*visible+i).getAsJsonObject();if(!row.has("iconMaterial"))continue;

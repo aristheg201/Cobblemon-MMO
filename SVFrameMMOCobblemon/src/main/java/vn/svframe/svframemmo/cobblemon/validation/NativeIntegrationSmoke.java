@@ -13,6 +13,7 @@ import java.util.UUID;
 
 public final class NativeIntegrationSmoke {
     public static void main(String[] args) {
+        PlayerMoveNativeChecks.run(args);
         MoveSemanticRegistry registry = new MoveSemanticRegistry();
         require(!vn.svframe.svframemmo.cobblemon.move.PlayerMoveCoverage.purchasable("metronome"),"An unimplemented move must never be sold as a functioning player skill");
         require(vn.svframe.svframemmo.cobblemon.move.PlayerMoveCoverage.purchasable("recover"),"The explicit half-health recovery adapter must remain available");

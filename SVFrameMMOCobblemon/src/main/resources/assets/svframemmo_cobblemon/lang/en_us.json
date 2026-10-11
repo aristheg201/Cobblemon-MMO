@@ -1,5 +1,5 @@
 {
-  "svframemmo_cobblemon.shop.unsupported": "This move has no validated player-casting adapter and cannot be purchased.",
+  "svframemmo_cobblemon.shop.unsupported": "This move has no supported overworld player adapter.",
   "svframemmo_cobblemon.shop.purchased": "Purchased %s for %s %s. The player skill has been saved.",
   "svframemmo_cobblemon.shop.disabled": "The Pokémon skill shop is disabled.",
   "svframemmo_cobblemon.shop.not_ready": "The Pokémon move catalog is not ready.",
@@ -10,5 +10,20 @@
   "svframemmo_cobblemon.shop.payment_failed": "Payment failed. No skill was granted.",
   "svframemmo_cobblemon.shop.refunded": "The skill could not be granted. Your payment has been refunded.",
   "svframemmo_cobblemon.shop.refund_failed": "The skill purchase and refund failed. Please contact an administrator.",
-  "svframemmo_cobblemon.shop.admin_granted": "An administrator granted %s. Open the Skills menu to equip it."
+  "svframemmo_cobblemon.shop.admin_granted": "An administrator granted %s. Open the Skills menu to equip it.",
+  "svframemmo_cobblemon.effect.bite": "Close-range bite: 30% chance to briefly stagger the target.",
+  "svframemmo_cobblemon.effect.lick": "Tongue strike: 30% chance to paralyze. Slows other creatures briefly.",
+  "svframemmo_cobblemon.effect.strike": "Damage based on move power. Aim at a target unless this move affects an area.",
+  "svframemmo_cobblemon.effect.secondary": "Deals damage and can apply this move's additional effect.",
+  "svframemmo_cobblemon.effect.area": "Affects eligible nearby foes within 5 blocks.",
+  "svframemmo_cobblemon.effect.dash": "Dash in your facing direction; damages an aimed target if one is present.",
+  "svframemmo_cobblemon.effect.heal": "Restores half your maximum health at level 1; upgrades increase healing.",
+  "svframemmo_cobblemon.effect.drain": "Restores health from damage actually dealt to the target.",
+  "svframemmo_cobblemon.effect.recoil": "A powerful attack that also hurts you based on damage dealt.",
+  "svframemmo_cobblemon.effect.multi_hit": "Hits multiple times; combined damage is applied as one strike.",
+  "svframemmo_cobblemon.effect.buff": "Boosts Pokémon move stats for 30 seconds. Speed stages also affect movement.",
+  "svframemmo_cobblemon.effect.debuff": "Lowers foes' Pokémon move stats for 30 seconds.",
+  "svframemmo_cobblemon.effect.status": "Inflicts a status condition; other creatures receive a brief control effect.",
+  "svframemmo_cobblemon.effect.guard": "Blocks incoming damage for 1 second.",
+  "svframemmo_cobblemon.effect.teleport": "Teleports up to 12 blocks forward to a clear spot with solid ground."
 }

@@ -62,6 +62,8 @@ public final class PlayerSkillCatalog {
 
     /** Resolves either a current-class definition or any contributed external definition, regardless of ownership. */
     public static Entry definition(PlayerData data, String skillId) {
+        Entry owned = owned(data, skillId);
+        if (owned != null) return owned;
         ClassSkill classSkill = data.getProfess().getSkill(skillId);
         if (classSkill != null)
             return new Entry(classSkill, Origin.CLASS, data.canUseSkill(classSkill), data.getSkillLevel(classSkill.getSkill().getId()));
@@ -118,10 +120,10 @@ public final class PlayerSkillCatalog {
         if(!allowedSlots(data,entry).contains(slot))throw new IllegalArgumentException("Skill is not allowed in slot "+slot);
         if (entry.origin() == Origin.EXTERNAL) {
             SVFrameMMO.externalProgression().bind(data.getUniqueId(), slot, entry.id());
-            data.unbindSkill(slot);
+            data.unbindClassSkill(slot);
             SVFrameMMO.externalProgression().save();
         } else {
-            data.bindSkill(slot, entry.id());
+            data.bindClassSkill(slot, entry.id());
             SVFrameMMO.externalProgression().unbind(data.getUniqueId(), slot);
             SVFrameMMO.externalProgression().save();
         }
@@ -129,7 +131,7 @@ public final class PlayerSkillCatalog {
 
     public static String unbind(PlayerData data, int slot) {
         String external = SVFrameMMO.externalProgression().unbind(data.getUniqueId(), slot);
-        String classSkill = data.unbindSkill(slot);
+        String classSkill = data.unbindClassSkill(slot);
         if (external != null) SVFrameMMO.externalProgression().save();
         return external != null ? external : classSkill;
     }
@@ -153,6 +155,7 @@ public final class PlayerSkillCatalog {
             SVFrameMMO.externalProgression().save();
         }
         data.giveSkillPoints(-amount);
+        SVFrameMMO.playerData().savePlayer(data);
         return amount;
     }
 
@@ -168,6 +171,7 @@ public final class PlayerSkillCatalog {
             SVFrameMMO.externalProgression().save();
         }
         data.giveSkillPoints(1);
+        SVFrameMMO.playerData().savePlayer(data);
         return true;
     }
 

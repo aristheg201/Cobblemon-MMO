@@ -67,17 +67,16 @@ public final class FantasyHubClient implements ClientModInitializer {
         });
         ClientPlayConnectionEvents.DISCONNECT.register((handler,client)->state=new JsonObject());
         var menu=KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fantasyhub.menu",InputUtil.Type.KEYSYM,GLFW.GLFW_KEY_F8,"category.fantasyhub"));
-        KeyBinding[] abilities=new KeyBinding[9];
-        for(int i=0;i<abilities.length;i++)abilities[i]=KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fantasyhub.slot."+(i+1),InputUtil.Type.KEYSYM,GLFW.GLFW_KEY_UNKNOWN,"category.fantasyhub"));
         ClientTickEvents.END_CLIENT_TICK.register(client->{
             ticks++;
             while(menu.wasPressed())if(client.player!=null&&state.has("schema"))client.setScreen(new HubScreen(HubScreen.View.PROFILE));
-            for(int i=0;i<abilities.length;i++)while(abilities[i].wasPressed())if(client.currentScreen==null)send("cast","",i+1);
             if(ticks%10==0&&client.player!=null&&state.has("schema")&&"1".equals(System.getenv("SVFRAME_RUNTIME_QA"))){
                 JsonObject o=new JsonObject();o.addProperty("clientHealth",client.player.getHealth());o.addProperty("clientMaxHealth",client.player.getMaxHealth());
                 o.addProperty("hurtTime",client.player.hurtTime);o.addProperty("maxHurtTime",client.player.maxHurtTime);
                 o.addProperty("stateHealth",number("health"));o.addProperty("stateMaxHealth",number("healthMax"));o.addProperty("clientTick",ticks);
                 com.google.gson.JsonArray players=new com.google.gson.JsonArray();for(var tracked:client.world.getPlayers())players.add(tracked.getName().getString());o.add("trackedPlayers",players);
+                if(state.has("casting"))o.add("clientCasting",state.get("casting").deepCopy());
+                o.add("displayedSkillSlots",SkillBarPresentation.slots(state).deepCopy());
                 o.addProperty("damagePackets",ClientFeedbackQa.damagePackets);o.addProperty("hurtCameraFrames",ClientFeedbackQa.hurtCameraFrames);
                 if(ClientPlayNetworking.canSend(Protocol.Observation.ID))ClientPlayNetworking.send(new Protocol.Observation(o.toString()));
                 observed=true;

@@ -129,6 +129,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
                 FusionVisualBridge.playSuccessfulBasicAttack(attacker);
         });
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
+            FUSIONS.clearMoveState(entity.getUuid());
             if (source.getAttacker() instanceof ServerPlayerEntity attacker && source.getSource() == attacker
                     && !FUSIONS.isExecutingMoveDamage(attacker))
                 FusionVisualBridge.playSuccessfulBasicAttack(attacker);
@@ -150,6 +151,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             COSMETICS.start(server);
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            FUSIONS.clearMoveStates();
             FUSIONS.cooldowns().stop();
             COSMETICS.stop();
         });

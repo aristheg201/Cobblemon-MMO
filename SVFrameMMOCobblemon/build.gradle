@@ -67,6 +67,7 @@ tasks.register('nativeIntegrationSmoke', JavaExec) {
     description = 'Runs native Cobblemon integration smoke checks on the Loom runtime classpath.'
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'vn.svframe.svframemmo.cobblemon.validation.NativeIntegrationSmoke'
+    if (project.hasProperty('moveProviderAudit')) args project.property('moveProviderAudit')
 }
 
 tasks.register('copyProductionRuntimeDeps', Sync) {
