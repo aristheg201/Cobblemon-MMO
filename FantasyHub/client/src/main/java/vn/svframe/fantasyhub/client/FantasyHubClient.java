@@ -85,20 +85,7 @@ public final class FantasyHubClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register((context,counter)->{
             var client=MinecraftClient.getInstance();
             if(!hudEnabled||client.player==null||client.options.hudHidden||client.currentScreen!=null||!state.has("schema"))return;
-            context.getMatrices().push();context.getMatrices().scale(hudScale,hudScale,1);
-            int visible=0;for(String resource:new String[]{"health","mana","stamina","magic"})if(options.visible(resource))visible++;
-            int panelWidth=options.compact?160:190,rowHeight=options.compact?12:15;
-            // Reserve the left edge for Cobblemon's party column.
-            int x=options.right?Math.max(0,(int)(context.getScaledWindowWidth()/hudScale)-panelWidth-12):(FabricLoader.getInstance().isModLoaded("cobblemon")?72:12),y=12;
-            FantasyPanel.frame(context,x,y,panelWidth,35+visible*rowHeight);
-            context.drawText(client.textRenderer,Text.translatable("fantasyhub.hud.level",(int)number("level")),x+9,y+7,0xffebd49e,false);
-            int row=0;String[] resources={"health","mana","stamina","magic"};int[] colors={0xffa53138,0xff3578b6,0xffa79035,0xff8858a6};
-            for(int i=0;i<resources.length;i++)if(options.visible(resources[i])){String r=resources[i];FantasyPanel.bar(context,x+9,y+24+row++*rowHeight,panelWidth-18,12,number(r),number(r+"Max"),colors[i],r);}
-            int experienceY=y+26+visible*rowHeight;
-            context.fill(x+9,experienceY,x+panelWidth-9,experienceY+3,0xff302720);
-            int experienceWidth=(int)((panelWidth-18)*Math.max(0,Math.min(1,number("nextLevel")<=0?0:number("experience")/number("nextLevel"))));
-            context.fill(x+9,experienceY,x+9+experienceWidth,experienceY+3,0xffe6bb55);
-            context.getMatrices().pop();
+            CompactHud.render(context);
             AbilityHud.render(context);
         });
     }
