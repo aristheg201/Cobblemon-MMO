@@ -11,13 +11,10 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
-import io.netty.buffer.Unpooled;
 import org.lwjgl.glfw.GLFW;
 import vn.svframe.fantasyhub.protocol.Protocol;
 import java.nio.file.*;
-import java.util.concurrent.CompletableFuture;
 
 public final class FantasyHubClient implements ClientModInitializer {
     private static JsonObject state=new JsonObject();
@@ -41,16 +38,14 @@ public final class FantasyHubClient implements ClientModInitializer {
         });
         options=PresentationOptions.load();hudEnabled=options.enabled;hudScale=options.scale;
         net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry.ITEM.register((stack,tint)->net.minecraft.component.type.DyedColorComponent.getColor(stack,0xffffff),Protocol.visualBone);
-        ClientLoginNetworking.registerGlobalReceiver(Protocol.LOGIN,(client,handler,buf,callbacks)->{
-            int version=buf.readVarInt();String assets=buf.readString(128);
-            PacketByteBuf response=new PacketByteBuf(Unpooled.buffer());
-            boolean present=false;
-            try(var asset=FantasyHubClient.class.getResourceAsStream("/assets/fantasyhub/asset-revision.txt")){
-                present=asset!=null&&Protocol.ASSET_REVISION.equals(new String(asset.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8).trim())&&AssetIntegrity.verified();
-            }catch(java.io.IOException ignored){}
-            response.writeVarInt(present&&version==Protocol.VERSION?Protocol.VERSION:0);
-            response.writeString(present&&Protocol.ASSET_REVISION.equals(assets)?assets:"missing-assets",128);
-            return CompletableFuture.completedFuture(response);
+        ClientConfigurationNetworking.registerGlobalReceiver(Protocol.Handshake.ID,(challenge,context)->{
+            String diagnostic=AssetIntegrity.diagnose();
+            if(challenge.version()!=Protocol.VERSION)diagnostic="server protocol mismatch: "+challenge.version();
+            else if(!Protocol.ASSET_REVISION.equals(challenge.assets()))diagnostic="server asset revision mismatch: "+challenge.assets();
+            String version=FabricLoader.getInstance().getModContainer("fantasyhubclient").orElseThrow().getMetadata().getVersion().getFriendlyString();
+            if(diagnostic.length()>512)diagnostic=diagnostic.substring(0,512);
+            org.slf4j.LoggerFactory.getLogger("FantasyHub/Handshake").info("Configuration challenge: client={}, protocol={}, assets={}, result={}",version,challenge.version(),challenge.assets(),diagnostic.isEmpty()?"verified":diagnostic);
+            context.responseSender().sendPacket(new Protocol.Handshake(Protocol.VERSION,Protocol.ASSET_REVISION,version,diagnostic));
         });
         ClientPlayNetworking.registerGlobalReceiver(Protocol.State.ID,(payload,context)->{
             JsonObject next=JsonParser.parseString(payload.json()).getAsJsonObject();

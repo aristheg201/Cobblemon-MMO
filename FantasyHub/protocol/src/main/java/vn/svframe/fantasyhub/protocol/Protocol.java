@@ -3,6 +3,7 @@ package vn.svframe.fantasyhub.protocol;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
@@ -15,7 +16,11 @@ public final class Protocol implements ModInitializer {
     private static boolean installed;
     public static final int VERSION=1;
     public static final String ASSET_REVISION="reference-dragonborn-v4";
-    public static final Identifier LOGIN=Identifier.of("fantasyhub","login_v1");
+    public record Handshake(int version,String assets,String clientVersion,String diagnostic) implements CustomPayload {
+        public static final Id<Handshake> ID=new Id<>(Identifier.of("fantasyhub","handshake_v1"));
+        public static final PacketCodec<PacketByteBuf,Handshake> CODEC=PacketCodec.of((p,b)->{b.writeVarInt(p.version);b.writeString(p.assets,128);b.writeString(p.clientVersion,32);b.writeString(p.diagnostic,512);},b->new Handshake(b.readVarInt(),b.readString(128),b.readString(32),b.readString(512)));
+        @Override public Id<Handshake> getId(){return ID;}
+    }
     public static Item visualBone,dragonbornHat;
     public record State(String json) implements CustomPayload {
         public static final Id<State> ID=new Id<>(Identifier.of("fantasyhub","state_v1"));
@@ -49,6 +54,8 @@ public final class Protocol implements ModInitializer {
         if(installed)return;
         visualBone=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","visual_bone"),new Item(new Item.Settings()));
         dragonbornHat=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","dragonborn_hat"),new net.minecraft.item.ArmorItem(net.minecraft.item.ArmorMaterials.LEATHER,net.minecraft.item.ArmorItem.Type.HELMET,new Item.Settings().maxCount(1)));
+        PayloadTypeRegistry.configurationS2C().register(Handshake.ID,Handshake.CODEC);
+        PayloadTypeRegistry.configurationC2S().register(Handshake.ID,Handshake.CODEC);
         PayloadTypeRegistry.playS2C().register(State.ID,State.CODEC);
         PayloadTypeRegistry.playS2C().register(Casting.ID,Casting.CODEC);
         PayloadTypeRegistry.playS2C().register(Open.ID,Open.CODEC);

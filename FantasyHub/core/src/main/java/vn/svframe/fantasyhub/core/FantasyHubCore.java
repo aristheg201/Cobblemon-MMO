@@ -7,8 +7,6 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.*;
-import net.minecraft.network.PacketByteBuf;
-import io.netty.buffer.Unpooled;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import vn.svframe.fantasyhub.protocol.Protocol;
@@ -69,15 +67,7 @@ public final class FantasyHubCore implements ModInitializer {
                 if(!vn.svframe.svframeitems.SVFrameItems.reload())throw new IllegalStateException("Cannot load source Dragonborn equipment definitions");
             }catch(java.io.IOException failure){throw new IllegalStateException("Cannot initialize Fantasy Hub presentation configuration",failure);}
         });
-        ServerLoginNetworking.registerGlobalReceiver(Protocol.LOGIN,(server,handler,understood,buf,sync,sender)->{
-            boolean valid=false;
-            try{valid=understood&&buf.readVarInt()==Protocol.VERSION&&Protocol.ASSET_REVISION.equals(buf.readString(128))&&buf.readableBytes()==0;}catch(RuntimeException ignored){}
-            if(!valid)handler.disconnect(Text.translatableWithFallback("fantasyhub.connection.incompatible", "Fantasy Hub requires FantasyHubClient 0.1.1 for Minecraft 1.21.1. Install the matching client JAR and reconnect."));
-        });
-        ServerLoginConnectionEvents.QUERY_START.register((handler,server,sender,sync)->{
-            PacketByteBuf buf=new PacketByteBuf(Unpooled.buffer());buf.writeVarInt(Protocol.VERSION);buf.writeString(Protocol.ASSET_REVISION,128);
-            sender.sendPacket(Protocol.LOGIN,buf);
-        });
+        PresentationHandshake.install();
         ServerPlayNetworking.registerGlobalReceiver(Protocol.Action.ID,(request,context)->{
             var player=context.player();long now=tick;
             if(now<nextAction.getOrDefault(player.getUuid(),-1L))return;
@@ -157,7 +147,7 @@ public final class FantasyHubCore implements ModInitializer {
                         ctx.getSource().sendFeedback(()->Text.literal(snapshot.toString()),false);return 1;
                     })))
                 .then(literal("hudstatus").executes(ctx->{
-                    var player=ctx.getSource().getPlayerOrThrow();Map<String,Object> status=new LinkedHashMap<>();status.put("build","0.1.1-f-hud-hotfix");status.put("castingChannel",ServerPlayNetworking.canSend(player,Protocol.Casting.ID));status.put("casting",castingState(player));
+                    var player=ctx.getSource().getPlayerOrThrow();Map<String,Object> status=new LinkedHashMap<>();status.put("build","0.1.2-proxy-handshake");status.put("castingChannel",ServerPlayNetworking.canSend(player,Protocol.Casting.ID));status.put("casting",castingState(player));
                     ctx.getSource().sendFeedback(()->Text.literal(GSON.toJson(status)),false);return 1;
                 }))
                 .then(literal("resync").requires(s->s.hasPermissionLevel(2)).executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();SVFrameMMO.playerData().get(player).refreshClassStats();snapshots.remove(player.getUuid());return 1;})));
