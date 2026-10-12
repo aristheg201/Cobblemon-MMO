@@ -71,4 +71,19 @@ class NativeStatEngineTest {
         assertEquals(1, updates.get(), "buffered modifier changes must publish one native update");
         assertEquals(3d, engine.stat(player, stat), 1.0e-9);
     }
+    @Test
+    void periodicCleanupDoesNotReadNativeAttributesOfAnOfflinePlayer() {
+        NativeStatEngine engine = new NativeStatEngine();
+        UUID player = UUID.randomUUID();
+        engine.registerHandler(new NativeStatHandler("MAX_HEALTH") {
+            @Override public double getBaseValue(NativeStatEngine.StatInstance instance) {
+                throw new IllegalStateException("Player is offline");
+            }
+        });
+        engine.instance(player, "MAX_HEALTH");
+        assertDoesNotThrow(() -> engine.tick(1200L));
+        assertEquals(1, engine.instances(player).size());
+        engine.clear(player);
+        assertEquals(0, engine.trackedEntities());
+    }
 }
