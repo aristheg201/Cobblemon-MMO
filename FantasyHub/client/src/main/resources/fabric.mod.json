@@ -18,5 +18,8 @@
   },
   "mixins": [
     "fantasyhubclient.mixins.json"
-  ]
+  ],
+  "custom": {
+    "svframe-client-patch": "mana-thirst-clearance-1"
+  }
 }

@@ -6,9 +6,17 @@ import net.minecraft.text.Text;
 
 /** Resources share vanilla status-bar anchors, independent of GUI scale and maximum health. */
 public final class CompactHud {
+    /** Leave the row immediately above food available for thirst/survival HUDs. */
+    public static final int MANA_VERTICAL_OFFSET=20;
     private CompactHud(){}
     public static boolean active(){var client=MinecraftClient.getInstance();return FantasyHubClient.hudEnabled&&client.player!=null&&client.interactionManager!=null&&client.interactionManager.hasStatusBars()&&!client.options.hudHidden&&FantasyHubClient.state().has("schema");}
     public static boolean visible(String resource){return active()&&FantasyHubClient.options.visible(resource);}
+    public static int oxygenY(int vanillaY){
+        if(!visible("mana"))return vanillaY;
+        // Survival mods may already reserve a row for thirst. Clamp above mana
+        // instead of adding another offset to their adjusted oxygen position.
+        return Math.min(vanillaY,MinecraftClient.getInstance().getWindow().getScaledHeight()-39-MANA_VERTICAL_OFFSET-10);
+    }
     public static int staminaOffset(){
         if(visible("health"))return 10;
         var player=MinecraftClient.getInstance().player;if(player==null)return 10;
@@ -20,7 +28,7 @@ public final class CompactHud {
         int center=context.getScaledWindowWidth()/2,y=context.getScaledWindowHeight()-39;
         if(visible("health"))bar(context,center-91,y,"health",client.player.getHealth(),client.player.getMaxHealth(),0xffba3840);
         if(visible("stamina"))bar(context,center-91,y-staminaOffset(),"stamina",FantasyHubClient.number("stamina"),FantasyHubClient.number("staminaMax"),0xffb89f38);
-        if(visible("mana"))bar(context,center+10,y-10,"mana",FantasyHubClient.number("mana"),FantasyHubClient.number("manaMax"),0xff347bbd);
+        if(visible("mana"))bar(context,center+10,y-MANA_VERTICAL_OFFSET,"mana",FantasyHubClient.number("mana"),FantasyHubClient.number("manaMax"),0xff347bbd);
         // The distinct magic charge fits into the two-pixel gap between XP and hotbar, clear of level text.
         if(visible("magic")&&FantasyHubClient.number("magicMax")>0){int x=center-91,chargeY=context.getScaledWindowHeight()-24;context.fill(x,chargeY,x+182,chargeY+2,0xff302437);int fill=(int)Math.round(182*Math.clamp(FantasyHubClient.number("magic")/FantasyHubClient.number("magicMax"),0,1));context.fill(x,chargeY,x+fill,chargeY+2,0xffa166c9);}
     }
