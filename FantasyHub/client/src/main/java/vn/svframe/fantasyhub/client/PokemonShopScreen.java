@@ -25,6 +25,7 @@ public final class PokemonShopScreen extends Screen {
    private int h;
    private int page;
    private int slot = 1;
+   private int paymentOption = 1;
    private int detailScroll;
    private String type = "";
    private String category = "";
@@ -40,6 +41,11 @@ public final class PokemonShopScreen extends Screen {
 
    public void refresh() {
       this.clearAndInit();
+   }
+
+   private JsonObject payment(JsonObject row) {
+      if(row.has("paymentOptions"))for(var raw:row.getAsJsonArray("paymentOptions"))if(raw.getAsJsonObject().get("id").getAsInt()==paymentOption)return raw.getAsJsonObject();
+      return row;
    }
 
    private List<JsonObject> rows() {
@@ -199,7 +205,7 @@ public final class PokemonShopScreen extends Screen {
             : Text.translatable(row.get("descriptionKey").getAsString());
          button.setTooltip(
             Tooltip.of(
-               Text.translatable("fantasyhub.shop.price", new Object[]{row.get("price").getAsString(), row.get("currency").getAsString()})
+               Text.translatable("fantasyhub.shop.price", new Object[]{payment(row).get("price").getAsString(), payment(row).get("currency").getAsString()})
                   .append(Text.literal("\n"))
                   .append(description)
             )
@@ -238,12 +244,14 @@ public final class PokemonShopScreen extends Screen {
             b -> {
                if (this.selection() != null) {
                   JsonObject offer = this.selection();
+                  JsonObject quoted=payment(offer);
+                  int selectedPayment=paymentOption;
                   this.client
                      .setScreen(
                         new ConfirmScreen(
                            yes -> {
                               if (yes) {
-                                 FantasyHubClient.send("purchase", offer.get("id").getAsString(), 0);
+                                 FantasyHubClient.send("purchase", offer.get("id").getAsString(), selectedPayment);
                               }
 
                               this.client.setScreen(this);
@@ -251,7 +259,7 @@ public final class PokemonShopScreen extends Screen {
                            Text.translatable("fantasyhub.shop.confirm"),
                            Text.translatable(
                               "fantasyhub.shop.confirm.detail",
-                              new Object[]{name(offer), offer.get("price").getAsString(), offer.get("currency").getAsString()}
+                              new Object[]{name(offer), quoted.get("price").getAsString(), quoted.get("currency").getAsString()}
                            )
                         )
                      );
@@ -260,7 +268,7 @@ public final class PokemonShopScreen extends Screen {
          )
          .dimensions(this.left + 74 + actionWidth, bottom, actionWidth, 20)
          .build();
-      purchase.active = row != null && !owned;
+      purchase.active = row != null && !owned && payment(row).has("available") && payment(row).get("available").getAsBoolean();
       this.addDrawableChild(purchase);
       FantasyButton equip = FantasyButton.builder(
             Text.translatable("fantasyhub.equip"), b -> FantasyHubClient.send("bind", this.selection().get("skillId").getAsString(), this.slot)
@@ -276,6 +284,8 @@ public final class PokemonShopScreen extends Screen {
          .build();
       cast.active = owned;
       this.addDrawableChild(cast);
+      this.addDrawableChild(FantasyButton.builder(Text.translatable("fantasyhub.shop.payment",paymentOption==1?"beastcoin":"cobbledollars"),b->{paymentOption=paymentOption==1?2:1;clearAndInit();})
+         .dimensions(this.left+118,this.top+this.h-29,Math.max(60,this.w-210),20).build());
       this.addDrawableChild(
          FantasyButton.builder(Text.translatable("gui.done"), b -> this.close())
             .dimensions(this.left + this.w - 84, this.top + this.h - 29, 72, 20)
@@ -304,7 +314,7 @@ public final class PokemonShopScreen extends Screen {
             this.textRenderer,
             this.textRenderer
                .trimToWidth(
-                  Text.translatable("fantasyhub.shop.price", new Object[]{row.get("price").getAsString(), row.get("currency").getAsString()}).getString(),
+                  Text.translatable("fantasyhub.shop.price", new Object[]{payment(row).get("price").getAsString(), payment(row).get("currency").getAsString()}).getString(),
                   available
                ),
             x,

@@ -25,5 +25,8 @@
   "svframemmo_cobblemon.effect.debuff": "Lowers foes' Pokémon move stats for 30 seconds.",
   "svframemmo_cobblemon.effect.status": "Inflicts a status condition; other creatures receive a brief control effect.",
   "svframemmo_cobblemon.effect.guard": "Blocks incoming damage for 1 second.",
-  "svframemmo_cobblemon.effect.teleport": "Teleports up to 12 blocks forward to a clear spot with solid ground."
+  "svframemmo_cobblemon.effect.teleport": "Teleports up to 12 blocks forward to a clear spot with solid ground.",
+  "svframemmo_cobblemon.shop.payment_invalid": "Invalid payment option.",
+  "svframemmo_cobblemon.shop.pay_beastcoin": "Beastcoin",
+  "svframemmo_cobblemon.shop.pay_cobbledollars": "CobbleDollars"
 }

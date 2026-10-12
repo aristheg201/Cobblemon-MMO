@@ -1,0 +1,272 @@
+# SVFrame class switching layer v28
+# Menu -> /svclass switch <class>
+# Payment/cooldown commit: Fantasy Hub native transaction. Default 3000 beastcoin; Dragonborn/Death Knight 2 huntercoin.
+
+options:
+    prefix: &5Marilyn &8»
+    class-switch-fee: 3000
+    class-switch-cooldown: 60 minutes
+
+function svclass_name(id: text) :: text:
+    if {_id} is "paladin":
+        return "Paladin"
+    if {_id} is "companion":
+        return "Companion"
+    if {_id} is "necromancer":
+        return "Necromancer"
+    if {_id} is "death_knight":
+        return "Death Knight"
+    if {_id} is "thieves_guild":
+        return "Thieves Guild"
+    if {_id} is "gunner":
+        return "Gunner"
+    if {_id} is "nightingale":
+        return "Nightingale"
+    if {_id} is "assassin":
+        return "Assassin"
+    if {_id} is "blade":
+        return "Blade"
+    if {_id} is "archmage":
+        return "Archmage"
+    if {_id} is "ninja_samurai":
+        return "Ninja Samurai"
+    if {_id} is "druid":
+        return "Druid"
+    if {_id} is "dragonborn":
+        return "Dragonborn"
+    if {_id} is "hunter":
+        return "Hunter"
+    if {_id} is "warrior":
+        return "Warrior"
+    if {_id} is "mage":
+        return "Mage"
+    if {_id} is "rogue":
+        return "Rogue"
+    if {_id} is "marksman":
+        return "Marksman"
+    if {_id} is "archer":
+        return "Archer"
+    if {_id} is "bard":
+        return "Bard"
+    if {_id} is "summoner":
+        return "Summoner"
+    if {_id} is "dark_brotherhood":
+        return "Dark Brotherhood"
+    if {_id} is "dawnguard":
+        return "Dawnguard"
+    if {_id} is "volkihar":
+        return "Volkihar"
+    if {_id} is "arctic_knight":
+        return "Arctic Knight"
+    if {_id} is "bloodmoon_vampire":
+        return "Bloodmoon Vampire"
+    if {_id} is "water_samurai":
+        return "Water Samurai"
+    if {_id} is "unholy_ones":
+        return "Unholy Ones"
+    if {_id} is "awakened_mage":
+        return "Awakened Mage"
+    if {_id} is "awakened_gunslinger":
+        return "Awakened Gunslinger"
+    if {_id} is "entrepreneur":
+        return "Entrepreneur"
+    if {_id} is "ace":
+        return "Ace"
+    return "%{_id}%"
+
+function svclass_valid(id: text) :: boolean:
+    if {_id} is "paladin":
+        return true
+    if {_id} is "companion":
+        return true
+    if {_id} is "necromancer":
+        return true
+    if {_id} is "death_knight":
+        return true
+    if {_id} is "thieves_guild":
+        return true
+    if {_id} is "gunner":
+        return true
+    if {_id} is "nightingale":
+        return true
+    if {_id} is "assassin":
+        return true
+    if {_id} is "blade":
+        return true
+    if {_id} is "archmage":
+        return true
+    if {_id} is "ninja_samurai":
+        return true
+    if {_id} is "druid":
+        return true
+    if {_id} is "dragonborn":
+        return true
+    if {_id} is "hunter":
+        return true
+    if {_id} is "warrior":
+        return true
+    if {_id} is "mage":
+        return true
+    if {_id} is "rogue":
+        return true
+    if {_id} is "marksman":
+        return true
+    if {_id} is "archer":
+        return true
+    if {_id} is "bard":
+        return true
+    if {_id} is "summoner":
+        return true
+    if {_id} is "dark_brotherhood":
+        return true
+    if {_id} is "dawnguard":
+        return true
+    if {_id} is "volkihar":
+        return true
+    if {_id} is "arctic_knight":
+        return true
+    if {_id} is "bloodmoon_vampire":
+        return true
+    if {_id} is "water_samurai":
+        return true
+    if {_id} is "unholy_ones":
+        return true
+    if {_id} is "awakened_mage":
+        return true
+    if {_id} is "awakened_gunslinger":
+        return true
+    if {_id} is "entrepreneur":
+        return true
+    if {_id} is "ace":
+        return true
+    return false
+
+function svclass_supporter(p: player) :: boolean:
+    if {_p} has permission "svframe.supporter":
+        return true
+    if {_p} has permission "svframe.donator":
+        return true
+    if {_p} has permission "argonmc.rank.vip":
+        return true
+    if {_p} has permission "argonmc.rank.sergeant":
+        return true
+    if {_p} has permission "argonmc.rank.lieutenant":
+        return true
+    if {_p} has permission "argonmc.rank.captain":
+        return true
+    if {_p} has permission "argonmc.rank.mvp":
+        return true
+    if {_p} has permission "argonmc.rank.viscount":
+        return true
+    if {_p} has permission "argonmc.rank.earl":
+        return true
+    if {_p} has permission "argonmc.rank.duke":
+        return true
+    if {_p} has permission "argonmc.rank.elite":
+        return true
+    return false
+
+function svclass_skyrim_complete(p: player) :: boolean:
+    if {_p} does not have permission "svframe.story.boss.ashensentinel":
+        return false
+    if {_p} does not have permission "svframe.story.boss.wolfknight":
+        return false
+    if {_p} does not have permission "svframe.story.boss.draugrlord":
+        return false
+    if {_p} does not have permission "svframe.story.boss.ustengravlord":
+        return false
+    if {_p} does not have permission "svframe.story.boss.kingpin":
+        return false
+    if {_p} does not have permission "svframe.story.boss.dwemersmith":
+        return false
+    if {_p} does not have permission "svframe.story.boss.firedragon":
+        return false
+    if {_p} does not have permission "svframe.story.boss.frostdragon":
+        return false
+    if {_p} does not have permission "svframe.story.boss.undeaddragon":
+        return false
+    if {_p} does not have permission "svframe.story.boss.voiddragon":
+        return false
+    if {_p} does not have permission "svframe.story.boss.ancientdragon":
+        return false
+    if {_p} does not have permission "svframe.story.boss.mirmulnir":
+        return false
+    if {_p} does not have permission "svframe.story.boss.sahloknir":
+        return false
+    if {_p} does not have permission "svframe.story.boss.odahviing":
+        return false
+    if {_p} does not have permission "svframe.story.boss.revenant":
+        return false
+    if {_p} does not have permission "svframe.story.boss.forestlady":
+        return false
+    if {_p} does not have permission "svframe.story.boss.hastur":
+        return false
+    if {_p} does not have permission "svframe.story.boss.fallenangel":
+        return false
+    if {_p} does not have permission "svframe.story.boss.nahkriin":
+        return false
+    if {_p} does not have permission "svframe.story.boss.alduin":
+        return false
+    return true
+
+function svclass_unlocked(p: player, id: text) :: boolean:
+    if {_id} is "hunter":
+        if {_p} has permission "svframe.class.hunter.override":
+            return true
+        send "{@prefix} &cHunter chưa mở trong mùa này. Wild Hunt chưa gọi tên, đừng tự ký giấy báo tử." to {_p}
+        return false
+    if {_id} is "dragonborn":
+        if {_p} has permission "svframe.class.dragonborn":
+            return true
+        if svclass_supporter({_p}) is true:
+            return true
+        if svclass_skyrim_complete({_p}) is true:
+            return true
+        send "{@prefix} &cDragonborn chỉ mở cho Supporter hoặc người đã dọn sạch toàn bộ boss Skyrim mùa này." to {_p}
+        return false
+    set {_perm} to "svframe.class.%{_id}%"
+    if {_p} has permission {_perm}:
+        return true
+    send "{@prefix} &cChưa mở class &e%svclass_name({_id})%&c. Đi đập boss đúng tuyến truyện trước đã, menu không nhận niềm tin làm giấy phép." to {_p}
+    return false
+
+function svclass_begin(p: player) :: boolean:
+    if {svclass.lock::%uuid of {_p}%} is true:
+        send "{@prefix} &cBấm chậm thôi. Class không chạy mất, chỉ có ví của ngươi là dễ bay." to {_p}
+        return false
+    set {svclass.lock::%uuid of {_p}%} to true
+    return true
+
+function svclass_end(p: player):
+    delete {svclass.lock::%uuid of {_p}%}
+
+command /classmenu [<text>]:
+    trigger:
+        execute console command "dm open svframe_class_switch %player%"
+
+command /classes [<text>]:
+    trigger:
+        execute console command "dm open svframe_class_switch %player%"
+
+command /doiclass [<text>]:
+    trigger:
+        execute console command "dm open svframe_class_switch %player%"
+
+command /svclass [<text>] [<text>]:
+    trigger:
+        if arg-1 is not set:
+            send "{@prefix} &7Dùng: &e/svclass switch <class>&7. Hoặc mở &e/classmenu&7." to player
+            stop
+        set {_action} to lowercase arg-1
+        if {_action} is not "switch":
+            send "{@prefix} &7Dùng: &e/svclass switch <class>&7. Hoặc mở &e/classmenu&7." to player
+            stop
+        if arg-2 is not set:
+            send "{@prefix} &cThiếu class id. Menu có nút, dùng nút đi cho đỡ lạc." to player
+            stop
+        set {_class} to lowercase arg-2
+        replace all " " with "_" in {_class}
+        if svclass_valid({_class}) is false:
+            send "{@prefix} &cClass &e%{_class}% &ckhông nằm trong danh sách mùa này." to player
+            stop
+        execute console command "fantasyhub classpurchase %player% %{_class}%"

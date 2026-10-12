@@ -14,7 +14,6 @@ import java.util.concurrent.CompletableFuture;
 
 /** Optional, fail-closed economy bridge used only by the Pokemon skill shop. */
 public final class PokemonSkillEconomy {
-    private volatile BEconomyApi beconomyApi;
 
     public CompletableFuture<ChargeResult> withdraw(ServerPlayerEntity player, String provider, String currency, BigDecimal amount) {
         if (player == null) return CompletableFuture.completedFuture(ChargeResult.failed("Player is not available."));
@@ -23,7 +22,7 @@ public final class PokemonSkillEconomy {
         try {
             return switch (normalized) {
                 case "cobbledollars" -> CompletableFuture.completedFuture(withdrawCobbleDollars(player, amount));
-                case "beconomy" -> CompletableFuture.completedFuture(withdrawBEconomy(player.getUuid(), currency, amount));
+                case "beconomy" -> CompletableFuture.completedFuture(withdrawNativeBEconomy(player, currency, amount));
                 case "impactor" -> withdrawImpactor(player.getUuid(), currency, amount);
                 default -> CompletableFuture.completedFuture(ChargeResult.failed("Unsupported economy provider: " + normalized));
             };
@@ -39,7 +38,7 @@ public final class PokemonSkillEconomy {
         try {
             return switch (normalized) {
                 case "cobbledollars" -> CompletableFuture.completedFuture(refundCobbleDollars(player, amount));
-                case "beconomy" -> CompletableFuture.completedFuture(refundBEconomy(player.getUuid(), currency, amount));
+                case "beconomy" -> CompletableFuture.completedFuture(refundNativeBEconomy(player, currency, amount));
                 case "impactor" -> refundImpactor(player.getUuid(), currency, amount);
                 default -> CompletableFuture.completedFuture(false);
             };
@@ -52,6 +51,7 @@ public final class PokemonSkillEconomy {
     public String displayCurrency(String provider, String currency) {
         String normalized = normalize(provider);
         if (normalized.equals("cobbledollars")) return "CobbleDollars";
+        if (normalized.equals("beconomy")&&"secondary".equalsIgnoreCase(currency))return "beastcoin";
         String value = currency == null ? "" : currency.trim();
         return value.isBlank() ? normalized : value;
     }
@@ -79,37 +79,21 @@ public final class PokemonSkillEconomy {
         return true;
     }
 
-    private ChargeResult withdrawBEconomy(UUID player, String currency, BigDecimal amount) throws ReflectiveOperationException {
-        if (!FabricLoader.getInstance().isModLoaded("beconomy")) return ChargeResult.failed("BEconomy is not installed.");
-        String currencyType = requireCurrency(currency);
-        BEconomyApi api = resolveBEconomy();
-        Object result = api.decrease.invoke(api.receiver, player, currencyType, amount);
-        if (!(result instanceof Boolean success)) return ChargeResult.failed("BEconomy decreaseBalance returned an unsupported result.");
-        return success ? ChargeResult.success() : ChargeResult.insufficient("Not enough " + currencyType + ".");
+    private static ChargeResult withdrawNativeBEconomy(ServerPlayerEntity player,String currency,BigDecimal amount) {
+        var key=vn.svframe.svframelib.api.economy.CurrencyKey.beconomy(requireCurrency(currency));
+        var service=vn.svframe.svframelib.api.economy.CurrencyService.get();
+        if(!service.isAvailable(key))return ChargeResult.failed("BEconomy currency unavailable: "+currency);
+        return service.withdraw(player,key,amount)?ChargeResult.success():ChargeResult.insufficient("Not enough "+currency+".");
     }
-
-    private boolean refundBEconomy(UUID player, String currency, BigDecimal amount) throws ReflectiveOperationException {
-        if (!FabricLoader.getInstance().isModLoaded("beconomy")) return false;
-        BEconomyApi api = resolveBEconomy();
-        api.increase.invoke(api.receiver, player, requireCurrency(currency), amount);
-        return true;
+    private static boolean refundNativeBEconomy(ServerPlayerEntity player,String currency,BigDecimal amount) {
+        var key=vn.svframe.svframelib.api.economy.CurrencyKey.beconomy(requireCurrency(currency));
+        var service=vn.svframe.svframelib.api.economy.CurrencyService.get();
+        if(!service.isAvailable(key))return false;
+        service.deposit(player,key,amount);return true;
     }
-
-    private BEconomyApi resolveBEconomy() throws ReflectiveOperationException {
-        BEconomyApi cached = beconomyApi;
-        if (cached != null) return cached;
-        synchronized (this) {
-            if (beconomyApi != null) return beconomyApi;
-            ClassLoader loader = PokemonSkillEconomy.class.getClassLoader();
-            Class<?> entrypoint = Class.forName("org.krripe.beconomy.api.BEconomy", true, loader);
-            Object singleton = entrypoint.getField("INSTANCE").get(null);
-            Object api = entrypoint.getMethod("getAPI").invoke(singleton);
-            if (api == null) throw new IllegalStateException("BEconomy API is not initialized");
-            Method decrease = api.getClass().getMethod("decreaseBalance", UUID.class, String.class, BigDecimal.class);
-            Method increase = api.getClass().getMethod("increaseBalance", UUID.class, String.class, BigDecimal.class);
-            beconomyApi = new BEconomyApi(api, decrease, increase);
-            return beconomyApi;
-        }
+    public boolean available(String provider,String currency) {
+        if(normalize(provider).equals("beconomy"))return vn.svframe.svframelib.api.economy.CurrencyService.get().isAvailable(vn.svframe.svframelib.api.economy.CurrencyKey.beconomy(currency));
+        return normalize(provider).equals("cobbledollars")&&FabricLoader.getInstance().isModLoaded("cobbledollars");
     }
 
     private static CompletableFuture<ChargeResult> withdrawImpactor(UUID player, String configuredCurrency, BigDecimal amount) throws ReflectiveOperationException {
@@ -201,7 +185,6 @@ public final class PokemonSkillEconomy {
         return provider == null ? "" : provider.trim().toLowerCase(Locale.ROOT);
     }
 
-    private record BEconomyApi(Object receiver, Method decrease, Method increase) { }
     private record ImpactorContext(Object service, Object currency, String currencyKey, Method accountMethod) { }
 
     public record ChargeResult(boolean charged, boolean insufficient, String message) {

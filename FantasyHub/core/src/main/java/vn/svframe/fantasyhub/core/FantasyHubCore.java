@@ -84,7 +84,7 @@ public final class FantasyHubCore implements ModInitializer {
                     case "upgrade" -> {var entry=PlayerSkillCatalog.owned(data,request.id());if(entry!=null)PlayerSkillCatalog.upgrade(data,entry,1);}
                     case "cast" -> {if(request.slot()<1||request.slot()>9)return;SVFrameMMO.skillRuntime().castBound(data,request.slot());}
                     case "cast_id" -> SVFrameMMO.skillRuntime().cast(data,request.id());
-                    case "purchase" -> {var shop=vn.svframe.svframelib.skill.PlayerAbilityShop.get();if(shop==null)return;shop.purchase(player,request.id());}
+                    case "purchase" -> {var shop=vn.svframe.svframelib.skill.PlayerAbilityShop.get();if(shop==null)return;shop.purchaseUsing(player,request.id(),request.slot());}
                     case "refresh" -> snapshots.remove(player.getUuid());
                     default -> {return;}
                 }
@@ -126,6 +126,7 @@ public final class FantasyHubCore implements ModInitializer {
         });
         CommandRegistrationCallback.EVENT.register((dispatcher,access,environment)->{
             RpgLifecycleQa.register(dispatcher);
+            EconomyPolicyQa.register(dispatcher);
             for(String alias:List.of("classmenu","classes","doiclass"))dispatcher.register(literal(alias).executes(ctx->{
                 var player=ctx.getSource().getPlayerOrThrow();snapshots.remove(player.getUuid());ServerPlayNetworking.send(player,new Protocol.Open("classes"));return 1;
             }));
@@ -136,6 +137,12 @@ public final class FantasyHubCore implements ModInitializer {
             dispatcher.register(literal("fantasyhub")
                 .executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();snapshots.remove(player.getUuid());ServerPlayNetworking.send(player,new Protocol.Open("profile"));return 1;})
                 .then(literal("classes").executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();ServerPlayNetworking.send(player,new Protocol.Open("classes"));return 1;}))
+                .then(literal("classpurchase").requires(s->s.hasPermissionLevel(2))
+                    .then(net.minecraft.server.command.CommandManager.argument("player",net.minecraft.command.argument.EntityArgumentType.player())
+                    .then(net.minecraft.server.command.CommandManager.argument("class",com.mojang.brigadier.arguments.StringArgumentType.word()).executes(ctx->{
+                        var target=net.minecraft.command.argument.EntityArgumentType.getPlayer(ctx,"player");
+                        return ClassSwitchService.request(target,com.mojang.brigadier.arguments.StringArgumentType.getString(ctx,"class"),()->snapshots.remove(target.getUuid()))?1:0;
+                    }))))
                 .then(literal("shop").executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();ServerPlayNetworking.send(player,new Protocol.Open("pokemon_shop"));return 1;}))
                 .then(literal("attributes").executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();ServerPlayNetworking.send(player,new Protocol.Open("attributes"));return 1;}))
                 .then(literal("skills").executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();ServerPlayNetworking.send(player,new Protocol.Open("skills"));return 1;}))
@@ -147,7 +154,7 @@ public final class FantasyHubCore implements ModInitializer {
                         ctx.getSource().sendFeedback(()->Text.literal(snapshot.toString()),false);return 1;
                     })))
                 .then(literal("hudstatus").executes(ctx->{
-                    var player=ctx.getSource().getPlayerOrThrow();Map<String,Object> status=new LinkedHashMap<>();status.put("build","0.1.2-proxy-handshake");status.put("castingChannel",ServerPlayNetworking.canSend(player,Protocol.Casting.ID));status.put("casting",castingState(player));
+                    var player=ctx.getSource().getPlayerOrThrow();Map<String,Object> status=new LinkedHashMap<>();status.put("build","0.1.3-economy-pricing");status.put("castingChannel",ServerPlayNetworking.canSend(player,Protocol.Casting.ID));status.put("casting",castingState(player));
                     ctx.getSource().sendFeedback(()->Text.literal(GSON.toJson(status)),false);return 1;
                 }))
                 .then(literal("resync").requires(s->s.hasPermissionLevel(2)).executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();SVFrameMMO.playerData().get(player).refreshClassStats();snapshots.remove(player.getUuid());return 1;})));
@@ -171,10 +178,11 @@ public final class FantasyHubCore implements ModInitializer {
         out.put("attributes",attributes);
         out.put("classSwitch",ClassSwitchService.policy(data));
         List<Map<String,Object>> roster=new ArrayList<>();
+        Map<vn.svframe.svframelib.api.economy.CurrencyKey,java.math.BigDecimal> classBalances=new HashMap<>();
         for(var type:SVFrameMMO.classes().getAll()) {
             Map<String,Object> row=new LinkedHashMap<>();row.put("id",type.getId());row.put("name",type.getName());
             row.put("description",type.getDescription());row.put("attributeDescription",type.getAttributeDescription());row.put("maxLevel",type.getMaxLevel());
-            row.put("selectable",ClassSwitchService.selectable(type.getId()));row.put("unlocked",ClassSwitchService.unlocked(player,type.getId()));
+            row.put("price",ClassSwitchService.offer(type.getId(),player,classBalances));row.put("selectable",ClassSwitchService.selectable(type.getId()));row.put("unlocked",ClassSwitchService.unlocked(player,type.getId()));
             row.put("current",data.getClassId().equals(type.getId()));
             Map<String,Double> baseStats=new TreeMap<>();for(String stat:type.getStats())baseStats.put(stat,type.calculateBaseStat(stat,1,data));row.put("baseStats",baseStats);
             List<Map<String,Object>> classSkills=new ArrayList<>();

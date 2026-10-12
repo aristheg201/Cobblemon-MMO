@@ -34,16 +34,19 @@ public final class PokemonSkillShopGui {
    private final ServerPlayerEntity player;
    private final PokemonSkillShopService shop;
    private final int page;
+   private final int paymentOption;
+   private String currency(){return paymentOption==1?"beastcoin":"cobbledollars";}
    private final Map<Integer, PokemonSkillShopService.Offer> offerBySlot = new LinkedHashMap<>();
 
-   public PokemonSkillShopGui(ServerPlayerEntity player, PokemonSkillShopService shop, int page) {
+   public PokemonSkillShopGui(ServerPlayerEntity player, PokemonSkillShopService shop, int page,int paymentOption) {
+      this.paymentOption=paymentOption==2?2:1;
       this.player = player;
       this.shop = shop;
       this.page = Math.max(0, page);
    }
 
    public void open() {
-      List<PokemonSkillShopService.Offer> offers = this.shop.offers(this.player.getUuid());
+      List<PokemonSkillShopService.Offer> offers = this.shop.offers(this.player.getUuid(),paymentOption);
       int pageCount = Math.max(1, (offers.size() + 36 - 1) / 36);
       int actualPage = Math.min(this.page, pageCount - 1);
       int start = actualPage * 36;
@@ -67,7 +70,7 @@ public final class PokemonSkillShopGui {
             List.of(
                Text.literal("Chọn Skill cần học ở 4 hàng bên dưới.").formatted(Formatting.GRAY),
                Text.literal("Xanh lá = đã sở hữu • Vàng = có thể mua").formatted(Formatting.DARK_GRAY),
-               Text.literal("Tiền tệ: " + this.shop.currencyLabel()).formatted(Formatting.GOLD)
+               Text.literal("Tiền tệ: " + currency()).formatted(Formatting.GOLD)
             )
          )
       );
@@ -94,12 +97,14 @@ public final class PokemonSkillShopGui {
          new LoreComponent(
             List.of(
                Text.literal("Tổng Skill: " + offers.size()).formatted(Formatting.GRAY),
-               Text.literal("Tiền tệ: " + this.shop.currencyLabel()).formatted(Formatting.GOLD),
+               Text.literal("Tiền tệ: " + currency()).formatted(Formatting.GOLD),
                Text.literal("Skill đã mua được lưu vĩnh viễn trong SVFrameMMO.").formatted(Formatting.DARK_GRAY)
             )
          )
       );
       inventory.setStack(49, info);
+      inventory.setStack(47,named(new ItemStack(Items.EMERALD),Text.translatable("svframemmo_cobblemon.shop.pay_beastcoin").getString()));
+      inventory.setStack(48,named(new ItemStack(Items.GOLD_INGOT),Text.translatable("svframemmo_cobblemon.shop.pay_cobbledollars").getString()));
       ItemStack close = named(new ItemStack(Items.BARRIER), "ĐÓNG");
       close.set(
          DataComponentTypes.LORE, new LoreComponent(List.of(Text.literal("Nhấp để đóng cửa hàng.").formatted(Formatting.GRAY)))
@@ -181,7 +186,7 @@ public final class PokemonSkillShopGui {
             Text.literal("Giá: ")
                .formatted(Formatting.GRAY)
                .append(
-                  Text.literal(PokemonSkillShopService.format(offer.price()) + " " + this.shop.currencyLabel()).formatted(Formatting.GOLD)
+                  Text.literal(PokemonSkillShopService.format(offer.price()) + " " + currency()).formatted(Formatting.GOLD)
                )
          );
          lore.add(Text.literal("► Nhấp để mua Skill").formatted(Formatting.YELLOW));
@@ -192,10 +197,11 @@ public final class PokemonSkillShopGui {
    }
 
    private void handle(int slot, int actualPage) {
-      if (slot == 45 && actualPage > 0) {
-         this.shop.open(this.player, actualPage - 1);
+      if(slot==47||slot==48){this.shop.open(this.player,actualPage,slot==47?1:2);}
+      else if (slot == 45 && actualPage > 0) {
+         this.shop.open(this.player, actualPage - 1,paymentOption);
       } else if (slot == 53) {
-         this.shop.open(this.player, actualPage + 1);
+         this.shop.open(this.player, actualPage + 1,paymentOption);
       } else if (slot == 50) {
          this.player.closeHandledScreen();
       } else {
@@ -204,7 +210,7 @@ public final class PokemonSkillShopGui {
             if (offer.owned()) {
                this.player.sendMessage(Text.literal("Bạn đã sở hữu " + offer.name() + ". Hãy mở menu Kỹ năng để gắn hoặc nâng cấp."), true);
             } else {
-               this.shop.purchase(this.player, offer.moveId(), actualPage);
+               this.shop.purchase(this.player, offer.moveId(), paymentOption,actualPage);
             }
          }
       }

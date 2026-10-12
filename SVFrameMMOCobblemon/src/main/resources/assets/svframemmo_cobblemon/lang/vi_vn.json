@@ -25,5 +25,8 @@
   "svframemmo_cobblemon.effect.debuff": "Giảm chỉ số chiêu Pokémon của mục tiêu trong 30 giây.",
   "svframemmo_cobblemon.effect.status": "Gây trạng thái; sinh vật khác nhận hiệu ứng khống chế ngắn.",
   "svframemmo_cobblemon.effect.guard": "Chặn sát thương nhận vào trong 1 giây.",
-  "svframemmo_cobblemon.effect.teleport": "Dịch chuyển tối đa 12 khối về phía trước tới nơi thoáng, có nền chắc."
+  "svframemmo_cobblemon.effect.teleport": "Dịch chuyển tối đa 12 khối về phía trước tới nơi thoáng, có nền chắc.",
+  "svframemmo_cobblemon.shop.payment_invalid": "Lựa chọn thanh toán không hợp lệ.",
+  "svframemmo_cobblemon.shop.pay_beastcoin": "Beastcoin",
+  "svframemmo_cobblemon.shop.pay_cobbledollars": "CobbleDollars"
 }

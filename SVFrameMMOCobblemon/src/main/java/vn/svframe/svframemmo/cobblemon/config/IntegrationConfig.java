@@ -68,8 +68,45 @@ public final class IntegrationConfig {
         public boolean enabled = true;
         @SerializedName("economy-provider") public String economyProvider = "cobbledollars";
         public String currency = "cobbledollars";
-        @SerializedName("default-price") public double defaultPrice = 2500d;
+        @SerializedName("default-price") public double defaultPrice = 500_000d;
         public Map<String, Double> prices = new LinkedHashMap<>();
+        @SerializedName("pricing-version") public int pricingVersion;
+        @SerializedName("beastcoin-default-price") public double beastcoinDefaultPrice = 100d;
+        @SerializedName("beastcoin-prices") public Map<String, Double> beastcoinPrices = new LinkedHashMap<>();
+        @SerializedName("cobbledollars-default-price") public double cobbledollarsDefaultPrice = 500_000d;
+        @SerializedName("cobbledollars-prices") public Map<String, Double> cobbledollarsPrices = new LinkedHashMap<>();
+
+        public vn.svframe.svframemmo.cobblemon.move.SkillPayment payment(int option,String move,String skill) {
+            int selected=option==0?1:option;
+            return vn.svframe.svframemmo.cobblemon.move.SkillPayment.quote(selected,
+                vn.svframe.svframemmo.cobblemon.move.SkillPayment.override(selected==1?beastcoinPrices:cobbledollarsPrices,move,skill),
+                selected==1?beastcoinDefaultPrice:cobbledollarsDefaultPrice);
+        }
+        public void validatePayments() {
+            if(beastcoinPrices==null)beastcoinPrices=new LinkedHashMap<>();
+            if(cobbledollarsPrices==null)cobbledollarsPrices=new LinkedHashMap<>();
+            if(pricingVersion<2) {
+                if(normalizedProvider().equals("cobbledollars")) {
+                    cobbledollarsDefaultPrice=Math.max(500_000d,defaultPrice);
+                    prices.forEach((key,value)->cobbledollarsPrices.putIfAbsent(key,Math.max(500_000d,value)));
+                } else if(normalizedProvider().equals("beconomy")&&"secondary".equalsIgnoreCase(currency)) {
+                    beastcoinDefaultPrice=Math.max(100d,defaultPrice);
+                    prices.forEach((key,value)->beastcoinPrices.putIfAbsent(key,Math.max(100d,value)));
+                }
+                pricingVersion=2;
+            }
+            // Legacy fields describe only the dollar option; new clients choose a server-defined payment ID.
+            economyProvider="cobbledollars";currency="cobbledollars";defaultPrice=cobbledollarsDefaultPrice;
+            prices=new LinkedHashMap<>(cobbledollarsPrices);
+            for(int option:new int[]{1,2}) {
+                payment(option,"","");
+                var values=option==1?beastcoinPrices:cobbledollarsPrices;
+                for(var entry:values.entrySet()) {
+                    if(entry.getKey()==null||entry.getKey().isBlank()||entry.getValue()==null)throw new IllegalArgumentException("Invalid skill payment override");
+                    vn.svframe.svframemmo.cobblemon.move.SkillPayment.quote(option,entry.getValue(),option==1?beastcoinDefaultPrice:cobbledollarsDefaultPrice);
+                }
+            }
+        }
         public String title = "Pokemon Skills";
 
         /** Native SVFrameMMO progression for learned Cobblemon moves. */
@@ -113,6 +150,8 @@ public final class IntegrationConfig {
         }
         IntegrationConfig parsed = GSON.fromJson(Files.readString(FILE), IntegrationConfig.class);
         if (parsed == null) parsed = new IntegrationConfig();
+        if(parsed.pokemonSkills==null||parsed.pokemonSkills.pricingVersion<2)
+            Files.copy(FILE,FILE.resolveSibling("config.before-pricing-v2.json"),java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         parsed.validate();
         Files.writeString(FILE, GSON.toJson(parsed));
         return parsed;
@@ -144,6 +183,7 @@ public final class IntegrationConfig {
         if (vfx.maxSnowstormPacketsPerTick < 1 || vfx.maxSnowstormPacketsPerTick > 4096) throw new IllegalArgumentException("max-snowstorm-packets-per-tick must be 1..4096");
         if (vfx.maxFallbackParticlesPerEmission < 1 || vfx.maxFallbackParticlesPerEmission > 256) throw new IllegalArgumentException("max-fallback-particles-per-emission must be 1..256");
 
+        pokemonSkills.validatePayments();
         String provider = pokemonSkills.normalizedProvider();
         if (!ECONOMY_PROVIDERS.contains(provider)) throw new IllegalArgumentException("pokemon-skills.economy-provider must be one of cobbledollars, beconomy, impactor");
         if (pokemonSkills.currency == null || pokemonSkills.currency.isBlank()) throw new IllegalArgumentException("pokemon-skills.currency must not be blank");

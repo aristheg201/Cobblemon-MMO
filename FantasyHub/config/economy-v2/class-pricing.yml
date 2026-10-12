@@ -1,0 +1,11 @@
+# Merge these keys into config/FantasyHub/class-switch.yml.
+# Existing permission/unlock conditions and cooldown remain unchanged.
+pricing-version: 2
+currency: beconomy:secondary
+fee: 3000
+premium-currency: beconomy:primary
+premium-fee: 2
+# Optional ordinary class overrides, inclusive range 1000..5000:
+class-prices:
+  PALADIN: 3000
+# Dragonborn and Death Knight always cost 2 huntercoin.

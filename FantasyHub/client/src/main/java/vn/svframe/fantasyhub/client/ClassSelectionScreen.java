@@ -34,7 +34,7 @@ public final class ClassSelectionScreen extends Screen {
         addDrawableChild(FantasyButton.builder(Text.literal("›"),b->{if((page+1)*count<rows.size())page++;clearAndInit();}).dimensions(left+40,top+panelHeight-52,24,20).build());
         var row=selection();var policy=FantasyHubClient.state().getAsJsonObject("classSwitch");
         var choose=FantasyButton.builder(Text.translatable(confirming?"fantasyhub.classes.confirm":"fantasyhub.classes.choose"),b->{if(!confirming){confirming=true;clearAndInit();}else{FantasyHubClient.send("switch_class",selected,0);confirming=false;clearAndInit();}}).dimensions(left+listWidth+12,top+panelHeight-52,panelWidth-listWidth-24,20).build();
-        choose.active=row!=null&&row.get("selectable").getAsBoolean()&&row.get("unlocked").getAsBoolean()&&!row.get("current").getAsBoolean()&&policy!=null&&policy.get("economyAvailable").getAsBoolean()&&!policy.get("busy").getAsBoolean()&&policy.get("remainingSeconds").getAsLong()==0;
+        choose.active=row!=null&&row.get("selectable").getAsBoolean()&&row.get("unlocked").getAsBoolean()&&!row.get("current").getAsBoolean()&&policy!=null&&row.getAsJsonObject("price").get("economyAvailable").getAsBoolean()&&row.getAsJsonObject("price").get("canAfford").getAsBoolean()&&!policy.get("busy").getAsBoolean()&&policy.get("remainingSeconds").getAsLong()==0;
         addDrawableChild(choose);
         addDrawableChild(FantasyButton.builder(Text.translatable("gui.done"),b->close()).dimensions(left+panelWidth-84,top+panelHeight-27,72,20).build());
     }
@@ -61,7 +61,8 @@ public final class ClassSelectionScreen extends Screen {
         context.disableScissor();
         if(hasPreview)model.render(context,selected,left+panelWidth-88,top+40,left+panelWidth-12,top+panelHeight-60,mouseX,mouseY);
         var policy=FantasyHubClient.state().getAsJsonObject("classSwitch");if(policy!=null){
-            Text cost=Text.translatable("fantasyhub.classes.cost",policy.get("fee").getAsString(),policy.get("currency").getAsString(),policy.get("remainingSeconds").getAsLong());
+            var price=row==null?policy:row.getAsJsonObject("price");
+            Text cost=Text.translatable("fantasyhub.classes.cost",price.get("fee").getAsString(),price.get("currency").getAsString(),policy.get("remainingSeconds").getAsLong());
             context.drawText(textRenderer,textRenderer.trimToWidth(cost.getString(),panelWidth-106),left+12,top+panelHeight-20,0xffd8bd8b,false);
         }
         for(var child:children())if(child instanceof net.minecraft.client.gui.Drawable drawable)drawable.render(context,mouseX,mouseY,delta);

@@ -43,7 +43,7 @@ public final class CobblemonShopRuntimeQa {
 
    private CobblemonShopRuntimeQa(ServerPlayerEntity player) {
       this.player = player;
-      this.offers = SVFrameMMOCobblemon.pokemonSkills().offers(player.getUuid());
+      this.offers = SVFrameMMOCobblemon.pokemonSkills().offers(player.getUuid(),2);
       this.report.put("offers", this.results);
       this.report.put("expected_offer_count", PlayerMoveCoverage.purchaseAdapters().size());
    }
@@ -82,11 +82,11 @@ public final class CobblemonShopRuntimeQa {
          BigInteger before = this.balance();
          entry.put("balanceBefore", before.toString());
          entry.put("previouslyOwned", offer.owned());
-         SVFrameMMOCobblemon.pokemonSkills().purchase(this.player, offer.moveId());
+         SVFrameMMOCobblemon.pokemonSkills().purchaseUsing(this.player, offer.moveId(),2);
          this.waitForPurchase(offer, entry, before, 0);
       } else {
          BigInteger before = this.balance();
-         SVFrameMMOCobblemon.pokemonSkills().purchase(this.player, "metronome");
+         SVFrameMMOCobblemon.pokemonSkills().purchaseUsing(this.player, "metronome",2);
          this.report
             .put(
                "unsupported_not_sold",
@@ -109,7 +109,7 @@ public final class CobblemonShopRuntimeQa {
             BigInteger expected = offer.owned() ? before : before.subtract(offer.price().toBigIntegerExact());
             entry.put("balanceAfter", after.toString());
             entry.put("purchase_correct", learned && after.equals(expected));
-            SVFrameMMOCobblemon.pokemonSkills().purchase(this.player, offer.moveId());
+            SVFrameMMOCobblemon.pokemonSkills().purchaseUsing(this.player, offer.moveId(),2);
             entry.put("duplicate_no_charge", this.balance().equals(after));
             if (!learned) {
                entry.put("failure", "purchase did not grant ownership");

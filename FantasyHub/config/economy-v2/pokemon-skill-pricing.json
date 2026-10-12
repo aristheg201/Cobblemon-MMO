@@ -1,0 +1,11 @@
+{
+  "pricing-version": 2,
+  "beastcoin-default-price": 100,
+  "beastcoin-prices": {},
+  "cobbledollars-default-price": 500000,
+  "cobbledollars-prices": {},
+  "economy-provider": "cobbledollars",
+  "currency": "cobbledollars",
+  "default-price": 500000,
+  "prices": {}
+}

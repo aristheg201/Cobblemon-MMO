@@ -11,7 +11,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -35,11 +34,16 @@ public final class PokemonSkillShopService implements PlayerAbilityShop {
    }
 
    public void purchase(ServerPlayerEntity player, String id) {
-      this.purchase(player, id, -1);
+      this.purchase(player, id, 1, -1);
+   }
+
+   @Override public void purchaseUsing(ServerPlayerEntity player,String id,int paymentOption) {
+      this.purchase(player,id,paymentOption,-1);
    }
 
    public List<Map<String, Object>> catalog(ServerPlayerEntity player) {
       List<Map<String, Object>> rows = new ArrayList<>();
+      boolean beastAvailable=economy.available("beconomy","secondary"),dollarsAvailable=economy.available("cobbledollars","cobbledollars");
 
       for (PokemonSkillShopService.Offer offer : this.offers(player.getUuid())) {
          ClassSkill definition = CobblemonMoveSkillAdapter.definition(offer.moveId());
@@ -59,11 +63,13 @@ public final class PokemonSkillShopService implements PlayerAbilityShop {
             row.put("category", profile.isHeal() ? "healing" : profile.damageCategory());
             row.put("owned", offer.owned());
             row.put("price", offer.price().toPlainString());
-            row.put(
-               "currency",
-               this.economy
-                  .displayCurrency(SVFrameMMOCobblemon.config().pokemonSkills.normalizedProvider(), SVFrameMMOCobblemon.config().pokemonSkills.currency)
-            );
+            row.put("currency","beastcoin");
+            List<Map<String,Object>> payments=new ArrayList<>();
+            for(int option:new int[]{1,2}) {
+               SkillPayment payment=SVFrameMMOCobblemon.config().pokemonSkills.payment(option,offer.moveId(),offer.skillId());
+               payments.add(Map.of("id",payment.id(),"price",payment.price().toPlainString(),"currency",economy.displayCurrency(payment.provider(),payment.currency()),"available",option==1?beastAvailable:dollarsAvailable));
+            }
+            row.put("paymentOptions",List.copyOf(payments));
             row.put("mana", definition.getParameter("mana", level, data));
             row.put("stamina", definition.getParameter("stamina", level, data));
             row.put("cooldown", definition.getParameter("cooldown", level, data));
@@ -93,7 +99,9 @@ public final class PokemonSkillShopService implements PlayerAbilityShop {
       this.open(player, 0);
    }
 
-   public void open(ServerPlayerEntity player, int requestedPage) {
+   public void open(ServerPlayerEntity player, int requestedPage) { this.open(player,requestedPage,1); }
+
+   public void open(ServerPlayerEntity player,int requestedPage,int paymentOption) {
       if (player != null) {
          IntegrationConfig.PokemonSkillShopConfig config = SVFrameMMOCobblemon.config().pokemonSkills;
          if (!config.enabled) {
@@ -104,13 +112,15 @@ public final class PokemonSkillShopService implements PlayerAbilityShop {
                player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.not_ready"), true);
             } else {
                int last = Math.max(0, (offers.size() - 1) / 36);
-               new PokemonSkillShopGui(player, this, Math.max(0, Math.min(last, requestedPage))).open();
+               new PokemonSkillShopGui(player, this, Math.max(0, Math.min(last, requestedPage)), paymentOption).open();
             }
          }
       }
    }
 
-   public List<PokemonSkillShopService.Offer> offers(UUID player) {
+   public List<PokemonSkillShopService.Offer> offers(UUID player) { return offers(player,1); }
+
+   public List<PokemonSkillShopService.Offer> offers(UUID player,int paymentOption) {
       if (!SVFrameMMOCobblemon.config().pokemonSkills.enabled) {
          return List.of();
       } else {
@@ -127,7 +137,7 @@ public final class PokemonSkillShopService implements PlayerAbilityShop {
 
                result.add(
                   new PokemonSkillShopService.Offer(
-                     moveId, skillId, name, this.price(moveId, skillId), SVFrameMMO.externalProgression().isLearned(player, skillId)
+                     moveId, skillId, name, SVFrameMMOCobblemon.config().pokemonSkills.payment(paymentOption,moveId,skillId).price(), SVFrameMMO.externalProgression().isLearned(player, skillId)
                   )
                );
             }
@@ -148,11 +158,15 @@ public final class PokemonSkillShopService implements PlayerAbilityShop {
       return CobblemonMoveSkillAdapter.definitions().keySet().stream().filter(PlayerMoveCoverage::purchasable).sorted(String.CASE_INSENSITIVE_ORDER).toList();
    }
 
-   public void purchase(ServerPlayerEntity player, String rawMoveId, int returnPage) {
+   public void purchase(ServerPlayerEntity player,String rawMoveId,int returnPage) { this.purchase(player,rawMoveId,1,returnPage); }
+
+   public void purchase(ServerPlayerEntity player, String rawMoveId, int paymentOption,int returnPage) {
       if (player != null) {
          IntegrationConfig.PokemonSkillShopConfig config = SVFrameMMOCobblemon.config().pokemonSkills;
          if (!config.enabled) {
             player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.disabled"), true);
+         } else if(paymentOption<0||paymentOption>2) {
+            player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.payment_invalid"),true);
          } else {
             PokemonSkillShopService.ResolvedSkill resolved = resolve(rawMoveId);
             if (resolved == null) {
@@ -164,14 +178,15 @@ public final class PokemonSkillShopService implements PlayerAbilityShop {
                if (SVFrameMMO.externalProgression().isLearned(playerId, resolved.skillId)) {
                   player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.already_owned", new Object[]{resolved.name}), true);
                   if (returnPage >= 0) {
-                     this.open(player, returnPage);
+                     this.open(player, returnPage,paymentOption);
                   }
                } else if (!this.purchasing.add(playerId)) {
                   player.sendMessage(Text.translatable("svframemmo_cobblemon.shop.processing"), true);
                } else {
-                  BigDecimal price = this.price(resolved.moveId, resolved.skillId);
-                  String provider = config.normalizedProvider();
-                  String currency = config.currency;
+                  SkillPayment payment=config.payment(paymentOption,resolved.moveId,resolved.skillId);
+                  BigDecimal price=payment.price();
+                  String provider=payment.provider();
+                  String currency=payment.currency();
                   this.economy.withdraw(player, provider, currency, price).whenComplete((charge, failure) -> {
                      MinecraftServer server = player.getServer();
                      if (server == null) {
@@ -237,7 +252,7 @@ public final class PokemonSkillShopService implements PlayerAbilityShop {
                                              true
                                           );
                                           if (returnPage >= 0) {
-                                             this.open(online, returnPage);
+                                             this.open(online, returnPage,provider.equals("cobbledollars")?2:1);
                                           }
                                        }
                                     }
@@ -308,7 +323,7 @@ public final class PokemonSkillShopService implements PlayerAbilityShop {
                         }
 
                         if (returnPage >= 0 && !player.isDisconnected()) {
-                           this.open(player, returnPage);
+                           this.open(player, returnPage,provider.equals("cobbledollars")?2:1);
                         }
                      }
                   );
@@ -356,39 +371,16 @@ public final class PokemonSkillShopService implements PlayerAbilityShop {
 
    public BigDecimal price(String moveId, String skillId) {
       IntegrationConfig.PokemonSkillShopConfig config = SVFrameMMOCobblemon.config().pokemonSkills;
-      Double override = lookupPrice(config.prices, moveId, skillId);
-      return BigDecimal.valueOf(override == null ? config.defaultPrice : override).stripTrailingZeros();
+      return config.payment(1,moveId,skillId).price();
    }
 
    public String currencyLabel() {
       IntegrationConfig.PokemonSkillShopConfig config = SVFrameMMOCobblemon.config().pokemonSkills;
-      return this.economy.displayCurrency(config.normalizedProvider(), config.currency);
+      return "beastcoin";
    }
 
    public String title() {
       return SVFrameMMOCobblemon.config().pokemonSkills.title;
-   }
-
-   private static Double lookupPrice(Map<String, Double> prices, String moveId, String skillId) {
-      if (prices != null && !prices.isEmpty()) {
-         for (Entry<String, Double> entry : prices.entrySet()) {
-            String key = entry.getKey() == null ? "" : entry.getKey().trim();
-            if (key.equalsIgnoreCase(moveId) || key.equalsIgnoreCase(skillId)) {
-               return entry.getValue();
-            }
-
-            try {
-               if (CobblemonMoveSkillAdapter.id(key).equals(moveId)) {
-                  return entry.getValue();
-               }
-            } catch (IllegalArgumentException var7) {
-            }
-         }
-
-         return null;
-      } else {
-         return null;
-      }
    }
 
    private static PokemonSkillShopService.ResolvedSkill resolve(String raw) {
