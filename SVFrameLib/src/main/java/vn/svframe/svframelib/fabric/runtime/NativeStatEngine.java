@@ -470,10 +470,11 @@ public final class NativeStatEngine {
         if (currentTick % 1200L != 0L) return removed;
         for (Map.Entry<UUID, EntityStats> entityEntry : entities.entrySet()) {
             EntityStats entity = entityEntry.getValue();
-            entity.stats.entrySet().removeIf(entry -> entry.getValue().isEmpty()
+            // Registered handlers can require a live player; they are never candidates for this cleanup.
+            entity.stats.entrySet().removeIf(entry -> handler(entry.getKey()) == null
+                    && entry.getValue().isEmpty()
                     && entry.getValue().base() == 0.0d
-                    && entry.getValue().defaultBase() == 0.0d
-                    && handler(entry.getKey()) == null);
+                    && entry.getValue().defaultBase() == 0.0d);
             if (entity.stats.isEmpty() && !entity.sessionOpen) entities.remove(entityEntry.getKey(), entity);
         }
         return removed;
