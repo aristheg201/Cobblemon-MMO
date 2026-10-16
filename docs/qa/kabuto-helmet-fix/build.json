@@ -1,0 +1,12 @@
+{
+  "artifact": "FantasyHubClient-0.1.9-helmetfix1.jar",
+  "version": "0.1.9",
+  "patch": "helmetfix1",
+  "sha256": "eb190cc941abb8560b36306e494046b8d6ca1b9196615de0cd7d499bf2cd6f1b",
+  "size": 1331964,
+  "client_tests": 14,
+  "failures": 0,
+  "server_compatibility": "Bridge 0.1.9; no server replacement",
+  "changed_class": "vn/svframe/fantasyhub/client/KabutoVisuals.class",
+  "runtime_qa": "PASS: Masked/Rider/Hyper/human front views, self and observer"
+}

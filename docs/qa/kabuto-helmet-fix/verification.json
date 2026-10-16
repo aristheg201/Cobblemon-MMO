@@ -1,0 +1,30 @@
+{
+  "result": "PASS",
+  "scope": "Focused helmet/vanilla-face visibility regression; native Minecraft 1.21.1 two-client front views",
+  "method": "Manual inspection of unmodified native screenshots plus real server form snapshots",
+  "checks": {
+    "masked_front_no_player_face": true,
+    "rider_after_cast_off_front_no_player_face": true,
+    "hyper_front_no_player_face": true,
+    "human_head_restored_after_henshin_toggle": true,
+    "self_and_observer_reviewed": true,
+    "server_unchanged_bridge_0_1_9": true,
+    "configuration_handshake_accepted": true,
+    "only_kabuto_visual_class_changed": true
+  },
+  "evidence": [
+    "masked-observer.png",
+    "masked-self.png",
+    "rider-observer.png",
+    "rider-self.png",
+    "hyper-observer.png",
+    "hyper-self.png",
+    "human-observer.png",
+    "human-self.png"
+  ],
+  "limitations": [
+    "Focused visual patch; no claim of full RPG ecosystem completion.",
+    "One initial observer registry-transfer timeout occurred; second connection succeeded."
+  ],
+  "source_commit": "84b2859"
+}

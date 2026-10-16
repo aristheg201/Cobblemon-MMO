@@ -1,0 +1,10 @@
+{
+  "artifact": "FantasyHubClient-0.1.9-helmetfix1.jar",
+  "url": "https://drive.google.com/file/d/1MImoLU8s00ta_cSSui284vmSJcqA54pc/view",
+  "sha256": "eb190cc941abb8560b36306e494046b8d6ca1b9196615de0cd7d499bf2cd6f1b",
+  "size": 1331964,
+  "client_version": "0.1.9",
+  "compatible_server": "Bridge 0.1.9; no server changes",
+  "source_commit": "84b2859",
+  "qa": "docs/qa/kabuto-helmet-fix/verification.json"
+}

@@ -1,3 +1,11 @@
+# Current checkpoint — Kabuto client helmet face fix
+
+Latest user steering: other class/item issues were fixed on their side; focus only on vanilla face protruding from helmet during Henshin/Cast Off. Fixed KabutoVisuals.animate to hide model.head as well as hat while server-confirmed transformed. Vanilla PlayerEntityRenderer.setModelPose calls setVisible(true) before each normal player, so human head/other players restore correctly. No server/config/gameplay/assets changes. Root versions remain0.1.9; a speculative gun-air patch was saved ONLY to /workspace/scratch/unshipped-gun-air.patch and reverted after latest user steering. Never deliver core/build/libs/FantasyHubCore-0.1.10.jar: it is an unshipped abandoned candidate.
+
+Delivered client /workspace/artifacts/kabuto-helmet-fix/FantasyHubClient-0.1.9-helmetfix1.jar, same internal0.1.9 for exact Bridge handshake. Drive file1MImoLU8s00ta_cSSui284vmSJcqA54pc, metadata size1331964 verified. Only KabutoVisuals.class differs from prior delivered client. Actual local build14testsPASS. Native two-client visual PASS for Masked, Rider after full Cast Off, Hyper, and human reset; 8screenshots + real server snapshots in docs/qa/kabuto-helmet-fix. Server46535 unchanged Bridge0.1.9; updated clients48204 DISPLAY99 and48206 DISPLAY101 (verify PIDs), logs /workspace/qa-evidence/kabuto-helmet-fix. Both viaVelocity25577. Source84b2859 pushed[skip ci]. At end human form, belt still equipped and passives valid. Full ecosystem gate remains FAIL.
+
+Prior checkpoint follows.
+
 # Current checkpoint — Bridge equipment/mining test build 0.1.9 (2026-10-16)
 
 User explicitly requests Bridge, not Core, and needs a test JAR immediately. Deliver Bridge-only hotfix ZIP, never instruct installing Core alongside it. Local builds pass: Items24/Core15/Client14 tests, compatibility26. All nested module hashes and Core/Bridge raw classes match. Versions: Bridge/Client0.1.9, assets kabuto-equipment-v10; MMO1.13.4-fabric; Items0.1.2-fabric; other raw modules unchanged. Latest real runtime enchant report PASS73equipment+10anvil/grindstone/glint checks. Native Zecter passives PASS12 and CobblePass filesystem/reward-save PASS6. Native original Rider armor observed; complete visual/Filament late-tracking/Gun sound acceptance remains unverified. DO NOT claim full port complete.
