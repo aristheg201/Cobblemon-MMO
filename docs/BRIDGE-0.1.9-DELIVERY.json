@@ -1,0 +1,12 @@
+{
+  "release": "0.1.9",
+  "delivery": "BRIDGE_TEST_BUILD",
+  "zip_url": "https://drive.google.com/file/d/11XtI70iCFXOdw1geXBfYA2XA5FxddmX0/view",
+  "size": 10974820,
+  "sha256": "b5c3a5eb61d42c143156ee154fe75bc80afa45fd7e58ac49d250bb335bc5af3d",
+  "source_url": "https://drive.google.com/file/d/1GShwl75eS6w3PeiNe5DBhjtcvNbssZSm/view",
+  "integration_commit": "b9f7c7e",
+  "items_commit": "022a4ee",
+  "global_release_gate": "FAIL",
+  "pending": "Live mining fixture must yield to queued GuildRuntime.signal; full source parity and focused visual matrix remain incomplete."
+}
