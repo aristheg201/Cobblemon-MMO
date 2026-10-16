@@ -11,9 +11,10 @@ class MythicEngineTest {
     static final Point ORIGIN=new Point("minecraft:overworld",5,64,8);
     static final class World implements Platform {
         final List<String> effects=new ArrayList<>(),failures=new ArrayList<>();boolean alive=true,condition=true;int predicates;
+        Set<UUID> excludedTargets=new HashSet<>();
         List<Target> selected=List.of(new Target(TARGET,null));
         @Override public boolean valid(Context c){return alive;}
-        @Override public boolean condition(MythicLine.Condition condition,Context c,Target t){predicates++;return this.condition;}
+        @Override public boolean condition(MythicLine.Condition condition,Context c,Target t){predicates++;return this.condition&&!excludedTargets.contains(t.entity());}
         @Override public List<Target> select(MythicLine.Selector selector,Context c){return selected;}
         @Override public double number(String expression,Context c,Target t){return new ExpressionRuntime().evaluate(text(expression,c,t),Map.of());}
         @Override public String text(String expression,Context c,Target t){for(var p:c.parameters().entrySet())expression=expression.replace("<modifier."+p.getKey()+">",p.getValue());return expression;}
@@ -78,6 +79,43 @@ class MythicEngineTest {
     @Test void supportedRecursiveGraphsCannotOverflowTheStackOrScheduler(){
         World world=new World();MythicEngine engine=new MythicEngine(world);engine.replace(Map.of("r",definition("r","skill{s=r}")),Map.of());
         assertTrue(cast(engine,"r"));assertEquals(0,engine.scheduledCount());assertTrue(world.effects.isEmpty());
+    }
+    @Test void originalTotemAliasesAreDependencyCheckedBeforeTheWrapperCanBeOffered() {
+        World world=new World();MythicEngine engine=new MythicEngine(world);
+        var line=MythicLine.parse("totem{md=100;oT=missingTick;oE=missingEnd}");
+        assertEquals("missingTick",line.value("ontick",""));
+        assertEquals("missingEnd",line.value("onend",""));
+        var definition=definition("Hunter_Blackhole","totem{md=100;oT=missingTick;oE=missingEnd}");
+        engine.replace(Map.of(definition.id(),definition),Map.of());
+        assertFalse(engine.available("Hunter_Blackhole"));
+        assertEquals(Set.of("missingTick","missingEnd"),MythicEngine.references(definition));
+    }
+    @Test void repeatIAliasRetainsUpstreamSchedulingInsteadOfBeingRejectedOrIgnored() {
+        World world=new World();MythicEngine engine=new MythicEngine(world);
+        engine.replace(Map.of("r",definition("r","message{m=impact;repeat=2;repeati=3}")),Map.of());
+        assertTrue(cast(engine,"r"));engine.tick();engine.tick();assertEquals(1,world.effects.size());
+        engine.tick();assertEquals(2,world.effects.size());for(int i=0;i<3;i++)engine.tick();assertEquals(3,world.effects.size());
+    }
+    @Test void legitimateLongLivedEffectsGetABoundedFreshBudgetEachServerTick() {
+        World world=new World();MythicEngine engine=new MythicEngine(world);
+        String[] effects=new String[1500];Arrays.fill(effects,"message{m=effect}");
+        engine.replace(Map.of("many",definition("many",effects)),Map.of());
+        var context=new Context(ACTOR,TARGET,new Target(TARGET,null),ORIGIN,Map.of(),new HashMap<>(),new Execution(),0);
+        for(int i=0;i<3;i++){assertTrue(engine.call("many",context));engine.tick();}
+        assertEquals(4500,world.effects.size());assertFalse(context.execution().cancelled());assertTrue(world.failures.isEmpty());
+    }
+    @Test void excludedEntitiesCannotConsumeTheTargetsLimitBeforeConditionsRun() {
+        World world=new World();List<Target> selected=new ArrayList<>();
+        for(int i=0;i<150;i++){UUID excluded=UUID.randomUUID();world.excludedTargets.add(excluded);selected.add(new Target(excluded,null));}
+        selected.add(new Target(TARGET,null));world.selected=List.copyOf(selected);
+        MythicEngine engine=new MythicEngine(world);
+        engine.replace(Map.of("Hunter_Aard",definition("Hunter_Aard","message{m=hit} @EIR{r=22;limit=1;conditions=[- isLiving true]}")),Map.of());
+        assertTrue(cast(engine,"Hunter_Aard"));assertEquals(List.of("message:hit:"+TARGET+":5.0"),world.effects);
+    }
+    @Test void aPresentButUnparseableDependencyIsReportedAsUnavailableRatherThanMissingSource() {
+        World world=new World();MythicEngine engine=new MythicEngine(world);
+        engine.replace(Map.of("wrapper",definition("wrapper","skill{s=presentButBad}")),Map.of("presentButBad",List.of("Invalid potion integer -255")));
+        assertEquals(List.of("Unavailable meta-skill presentButBad"),engine.failures().get("wrapper"));
     }
     @Test void metadataTyposAreReportedInsteadOfDroppingConditions(){
         assertThrows(IllegalArgumentException.class,()->MythicDefinition.parse("r","authored.yml",Map.of("Conditons",List.of("hasaura{a=test} false"),"Skills",List.of("damage{a=2}"))));

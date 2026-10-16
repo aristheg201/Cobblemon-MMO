@@ -38,8 +38,21 @@ public record MythicLine(String mechanic, Map<String,String> parameters, Selecto
             else chance=Double.parseDouble(word);
         }
         if(!Double.isFinite(chance)||chance<0||chance>1||interval<1||interval>72000)throw new IllegalArgumentException("Invalid chance/timer in "+source);
+        alias(parameters,"repeatinterval","repeati");
+        if(Set.of("projectile","totem","aura").contains(action.getKey().toLowerCase(Locale.ROOT))) {
+            for(String event:List.of("tick","hit","end","start")) {
+                String canonical="on"+event,preferred=parameters.remove(canonical+"skill");
+                alias(parameters,canonical,"o"+event.charAt(0));
+                if(preferred!=null)parameters.put(canonical,preferred);
+            }
+        }
         if(action.getKey().equalsIgnoreCase("potion"))parameters=vn.svframe.svframemobs.PotionParameters.normalize(parameters,true,Set.of("repeat","repeatinterval","delay"));
         return new MythicLine(action.getKey().toLowerCase(Locale.ROOT),parameters,selector,chance,trigger,interval);
+    }
+    private static void alias(Map<String,String> parameters,String canonical,String... aliases) {
+        String value=parameters.get(canonical);
+        for(String alias:aliases){String candidate=parameters.remove(alias);if(value==null)value=candidate;}
+        if(value!=null)parameters.put(canonical,value);
     }
     public static Condition condition(String source) {
         List<String> words=words(source);if(words.isEmpty())throw new IllegalArgumentException("Empty condition");

@@ -20,7 +20,7 @@ public final class MythicEngine {
         }
     }
     public static final class Execution {
-        private int steps;private boolean cancelled;
+        private int steps;private long budgetTick=Long.MIN_VALUE;private boolean cancelled;
         public boolean cancelled(){return cancelled;}
         public void cancel(){cancelled=true;}
     }
@@ -62,8 +62,8 @@ public final class MythicEngine {
             for(var definition:input.values())if(!errors.containsKey(definition.id())) {
                 List<String> problems=new ArrayList<>();
                 for(String reference:references(definition)) {
-                    if(!input.containsKey(reference)&&!platform.externalAvailable(reference))problems.add("Missing meta-skill "+reference);
-                    else if(errors.containsKey(reference))problems.add("Unavailable meta-skill "+reference);
+                    if(errors.containsKey(reference))problems.add("Unavailable meta-skill "+reference);
+                    else if(!input.containsKey(reference)&&!platform.externalAvailable(reference))problems.add("Missing meta-skill "+reference);
                 }
                 if(!problems.isEmpty()){errors.put(definition.id(),List.copyOf(problems));changed=true;}
             }
@@ -126,10 +126,14 @@ public final class MythicEngine {
     private boolean passes(List<MythicLine.Condition> list,Context context,Target target) {
         for(var condition:list)if(platform.condition(condition,context,target)!=condition.expected())return false;return true;
     }
+    private boolean consume(Execution execution) {
+        if(execution.budgetTick!=tick){execution.budgetTick=tick;execution.steps=0;}
+        return ++execution.steps<=4096;
+    }
     private void run(MythicDefinition definition,Context context,int index) {
         if(context.execution().cancelled()||!platform.valid(context))return;
         for(int i=index;i<definition.skills().size();i++) {
-            if(++context.execution().steps>4096){context.execution().cancel();throw new IllegalStateException("Skill execution exceeded 4096 steps");}
+            if(!consume(context.execution())){context.execution().cancel();throw new IllegalStateException("Skill execution exceeded 4096 steps in one tick");}
             MythicLine action=definition.skills().get(i);
             if(action.mechanic().equals("delay")) {
                 int delay=ticks(platform.number(action.value("ticks",action.value("t","0")),context,context.target()),0,72000);int next=i+1;
@@ -148,15 +152,18 @@ public final class MythicEngine {
     }
     private void applyToTargets(MythicLine action,Context context) {
         List<Target> selected=action.selector()==null?List.of(context.target()):platform.select(action.selector(),context);
-        if(selected.size()>128)selected=selected.subList(0,128);
+        int limit=action.selector()!=null&&action.selector().name().equals("nearestplayer")?1:
+            ticks(platform.number(action.selector()==null?"128":action.selector().parameters().getOrDefault("limit","128"),context,context.target()),1,128);
+        int accepted=0;
         for(Target target:selected) {
             if(action.selector()!=null&&!passes(action.selector().conditions(),context,target))continue;
             perform(action,context.target(target),target);
+            if(++accepted>=limit)break;
         }
     }
     private void perform(MythicLine action,Context context,Target target) {
         if(context.execution().cancelled()||!platform.valid(context))return;
-        if(++context.execution().steps>4096){context.execution().cancel();throw new IllegalStateException("Skill execution exceeded 4096 effects");}
+        if(!consume(context.execution())){context.execution().cancel();throw new IllegalStateException("Skill execution exceeded 4096 effects in one tick");}
         if(action.mechanic().equals("skill")) {
             Map<String,String> overrides=new LinkedHashMap<>();action.parameters().forEach((k,v)->{if(!Set.of("s","skill","repeat","repeatinterval","delay").contains(k))overrides.put(k,platform.text(v,context,target));});
             String id=action.value("s",action.value("skill",""));

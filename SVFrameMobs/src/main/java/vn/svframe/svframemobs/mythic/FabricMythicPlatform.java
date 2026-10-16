@@ -39,12 +39,15 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
         fields("damage mmodamage","a amount pkb preventknockback hnp hp type ignoreinvulnerability preventimmunity pi damagecause dc");
         fields("heal","a amount percent");fields("potion","type duration level hasparticles ambient overwrite icon");
         fields("velocity","x y z mode");fields("throw","v velocity vy velocityy");fields("lunge","v velocity vy velocityy");
+        fields("pull","v velocity toorigin to");
         fields("teleport","");fields("addtag removetag","t tag tags");fields("remove","delay");fields("ignite","ticks duration");fields("extinguish"," ");
         fields("setai ai","ai");fields("setspeed","speed s type");fields("gcd","ticks");fields("setstance","stance s");
         fields("message actionmessage","m message");fields("sound effect:sound","s sound v volume p pitch");
         fields("particle particles effect:particles","p particle a amount count hs vs hspread vspread y speed color c size material forwardoffset sideoffset");
-        fields("effect:particlering effect:particlesphere","p particle a amount count r radius points y speed color c size material");
+        fields("effect:particlering effect:particlesphere","p particle a amount count r radius points y speed color c size material hs vs hspread vspread");
         fields("projectile","ontick onhit onend onstart v velocity i interval hr vr mr maxrange hnp hp sb se syo tyo g gravity ho hs hfs");
+        fields("totem","ontick onend onstart md maxduration duration d i interval yoffset yo hnp hp");
+        fields("stun","duration d f face facing cancelontakedamage cancelondeath");
         fields("ondamaged","a auraname an duration d ce cancelevent damagemods");
         fields("hidefromplayers","d duration");fields("lightning","d damage");
         fields("aura","a aur an auraname duration d interval i ontick onend onstart maxstacks stacks refreshduration");fields("auraremove","a aur an auraname");
@@ -59,10 +62,33 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
     private final Map<UUID,Long> globalCooldown=new HashMap<>(),combat=new HashMap<>();
     private record DamageWard(long until, boolean all, Set<String> causes) {}
     private final Map<AuraKey,DamageWard> damageWards=new HashMap<>();
+    private record Stun(Point anchor,float yaw,float pitch,long until,boolean facing,boolean cancelDamage,boolean cancelDeath) {}
+    private final Map<UUID,Stun> stuns=new HashMap<>();
+    private void stun(MythicLine line,Context context,Target target) {
+        Entity actor=entity(context.caster()),victim=entity(target.entity());
+        if(!(victim instanceof LivingEntity living)||!RpgEntityAdapters.allows(actor,living,RpgEntityAdapters.Effect.STATUS))return;
+        int duration=MythicEngine.ticks(n(line,"duration","d",100,context,target),1,72000);
+        stuns.put(victim.getUuid(),new Stun(point(victim),victim.getYaw(),victim.getPitch(),tick+duration,
+            bool(line,"facing",bool(line,"face",bool(line,"f",false))),bool(line,"cancelontakedamage",false),bool(line,"cancelondeath",true)));
+    }
+    public void damaged(LivingEntity victim) {Stun stun=stuns.get(victim.getUuid());if(stun!=null&&stun.cancelDamage())stuns.remove(victim.getUuid());}
+    private void tickStuns() {
+        var iterator=stuns.entrySet().iterator();
+        while(iterator.hasNext()) {
+            var entry=iterator.next();Stun stun=entry.getValue();Entity victim=entity(entry.getKey());
+            if(victim==null||victim.isRemoved()||tick>=stun.until()||(!victim.isAlive()&&stun.cancelDeath())||!point(victim).world().equals(stun.anchor().world())){iterator.remove();continue;}
+            float yaw=stun.facing()?stun.yaw():victim.getYaw(),pitch=stun.facing()?stun.pitch():victim.getPitch();
+            if(victim.squaredDistanceTo(vector(stun.anchor()))>.000001||(stun.facing()&&(victim.getYaw()!=yaw||victim.getPitch()!=pitch))) {
+                if(victim instanceof ServerPlayerEntity player)player.networkHandler.requestTeleport(stun.anchor().x(),stun.anchor().y(),stun.anchor().z(),yaw,pitch);
+                else victim.refreshPositionAndAngles(stun.anchor().x(),stun.anchor().y(),stun.anchor().z(),yaw,pitch);
+            }
+            victim.setVelocity(Vec3d.ZERO);victim.velocityDirty=true;
+        }
+    }
     private MinecraftServer server;private long tick;private int particleBudget;
     public void server(MinecraftServer server){this.server=server;}
-    public void tick(long tick){this.tick=tick;particleBudget=2048;NativeVisibility.tick(server,tick);damageWards.entrySet().removeIf(r->r.getValue().until()<=tick);if(tick%200==0){globalCooldown.entrySet().removeIf(r->r.getValue()<=tick);combat.entrySet().removeIf(r->r.getValue()<=tick);variables.keySet().removeIf(id->entity(id)==null);auras.entrySet().removeIf(row->row.getValue().until()<=tick||entity(row.getKey().entity())==null);}}
-    public void clear(){damageWards.clear();NativeVisibility.clear();auras.clear();variables.clear();globalCooldown.clear();combat.clear();server=null;}
+    public void tick(long tick){this.tick=tick;particleBudget=2048;tickStuns();NativeVisibility.tick(server,tick);damageWards.entrySet().removeIf(r->r.getValue().until()<=tick);if(tick%200==0){globalCooldown.entrySet().removeIf(r->r.getValue()<=tick);combat.entrySet().removeIf(r->r.getValue()<=tick);variables.keySet().removeIf(id->entity(id)==null);auras.entrySet().removeIf(row->row.getValue().until()<=tick||entity(row.getKey().entity())==null);}}
+    public void clear(){stuns.clear();damageWards.clear();NativeVisibility.clear();auras.clear();variables.clear();globalCooldown.clear();combat.clear();server=null;}
     public Entity entity(UUID id) {if(id==null||server==null)return null;for(ServerWorld world:server.getWorlds()){Entity found=world.getEntity(id);if(found!=null)return found;}return null;}
     public static Point point(Entity entity){return new Point(entity.getWorld().getRegistryKey().getValue().toString(),entity.getX(),entity.getY(),entity.getZ());}
     private ServerWorld world(Point point){if(server==null||point==null)return null;for(ServerWorld world:server.getWorlds())if(world.getRegistryKey().getValue().toString().equals(point.world()))return world;return null;}
@@ -111,8 +137,11 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
     @Override public List<Target> select(MythicLine.Selector selector,Context context) {
         Entity caster=entity(context.caster());if(caster==null)return List.of();String name=selector.name();Map<String,String> parameters=selector.parameters();
         if(Set.of("self","caster").contains(name))return List.of(new Target(caster.getUuid(),null));
-        if(name.equals("selflocation"))return List.of(new Target(null,point(caster)));
-        if(name.equals("selfeyelocation"))return List.of(new Target(null,point(caster).add(0,caster.getStandingEyeHeight(),0)));
+        if(name.equals("selflocation")||name.equals("selfeyelocation")){
+            double offset=number(parameters.getOrDefault("y","0"),context,context.target());
+            if(Math.abs(offset)>64)throw new IllegalArgumentException("Location offset exceeds range");
+            return List.of(new Target(null,point(caster).add(0,offset+(name.equals("selfeyelocation")?caster.getStandingEyeHeight():0),0)));
+        }
         if(name.equals("trigger"))return entity(context.trigger())==null?List.of():List.of(new Target(context.trigger(),null));
         if(Set.of("target","t","targetlocation").contains(name)) {
             Entity target=context.target()!=null&&!Objects.equals(context.target().entity(),caster.getUuid())?entity(context.target().entity()):caster instanceof MobEntity mob?mob.getTarget():null;
@@ -135,8 +164,9 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
         if(sort.equals("NEAREST")||name.equals("nearestplayer"))candidates.sort(Comparator.comparingDouble(e->e.squaredDistanceTo(origin)));
         else if(sort.equals("FURTHEST"))candidates.sort(Comparator.comparingDouble((LivingEntity e)->e.squaredDistanceTo(origin)).reversed());
         else if(sort.equals("RANDOM"))Collections.shuffle(candidates);
-        int limit=name.equals("nearestplayer")?1:MythicEngine.ticks(number(parameters.getOrDefault("limit","128"),context,context.target()),1,128);
-        return candidates.stream().limit(limit).map(e->new Target(e.getUuid(),null)).toList();
+        // The engine applies inline conditions before the target limit. An
+        // excluded armor stand must not consume a real enemy's target slot.
+        return candidates.stream().map(e->new Target(e.getUuid(),null)).toList();
     }
     @Override public boolean condition(MythicLine.Condition test,Context context,Target selected) {
         Entity e=selected==null?null:entity(selected.entity()),caster=entity(context.caster());Map<String,String> p=test.parameters();
@@ -174,7 +204,7 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
         Entity actor=entity(context.caster()),victim=entity(target.entity());Point location=position(target,context);ServerWorld world=world(location);if(actor==null||world==null)return;
         switch(line.mechanic()) {
             case "skill"->vn.svframe.svframelib.fabric.SVFrameLibFabricMod.castSkill(line.value("s",line.value("skill","")),context.caster(),target.entity(),context.parameters());
-            case "damage","mmodamage"->{if(!(victim instanceof LivingEntity living)||!(actor instanceof LivingEntity source)||actor==victim||actor.isTeammate(victim))return;
+            case "damage","mmodamage"->{if(!(victim instanceof LivingEntity living)||!(actor instanceof LivingEntity source)||(actor==victim&&!explicitSelf(line))||(actor!=victim&&actor.isTeammate(victim)))return;
                 if(!bool(line,victim instanceof ServerPlayerEntity?"hp":"hnp",true)||!RpgEntityAdapters.allows(actor,living,RpgEntityAdapters.Effect.DAMAGE))return;
                 double amount=n(line,"amount","a",1,context,target);if(amount<=0)return;
                 vn.svframe.svframelib.api.stat.provider.StatProvider provider=source instanceof ServerPlayerEntity player?new vn.svframe.svframelib.player.PlayerMetadata(MMOPlayerData.setup(player).getStatMap(),vn.svframe.svframelib.api.player.EquipmentSlot.MAIN_HAND):new EntityStatProvider(source);
@@ -190,6 +220,11 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
                 living.addStatusEffect(new StatusEffectInstance(entry,duration,level,bool(line,"ambient",false),particles,bool(line,"icon",particles)),actor);
             }}
             case "velocity"->{if(victim!=null)move(actor,victim,new Vec3d(n(line,"x",0,context,target),n(line,"y",0,context,target),n(line,"z",0,context,target)),line.value("mode","SET"));}
+            case "pull"->{if(victim!=null){
+                Point destination=bool(line,"toorigin",bool(line,"to",false))?context.origin():point(actor);
+                var motion=PullMotion.towards(point(victim),destination,n(line,"velocity","v",1,context,target));
+                move(actor,victim,new Vec3d(motion.x(),motion.y(),motion.z()),"SET");
+            }}
             case "throw"->{if(victim!=null){Vec3d direction=victim.getPos().subtract(actor.getPos()).multiply(1,0,1).normalize().multiply(n(line,"velocity","v",1,context,target)/10);move(actor,victim,direction.add(0,n(line,"velocityy","vy",1,context,target)/10,0),"SET");}}
             case "lunge"->{Vec3d direction=vector(location).subtract(actor.getPos()).multiply(1,0,1).normalize().multiply(n(line,"velocity","v",1,context,target));move(actor,actor,direction.add(0,n(line,"velocityy","vy",0,context,target),0),"SET");}
             case "teleport"->{if(world!=actor.getWorld()||!world.isChunkLoaded(BlockPos.ofFloored(vector(location)))||!world.getWorldBorder().contains(location.x(),location.z()))return;
@@ -206,6 +241,8 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
             case "message","actionmessage"->{if(victim instanceof ServerPlayerEntity player)player.sendMessage(Text.literal(text(line.value("m",line.value("message","")),context,target).replace('&','§')),line.mechanic().equals("actionmessage"));}
             case "effect:sound","sound"->world.playSound(null,location.x(),location.y(),location.z(),SoundEvent.of(id(line.value("s",line.value("sound","entity.player.levelup")))),SoundCategory.PLAYERS,(float)MathHelper.clamp(n(line,"volume","v",1,context,target),0,4),(float)MathHelper.clamp(n(line,"pitch","p",1,context,target),.01,2));
             case "particles","particle","effect:particles","effect:particlering","effect:particlesphere"->particles(line,context,target,world,location);
+            case "totem"->totem(line,context,target,engine);
+            case "stun"->stun(line,context,target);
             case "projectile"->projectile(line,context,target,engine);
             case "ondamaged"->damageWard(line,context,target);
             case "hidefromplayers"->{if(victim instanceof ServerPlayerEntity observer&&actor instanceof ServerPlayerEntity hidden&&observer!=hidden)
@@ -217,6 +254,33 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
             case "randomskill"->{String[] options=line.value("skills",line.value("s","")).split(",");double total=0;List<String> names=new ArrayList<>();List<Double> weights=new ArrayList<>();for(String item:options){String[] pair=item.trim().split("\\s+");double weight=pair.length==2?number(pair[1],context,target):1;if(weight<=0||pair.length>2)throw new IllegalArgumentException("Invalid random skill weight");names.add(pair[0]);weights.add(weight);total+=weight;}double pick=Math.random()*total;for(int i=0;i<names.size();i++){pick-=weights.get(i);if(pick<=0){engine.call(names.get(i),context.child(target,Map.of()));break;}}}
             default->throw new IllegalArgumentException("Unsupported native effect "+line.mechanic());
         }
+    }
+    private static boolean explicitSelf(MythicLine line) {
+        return line.selector()!=null&&Set.of("self","caster").contains(line.selector().name());
+    }
+    private void totem(MythicLine line,Context context,Target target,MythicEngine engine) {
+        Point anchor=position(target,context).add(0,n(line,"yoffset","yo",1,context,target),0);
+        Target location=new Target(null,anchor);Context anchored=context.at(anchor).target(location);
+        int duration=MythicEngine.ticks(n(line,"maxduration","md",n(line,"duration","d",400,context,target),context,target),1,72000);
+        int interval=MythicEngine.ticks(n(line,"interval","i",1,context,target),1,72000);
+        Entity caster=entity(context.caster());
+        // Original player-only LOS check occurs once when the totem starts,
+        // not repeatedly as the caster walks away from its fixed anchor.
+        if(caster instanceof ServerPlayerEntity) {
+            ServerWorld world=world(anchor);
+            HitResult hit=world.raycast(new RaycastContext(caster.getPos().add(0,1,0),vector(anchor),RaycastContext.ShapeType.COLLIDER,RaycastContext.FluidHandling.NONE,caster));
+            if(hit.getType()!=HitResult.Type.MISS) {
+                Point impact=new Point(anchor.world(),hit.getPos().x,hit.getPos().y,hit.getPos().z);
+                callback(line.value("onstart",""),anchored,location,anchor,engine);
+                callback(line.value("onend",""),anchored,new Target(null,impact),impact,engine);return;
+            }
+        }
+        AnchoredTotem.start(engine,anchored,duration,interval,()->{
+            ServerWorld world=world(anchor);
+            return world!=null&&world.isChunkLoaded(BlockPos.ofFloored(vector(anchor)));
+        },()->callback(line.value("onstart",""),anchored,location,anchor,engine),
+          ()->callback(line.value("ontick",""),anchored,location,anchor,engine),
+          ()->callback(line.value("onend",""),anchored,location,anchor,engine));
     }
     private net.minecraft.entity.damage.DamageSource damageSource(MythicLine line,LivingEntity actor,LivingEntity target) {
         String cause=line.value("damagecause",line.value("dc",""));if(cause.isBlank())return null;
@@ -269,7 +333,7 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
         if(line.mechanic().equals("effect:particlering")||line.mechanic().equals("effect:particlesphere")) {
             double radius=n(line,"radius","r",3,c,t);if(radius<0||radius>64)throw new IllegalArgumentException("Invalid particle radius");
             int points=ring?Math.max(1,amount/perPoint):amount;
-            for(int i=0;i<points;i++){double a=2*Math.PI*i/points,dy=0,r=radius;if(line.mechanic().equals("effect:particlesphere")){dy=1-2*(i+.5)/points;r=radius*Math.sqrt(1-dy*dy);a=i*Math.PI*(3-Math.sqrt(5));dy*=radius;}world.spawnParticles(particle,center.x()+Math.cos(a)*r,center.y()+y+dy,center.z()+Math.sin(a)*r,perPoint,0,0,0,speed);}
+            for(int i=0;i<points;i++){double a=2*Math.PI*i/points,dy=0,r=radius;if(line.mechanic().equals("effect:particlesphere")){dy=1-2*(i+.5)/points;r=radius*Math.sqrt(1-dy*dy);a=i*Math.PI*(3-Math.sqrt(5));dy*=radius;}world.spawnParticles(particle,center.x()+Math.cos(a)*r,center.y()+y+dy,center.z()+Math.sin(a)*r,perPoint,n(line,"hs","hspread",0,c,t),n(line,"vs","vspread",0,c,t),n(line,"hs","hspread",0,c,t),speed);}
         }else {
             Entity caster=entity(c.caster());Vec3d direction=caster.getRotationVec(1).multiply(1,0,1).normalize(),side=new Vec3d(-direction.z,0,direction.x);
             Vec3d offset=direction.multiply(n(line,"forwardoffset",0,c,t)).add(side.multiply(n(line,"sideoffset",0,c,t)));

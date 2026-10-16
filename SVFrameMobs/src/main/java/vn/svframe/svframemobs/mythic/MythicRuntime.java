@@ -38,6 +38,7 @@ public final class MythicRuntime implements NativeSkillProviders.Provider {
         NativeSkillProviders.register("mythicmobs",this);
         ServerLifecycleEvents.SERVER_STARTING.register(server->{platform.server(server);try{if(!definitionsLoaded)reload();}catch(IOException failure){throw new IllegalStateException("Cannot load native Mythic graphs",failure);}});
         net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity,source,amount)->!platform.blocksDamage(entity,source));
+        net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DAMAGE.register((entity,source,baseDamage,damageTaken,blocked)->{if(damageTaken>0)platform.damaged(entity);});
         ServerTickEvents.END_SERVER_TICK.register(server->{platform.tick(engine.currentTick()+1);engine.tick();});
         ServerLifecycleEvents.SERVER_STOPPED.register(server->{engine.clear();platform.clear();definitionsLoaded=false;});
     }
