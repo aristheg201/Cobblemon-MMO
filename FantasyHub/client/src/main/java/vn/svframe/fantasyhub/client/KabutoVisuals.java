@@ -40,15 +40,15 @@ public final class KabutoVisuals {
     }
     float strength = (float) Math.sin(Math.PI * t);
     switch (pose.ability) {
-      case "KUNAI_STRIKE" -> {
-        var data =
-            entity.getMainHandStack().get(net.minecraft.component.DataComponentTypes.CUSTOM_DATA);
-        if (data != null && data.copyNbt().getString("SVFRAME_ITEM_MODEL").endsWith("/kunai_gun")) {
-          var arm =
-              entity.getMainArm() == net.minecraft.util.Arm.LEFT ? model.leftArm : model.rightArm;
-          arm.pitch = -1.5f * (1 - t);
-          arm.yaw = entity.getMainArm() == net.minecraft.util.Arm.LEFT ? .1f : -.1f;
-        }
+      case "GUN_FIRE" -> {
+        // The confirmed cast and synchronized mode also work for remote Polymer stacks,
+        // whose private server item NBT need not be visible to an observing client.
+        var arm =
+            entity.getMainArm() == net.minecraft.util.Arm.LEFT ? model.leftArm : model.rightArm;
+        float aim = t < .65f ? 1 : (1 - t) / .35f;
+        arm.pitch = (-1.5708f + entity.getPitch() * .0174533f) * aim;
+        arm.yaw = entity.getMainArm() == net.minecraft.util.Arm.LEFT ? .1f : -.1f;
+        arm.roll = 0;
       }
       case "RIDER_KICK" -> {
         model.rightLeg.pitch = -1.65f * strength;
@@ -84,8 +84,10 @@ public final class KabutoVisuals {
   private static final Map<Integer, Protocol.Kabuto> STATES = new HashMap<>();
 
   static void accept(Protocol.Kabuto state) {
-    if (state.form() < 0) STATES.remove(state.entityId());
-    else STATES.put(state.entityId(), state);
+    if (state.form() < 0) {
+      STATES.remove(state.entityId());
+      KabutoEffects.removeEntity(state.entityId());
+    } else STATES.put(state.entityId(), state);
   }
 
   public static Protocol.Kabuto state(int entityId) {

@@ -41,6 +41,7 @@ public final class FantasyHubClient implements ClientModInitializer {
         if(FabricLoader.getInstance().isModLoaded("accessories"))try{Class.forName("io.wispforest.accessories.api.client.AccessoriesRendererRegistry").getMethod("registerNoRenderer",net.minecraft.item.Item.class).invoke(null,Protocol.zecterBelt);}catch(ReflectiveOperationException failure){throw new IllegalStateException("Cannot register the native Zecter belt renderer",failure);}
         net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.INSTANCE.register(Protocol.kabutoHat,(stack,mode,matrices,vertices,light,overlay)->{if(mode==net.minecraft.client.render.model.json.ModelTransformationMode.GUI){var client=MinecraftClient.getInstance();var icon=client.getBakedModelManager().getModel(net.minecraft.util.Identifier.of("fantasyhub","item/additions/kabuto_helmet_icon"));matrices.push();matrices.translate(.5,.5,.5);client.getItemRenderer().renderItem(stack,mode,false,matrices,vertices,light,overlay,icon);matrices.pop();}else KabutoHatRenderer.render(matrices,vertices,light,overlay);});
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register((entity,world)->KabutoVisuals.remove(entity.getId()));
+        ClientPlayNetworking.registerGlobalReceiver(Protocol.KabutoFx.ID,(payload,context)->KabutoEffects.accept(payload));
         ClientPlayNetworking.registerGlobalReceiver(Protocol.KabutoCue.ID,(payload,context)->KabutoVisuals.cue(payload));
         ClientPlayNetworking.registerGlobalReceiver(Protocol.Kabuto.ID,(payload,context)->KabutoVisuals.accept(payload));
         net.fabricmc.fabric.api.event.player.UseItemCallback.EVENT.register((player,world,hand)->{var stack=player.getStackInHand(hand);if(!world.isClient||!stack.isOf(Protocol.kunaiGun))return net.minecraft.util.TypedActionResult.pass(stack);var state=KabutoVisuals.state(player.getId());if(state==null||(state.form()==0&&!player.isSneaking()&&player.getOffHandStack().isOf(net.minecraft.item.Items.SHIELD)))return net.minecraft.util.TypedActionResult.pass(stack);return net.minecraft.util.TypedActionResult.success(stack);});
@@ -72,13 +73,13 @@ public final class FantasyHubClient implements ClientModInitializer {
             else if(payload.screen().equals("pokemon_shop"))context.client().setScreen(new PokemonShopScreen());
             else try{context.client().setScreen(new HubScreen(HubScreen.View.valueOf(payload.screen().toUpperCase(java.util.Locale.ROOT))));}catch(IllegalArgumentException ignored){}
         });
-        ClientPlayConnectionEvents.DISCONNECT.register((handler,client)->{state=new JsonObject();castingState.reset();KabutoVisuals.clear();});
+        ClientPlayConnectionEvents.DISCONNECT.register((handler,client)->{state=new JsonObject();castingState.reset();KabutoVisuals.clear();KabutoEffects.clear();});
         var menu=KeyBindingHelper.registerKeyBinding(new KeyBinding("key.fantasyhub.menu",InputUtil.Type.KEYSYM,GLFW.GLFW_KEY_F8,"category.fantasyhub"));
         ClientTickEvents.END_CLIENT_TICK.register(client->{
-            ticks++;
+            ticks++;KabutoEffects.tick();
             while(menu.wasPressed())if(client.player!=null&&state.has("schema"))client.setScreen(new HubScreen(HubScreen.View.PROFILE));
             if(ticks%10==0&&client.player!=null&&state.has("schema")&&"1".equals(System.getenv("SVFRAME_RUNTIME_QA"))){
-                JsonObject o=new JsonObject();o.addProperty("clientHealth",client.player.getHealth());
+                JsonObject o=new JsonObject();o.addProperty("clientHealth",client.player.getHealth());o.add("kabutoEffects",KabutoEffects.observation());
                 JsonObject equipment=new JsonObject();for(var slot:java.util.List.of(net.minecraft.entity.EquipmentSlot.HEAD,net.minecraft.entity.EquipmentSlot.CHEST,net.minecraft.entity.EquipmentSlot.LEGS,net.minecraft.entity.EquipmentSlot.FEET)){var stack=client.player.getEquippedStack(slot);var data=stack.get(net.minecraft.component.DataComponentTypes.CUSTOM_DATA);equipment.addProperty(slot.name(),data==null?"":data.copyNbt().getString("SVFRAME_ITEM_MODEL"));}o.add("equippedModels",equipment);
                 var kb=KabutoVisuals.state(client.player.getId());if(kb!=null){var visual=new JsonObject();visual.addProperty("form",kb.form());visual.addProperty("clock",kb.clock());visual.addProperty("hyper",kb.hyper());visual.addProperty("energy",kb.energy());visual.addProperty("gauge",kb.gauge());o.add("kabuto",visual);}o.addProperty("clientMaxHealth",client.player.getMaxHealth());
                 o.addProperty("hurtTime",client.player.hurtTime);o.addProperty("maxHurtTime",client.player.maxHurtTime);

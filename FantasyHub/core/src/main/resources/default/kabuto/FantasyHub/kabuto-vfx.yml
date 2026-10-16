@@ -1,0 +1,8 @@
+# Presentation only. Disabling an effect never changes damage, movement or cooldowns.
+enabled: true
+minecraft: true
+cobblemon: true
+# Bounded semantic packets; clients construct the particles locally.
+view-distance: 48
+max-events-per-tick: 96
+density: 1.0

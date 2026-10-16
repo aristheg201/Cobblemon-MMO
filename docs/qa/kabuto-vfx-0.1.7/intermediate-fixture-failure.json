@@ -1,0 +1,7 @@
+{
+  "result": "FAIL",
+  "failed": [
+    "gun_projectile: damage_applied"
+  ],
+  "source": "real dedicated server + connected Minecraft client"
+}

@@ -140,5 +140,6 @@
   "subtitle.fantasyhub.kabuto_rider_kick": "Rider Kick!",
   "subtitle.fantasyhub.kabuto_hyper": "Hyper Zecter!",
   "fantasyhub.kabuto.reloaded": "Kabuto configuration reloaded.",
-  "fantasyhub.kabuto.invalid_config": "Cannot reload Kabuto configuration: %s"
+  "fantasyhub.kabuto.invalid_config": "Cannot reload Kabuto configuration: %s",
+  "fantasyhub.effects.density": "Skill effects: %s%%"
 }

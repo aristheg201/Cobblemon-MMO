@@ -1,3 +1,17 @@
+# Current continuation — Kabuto VFX / third-person gun fix0.1.7
+
+Latest steering: first-person gun was confirmed correct; third-person was reversed. Keep first-person Y=-90,Z=-3.5; third-person alone Y=-90,Z=-3.15, scale.45. Do not flip both again. Actual two-client firing frames in docs/qa/kabuto-vfx-0.1.7/gun-verified. Native GUN_FIRE cue fixes remote pose without requiring private Polymer item NBT. Actual Blockbench5.2.2 project and deterministic targeted editor operation included.
+
+Mixed Minecraft/Cobblemon VFX is implemented with bounded server semantic packets, finite client timelines and11actual ParticleStorm effects. Two broken native descriptors are privately normalized, not patched globally. Settings density0 disables own effects without disabling actual damage or observer effects. Final focused tests PASS:25fresh Core/Client unit tests,5native F checks, native skill regression,60mixed-VFX checks,8density checks, right-hand first/third firing review. Mobs33results retained from unchanged baseline. Whole ecosystem remains unfinished; release gate FAIL, no full-Skript/Mythic/class parity claim.
+
+Final raw/bundled build script /workspace/scratch/build_kabuto_vfx_final.py. Artifacts /workspace/artifacts/kabuto-vfx-0.1.7. Core/Bridge/Client/Protocol0.1.7; asset kabuto-vfx-v8; Mobs0.1.2 unchanged. Preserve raw Bridge before bundled build overwrites Core. All five nested hashes and raw/bundled class bytes verified. Java21/Gradle8.8 local, no GitHub Actions. Existing integration branch only, use[skip ci]. Imported/private assets remain ignored in public Git and included in authorized private source ZIP.
+
+Final runtime server32422, primary32423 DISPLAY:99, observer32426 DISPLAY:101, Xvfb99/101. Verify processes before reusing. Velocity25577 -> Fabric25565, RCON25575. QAPlayer UUID199f2445-7f42-3492-b97b-f1a69c57ee90; QAAttacker UUIDe585ad00-e318-3e35-aa1c-115aefd03416. Last64KiB of observation JSONL only; files are large. F needs fresh untransformed session. native skill runner requires Gun Mode; now waits for actual server callback fields, not only wall-clock sleeps. QA evidence /workspace/qa-evidence/kabuto-vfx-0.1.7.
+
+Delivery is being packaged/uploaded; see the latest delivery receipt when present. Never overwrite delivered0.1.6. Next broad work remains the existing Gunner/Awakened Gunslinger/Awakened Mage/Mage gaps and matrix requirements, plus left-hand/full Kabuto progression/protection/Hyper/performance acceptance. Do not repeat the full audit.
+
+## Prior checkpoint history
+
 # Continuous implementation state — 2026-10-16
 
 Current user focus: finish Kabuto photo corrections. SHOULDERS MUST BE SQUARE. Broad forehead V/cyan patterned visor, original red Rider helmet, horizontal red/gold Zecter/silver strap, same Gun frame with pistol-handle Gun grip and cylinder alternate grip; no generic dagger. Seven editable projects authored/exported using actual Blockbench5.2.2; source in FantasyHub/assets-source/kabuto. Assets revision kabuto-blockbench-v7. Original movie voices not supplied; digital cues are original synthesis. Full armor is server-confirmed form + client overlay preserving inventory, not replacement armor stacks. F while wearing real belt Henshins only if not already transformed; reopening F preserves Rider. Cast Off switches form2.

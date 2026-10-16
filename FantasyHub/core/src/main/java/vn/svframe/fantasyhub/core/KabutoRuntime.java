@@ -15,7 +15,6 @@ import net.minecraft.entity.effect.*;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.particle.*;
 import net.minecraft.registry.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -24,7 +23,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.*;
-import org.joml.Vector3f;
 import vn.svframe.fantasyhub.protocol.*;
 import vn.svframe.svframeitems.runtime.*;
 import vn.svframe.svframelib.SVFrameLib;
@@ -47,11 +45,6 @@ public final class KabutoRuntime {
   private static final Identifier FORM = Identifier.of("fantasyhub", "kabuto_form");
   private static final Map<UUID, Session> PLAYERS = new HashMap<>();
   private static final Map<UUID, Frozen> FROZEN = new HashMap<>();
-  private static final DustParticleEffect
-      RED = new DustParticleEffect(new Vector3f(.92f, .035f, .04f), 1.1f),
-      CYAN = new DustParticleEffect(new Vector3f(.15f, .85f, 1), .9f),
-      SILVER = new DustParticleEffect(new Vector3f(.8f, .85f, .9f), 1.2f),
-      GOLD = new DustParticleEffect(new Vector3f(1, .7f, .08f), 1.2f);
   static final List<String> SKILLS =
       List.of(
           "HENSHIN",
@@ -265,7 +258,10 @@ public final class KabutoRuntime {
               s.state.combo = Math.min(10, s.state.combo + 1);
               if (!s.state.gun
                   && source.isOf(net.minecraft.entity.damage.DamageTypes.PLAYER_ATTACK)
-                  && attacker.getMainHandStack().isOf(Protocol.kunaiGun)) bleed(s, victim);
+                  && attacker.getMainHandStack().isOf(Protocol.kunaiGun)) {
+                bleed(s, victim);
+                fx(s, "SLASH", attacker.getEyePos(), surface(attacker, victim), 10, 1);
+              }
             }
           }
           if (blocked && victim instanceof ServerPlayerEntity player) {
@@ -319,7 +315,9 @@ public final class KabutoRuntime {
           net.fabricmc.loader.api.FabricLoader.getInstance()
               .getConfigDir()
               .resolve("FantasyHub/kabuto.yml");
-      config = KabutoSettings.validate(YamlLite.map(YamlLite.parse(file)));
+      var parsed = KabutoSettings.validate(YamlLite.map(YamlLite.parse(file)));
+      KabutoEffects.reload();
+      config = parsed;
     } catch (java.io.IOException e) {
       throw new IllegalStateException("Cannot load Kabuto balancing", e);
     }
@@ -449,7 +447,7 @@ public final class KabutoRuntime {
         var cooldown = metadata.getCaster().getData().getCooldownMap().getInfo(metadata.getCast());
         if (cooldown != null)
           cooldown.reduceRemainingCooldown(number("empowered-cooldown-reduction"));
-        ring(s.player.getServerWorld(), s.player.getPos(), 1.1, GOLD, 28);
+        fx(s, "EMPOWER", s.player.getPos(), s.player.getPos(), 14, 1.1);
       }
       double scale =
           (empowered ? number("empowered-damage-multiplier") : 1)
@@ -465,18 +463,12 @@ public final class KabutoRuntime {
             applyForm(s);
             var p = s.player;
             var w = p.getServerWorld();
-            burst(
-                w,
-                new BlockStateParticleEffect(
-                    ParticleTypes.BLOCK, net.minecraft.block.Blocks.IRON_BLOCK.getDefaultState()),
-                p.getPos().add(0, 1, 0),
-                48,
-                .7);
-            ring(w, p.getPos(), 3, RED, 40);
+            fx(s, "CAST_OFF", p.getPos(), p.getPos(), 14, 4);
             aoe(s, p.getPos(), 4, number("cast-off-damage") * scale, .45);
             s.landing = result.point;
             s.leapStarted = tick;
             s.leapUntil = tick + 60;
+            fx(s, "LEAP", p.getPos(), result.point, 60, 1.2);
             s.leapDamage = number("slam-damage") * scale;
             velocity(p, forward(p).multiply(.35).add(0, 1.1, 0));
             sound(s, "cast_off", .8f);
@@ -484,7 +476,13 @@ public final class KabutoRuntime {
           case "CLOCK_UP" -> {
             s.state.startClock(tick, integer("clock-gauge-cost"), integer("clock-duration-ticks"));
             applySpeed(s);
-            ring(s.player.getServerWorld(), s.player.getPos(), number("clock-radius"), CYAN, 48);
+            fx(
+                s,
+                "CLOCK",
+                s.player.getPos(),
+                s.player.getPos(),
+                integer("clock-duration-ticks"),
+                number("clock-radius"));
             sound(s, "clock_up", 1);
             if (s.state.hyper) hyperDash(s);
           }
@@ -500,29 +498,34 @@ public final class KabutoRuntime {
                     nbt.putString(
                         "SVFRAME_ITEM_MODEL",
                         "fantasyhub:item/additions/" + (s.state.gun ? "kunai_gun" : "kunai")));
+            fx(s, "MODE", s.player.getPos(), s.player.getPos(), 8, .6);
             sound(s, "mode", 1.3f);
           }
           case "KUNAI_STRIKE" -> {
             s.player.swingHand(Hand.MAIN_HAND);
             if (s.state.gun) shoot(s, result.target, number("gun-damage") * scale);
             else {
-              hit(s, result.target, number("kunai-damage") * scale, false);
+              boolean damaged = hit(s, result.target, number("kunai-damage") * scale, false);
               bleed(s, result.target);
-              burst(s.player.getServerWorld(), RED, result.target.getPos().add(0, 1, 0), 20, .3);
+              if (damaged)
+                fx(s, "SLASH", s.player.getEyePos(), surface(s.player, result.target), 10, 1);
             }
             s.state.gain(integer("energy-per-hit"), integer("gauge-per-hit"));
           }
           case "HYPER_FORM" -> {
             s.state.hyper = true;
             s.state.gauge = 100;
-            ring(s.player.getServerWorld(), s.player.getPos().add(0, 1, 0), 1.2, GOLD, 40);
+            fx(s, "HYPER", s.player.getPos(), s.player.getPos(), 24, 1.2);
             sound(s, "hyper", .8f);
           }
         }
       } finally {
         s.executing = false;
         publish(s);
-        cue(s, ability, ability.equals("RIDER_KICK") ? 14 : 24);
+        cue(
+            s,
+            ability.equals("KUNAI_STRIKE") && s.state.gun ? "GUN_FIRE" : ability,
+            ability.equals("RIDER_KICK") ? 14 : 24);
       }
     }
   }
@@ -539,21 +542,19 @@ public final class KabutoRuntime {
         continue;
       }
       if (dot.next <= tick) {
-        hit(s, dot.target, number("bleed-damage"), false);
+        if (hit(s, dot.target, number("bleed-damage"), false))
+          fx(s, "BLEED", surface(p, dot.target), dot.target.getPos(), 5, .2);
         entry.setValue(new Bleed(dot.target, dot.until, tick + 20));
       }
     }
     if (state.clockUntil > 0 && !state.clock(tick)) {
       state.clockUntil = 0;
       applySpeed(s);
+      fx(s, "CLOCK_END", p.getPos(), p.getPos(), 10, 1.3);
       sound(s, "clock_over", .7f);
     }
     if (state.clock(tick)) {
       p.removeStatusEffect(StatusEffects.SLOWNESS);
-      if (tick % 3 == 0) {
-        burst(p.getServerWorld(), state.hyper ? GOLD : CYAN, p.getPos().add(0, .8, 0), 6, .3);
-        burst(p.getServerWorld(), ParticleTypes.ELECTRIC_SPARK, p.getPos().add(0, 1, 0), 3, .35);
-      }
       if (tick % 5 == 0)
         for (LivingEntity target : near(p, p.getPos(), number("clock-radius"))) {
           if (!RpgEntityAdapters.allows(p, target, RpgEntityAdapters.Effect.MOVEMENT)) continue;
@@ -575,10 +576,6 @@ public final class KabutoRuntime {
         }
     }
     if (s.leapUntil > tick) {
-      if (tick % 2 == 0) {
-        ring(p.getServerWorld(), s.landing, .9 + (tick - s.leapStarted) * .015, RED, 20);
-        burst(p.getServerWorld(), SILVER, p.getPos(), 4, .15);
-      }
       if (tick > s.leapStarted + 15) {
         Vec3d towards = s.landing.subtract(p.getPos());
         velocity(
@@ -596,8 +593,7 @@ public final class KabutoRuntime {
         } finally {
           s.executing = false;
         }
-        for (int i = 1; i <= 3; i++) ring(p.getServerWorld(), p.getPos(), i * 1.3, RED, 36);
-        burst(p.getServerWorld(), ParticleTypes.EXPLOSION, p.getPos(), 3, .6);
+        fx(s, "LAND", p.getPos(), p.getPos(), 16, 4);
         p.fallDistance = 0;
       } else p.fallDistance = 0;
     } else if (s.leapUntil > 0) {
@@ -637,22 +633,17 @@ public final class KabutoRuntime {
     if (p.getServerWorld().isSpaceEmpty(p, p.getBoundingBox().offset(destination.subtract(start))))
       p.networkHandler.requestTeleport(
           destination.x, destination.y, destination.z, p.getYaw(), p.getPitch());
-    for (int i = 0; i < 30; i++)
-      burst(
-          p.getServerWorld(),
-          s.state.hyper ? GOLD : RED,
-          start.lerp(end, i / 29d).add(0, .8, 0),
-          1,
-          .05);
-    burst(p.getServerWorld(), ParticleTypes.ELECTRIC_SPARK, target.getPos().add(0, 1, 0), 28, .5);
-    hit(
-        s,
-        target,
-        number("kick-damage")
-            * scale
-            * (s.state.hyper ? 1.5 : 1)
-            * (1 + s.state.combo * number("kick-combo-damage-per-point")),
-        true);
+    fx(s, "KICK", start, end, 12, 1);
+    boolean damaged =
+        hit(
+            s,
+            target,
+            number("kick-damage")
+                * scale
+                * (s.state.hyper ? 1.5 : 1)
+                * (1 + s.state.combo * number("kick-combo-damage-per-point")),
+            true);
+    if (damaged) fx(s, "KICK_HIT", surface(p, target), target.getPos(), 12, 1.5);
     s.state.combo = 0;
     velocity(p, Vec3d.ZERO);
     sound(s, "rider_kick", 1);
@@ -665,7 +656,7 @@ public final class KabutoRuntime {
       return;
     s.lastBlockTick = tick;
     s.state.gain(integer("energy-per-block"), integer("gauge-per-block"));
-    ring(s.player.getServerWorld(), s.player.getPos().add(0, 1, 0), .7, SILVER, 16);
+    fx(s, "BLOCK", s.player.getPos(), s.player.getPos(), 10, .7);
   }
 
   private static void bleed(Session s, LivingEntity target) {
@@ -692,6 +683,7 @@ public final class KabutoRuntime {
         direction = target.getBoundingBox().getCenter().subtract(start).normalize();
     // A fast projectile advances over real ticks and stops on the first
     // eligible entity or block, including a bystander crossing its path.
+    fx(s, "GUN_MUZZLE", start, start.add(direction), 5, .3);
     projectile(s, start, direction, damage, 0);
   }
 
@@ -710,6 +702,7 @@ public final class KabutoRuntime {
                 s.player));
     if (block.getType() != HitResult.Type.MISS) next = block.getPos();
     LivingEntity hit = null;
+    Vec3d hitPoint = null;
     double closest = Double.MAX_VALUE;
     for (LivingEntity t :
         w.getEntitiesByClass(
@@ -719,16 +712,20 @@ public final class KabutoRuntime {
       var contact = t.getBoundingBox().expand(.15).raycast(position, next);
       if (contact.isPresent() && contact.get().squaredDistanceTo(position) < closest) {
         hit = t;
+        hitPoint = contact.get();
         closest = contact.get().squaredDistanceTo(position);
       }
     }
-    for (int i = 0; i < 8; i++) burst(w, CYAN, position.lerp(next, i / 7d), 1, 0);
+    fx(s, "GUN", position, hitPoint == null ? next : hitPoint, 3, .2);
     if (hit != null) {
-      hit(s, hit, damage, false);
-      burst(w, ParticleTypes.ELECTRIC_SPARK, hit.getBoundingBox().getCenter(), 12, .2);
+      boolean damaged = hit(s, hit, damage, false);
+      fx(s, damaged ? "GUN_HIT" : "GUN_BLOCK", hitPoint, hitPoint.add(direction), 8, .7);
       return;
     }
-    if (block.getType() != HitResult.Type.MISS) return;
+    if (block.getType() != HitResult.Type.MISS) {
+      fx(s, "GUN_BLOCK", next, next.add(direction), 8, .5);
+      return;
+    }
     Vec3d end = next;
     later(1, () -> projectile(s, end, direction, damage, age + 1));
   }
@@ -750,8 +747,7 @@ public final class KabutoRuntime {
       if (ray.getType() == HitResult.Type.MISS
           && p.getServerWorld().isSpaceEmpty(p, p.getBoundingBox().offset(end.subtract(start)))) {
         p.networkHandler.requestTeleport(end.x, end.y, end.z, p.getYaw(), p.getPitch());
-        for (int i = 0; i < 24; i++)
-          burst(p.getServerWorld(), GOLD, start.lerp(end, i / 23d).add(0, 1, 0), 1, 0);
+        fx(s, "DASH", start, end, 12, 1);
         break;
       }
     }
@@ -842,7 +838,7 @@ public final class KabutoRuntime {
     s.state.hyper = false;
     s.leapUntil = 0;
     applyForm(s);
-    ring(s.player.getServerWorld(), s.player.getPos().add(0, 1, 0), .8, RED, 32);
+    fx(s, "HENSHIN", s.player.getPos(), s.player.getPos(), 24, .8);
     sound(s, "henshin", 1);
   }
 
@@ -1011,17 +1007,16 @@ public final class KabutoRuntime {
       p.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(p));
   }
 
-  private static void ring(
-      ServerWorld w, Vec3d pos, double radius, ParticleEffect effect, int count) {
-    for (int i = 0; i < count; i++) {
-      double angle = i * Math.PI * 2 / count;
-      burst(w, effect, pos.add(radius * Math.cos(angle), .12, radius * Math.sin(angle)), 1, 0);
-    }
+  private static void fx(
+      Session s, String phase, Vec3d start, Vec3d end, int duration, double radius) {
+    if (valid(s)) KabutoEffects.emit(s.player, phase, start, end, s.state.hyper, duration, radius);
   }
 
-  private static void burst(
-      ServerWorld w, ParticleEffect effect, Vec3d pos, int count, double spread) {
-    w.spawnParticles(effect, pos.x, pos.y, pos.z, count, spread, spread, spread, 0);
+  private static Vec3d surface(ServerPlayerEntity actor, LivingEntity target) {
+    Vec3d center = target.getBoundingBox().getCenter();
+    double radius =
+        Math.max(target.getBoundingBox().getLengthX(), target.getBoundingBox().getLengthZ()) * .5;
+    return center.add(actor.getEyePos().subtract(center).normalize().multiply(radius + .15));
   }
 
   private static void sound(Session s, String cue, float pitch) {

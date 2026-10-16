@@ -10,6 +10,8 @@ import java.util.logging.*;
 final class PresentationOptions {
     boolean enabled=true;
     float scale=.8f;
+    float effectsDensity=1f;
+    boolean cobblemonEffects=true;
     boolean right=false;
     boolean compact=true;
     boolean health=true,mana=true,stamina=true,magic=true;
@@ -20,6 +22,7 @@ final class PresentationOptions {
             var options=new com.google.gson.Gson().fromJson(Files.readString(path()),PresentationOptions.class);
             if(options==null)return new PresentationOptions();
             options.scale=Float.isFinite(options.scale)?Math.max(.5f,Math.min(1,options.scale)):.8f;
+            options.effectsDensity=Float.isFinite(options.effectsDensity)?Math.clamp(options.effectsDensity,0f,1.5f):1f;
             return options;
         }catch(IOException|RuntimeException failure){Logger.getLogger("FantasyHub-Client").log(Level.WARNING,"Could not load presentation options",failure);return new PresentationOptions();}
     }

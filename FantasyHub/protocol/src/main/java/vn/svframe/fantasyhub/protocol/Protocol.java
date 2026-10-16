@@ -15,7 +15,7 @@ import net.minecraft.registry.Registries;
 public final class Protocol implements ModInitializer {
     private static boolean installed;
     public static final int VERSION=1;
-    public static final String ASSET_REVISION="kabuto-blockbench-v7";
+    public static final String ASSET_REVISION="kabuto-vfx-v8";
     public record Handshake(int version,String assets,String clientVersion,String diagnostic) implements CustomPayload {
         public static final Id<Handshake> ID=new Id<>(Identifier.of("fantasyhub","handshake_v1"));
         public static final PacketCodec<PacketByteBuf,Handshake> CODEC=PacketCodec.of((p,b)->{b.writeVarInt(p.version);b.writeString(p.assets,128);b.writeString(p.clientVersion,32);b.writeString(p.diagnostic,512);},b->new Handshake(b.readVarInt(),b.readString(128),b.readString(32),b.readString(512)));
@@ -32,6 +32,12 @@ public final class Protocol implements ModInitializer {
         public static final Id<KabutoCue> ID=new Id<>(Identifier.of("fantasyhub","kabuto_cue_v1"));
         public static final PacketCodec<RegistryByteBuf,KabutoCue> CODEC=PacketCodec.of((p,b)->{b.writeVarInt(p.entityId);b.writeString(p.ability,32);b.writeVarInt(p.duration);},b->new KabutoCue(b.readVarInt(),b.readString(32),b.readVarInt()));
         @Override public Id<KabutoCue> getId(){return ID;}
+    }
+    /** Semantic presentation only: positions/timing come from accepted server actions. */
+    public record KabutoFx(int entityId,String phase,double x,double y,double z,double tx,double ty,double tz,boolean hyper,int duration,float radius,float density,int backends) implements CustomPayload {
+        public static final Id<KabutoFx> ID=new Id<>(Identifier.of("fantasyhub","kabuto_fx_v1"));
+        public static final PacketCodec<RegistryByteBuf,KabutoFx> CODEC=PacketCodec.of((p,b)->{b.writeVarInt(p.entityId);b.writeString(p.phase,24);b.writeDouble(p.x);b.writeDouble(p.y);b.writeDouble(p.z);b.writeDouble(p.tx);b.writeDouble(p.ty);b.writeDouble(p.tz);b.writeBoolean(p.hyper);b.writeVarInt(p.duration);b.writeFloat(p.radius);b.writeFloat(p.density);b.writeVarInt(p.backends);},b->new KabutoFx(b.readVarInt(),b.readString(24),b.readDouble(),b.readDouble(),b.readDouble(),b.readDouble(),b.readDouble(),b.readDouble(),b.readBoolean(),b.readVarInt(),b.readFloat(),b.readFloat(),b.readVarInt()));
+        @Override public Id<KabutoFx> getId(){return ID;}
     }
     public record State(String json) implements CustomPayload {
         public static final Id<State> ID=new Id<>(Identifier.of("fantasyhub","state_v1"));
@@ -74,6 +80,7 @@ public final class Protocol implements ModInitializer {
         PayloadTypeRegistry.configurationS2C().register(Handshake.ID,Handshake.CODEC);
         PayloadTypeRegistry.configurationC2S().register(Handshake.ID,Handshake.CODEC);
         PayloadTypeRegistry.playS2C().register(State.ID,State.CODEC);
+        PayloadTypeRegistry.playS2C().register(KabutoFx.ID,KabutoFx.CODEC);
         PayloadTypeRegistry.playS2C().register(Casting.ID,Casting.CODEC);
         PayloadTypeRegistry.playS2C().register(Open.ID,Open.CODEC);
         PayloadTypeRegistry.playC2S().register(Action.ID,Action.CODEC);

@@ -17,7 +17,7 @@ All supplied scripts and the broader upstream compatibility target remain record
 | mythic_skill | 4955 |
 | npc | 6 |
 | quest | 1519 |
-| requirement | 15 |
+| requirement | 19 |
 | script | 40 |
 | skill_wrapper | 796 |
 | sound | 882 |
@@ -32,3 +32,5 @@ Run `python FantasyHub/tools/check_port_completion.py` for the release gate. `--
 Focused Hunter runtime acceptance is recorded in [HUNTER-IMPLEMENTATION-QA.md](HUNTER-IMPLEMENTATION-QA.md). Its narrow regression entry passes; full class/equipment and ecosystem parity remain unfinished.
 
 Focused Kabuto native-input/skill/reconnect acceptance is recorded in [KABUTO-IMPLEMENTATION-QA.md](KABUTO-IMPLEMENTATION-QA.md). Its narrow regression entry passes; the five broad addition entries remain IN_PROGRESS. The original inventory above is retained; additions and current exact counts are in the JSON/release-gate output.
+
+2026-10-16: narrow Kabuto VFX/gun acceptance0.1.7 is verified; see KABUTO-VFX-0.1.7-QA.md. Full-port release gate remains FAIL; left-hand and broader model/class acceptance are not promoted.

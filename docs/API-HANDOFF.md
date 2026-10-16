@@ -1,3 +1,11 @@
+# Latest checkpoint — Kabuto VFX/gun correction0.1.7
+
+Core/Bridge/Client/Protocol0.1.7, assets kabuto-vfx-v8. First-person gun stays as user confirmed; third-person corrected independently. New server-confirmed GUN_FIRE pose and KabutoFx S2C events. Native Minecraft plus11actual Cobblemon ParticleStorm effects; private fixes for upstream flash/metal sprite references. Config FantasyHub/kabuto-vfx.yml, /kabuto reload, F8Settings density. No damage authority on client.
+
+Focused real QA passes: native F/inventory, skills,60two-client VFX checks,8density/damage-isolation checks, actual first/third gun firing frames.25fresh Hub unit tests;33Mobs baseline unchanged. See docs/KABUTO-VFX-0.1.7-QA.md and docs/CONTINUATION_STATE.md. Source/build/config/private assets included in new0.1.7 ZIP; delivery receipt/link follows upload. Full-port matrix still FAIL.
+
+## Previous deliveries
+
 ## Latest continuation — Kabuto / Wolven / Skyrim 0.1.6, 2026-10-16
 
 User's latest corrections are implemented in the code checkpoint: **square pauldrons**, broad silver forehead V/patterned cyan visor, original red Rider helmet, horizontal red/gold Zecter with silver strap, same Gun frame with two reference grip pivots. Actual Blockbench5.2.2 generated seven editable projects in FantasyHub/assets-source/kabuto; all required generated assets are inside the authorized source archive. F while wearing Zecter automatically Henshins Masked; Cast Off switches Rider; reopening F retains Rider. The complete suit is a server-confirmed overlay/stat form preserving actual Inventory NBT. Original actor/movie audio was not provided; six digital cues are original synthesis.

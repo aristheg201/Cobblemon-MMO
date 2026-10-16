@@ -1,0 +1,22 @@
+[
+  {
+    "command": "kill @e[tag=qa_kabuto]",
+    "response": "No entity was found"
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 0.5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_kunai_mode",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_kunai_strike",
+    "response": ""
+  }
+]

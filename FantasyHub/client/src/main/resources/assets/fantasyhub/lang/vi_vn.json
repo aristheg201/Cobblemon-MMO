@@ -140,5 +140,6 @@
   "subtitle.fantasyhub.kabuto_rider_kick": "Rider Kick!",
   "subtitle.fantasyhub.kabuto_hyper": "Hyper Zecter!",
   "fantasyhub.kabuto.reloaded": "Đã tải lại cấu hình Kabuto.",
-  "fantasyhub.kabuto.invalid_config": "Không thể tải lại cấu hình Kabuto: %s"
+  "fantasyhub.kabuto.invalid_config": "Không thể tải lại cấu hình Kabuto: %s",
+  "fantasyhub.effects.density": "Hiệu ứng kỹ năng: %s%%"
 }

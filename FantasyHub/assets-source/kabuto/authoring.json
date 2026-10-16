@@ -16,7 +16,8 @@
     "1000391750.jpg",
     "1000391751.jpg",
     "1000391754.jpg",
-    "1000391753.jpg"
+    "1000391753.jpg",
+    "1000391756.jpg"
   ],
-  "notes": "Silver brow wedge crown, wrapped patterned cyan visor, horizontal red/gold Zecter, same Kunai Gun frame with two real grip points. Original movie voices not supplied."
+  "notes": "Silver brow wedge crown, wrapped patterned cyan visor, horizontal red/gold Zecter, same Kunai Gun frame with two real grip points. Original movie voices not supplied. Gun muzzle is negative model X: forward silver cylinder and red D-guard, rear black receiver and pistol grip. Both hand transforms reversed around the grip per latest reference. Final correction: first-person stays Y=-90/Z=-3.5 as user confirmed; third-person alone uses Y=-90/Z=-3.15 because held-item and first-person base matrices differ."
 }

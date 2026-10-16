@@ -1,0 +1,15 @@
+{
+  "result": "PASS",
+  "review": "Manual inspection of unmodified frames from two simultaneously recorded real clients, at 6.3 seconds. Right-handed first- and third-person gun firing. Silver cylinder/open red foreguard point toward target; black receiver/pistol grip at hand; blade below grip. Left-handed runtime acceptance remains in broader model matrix.",
+  "firstperson_transform_preserved": true,
+  "thirdperson_transform_corrected_independently": true,
+  "source_editor": "Blockbench 5.2.2",
+  "frames": {
+    "gun-firing-first-person.png": "19f0b54b14fae061037e4e8843c51034d23cc7ede8af71ea63866653a3184c04",
+    "gun-firing-third-person.png": "3fa351dd0cf93e36377aea1ae6f5bd9e2c5a5e565404a41da4b9eaf5a82fb3fa"
+  },
+  "videos": {
+    "first-person.mp4": "83c5265b129e19ac501ef7b4094c0aa6cb68711aa1f07b8809e97434d414a71a",
+    "third-person.mp4": "1f82894ce36bbba48b51416dd1c8397ebf16a0146d516c15fb23aa970992cd25"
+  }
+}

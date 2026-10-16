@@ -18,6 +18,16 @@ def main():
  def act(s,wait=1.2,label=None):
   send(f'execute as {a.player} run fantasyhubqa kabuto_{s}');time.sleep(min(.25,wait));screenshot((label or s)+'-active');time.sleep(max(0,wait-.25))
   state=json.loads((a.server/'qa/kabuto-runtime.json').read_text());name=label or s;evidence[name]=state.get(s,state);screenshot(name)
+  # Runtime callbacks use SERVER TICKS. Two rendered clients may run below
+  # 20 TPS; a fixed wall-clock sleep must not read a half-written scenario.
+  required=({'slam_damage_applied'} if s=='cast_off' else
+            {'expired','mob_ai_restored'} if s=='clock_up' else
+            {'damage_applied'} if s in ('rider_kick','kunai_strike') else set())
+  deadline=time.monotonic()+30
+  while required-set(evidence[name]) and time.monotonic()<deadline:
+   time.sleep(.25)
+   state=json.loads((a.server/'qa/kabuto-runtime.json').read_text());evidence[name]=state.get(s,state)
+  if required-set(evidence[name]):failed.append(name+': server-tick callback timeout')
   if isinstance(evidence[name],dict) and evidence[name].get('cast_accepted') is False:failed.append(name+': cast rejected')
   (a.output/'kabuto-runtime.json').write_text(json.dumps(evidence,indent=2));print(name,flush=True)
  try:

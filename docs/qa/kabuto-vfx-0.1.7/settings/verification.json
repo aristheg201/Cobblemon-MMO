@@ -1,0 +1,410 @@
+{
+  "result": "PASS",
+  "checks": {
+    "ui_density_zero_persisted": true,
+    "client_density_zero": true,
+    "local_minecraft_unchanged": true,
+    "local_native_unchanged": true,
+    "observer_minecraft_increased": true,
+    "observer_native_increased": true,
+    "cast_accepted": true,
+    "server_damage_applied": true
+  },
+  "before": {
+    "actor": {
+      "clientHealth": 49.8,
+      "kabutoEffects": {
+        "phases": {
+          "HENSHIN": 4,
+          "CAST_OFF": 3,
+          "LEAP": 3,
+          "LAND": 3,
+          "GUN_MUZZLE": 5,
+          "GUN": 10,
+          "GUN_HIT": 5,
+          "EMPOWER": 2,
+          "CLOCK": 4,
+          "CLOCK_END": 4,
+          "KICK": 2,
+          "KICK_HIT": 2,
+          "MODE": 3,
+          "SLASH": 2,
+          "BLEED": 6,
+          "HYPER": 2,
+          "DASH": 2
+        },
+        "minecraftParticleRequests": 19576,
+        "activeTimelines": 0,
+        "budgetDrops": 0,
+        "density": 0.0,
+        "cobblemon": {
+          "backend": "Cobblemon 1.8 ParticleStorm",
+          "emitters": {
+            "swordsdance_sparkle": 15,
+            "metal_sparks": 16,
+            "explosion_burst_flash": 6,
+            "impact_steel": 3,
+            "bulletpunch_targetsparks": 8,
+            "quickattack_dashlines": 44,
+            "thundershock_actorbolts": 6,
+            "thunderbolt_targetimpact": 2,
+            "impact_electric": 2,
+            "scratch_target": 2,
+            "scratch_targetsparks": 2
+          },
+          "nativeParticlesPeak": 62,
+          "textureRepairs": {
+            "metal_sparks": "cobblemon:generic/orb/scaling",
+            "explosion_burst_flash": "cobblemon:vanilla/flash"
+          },
+          "available": true
+        }
+      },
+      "equippedModels": {
+        "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+        "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+        "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+        "FEET": "fantasyhub:item/additions/kabuto_boots"
+      },
+      "kabuto": {
+        "form": 1,
+        "clock": false,
+        "hyper": true,
+        "energy": 20,
+        "gauge": 0
+      },
+      "clientMaxHealth": 49.8,
+      "hurtTime": 0,
+      "maxHurtTime": 10,
+      "stateHealth": 49.79999923706055,
+      "stateMaxHealth": 49.79999923706055,
+      "clientTick": 9070,
+      "clientVanillaLevel": 3,
+      "clientVanillaProgress": 0.15384626,
+      "clientVanillaTotal": 29,
+      "rpgExperienceRendered": false,
+      "experienceDisplay": "VANILLA",
+      "trackedPlayers": [
+        "QAPlayer"
+      ],
+      "clientCasting": {
+        "active": false,
+        "mode": "",
+        "slots": []
+      },
+      "displayedSkillSlots": [],
+      "renderedSkillSlots": 0,
+      "damagePackets": 1,
+      "hurtCameraFrames": 2,
+      "serverMaxHealth": 49.8,
+      "serverHealth": 49.8,
+      "serverVanillaLevel": 3,
+      "serverVanillaProgress": 0.15384626,
+      "serverVanillaTotal": 29,
+      "serverTick": 8652,
+      "scenario": "kabuto_kunai_mode"
+    },
+    "observer": {
+      "clientHealth": 20.0,
+      "kabutoEffects": {
+        "phases": {
+          "HENSHIN": 2,
+          "CAST_OFF": 2,
+          "LEAP": 2,
+          "LAND": 2,
+          "GUN_MUZZLE": 4,
+          "GUN": 8,
+          "GUN_HIT": 4,
+          "EMPOWER": 1,
+          "CLOCK": 2,
+          "CLOCK_END": 2,
+          "KICK": 1,
+          "KICK_HIT": 1,
+          "MODE": 2,
+          "SLASH": 1,
+          "BLEED": 3,
+          "HYPER": 1,
+          "DASH": 1
+        },
+        "minecraftParticleRequests": 11267,
+        "activeTimelines": 0,
+        "budgetDrops": 0,
+        "density": 1.0,
+        "cobblemon": {
+          "nativeParticlesPeak": 62,
+          "textureRepairs": {
+            "metal_sparks": "cobblemon:generic/orb/scaling",
+            "explosion_burst_flash": "cobblemon:vanilla/flash"
+          },
+          "available": true,
+          "backend": "Cobblemon 1.8 ParticleStorm",
+          "emitters": {
+            "swordsdance_sparkle": 8,
+            "metal_sparks": 10,
+            "explosion_burst_flash": 4,
+            "impact_steel": 2,
+            "bulletpunch_targetsparks": 6,
+            "quickattack_dashlines": 22,
+            "thundershock_actorbolts": 3,
+            "thunderbolt_targetimpact": 1,
+            "impact_electric": 1,
+            "scratch_target": 1,
+            "scratch_targetsparks": 1
+          }
+        }
+      },
+      "equippedModels": {
+        "HEAD": "",
+        "CHEST": "",
+        "LEGS": "",
+        "FEET": ""
+      },
+      "clientMaxHealth": 20.0,
+      "hurtTime": 0,
+      "maxHurtTime": 0,
+      "stateHealth": 20.0,
+      "stateMaxHealth": 20.0,
+      "clientTick": 9000,
+      "clientVanillaLevel": 0,
+      "clientVanillaProgress": 0.0,
+      "clientVanillaTotal": 0,
+      "rpgExperienceRendered": false,
+      "experienceDisplay": "VANILLA",
+      "trackedPlayers": [
+        "QAAttacker",
+        "QAPlayer"
+      ],
+      "clientCasting": {
+        "mode": "",
+        "active": false,
+        "slots": []
+      },
+      "displayedSkillSlots": [],
+      "renderedSkillSlots": 0,
+      "damagePackets": 0,
+      "hurtCameraFrames": 0,
+      "serverMaxHealth": 20.0,
+      "serverHealth": 20.0,
+      "serverVanillaLevel": 0,
+      "serverVanillaProgress": 0.0,
+      "serverVanillaTotal": 0,
+      "serverTick": 8647,
+      "scenario": "snapshot"
+    }
+  },
+  "after": {
+    "actor": {
+      "clientHealth": 49.8,
+      "kabutoEffects": {
+        "phases": {
+          "HENSHIN": 4,
+          "CAST_OFF": 3,
+          "LEAP": 3,
+          "LAND": 3,
+          "GUN_MUZZLE": 5,
+          "GUN": 10,
+          "GUN_HIT": 5,
+          "EMPOWER": 2,
+          "CLOCK": 4,
+          "CLOCK_END": 4,
+          "KICK": 2,
+          "KICK_HIT": 2,
+          "MODE": 3,
+          "SLASH": 2,
+          "BLEED": 6,
+          "HYPER": 2,
+          "DASH": 2
+        },
+        "minecraftParticleRequests": 19576,
+        "activeTimelines": 0,
+        "budgetDrops": 0,
+        "density": 0.0,
+        "cobblemon": {
+          "backend": "Cobblemon 1.8 ParticleStorm",
+          "emitters": {
+            "swordsdance_sparkle": 15,
+            "metal_sparks": 16,
+            "explosion_burst_flash": 6,
+            "impact_steel": 3,
+            "bulletpunch_targetsparks": 8,
+            "quickattack_dashlines": 44,
+            "thundershock_actorbolts": 6,
+            "thunderbolt_targetimpact": 2,
+            "impact_electric": 2,
+            "scratch_target": 2,
+            "scratch_targetsparks": 2
+          },
+          "nativeParticlesPeak": 62,
+          "textureRepairs": {
+            "metal_sparks": "cobblemon:generic/orb/scaling",
+            "explosion_burst_flash": "cobblemon:vanilla/flash"
+          },
+          "available": true
+        }
+      },
+      "equippedModels": {
+        "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+        "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+        "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+        "FEET": "fantasyhub:item/additions/kabuto_boots"
+      },
+      "kabuto": {
+        "form": 1,
+        "clock": false,
+        "hyper": true,
+        "energy": 30,
+        "gauge": 10
+      },
+      "clientMaxHealth": 49.8,
+      "hurtTime": 0,
+      "maxHurtTime": 10,
+      "stateHealth": 49.79999923706055,
+      "stateMaxHealth": 49.79999923706055,
+      "clientTick": 9160,
+      "clientVanillaLevel": 3,
+      "clientVanillaProgress": 0.15384626,
+      "clientVanillaTotal": 29,
+      "rpgExperienceRendered": false,
+      "experienceDisplay": "VANILLA",
+      "trackedPlayers": [
+        "QAPlayer"
+      ],
+      "clientCasting": {
+        "active": false,
+        "mode": "",
+        "slots": []
+      },
+      "displayedSkillSlots": [],
+      "renderedSkillSlots": 0,
+      "damagePackets": 1,
+      "hurtCameraFrames": 2,
+      "serverMaxHealth": 49.8,
+      "serverHealth": 49.8,
+      "serverVanillaLevel": 3,
+      "serverVanillaProgress": 0.15384626,
+      "serverVanillaTotal": 29,
+      "serverTick": 8743,
+      "scenario": "kabuto_kunai_strike"
+    },
+    "observer": {
+      "clientHealth": 20.0,
+      "kabutoEffects": {
+        "phases": {
+          "HENSHIN": 2,
+          "CAST_OFF": 2,
+          "LEAP": 2,
+          "LAND": 2,
+          "GUN_MUZZLE": 5,
+          "GUN": 10,
+          "GUN_HIT": 5,
+          "EMPOWER": 1,
+          "CLOCK": 2,
+          "CLOCK_END": 2,
+          "KICK": 1,
+          "KICK_HIT": 1,
+          "MODE": 2,
+          "SLASH": 1,
+          "BLEED": 3,
+          "HYPER": 1,
+          "DASH": 1
+        },
+        "minecraftParticleRequests": 11396,
+        "activeTimelines": 0,
+        "budgetDrops": 0,
+        "density": 1.0,
+        "cobblemon": {
+          "nativeParticlesPeak": 62,
+          "textureRepairs": {
+            "metal_sparks": "cobblemon:generic/orb/scaling",
+            "explosion_burst_flash": "cobblemon:vanilla/flash"
+          },
+          "available": true,
+          "backend": "Cobblemon 1.8 ParticleStorm",
+          "emitters": {
+            "swordsdance_sparkle": 8,
+            "metal_sparks": 11,
+            "explosion_burst_flash": 4,
+            "impact_steel": 2,
+            "bulletpunch_targetsparks": 7,
+            "quickattack_dashlines": 22,
+            "thundershock_actorbolts": 3,
+            "thunderbolt_targetimpact": 1,
+            "impact_electric": 1,
+            "scratch_target": 1,
+            "scratch_targetsparks": 1
+          }
+        }
+      },
+      "equippedModels": {
+        "HEAD": "",
+        "CHEST": "",
+        "LEGS": "",
+        "FEET": ""
+      },
+      "clientMaxHealth": 20.0,
+      "hurtTime": 0,
+      "maxHurtTime": 0,
+      "stateHealth": 20.0,
+      "stateMaxHealth": 20.0,
+      "clientTick": 9090,
+      "clientVanillaLevel": 0,
+      "clientVanillaProgress": 0.0,
+      "clientVanillaTotal": 0,
+      "rpgExperienceRendered": false,
+      "experienceDisplay": "VANILLA",
+      "trackedPlayers": [
+        "QAAttacker",
+        "QAPlayer"
+      ],
+      "clientCasting": {
+        "mode": "",
+        "active": false,
+        "slots": []
+      },
+      "displayedSkillSlots": [],
+      "renderedSkillSlots": 0,
+      "damagePackets": 0,
+      "hurtCameraFrames": 0,
+      "serverMaxHealth": 20.0,
+      "serverHealth": 20.0,
+      "serverVanillaLevel": 0,
+      "serverVanillaProgress": 0.0,
+      "serverVanillaTotal": 0,
+      "serverTick": 8739,
+      "scenario": "snapshot"
+    }
+  },
+  "gameplay": {
+    "current_health_before": 49.8,
+    "cast_accepted": true,
+    "health_after_immediate": 200.0,
+    "state_immediate": {
+      "gun": true,
+      "combo": 0,
+      "clock": false,
+      "hyper": true,
+      "gauge": 10,
+      "energy": 30,
+      "active": true,
+      "form": "RIDER"
+    },
+    "cooldown": 1.0,
+    "speed": 0.10000000149011612,
+    "attack_speed": 6.4,
+    "state_settled": {
+      "gun": true,
+      "combo": 0,
+      "clock": false,
+      "hyper": true,
+      "gauge": 10,
+      "energy": 30,
+      "active": true,
+      "form": "RIDER"
+    },
+    "health_max": 49.8,
+    "current_health_after": 49.8,
+    "damage_applied": true,
+    "health_after": 191.6
+  },
+  "restored_density": 1.0
+}

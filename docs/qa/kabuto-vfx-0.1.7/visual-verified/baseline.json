@@ -1,0 +1,166 @@
+{
+  "actor": {
+    "clientHealth": 49.8,
+    "kabutoEffects": {
+      "phases": {
+        "HENSHIN": 3,
+        "CAST_OFF": 2,
+        "LEAP": 2,
+        "LAND": 2,
+        "GUN_MUZZLE": 4,
+        "GUN": 8,
+        "GUN_HIT": 4,
+        "EMPOWER": 1,
+        "CLOCK": 2,
+        "CLOCK_END": 2,
+        "KICK": 1,
+        "KICK_HIT": 1,
+        "MODE": 2,
+        "SLASH": 1,
+        "BLEED": 3,
+        "HYPER": 1,
+        "DASH": 1
+      },
+      "minecraftParticleRequests": 12061,
+      "activeTimelines": 0,
+      "budgetDrops": 0,
+      "density": 1.0,
+      "cobblemon": {
+        "backend": "Cobblemon 1.8 ParticleStorm",
+        "emitters": {
+          "swordsdance_sparkle": 9,
+          "metal_sparks": 11,
+          "explosion_burst_flash": 4,
+          "impact_steel": 2,
+          "bulletpunch_targetsparks": 6,
+          "quickattack_dashlines": 22,
+          "thundershock_actorbolts": 3,
+          "thunderbolt_targetimpact": 1,
+          "impact_electric": 1,
+          "scratch_target": 1,
+          "scratch_targetsparks": 1
+        },
+        "nativeParticlesPeak": 62,
+        "textureRepairs": {
+          "metal_sparks": "cobblemon:generic/orb/scaling",
+          "explosion_burst_flash": "cobblemon:vanilla/flash"
+        },
+        "available": true
+      }
+    },
+    "equippedModels": {
+      "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+      "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+      "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+      "FEET": "fantasyhub:item/additions/kabuto_boots"
+    },
+    "kabuto": {
+      "form": 1,
+      "clock": false,
+      "hyper": true,
+      "energy": 20,
+      "gauge": 0
+    },
+    "clientMaxHealth": 49.8,
+    "hurtTime": 0,
+    "maxHurtTime": 10,
+    "stateHealth": 49.79999923706055,
+    "stateMaxHealth": 49.79999923706055,
+    "clientTick": 7080,
+    "clientVanillaLevel": 3,
+    "clientVanillaProgress": 1.008694e-07,
+    "clientVanillaTotal": 27,
+    "rpgExperienceRendered": false,
+    "experienceDisplay": "VANILLA",
+    "trackedPlayers": [
+      "QAPlayer"
+    ],
+    "clientCasting": {
+      "active": false,
+      "mode": "",
+      "slots": []
+    },
+    "displayedSkillSlots": [],
+    "renderedSkillSlots": 0,
+    "damagePackets": 1,
+    "hurtCameraFrames": 2,
+    "serverMaxHealth": 49.8,
+    "serverHealth": 49.8,
+    "serverVanillaLevel": 3,
+    "serverVanillaProgress": 1.008694e-07,
+    "serverVanillaTotal": 27,
+    "serverTick": 6661,
+    "scenario": "kabuto_kunai_mode"
+  },
+  "observer": {
+    "clientHealth": 20.0,
+    "kabutoEffects": {
+      "phases": {
+        "HENSHIN": 1,
+        "CAST_OFF": 1,
+        "LEAP": 1,
+        "LAND": 1,
+        "GUN_MUZZLE": 3,
+        "GUN": 6,
+        "GUN_HIT": 3
+      },
+      "minecraftParticleRequests": 3682,
+      "activeTimelines": 0,
+      "budgetDrops": 0,
+      "density": 1.0,
+      "cobblemon": {
+        "nativeParticlesPeak": 30,
+        "textureRepairs": {
+          "metal_sparks": "cobblemon:generic/orb/scaling",
+          "explosion_burst_flash": "cobblemon:vanilla/flash"
+        },
+        "available": true,
+        "backend": "Cobblemon 1.8 ParticleStorm",
+        "emitters": {
+          "swordsdance_sparkle": 1,
+          "metal_sparks": 5,
+          "explosion_burst_flash": 2,
+          "impact_steel": 1,
+          "bulletpunch_targetsparks": 4
+        }
+      }
+    },
+    "equippedModels": {
+      "HEAD": "",
+      "CHEST": "",
+      "LEGS": "",
+      "FEET": ""
+    },
+    "clientMaxHealth": 20.0,
+    "hurtTime": 0,
+    "maxHurtTime": 0,
+    "stateHealth": 20.0,
+    "stateMaxHealth": 20.0,
+    "clientTick": 7020,
+    "clientVanillaLevel": 0,
+    "clientVanillaProgress": 0.0,
+    "clientVanillaTotal": 0,
+    "rpgExperienceRendered": false,
+    "experienceDisplay": "VANILLA",
+    "trackedPlayers": [
+      "QAAttacker",
+      "QAPlayer"
+    ],
+    "clientCasting": {
+      "mode": "",
+      "active": false,
+      "slots": []
+    },
+    "displayedSkillSlots": [],
+    "renderedSkillSlots": 0,
+    "damagePackets": 0,
+    "hurtCameraFrames": 0,
+    "serverMaxHealth": 20.0,
+    "serverHealth": 20.0,
+    "serverVanillaLevel": 0,
+    "serverVanillaProgress": 0.0,
+    "serverVanillaTotal": 0,
+    "serverTick": 6668,
+    "scenario": "snapshot"
+  }
+}
