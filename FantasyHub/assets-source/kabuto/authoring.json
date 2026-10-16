@@ -1,0 +1,22 @@
+{
+  "authoring": "Blockbench 5.2.2",
+  "projects": [
+    "kabuto_masked",
+    "kabuto_rider",
+    "kabuto_hyper",
+    "zecter_belt",
+    "hyper_zecter",
+    "kunai_gun",
+    "kunai"
+  ],
+  "texture": "kabuto_metals.png",
+  "references": [
+    "1000391749.jpg",
+    "1000391748.jpg",
+    "1000391750.jpg",
+    "1000391751.jpg",
+    "1000391754.jpg",
+    "1000391753.jpg"
+  ],
+  "notes": "Silver brow wedge crown, wrapped patterned cyan visor, horizontal red/gold Zecter, same Kunai Gun frame with two real grip points. Original movie voices not supplied."
+}

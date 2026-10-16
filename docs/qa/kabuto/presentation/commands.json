@@ -1,0 +1,50 @@
+[
+  {
+    "command": "tp QAPlayer 200.5 65 0.5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "tp QAAttacker 200.5 65 3.8 180 12.3",
+    "response": "Teleported QAAttacker to 200.500000, 65.000000, 3.800000"
+  },
+  {
+    "command": "tp QAAttacker 201.8 65 2.7 149.42 15.73",
+    "response": "Teleported QAAttacker to 201.800000, 65.000000, 2.700000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_kunai_strike",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_kunai_mode",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_kunai_strike",
+    "response": ""
+  },
+  {
+    "command": "kill @e[tag=qa_kabuto]",
+    "response": "Killed Cow"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_cast_off",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 0.5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_kunai_mode",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_kunai_strike",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_hyper_form",
+    "response": ""
+  }
+]

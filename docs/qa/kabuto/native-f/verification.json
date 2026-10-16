@@ -1,0 +1,43 @@
+{
+  "after_f": {
+    "gun": true,
+    "combo": 0,
+    "clock": false,
+    "hyper": false,
+    "gauge": 0,
+    "energy": 0,
+    "active": true,
+    "form": "MASKED"
+  },
+  "masked_health": "Value of attribute Max Health for entity QAPlayer is 65.8",
+  "inventory_preserved_after_henshin": true,
+  "after_native_cast_off": {
+    "gun": true,
+    "combo": 0,
+    "clock": false,
+    "hyper": false,
+    "gauge": 0,
+    "energy": 0,
+    "active": true,
+    "form": "RIDER"
+  },
+  "after_reopening_f": {
+    "gun": true,
+    "combo": 0,
+    "clock": false,
+    "hyper": false,
+    "gauge": 0,
+    "energy": 0,
+    "active": true,
+    "form": "RIDER"
+  },
+  "inventory_preserved_after_cast_off": true,
+  "checks": {
+    "f_henshin": true,
+    "native_bound_cast_off": true,
+    "reopening_f_keeps_rider": true,
+    "henshin_inventory": true,
+    "cast_off_inventory": true
+  },
+  "result": "PASS"
+}

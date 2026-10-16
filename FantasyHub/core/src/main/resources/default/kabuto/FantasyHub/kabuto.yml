@@ -1,0 +1,36 @@
+# User-designed Kabuto mechanics. Multipliers are final totals:3.0 means300%.
+# Unspecified balance values are defaults, editable here; no currency conversion.
+energy-per-hit: 10
+energy-per-block: 20
+gauge-per-hit: 10
+gauge-per-block: 20
+clock-gauge-cost: 100
+clock-duration-ticks: 100
+clock-speed-multiplier: 3.0
+clock-radius: 8.0
+masked-health: 16.0
+masked-armor: 12.0
+masked-parry-chance: 15.0
+masked-knockback-resistance: 0.6
+masked-speed-multiplier: 0.8
+rider-attack-speed-multiplier: 1.6
+rider-critical-chance: 20.0
+rider-dodge-chance: 15.0
+cast-off-damage: 8.0
+slam-damage: 12.0
+kick-damage: 28.0
+kunai-damage: 6.0
+bleed-damage: 2.0
+bleed-duration-ticks: 60
+kick-combo-damage-per-point: 0.08
+gun-damage: 8.0
+empowered-damage-multiplier: 1.5
+empowered-cooldown-reduction: 0.25
+skills:
+  HENSHIN: {cooldown: 2, mana: 0, stamina: 0}
+  CAST_OFF: {cooldown: 12, mana: 5, stamina: 8}
+  CLOCK_UP: {cooldown: 45, mana: 8, stamina: 0}
+  RIDER_KICK: {cooldown: 20, mana: 0, stamina: 10}
+  KUNAI_MODE: {cooldown: 0.5, mana: 0, stamina: 0}
+  KUNAI_STRIKE: {cooldown: 1, mana: 0, stamina: 2}
+  HYPER_FORM: {cooldown: 60, mana: 10, stamina: 0}

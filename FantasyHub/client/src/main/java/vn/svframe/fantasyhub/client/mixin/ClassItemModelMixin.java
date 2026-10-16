@@ -15,6 +15,6 @@ public abstract class ClassItemModelMixin {
     @Inject(method="getModel",at=@At("RETURN"),cancellable=true)
     private void svframe$model(ItemStack stack,World world,LivingEntity entity,int seed,CallbackInfoReturnable<BakedModel> ci){
         var nbt=stack.get(DataComponentTypes.CUSTOM_DATA);if(nbt==null)return;Identifier id=Identifier.tryParse(nbt.copyNbt().getString("SVFRAME_ITEM_MODEL"));
-        if(id!=null&&id.getNamespace().equals("fantasyhub")&&(id.getPath().startsWith("item/dragonborn/")||id.getPath().startsWith("item/hunter/")))ci.setReturnValue(MinecraftClient.getInstance().getBakedModelManager().getModel(id));
+        if(id!=null&&id.getNamespace().equals("fantasyhub")&&(id.getPath().startsWith("item/additions/")||id.getPath().startsWith("item/dragonborn/")||id.getPath().startsWith("item/hunter/")))ci.setReturnValue(MinecraftClient.getInstance().getBakedModelManager().getModel(id));
     }
 }

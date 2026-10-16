@@ -1,0 +1,332 @@
+{
+  "result": "PASS",
+  "same_server_pid": "22948",
+  "cycles": [
+    {
+      "cycle": 1,
+      "pid": "22948",
+      "base_attribute": "Value of attribute Max Health for entity QAPlayer is 49.8",
+      "joined": {
+        "clientHealth": 49.8,
+        "equippedModels": {
+          "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+          "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+          "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+          "FEET": "fantasyhub:item/additions/kabuto_boots"
+        },
+        "clientMaxHealth": 49.8,
+        "hurtTime": 0,
+        "maxHurtTime": 0,
+        "stateHealth": 49.79999923706055,
+        "stateMaxHealth": 49.79999923706055,
+        "clientTick": 248300,
+        "clientVanillaLevel": 2,
+        "clientVanillaProgress": 0.18181826,
+        "clientVanillaTotal": 18,
+        "rpgExperienceRendered": false,
+        "experienceDisplay": "VANILLA",
+        "trackedPlayers": [
+          "QAPlayer"
+        ],
+        "clientCasting": {
+          "active": false,
+          "mode": "",
+          "slots": []
+        },
+        "displayedSkillSlots": [],
+        "renderedSkillSlots": 0,
+        "damagePackets": 1,
+        "hurtCameraFrames": 8,
+        "serverMaxHealth": 49.8,
+        "serverHealth": 49.8,
+        "serverVanillaLevel": 2,
+        "serverVanillaProgress": 0.18181826,
+        "serverVanillaTotal": 18,
+        "serverTick": 244033,
+        "scenario": "kabuto_henshin"
+      },
+      "after_f_attribute": "Value of attribute Max Health for entity QAPlayer is 65.8",
+      "after_f": {
+        "clientHealth": 49.899998,
+        "equippedModels": {
+          "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+          "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+          "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+          "FEET": "fantasyhub:item/additions/kabuto_boots"
+        },
+        "kabuto": {
+          "form": 0,
+          "clock": false,
+          "hyper": false,
+          "energy": 0,
+          "gauge": 0
+        },
+        "clientMaxHealth": 65.8,
+        "hurtTime": 0,
+        "maxHurtTime": 0,
+        "stateHealth": 49.89999771118164,
+        "stateMaxHealth": 65.80000305175781,
+        "clientTick": 248350,
+        "clientVanillaLevel": 2,
+        "clientVanillaProgress": 0.18181826,
+        "clientVanillaTotal": 18,
+        "rpgExperienceRendered": false,
+        "experienceDisplay": "VANILLA",
+        "trackedPlayers": [
+          "QAPlayer"
+        ],
+        "clientCasting": {
+          "active": true,
+          "mode": "SKILL_BAR",
+          "slots": [
+            {
+              "inputSlot": 2,
+              "id": "KABUTO_HENSHIN",
+              "cooldownRemaining": 0.0
+            },
+            {
+              "inputSlot": 3,
+              "id": "KABUTO_CAST_OFF",
+              "cooldownRemaining": 0.0
+            },
+            {
+              "inputSlot": 4,
+              "id": "KABUTO_CLOCK_UP",
+              "cooldownRemaining": 0.0
+            },
+            {
+              "inputSlot": 5,
+              "id": "KABUTO_RIDER_KICK",
+              "cooldownRemaining": 0.0
+            },
+            {
+              "inputSlot": 6,
+              "id": "KABUTO_KUNAI_MODE",
+              "cooldownRemaining": 0.0
+            },
+            {
+              "inputSlot": 7,
+              "id": "KABUTO_KUNAI_STRIKE",
+              "cooldownRemaining": 0.0
+            },
+            {
+              "inputSlot": 8,
+              "id": "KABUTO_HYPER_FORM",
+              "cooldownRemaining": 0.0
+            }
+          ]
+        },
+        "displayedSkillSlots": [
+          {
+            "inputSlot": 2,
+            "id": "KABUTO_HENSHIN",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 3,
+            "id": "KABUTO_CAST_OFF",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 4,
+            "id": "KABUTO_CLOCK_UP",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 5,
+            "id": "KABUTO_RIDER_KICK",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 6,
+            "id": "KABUTO_KUNAI_MODE",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 7,
+            "id": "KABUTO_KUNAI_STRIKE",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 8,
+            "id": "KABUTO_HYPER_FORM",
+            "cooldownRemaining": 0.0
+          }
+        ],
+        "renderedSkillSlots": 7,
+        "damagePackets": 1,
+        "hurtCameraFrames": 8,
+        "serverMaxHealth": 65.8,
+        "serverHealth": 49.899998,
+        "serverVanillaLevel": 2,
+        "serverVanillaProgress": 0.18181826,
+        "serverVanillaTotal": 18,
+        "serverTick": 244079,
+        "scenario": "kabuto_henshin"
+      }
+    },
+    {
+      "cycle": 2,
+      "pid": "22948",
+      "base_attribute": "Value of attribute Max Health for entity QAPlayer is 49.8",
+      "joined": {
+        "clientHealth": 49.8,
+        "equippedModels": {
+          "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+          "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+          "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+          "FEET": "fantasyhub:item/additions/kabuto_boots"
+        },
+        "clientMaxHealth": 49.8,
+        "hurtTime": 0,
+        "maxHurtTime": 0,
+        "stateHealth": 49.79999923706055,
+        "stateMaxHealth": 49.79999923706055,
+        "clientTick": 248490,
+        "clientVanillaLevel": 2,
+        "clientVanillaProgress": 0.18181826,
+        "clientVanillaTotal": 18,
+        "rpgExperienceRendered": false,
+        "experienceDisplay": "VANILLA",
+        "trackedPlayers": [
+          "QAPlayer"
+        ],
+        "clientCasting": {
+          "active": false,
+          "mode": "",
+          "slots": []
+        },
+        "displayedSkillSlots": [],
+        "renderedSkillSlots": 0,
+        "damagePackets": 1,
+        "hurtCameraFrames": 8,
+        "serverMaxHealth": 49.8,
+        "serverHealth": 49.8,
+        "serverVanillaLevel": 2,
+        "serverVanillaProgress": 0.18181826,
+        "serverVanillaTotal": 18,
+        "serverTick": 244292,
+        "scenario": "kabuto_henshin"
+      },
+      "after_f_attribute": "Value of attribute Max Health for entity QAPlayer is 65.8",
+      "after_f": {
+        "clientHealth": 49.899998,
+        "equippedModels": {
+          "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+          "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+          "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+          "FEET": "fantasyhub:item/additions/kabuto_boots"
+        },
+        "kabuto": {
+          "form": 0,
+          "clock": false,
+          "hyper": false,
+          "energy": 0,
+          "gauge": 0
+        },
+        "clientMaxHealth": 65.8,
+        "hurtTime": 0,
+        "maxHurtTime": 0,
+        "stateHealth": 49.89999771118164,
+        "stateMaxHealth": 65.80000305175781,
+        "clientTick": 248540,
+        "clientVanillaLevel": 2,
+        "clientVanillaProgress": 0.18181826,
+        "clientVanillaTotal": 18,
+        "rpgExperienceRendered": false,
+        "experienceDisplay": "VANILLA",
+        "trackedPlayers": [
+          "QAPlayer"
+        ],
+        "clientCasting": {
+          "active": true,
+          "mode": "SKILL_BAR",
+          "slots": [
+            {
+              "inputSlot": 2,
+              "id": "KABUTO_HENSHIN",
+              "cooldownRemaining": 0.0
+            },
+            {
+              "inputSlot": 3,
+              "id": "KABUTO_CAST_OFF",
+              "cooldownRemaining": 0.0
+            },
+            {
+              "inputSlot": 4,
+              "id": "KABUTO_CLOCK_UP",
+              "cooldownRemaining": 0.0
+            },
+            {
+              "inputSlot": 5,
+              "id": "KABUTO_RIDER_KICK",
+              "cooldownRemaining": 0.0
+            },
+            {
+              "inputSlot": 6,
+              "id": "KABUTO_KUNAI_MODE",
+              "cooldownRemaining": 0.0
+            },
+            {
+              "inputSlot": 7,
+              "id": "KABUTO_KUNAI_STRIKE",
+              "cooldownRemaining": 0.0
+            },
+            {
+              "inputSlot": 8,
+              "id": "KABUTO_HYPER_FORM",
+              "cooldownRemaining": 0.0
+            }
+          ]
+        },
+        "displayedSkillSlots": [
+          {
+            "inputSlot": 2,
+            "id": "KABUTO_HENSHIN",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 3,
+            "id": "KABUTO_CAST_OFF",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 4,
+            "id": "KABUTO_CLOCK_UP",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 5,
+            "id": "KABUTO_RIDER_KICK",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 6,
+            "id": "KABUTO_KUNAI_MODE",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 7,
+            "id": "KABUTO_KUNAI_STRIKE",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 8,
+            "id": "KABUTO_HYPER_FORM",
+            "cooldownRemaining": 0.0
+          }
+        ],
+        "renderedSkillSlots": 7,
+        "damagePackets": 1,
+        "hurtCameraFrames": 8,
+        "serverMaxHealth": 65.8,
+        "serverHealth": 49.899998,
+        "serverVanillaLevel": 2,
+        "serverVanillaProgress": 0.18181826,
+        "serverVanillaTotal": 18,
+        "serverTick": 244340,
+        "scenario": "kabuto_henshin"
+      }
+    }
+  ]
+}

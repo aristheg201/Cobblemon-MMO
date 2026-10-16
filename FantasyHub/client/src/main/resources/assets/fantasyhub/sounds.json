@@ -1,0 +1,46 @@
+{
+  "kabuto.henshin": {
+    "subtitle": "subtitle.fantasyhub.kabuto_henshin",
+    "sounds": [
+      "fantasyhub:kabuto/henshin"
+    ]
+  },
+  "kabuto.cast_off": {
+    "subtitle": "subtitle.fantasyhub.kabuto_cast_off",
+    "sounds": [
+      "fantasyhub:kabuto/cast_off"
+    ]
+  },
+  "kabuto.clock_up": {
+    "subtitle": "subtitle.fantasyhub.kabuto_clock_up",
+    "sounds": [
+      "fantasyhub:kabuto/clock_up"
+    ]
+  },
+  "kabuto.clock_over": {
+    "subtitle": "subtitle.fantasyhub.kabuto_clock_over",
+    "sounds": [
+      "fantasyhub:kabuto/clock_over"
+    ]
+  },
+  "kabuto.rider_kick": {
+    "subtitle": "subtitle.fantasyhub.kabuto_rider_kick",
+    "sounds": [
+      "fantasyhub:kabuto/rider_kick"
+    ]
+  },
+  "kabuto.mode": {
+    "sounds": [
+      {
+        "name": "minecraft:block.piston.extend",
+        "type": "event"
+      }
+    ]
+  },
+  "kabuto.hyper": {
+    "subtitle": "subtitle.fantasyhub.kabuto_hyper",
+    "sounds": [
+      "fantasyhub:kabuto/hyper"
+    ]
+  }
+}

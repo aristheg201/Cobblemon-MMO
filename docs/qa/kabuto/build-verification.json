@@ -1,0 +1,37 @@
+{
+  "unit_tests": {
+    "core": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "client": {
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "mobs": {
+      "tests": 33,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "nested_framework_hashes_match": true,
+  "bridge_core_classes_identical": true,
+  "runtime_acceptance": "PASS_FOCUSED_KABUTO_ONLY",
+  "post_build_fixes": [
+    "Frozen leases recheck actual combat/movement permission at use and release when owner ends Clock Up",
+    "Repeated Henshin/reload preserves current HP during deterministic modifier replacement"
+  ],
+  "whole_port_release_gate": "FAIL",
+  "real_client_server_tests": {
+    "native_f": "PASS",
+    "native_skills": "PASS",
+    "two_reconnects_same_server": "PASS",
+    "two_client_presentation": "CAPTURED",
+    "wolven_and_four_skyrim_sets": "EQUIPPED_AND_CAPTURED"
+  }
+}

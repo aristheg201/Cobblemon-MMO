@@ -7,7 +7,8 @@
     "DamageFeedbackQaMixin",
     "HurtCameraQaMixin",
     "ClassArmorMixin",
-    "ClassItemModelMixin"
+    "ClassItemModelMixin",
+    "KabutoPoseMixin"
   ],
   "injectors": {
     "defaultRequire": 1

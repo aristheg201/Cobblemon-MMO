@@ -1,0 +1,1 @@
+{"amount": 1, "operation": "SET", "icon": "trinkets:gui/slots/belt", "validator_predicates": ["trinkets:tag"]}

@@ -1,0 +1,31 @@
+display:
+  name: '&c&lKamen Rider Kabuto'
+  lore:
+  - '&7Masked Form → Cast Off → Rider Form → Clock Up'
+  - '&7Zecter Bond • Rider Kick • Hyper Zecter'
+  item: {material: fantasyhub:kabuto_hat}
+exp-curve: levels
+max-level: 100
+exp-table: class_exp_table
+attributes:
+  max-health: {base: 30, per-level: 0.2}
+  max-mana: {base: 40, per-level: 0.3}
+  max-stamina: {base: 40, per-level: 0.2}
+  armor: {base: 3, per-level: 0.02}
+skills:
+  KABUTO_ZECTER_BOND: {level: 1, max-level: 1, needs-bound: false}
+  KABUTO_HENSHIN: {level: 1, max-level: 1}
+  KABUTO_CAST_OFF: {level: 1, max-level: 30}
+  KABUTO_CLOCK_UP: {level: 10, max-level: 30}
+  KABUTO_RIDER_KICK: {level: 5, max-level: 30}
+  KABUTO_KUNAI_MODE: {level: 1, max-level: 1}
+  KABUTO_KUNAI_STRIKE: {level: 1, max-level: 30}
+  KABUTO_HYPER_FORM: {level: 100, max-level: 1}
+skill-slots:
+  1: {name: Henshin, formula: <ACTIVE>, unlocked-by-default: true}
+  2: {name: Cast Off, formula: <ACTIVE>, unlocked-by-default: true}
+  3: {name: Clock Up, formula: <ACTIVE>, unlocked-by-default: true}
+  4: {name: Rider Kick, formula: <ACTIVE>, unlocked-by-default: true}
+  5: {name: Kunai Mode, formula: <ACTIVE>, unlocked-by-default: true}
+  6: {name: Kunai Strike, formula: <ACTIVE>, unlocked-by-default: true}
+  7: {name: Hyper Form, formula: <ACTIVE>, unlocked-by-default: true}

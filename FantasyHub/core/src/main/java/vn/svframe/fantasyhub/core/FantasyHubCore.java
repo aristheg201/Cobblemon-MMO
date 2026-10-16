@@ -35,12 +35,14 @@ public final class FantasyHubCore implements ModInitializer {
     private long tick;
     @Override public void onInitialize(){
         Protocol.install();
+        KabutoRuntime.install();
         vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.registerMenu("svframe_class_switch",player->{snapshots.remove(player.getUuid());ServerPlayNetworking.send(player,new Protocol.Open("classes"));});
         vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.registerMenu("svframe_close",player->ServerPlayNetworking.send(player,new Protocol.Open("close")));
         ServerLifecycleEvents.SERVER_STARTING.register(server->{
             Path root=net.fabricmc.loader.api.FabricLoader.getInstance().getConfigDir().resolve("SVFrameLib");
             try{
                 boolean installedSource=SourcePackInstaller.install();
+                KabutoRuntime.reload();
                 for(String name:List.of("reference-models.json","visual-anchors.json")){
                     Path target=name.equals("reference-models.json")?root.resolve("visual-models").resolve(name):root.resolve(name);
                     if(Files.exists(target))continue;

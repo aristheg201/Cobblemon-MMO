@@ -1,0 +1,5 @@
+{"command": "attribute QAPlayer minecraft:generic.max_health get", "response": "Value of attribute Max Health for entity QAPlayer is 49.8"}
+{"command": "attribute QAPlayer minecraft:generic.max_health get", "response": "Value of attribute Max Health for entity QAPlayer is 65.8"}
+{"command": "kick QAPlayer QA second reconnect on same server", "response": "Kicked QAPlayer: QA second reconnect on same server"}
+{"command": "attribute QAPlayer minecraft:generic.max_health get", "response": "Value of attribute Max Health for entity QAPlayer is 49.8"}
+{"command": "attribute QAPlayer minecraft:generic.max_health get", "response": "Value of attribute Max Health for entity QAPlayer is 65.8"}

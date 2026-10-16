@@ -15,13 +15,24 @@ import net.minecraft.registry.Registries;
 public final class Protocol implements ModInitializer {
     private static boolean installed;
     public static final int VERSION=1;
-    public static final String ASSET_REVISION="reference-hunter-v5";
+    public static final String ASSET_REVISION="kabuto-blockbench-v7";
     public record Handshake(int version,String assets,String clientVersion,String diagnostic) implements CustomPayload {
         public static final Id<Handshake> ID=new Id<>(Identifier.of("fantasyhub","handshake_v1"));
         public static final PacketCodec<PacketByteBuf,Handshake> CODEC=PacketCodec.of((p,b)->{b.writeVarInt(p.version);b.writeString(p.assets,128);b.writeString(p.clientVersion,32);b.writeString(p.diagnostic,512);},b->new Handshake(b.readVarInt(),b.readString(128),b.readString(32),b.readString(512)));
         @Override public Id<Handshake> getId(){return ID;}
     }
-    public static Item visualBone,dragonbornHat;
+    public static Item visualBone,dragonbornHat,kabutoHat,zecterBelt,kunaiGun;
+    /** Only the server publishes form changes; clients never choose visual gameplay state. */
+    public record Kabuto(int entityId,int form,boolean clock,boolean hyper,int energy,int gauge,int clockTicks) implements CustomPayload {
+        public static final Id<Kabuto> ID=new Id<>(Identifier.of("fantasyhub","kabuto_v1"));
+        public static final PacketCodec<RegistryByteBuf,Kabuto> CODEC=PacketCodec.of((p,b)->{b.writeVarInt(p.entityId);b.writeVarInt(p.form);b.writeBoolean(p.clock);b.writeBoolean(p.hyper);b.writeVarInt(p.energy);b.writeVarInt(p.gauge);b.writeVarInt(p.clockTicks);},b->new Kabuto(b.readVarInt(),b.readVarInt(),b.readBoolean(),b.readBoolean(),b.readVarInt(),b.readVarInt(),b.readVarInt()));
+        @Override public Id<Kabuto> getId(){return ID;}
+    }
+    public record KabutoCue(int entityId,String ability,int duration) implements CustomPayload {
+        public static final Id<KabutoCue> ID=new Id<>(Identifier.of("fantasyhub","kabuto_cue_v1"));
+        public static final PacketCodec<RegistryByteBuf,KabutoCue> CODEC=PacketCodec.of((p,b)->{b.writeVarInt(p.entityId);b.writeString(p.ability,32);b.writeVarInt(p.duration);},b->new KabutoCue(b.readVarInt(),b.readString(32),b.readVarInt()));
+        @Override public Id<KabutoCue> getId(){return ID;}
+    }
     public record State(String json) implements CustomPayload {
         public static final Id<State> ID=new Id<>(Identifier.of("fantasyhub","state_v1"));
         public static final PacketCodec<RegistryByteBuf,State> CODEC=PacketCodec.of((p,b)->b.writeString(p.json,262144),b->new State(b.readString(262144)));
@@ -54,6 +65,12 @@ public final class Protocol implements ModInitializer {
         if(installed)return;
         visualBone=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","visual_bone"),new Item(new Item.Settings()));
         dragonbornHat=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","dragonborn_hat"),new net.minecraft.item.ArmorItem(net.minecraft.item.ArmorMaterials.LEATHER,net.minecraft.item.ArmorItem.Type.HELMET,new Item.Settings().maxCount(1)));
+        kabutoHat=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","kabuto_hat"),new net.minecraft.item.ArmorItem(net.minecraft.item.ArmorMaterials.LEATHER,net.minecraft.item.ArmorItem.Type.HELMET,new Item.Settings().maxCount(1)));
+        zecterBelt=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","zecter_belt"),new Item(new Item.Settings().maxCount(1)));
+        kunaiGun=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","kunai_gun"),new Item(new Item.Settings().maxCount(1)));
+        BeltEquipment.install();
+        PayloadTypeRegistry.playS2C().register(Kabuto.ID,Kabuto.CODEC);
+        PayloadTypeRegistry.playS2C().register(KabutoCue.ID,KabutoCue.CODEC);
         PayloadTypeRegistry.configurationS2C().register(Handshake.ID,Handshake.CODEC);
         PayloadTypeRegistry.configurationC2S().register(Handshake.ID,Handshake.CODEC);
         PayloadTypeRegistry.playS2C().register(State.ID,State.CODEC);

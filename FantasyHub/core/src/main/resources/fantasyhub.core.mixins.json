@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "vn.svframe.fantasyhub.core.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "KabutoStatusMixin",
+    "KabutoMobAiMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

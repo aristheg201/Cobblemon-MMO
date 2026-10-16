@@ -2,7 +2,7 @@ plugins { id 'fabric-loom' version '1.7.4' apply false }
 subprojects {
     apply plugin: 'fabric-loom'
     group='vn.svframe.fantasyhub'
-    version=project.name in ['core','client','protocol'] ? '0.1.5' : '0.1.0'
+    version=project.name in ['core','client','protocol'] ? '0.1.6' : '0.1.0'
     repositories { mavenCentral(); maven { url='https://maven.fabricmc.net/' } }
     dependencies {
         minecraft "com.mojang:minecraft:${minecraft_version}"
@@ -16,6 +16,7 @@ subprojects {
 }
 project(':core') {
     base.archivesName='FantasyHubCore'
+    dependencies { testRuntimeOnly 'org.yaml:snakeyaml:2.3' }
     dependencies { testImplementation platform('org.junit:junit-bom:5.11.4'); testImplementation 'org.junit.jupiter:junit-jupiter'; testRuntimeOnly 'org.junit.platform:junit-platform-launcher' }
     tasks.withType(Test).configureEach { useJUnitPlatform() }
     if(rootProject.hasProperty('frameworkBundle'))repositories { flatDir { dirs rootProject.property('frameworkBundle') } }
@@ -31,7 +32,7 @@ project(':core') {
             include 'vn.svframe.local:SVFrameLib:1.7.2-fabric'
             include 'vn.svframe.local:SVFrameMMO:1.13.3-fabric'
             include 'vn.svframe.local:SVFrameItems:0.1.1-fabric'
-            include 'vn.svframe.local:SVFrameMobs:0.1.1-fabric'
+            include 'vn.svframe.local:SVFrameMobs:0.1.2-fabric'
             include 'vn.svframe.local:SVFrameMMO-Cobblemon-Integration:0.1.18'
         }
     }
@@ -46,6 +47,7 @@ project(':client') {
     sourceSets.main.resources.srcDir('src/imported/resources')
     processResources {
         from(rootProject.file('skript/src/main/resources')) { include 'assets/**/lang/*.json' }
+        from(rootProject.file('../SVFrameItems').isDirectory() ? rootProject.file('../SVFrameItems/src/main/resources') : rootProject.file('../../items/SVFrameItems/src/main/resources')) { include 'assets/**/lang/*.json' }
         for(String module:['SVFrameLib','SVFrameMMO','SVFrameMMOCobblemon']) {
             from(rootProject.file('../'+module+'/src/main/resources')) { include 'assets/**/lang/*.json' }
         }

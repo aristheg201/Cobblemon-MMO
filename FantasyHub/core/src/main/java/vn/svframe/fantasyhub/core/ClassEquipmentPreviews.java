@@ -23,7 +23,8 @@ final class ClassEquipmentPreviews {
                 String id="SVFRAME_HUNTER_"+suffix;
                 if(SVFrameItems.registry().item(id)!=null)hunter.add(SVFrameItems.generator().generate(id,new ItemGenerator.GenerationContext(1,0)).encode(player.getRegistryManager()).toString());
             }
-            cache=Map.of("DRAGONBORN",List.copyOf(items),"HUNTER",List.copyOf(hunter));revision=SVFrameItems.registry().revision();
+            List<String> kabuto=new ArrayList<>();for(String suffix:List.of("HELMET","CHESTPLATE","LEGGINGS","BOOTS")){String id="KABUTO_"+suffix;if(SVFrameItems.registry().item(id)!=null)kabuto.add(SVFrameItems.generator().generate(id,new ItemGenerator.GenerationContext(1,0)).encode(player.getRegistryManager()).toString());}
+            cache=Map.of("DRAGONBORN",List.copyOf(items),"HUNTER",List.copyOf(hunter),"KABUTO",List.copyOf(kabuto));revision=SVFrameItems.registry().revision();
         }
         return cache;
     }

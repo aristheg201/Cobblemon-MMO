@@ -1,0 +1,18 @@
+{"command": "list", "response": "There are 1 of a max of 5 players online: QAPlayer"}
+{"command": "kill @e[tag=qa_kabuto]", "response": "No entity was found"}
+{"command": "tp QAPlayer 0 65 0 0 0", "response": "Teleported QAPlayer to 0.500000, 65.000000, 0.500000"}
+{"command": "execute as QAPlayer run fantasyhubqa kabuto_prepare", "response": ""}
+{"command": "execute as QAPlayer run fantasyhubqa kabuto_henshin", "response": ""}
+{"command": "execute as QAPlayer run fantasyhubqa kabuto_henshin", "response": ""}
+{"command": "data get entity QAPlayer Health", "response": "QAPlayer has the following entity data: 65.8f"}
+{"command": "kabuto reload", "response": "fantasyhub.kabuto.reloaded"}
+{"command": "data get entity QAPlayer Health", "response": "QAPlayer has the following entity data: 65.8f"}
+{"command": "execute as QAPlayer run fantasyhubqa kabuto_cast_off", "response": ""}
+{"command": "execute as QAPlayer run fantasyhubqa kabuto_charge", "response": ""}
+{"command": "execute as QAPlayer run fantasyhubqa kabuto_clock_up", "response": ""}
+{"command": "execute as QAPlayer run fantasyhubqa kabuto_rider_kick", "response": ""}
+{"command": "execute as QAPlayer run fantasyhubqa kabuto_kunai_strike", "response": ""}
+{"command": "execute as QAPlayer run fantasyhubqa kabuto_kunai_mode", "response": ""}
+{"command": "execute as QAPlayer run fantasyhubqa kabuto_kunai_strike", "response": ""}
+{"command": "execute as QAPlayer run fantasyhubqa kabuto_hyper_form", "response": ""}
+{"command": "execute as QAPlayer run fantasyhubqa kabuto_clock_up", "response": ""}
