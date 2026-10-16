@@ -142,5 +142,7 @@
   "fantasyhub.kabuto.reloaded": "Kabuto configuration reloaded.",
   "fantasyhub.kabuto.invalid_config": "Cannot reload Kabuto configuration: %s",
   "fantasyhub.effects.density": "Skill effects: %s%%",
-  "fantasyhub.kabuto.henshin_toggle": "Henshin: transform; cast again to return to human. Closing the skill bar also cancels transformation."
+  "fantasyhub.kabuto.henshin_toggle": "Henshin: transform; cast again to return to human. Closing the skill bar also cancels transformation.",
+  "subtitle.fantasyhub.kabuto_gun_fire": "Kunai Gun fires",
+  "subtitle.fantasyhub.kabuto_kunai_slash": "Kunai slashes"
 }

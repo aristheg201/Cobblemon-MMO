@@ -1,0 +1,675 @@
+{
+  "regressions": {
+    "native_anvil_book_output": true,
+    "native_anvil_applies_protection": true,
+    "anvil_keeps_thermal": true,
+    "wrong_category_rejected": true,
+    "vanilla_items_unchanged": true,
+    "grindstone_keeps_intrinsic_thermal": true,
+    "automatic_thermal_cannot_farm_grindstone_xp": true,
+    "legitimate_grindstone_xp_preserved": true,
+    "grindstone_removes_other_enchantments": true,
+    "intrinsic_thermal_keeps_original_weapon_colors": true
+  },
+  "verdict": "PASS",
+  "items": [
+    {
+      "item": "hero_entrance_focus",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "kabuto_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "kabuto_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "kabuto_helmet",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "kabuto_kunai_gun",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "kabuto_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_boots_avatar",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_boots_prestige",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_chestplate_avatar",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_chestplate_prestige",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_hat",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_hat_avatar",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_hat_prestige",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_helmet",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_helmet_avatar",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_helmet_prestige",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_leggings_avatar",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_armor_leggings_prestige",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_boots_prestige",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_chestplate_prestige",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_helmet",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_helmet_prestige",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_dragonborn_leggings_prestige",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_hunter_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_hunter_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_hunter_helmet",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_hunter_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_daedric_armor_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_daedric_armor_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_daedric_armor_hat",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_daedric_armor_helmet",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_daedric_armor_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_dragonbone_armor_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_dragonbone_armor_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_dragonbone_armor_hat",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_dragonbone_armor_helmet",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_dragonbone_armor_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_ebony_armor_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_ebony_armor_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_ebony_armor_hat",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_ebony_armor_helmet",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "svframe_skyrim_ebony_armor_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "trailblazer_blade",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "trailblazer_helm",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_feline_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_feline_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_feline_helmet",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_feline_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_grandmaster_wolven_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_grandmaster_wolven_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_grandmaster_wolven_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_griffin_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_griffin_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_griffin_helmet",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_griffin_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_kaer_morhen_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_kaer_morhen_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_kaer_morhen_helmet",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_kaer_morhen_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_ursine_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_ursine_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_ursine_helmet",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_ursine_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_wolven_boots",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_wolven_chestplate",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_wolven_helmet",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    },
+    {
+      "item": "witcher_wolven_leggings",
+      "thermal_tuning": true,
+      "table_accepts_existing_thermal": true,
+      "native_table_executes": true,
+      "other_enchantment_added": true,
+      "thermal_preserved": true,
+      "lapis_and_xp_consumed": true
+    }
+  ],
+  "equipment_count": 73
+}

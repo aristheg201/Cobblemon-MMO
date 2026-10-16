@@ -1,6 +1,6 @@
 plugins { id 'fabric-loom' version "${loom_version}" }
 group = 'vn.svframe'
-version = '1.13.3-fabric'
+version = '1.13.4-fabric'
 base { archivesName = 'SVFrameMMO' }
 repositories { mavenCentral(); maven { url = 'https://maven.fabricmc.net/' } }
 dependencies {

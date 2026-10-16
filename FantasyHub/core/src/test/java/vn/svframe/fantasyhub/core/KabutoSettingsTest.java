@@ -38,4 +38,19 @@ class KabutoSettingsTest {
       assertThrows(IllegalArgumentException.class, () -> KabutoSettings.validate(c));
     }
   }
+
+  @Test
+  void oldConfigsEnableNewBeltPassivesAndExplicitDisableIsPreserved() throws Exception {
+    var old=defaults();old.remove("zecter-night-vision");old.remove("zecter-regeneration");
+    var migrated=KabutoSettings.validate(old);
+    assertEquals(true,migrated.get("zecter-night-vision"));assertEquals(true,migrated.get("zecter-regeneration"));
+    old.put("zecter-night-vision",false);
+    assertEquals(false,KabutoSettings.validate(old).get("zecter-night-vision"));
+  }
+
+  @Test
+  void misspelledBooleanDoesNotSilentlyDisableNightVision() throws Exception {
+    var invalid=defaults();invalid.put("zecter-night-vision","flase");
+    assertThrows(IllegalArgumentException.class,()->KabutoSettings.validate(invalid));
+  }
 }

@@ -2,6 +2,7 @@ package vn.svframe.svframemmo.profession.mining;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -73,24 +74,26 @@ public final class CustomMiningRuntime {
         boolean restricted = settings.enableToolRestrictions && state.isToolRequired() && !player.getMainHandStack().isSuitableFor(state);
         List<ItemStack> drops = definition.rollDrops();
         var event = new CustomBlockMineEvent(
-                SVFrameMMO.playerData().get(player), world, pos, state, definition.apiInfo(), drops, restricted).call();
+                SVFrameMMO.playerData().get(player), world, pos, state, definition.apiInfo(settings.regenerationEnabled), drops, restricted).call();
         if (event.isCancelled()) return BreakDecision.DENY;
         drops = event.getDrops();
 
-        boolean placed = playerPlaced.remove(key);
+        boolean placed = playerPlaced.contains(key);
         if (definition.vanillaDrops) {
+            playerPlaced.remove(key);
             pendingVanilla.put(new PendingKey(player.getUuid(), key),
                     new PendingBreak(definition, state, placed, List.copyOf(drops)));
             return BreakDecision.PASS;
         }
-        completeCustomBreak(player, world, pos, state, definition, placed, drops);
-        return BreakDecision.HANDLED;
+        return completeCustomBreak(player, world, pos, state, definition, placed, drops)
+                ? BreakDecision.HANDLED : BreakDecision.DENY;
     }
 
     public synchronized void afterVanillaBreak(ServerPlayerEntity player, BlockPos pos, boolean success) {
         if (player == null || pos == null) return;
         BlockKey key = BlockKey.of(player.getServerWorld(), pos);
         PendingBreak pending = pendingVanilla.remove(new PendingKey(player.getUuid(), key));
+        if (success) playerPlaced.remove(key);
         if (pending == null) return;
         if (!success) {
             if (pending.playerPlaced) playerPlaced.add(key);
@@ -100,16 +103,26 @@ public final class CustomMiningRuntime {
         scheduleRegen(player.getServerWorld(), pos, pending.originalState, pending.definition);
     }
 
-    private void completeCustomBreak(ServerPlayerEntity player, ServerWorld world, BlockPos pos, BlockState state,
+    private boolean completeCustomBreak(ServerPlayerEntity player, ServerWorld world, BlockPos pos, BlockState state,
                                      Definition definition, boolean placed, List<ItemStack> drops) {
-        world.breakBlock(pos, false, player);
+        var blockEntity = world.getBlockEntity(pos);
+        // tryBreakBlock's HEAD interception bypasses Fabric's own BEFORE/AFTER injections.
+        // Preserve protection vetoes and notify integrations only after a successful break.
+        if (!PlayerBlockBreakEvents.BEFORE.invoker().beforeBlockBreak(world, player, pos, state, blockEntity)) {
+            PlayerBlockBreakEvents.CANCELED.invoker().onBlockBreakCanceled(world, player, pos, state, blockEntity);
+            return false;
+        }
+        if (!world.breakBlock(pos, false, player)) return false;
+        playerPlaced.remove(BlockKey.of(world, pos));
         ItemStack tool = player.getMainHandStack();
         if (!tool.isEmpty() && tool.isDamageable())
             tool.damage(1, world, player, item -> player.sendEquipmentBreakStatus(item, net.minecraft.entity.EquipmentSlot.MAINHAND));
         drop(world, pos, drops);
         applyTriggers(player, definition, placed);
-        SVFrameMMO.nativeExperience().onCustomBlockBroken(player, world, pos, state, placed);
+        // NativeExperienceRuntime also listens to this event; do not call it twice.
+        PlayerBlockBreakEvents.AFTER.invoker().afterBlockBreak(world, player, pos, state, blockEntity);
         scheduleRegen(world, pos, state, definition);
+        return true;
     }
 
     private void applyRewards(ServerPlayerEntity player, ServerWorld world, BlockPos pos, Definition definition,
@@ -129,7 +142,7 @@ public final class CustomMiningRuntime {
     }
 
     private void scheduleRegen(ServerWorld world, BlockPos pos, BlockState original, Definition definition) {
-        if (definition.regenTicks <= 0) return;
+        if (!settings.regenerationEnabled || definition.regenTicks <= 0) return;
         BlockKey key = BlockKey.of(world, pos);
         if (regenerating.containsKey(key)) return;
         if (definition.temporaryBlock != null) world.setBlockState(pos, definition.temporaryBlock, Block.NOTIFY_ALL);
@@ -138,6 +151,8 @@ public final class CustomMiningRuntime {
 
     private synchronized void tick(MinecraftServer server) {
         if (regenerating.isEmpty()) return;
+        reloadIfNeeded();
+        if (!settings.enabled || !settings.regenerationEnabled) {regenerating.clear();return;}
         long now = SVFrameMMO.currentTick();
         var iterator = regenerating.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -213,11 +228,13 @@ public final class CustomMiningRuntime {
     }
     private static String norm(String value) { return value == null ? "" : value.trim().toLowerCase(Locale.ROOT).replace('_', '-'); }
 
-    private record Settings(boolean enabled, boolean protectVanillaBlocks, boolean enableToolRestrictions, List<Condition> conditions) {
-        static Settings disabled() { return new Settings(false, false, false, List.of()); }
+    private record Settings(boolean enabled, boolean protectVanillaBlocks, boolean enableToolRestrictions,
+                            boolean regenerationEnabled, List<Condition> conditions) {
+        static Settings disabled() { return new Settings(false, false, false, false, List.of()); }
         static Settings parse(Map<String, Object> raw) {
             List<Condition> conditions = strings(raw.get("conditions")).stream().map(Condition::parse).toList();
-            return new Settings(bool(raw.get("enable"), true), bool(raw.get("protect-vanilla-blocks"), false), bool(raw.get("enable-tool-restrictions"), false), conditions);
+            return new Settings(bool(raw.get("enable"), false), bool(raw.get("protect-vanilla-blocks"), false),
+                    bool(raw.get("enable-tool-restrictions"), false), bool(raw.get("regeneration-enabled"), false), conditions);
         }
         boolean matches(ServerPlayerEntity player) {
             for (Condition condition : conditions) if (!condition.matches(player)) return false;
@@ -272,8 +289,8 @@ public final class CustomMiningRuntime {
             for (Drop drop : drops) { ItemStack stack = drop.roll(); if (!stack.isEmpty()) result.add(stack); }
             return result;
         }
-        CustomBlockMineEvent.BlockInfo apiInfo() {
-            return new CustomBlockMineEvent.BlockInfo(id, Identifier.of(blockId), vanillaDrops, regenTicks);
+        CustomBlockMineEvent.BlockInfo apiInfo(boolean regenerationEnabled) {
+            return new CustomBlockMineEvent.BlockInfo(id, Identifier.of(blockId), vanillaDrops, regenerationEnabled ? regenTicks : 0);
         }
     }
 

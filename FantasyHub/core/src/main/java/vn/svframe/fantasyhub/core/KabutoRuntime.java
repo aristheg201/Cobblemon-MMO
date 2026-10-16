@@ -62,11 +62,13 @@ public final class KabutoRuntime {
     final ServerPlayerEntity player;
     final ServerWorld world;
     final KabutoState state = new KabutoState();
+    final ZecterPassives passives = new ZecterPassives();
     final List<StatModifier> modifiers = new ArrayList<>();
     final Map<UUID, Bleed> bleeds = new LinkedHashMap<>();
     Protocol.Kabuto sent;
     boolean executing;
     long lastBlockTick = -1;
+    long lastBladeSoundTick = -20;
     long leapUntil, leapStarted;
     Vec3d landing;
     double leapDamage;
@@ -89,6 +91,24 @@ public final class KabutoRuntime {
   public static boolean clock(LivingEntity entity) {
     var session = PLAYERS.get(entity.getUuid());
     return session != null && session.state.clock(tick);
+  }
+
+  public static boolean transformed(LivingEntity entity) {
+    var session = PLAYERS.get(entity.getUuid());
+    return session != null && session.state.transformed;
+  }
+
+  public static void swing(ServerPlayerEntity player, Hand hand) {
+    var session = PLAYERS.get(player.getUuid());
+    if (session != null && valid(session) && !session.state.gun
+        && hand == Hand.MAIN_HAND && player.getStackInHand(hand).isOf(Protocol.kunaiGun))
+      bladeSound(session);
+  }
+
+  private static void bladeSound(Session session) {
+    if (tick - session.lastBladeSoundTick < 4) return;
+    session.lastBladeSoundTick = tick;
+    sound(session, "kunai_slash", 1);
   }
 
   static Map<String, Object> inspect(ServerPlayerEntity player) {
@@ -520,8 +540,12 @@ public final class KabutoRuntime {
           }
           case "KUNAI_STRIKE" -> {
             s.player.swingHand(Hand.MAIN_HAND);
-            if (s.state.gun) shoot(s, result.target, number("gun-damage") * scale);
+            if (s.state.gun) {
+              shoot(s, result.target, number("gun-damage") * scale);
+              sound(s, "gun_fire", 1);
+            }
             else {
+              bladeSound(s);
               boolean damaged = hit(s, result.target, number("kunai-damage") * scale, false);
               bleed(s, result.target);
               if (damaged)
@@ -551,6 +575,9 @@ public final class KabutoRuntime {
 
   private static void update(Session s) {
     var p = s.player;
+    if (tick % 20 == 0)
+      s.passives.tick(p, Boolean.TRUE.equals(config.get("zecter-regeneration")),
+          Boolean.TRUE.equals(config.get("zecter-night-vision")));
     var state = s.state;
     var dots = s.bleeds.entrySet().iterator();
     while (dots.hasNext()) {
@@ -857,6 +884,7 @@ public final class KabutoRuntime {
     s.state.hyper = false;
     s.leapUntil = 0;
     applyForm(s);
+    FilamentCosmetics.hide(s.player);
     fx(s, "HENSHIN", s.player.getPos(), s.player.getPos(), 24, .8);
     sound(s, "henshin", 1);
   }
@@ -867,6 +895,7 @@ public final class KabutoRuntime {
     s.player.fallDistance = 0;
     FROZEN.values().removeIf(lease -> lease.actor == s.player);
     applyForm(s);
+    FilamentCosmetics.restore(s.player);
     publish(s);
   }
 
@@ -945,6 +974,8 @@ public final class KabutoRuntime {
 
   private static void clear(Session s) {
     PLAYERS.remove(s.player.getUuid());
+    s.passives.clear(s.player);
+    FilamentCosmetics.restore(s.player);
     for (var m : s.modifiers) m.unregister(MMOPlayerData.setup(s.player));
     attribute(s.player, EntityAttributes.GENERIC_MOVEMENT_SPEED, 0);
     attribute(s.player, EntityAttributes.GENERIC_ATTACK_SPEED, 0);

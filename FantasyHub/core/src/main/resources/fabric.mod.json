@@ -17,10 +17,10 @@
     "fabricloader": ">=0.18.4",
     "java": ">=21",
     "fabric-api": "*",
-    "fantasyhubprotocol": "0.1.8",
+    "fantasyhubprotocol": "0.1.9",
     "svframelib": ">=1.7.2-fabric",
-    "svframemmo": ">=1.13.3-fabric",
-    "svframeitems": ">=0.1.1-fabric",
+    "svframemmo": ">=1.13.4-fabric",
+    "svframeitems": ">=0.1.2-fabric",
     "svframemobs": ">=0.1.2-fabric"
   },
   "mixins": [

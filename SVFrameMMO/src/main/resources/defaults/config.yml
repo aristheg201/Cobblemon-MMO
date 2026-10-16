@@ -109,7 +109,9 @@ share-across-classes:
 # World / profession systems
 # ---------------------------------------------------------------------------
 custom-mining:
-  enable: true
+  enable: false
+  # Ore regeneration is opt-in, including when older on-mine definitions contain regen times.
+  regeneration-enabled: false
   enable-tool-restrictions: false
   protect-vanilla-blocks: false
 

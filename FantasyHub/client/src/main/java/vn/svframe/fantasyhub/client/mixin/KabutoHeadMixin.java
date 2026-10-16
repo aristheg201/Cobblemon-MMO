@@ -33,6 +33,7 @@ abstract class KabutoHeadMixin {
       float pitch,
       CallbackInfo ci) {
     if (entity instanceof PlayerEntity
-        && entity.getEquippedStack(EquipmentSlot.HEAD).isOf(Protocol.kabutoHat)) ci.cancel();
+        && (vn.svframe.fantasyhub.client.KabutoVisuals.state(entity.getId()) != null
+            || entity.getEquippedStack(EquipmentSlot.HEAD).isOf(Protocol.kabutoHat))) ci.cancel();
   }
 }

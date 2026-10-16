@@ -5,6 +5,12 @@ import java.util.*;
 /** Bound administrator data before any spatial query, modifier or scheduler uses it. */
 final class KabutoSettings {
   static Map<String, Object> validate(Map<String, Object> source) {
+    source = new LinkedHashMap<>(source);
+    for (String key : List.of("zecter-regeneration", "zecter-night-vision")) {
+      source.putIfAbsent(key, true);
+      if (!(source.get(key) instanceof Boolean))
+        throw new IllegalArgumentException("Kabuto " + key + " must be true or false");
+    }
     for (String key :
         List.of(
             "energy-per-hit",

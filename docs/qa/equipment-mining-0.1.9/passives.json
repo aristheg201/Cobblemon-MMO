@@ -1,0 +1,15 @@
+{
+  "real_belt_equipped": true,
+  "belt_has_native_thermal": true,
+  "night_vision_active": true,
+  "regeneration_active": true,
+  "native_regeneration_heals": true,
+  "healing_has_no_hurt_timer": true,
+  "existing_night_vision_preserved": true,
+  "own_regeneration_removed": true,
+  "own_night_vision_no_flashing": true,
+  "own_night_vision_removed": true,
+  "stronger_potion_preserved": true,
+  "hidden_belt_lease_cannot_reappear": true,
+  "verdict": "PASS"
+}

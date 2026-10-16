@@ -42,5 +42,45 @@
     "sounds": [
       "fantasyhub:kabuto/hyper"
     ]
+  },
+  "kabuto.gun_fire": {
+    "subtitle": "subtitle.fantasyhub.kabuto_gun_fire",
+    "sounds": [
+      {
+        "name": "fantasyhub:kabuto/gun_fire_1",
+        "volume": 0.8,
+        "attenuation_distance": 24
+      },
+      {
+        "name": "fantasyhub:kabuto/gun_fire_2",
+        "volume": 0.8,
+        "attenuation_distance": 24
+      },
+      {
+        "name": "fantasyhub:kabuto/gun_fire_3",
+        "volume": 0.8,
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "kabuto.kunai_slash": {
+    "subtitle": "subtitle.fantasyhub.kabuto_kunai_slash",
+    "sounds": [
+      {
+        "name": "fantasyhub:kabuto/kunai_slash_1",
+        "volume": 0.7,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "fantasyhub:kabuto/kunai_slash_2",
+        "volume": 0.7,
+        "attenuation_distance": 16
+      },
+      {
+        "name": "fantasyhub:kabuto/kunai_slash_3",
+        "volume": 0.7,
+        "attenuation_distance": 16
+      }
+    ]
   }
 }

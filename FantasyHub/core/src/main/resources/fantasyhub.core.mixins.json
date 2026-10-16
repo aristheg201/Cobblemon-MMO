@@ -2,9 +2,13 @@
   "required": true,
   "package": "vn.svframe.fantasyhub.core.mixin",
   "compatibilityLevel": "JAVA_21",
+  "plugin": "vn.svframe.fantasyhub.core.mixin.OptionalCompatibilityPlugin",
   "mixins": [
     "KabutoStatusMixin",
-    "KabutoMobAiMixin"
+    "KabutoMobAiMixin",
+    "FilamentCosmeticMixin",
+    "KunaiSwingMixin",
+    "StatusEffectLeaseAccess"
   ],
   "injectors": {
     "defaultRequire": 1

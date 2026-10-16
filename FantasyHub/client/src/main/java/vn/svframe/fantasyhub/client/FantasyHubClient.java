@@ -92,6 +92,7 @@ public final class FantasyHubClient implements ClientModInitializer {
                 o.add("displayedSkillSlots",QaPresentationSnapshot.slots(SkillBarPresentation.slots(state)));
                 o.addProperty("renderedSkillSlots",AbilityHud.lastRenderedSlots);
                 o.addProperty("damagePackets",ClientFeedbackQa.damagePackets);o.addProperty("hurtCameraFrames",ClientFeedbackQa.hurtCameraFrames);
+                o.addProperty("gunSounds",ClientFeedbackQa.gunSounds);o.addProperty("kunaiSounds",ClientFeedbackQa.kunaiSounds);
                 if(o.toString().length()>4096&&o.has("clientCasting"))o.getAsJsonObject("clientCasting").remove("slots");
                 if(o.toString().length()<=4096&&ClientPlayNetworking.canSend(Protocol.Observation.ID))ClientPlayNetworking.send(new Protocol.Observation(o.toString()));
                 observed=true;

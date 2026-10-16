@@ -74,6 +74,8 @@ def build(root,out,pack):
     with zipfile.ZipFile(pack,'w',zipfile.ZIP_DEFLATED) as z:
         for n,b in files.items():z.writestr(n,b)
     index={str(p.relative_to(out)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (out/'assets').rglob('*') if p.is_file() and p.name!='asset-index.json'};write('assets/fantasyhub/asset-index.json',index)
+    from finalize_equipment_compat import finalize
+    finalize(Path(__file__).resolve().parents[1],pack)
     print('Added',len(items),'items;',len(models),'item models. Original authored bytes retained. Wolven deliberately has3pieces.')
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--references',type=Path,required=True);p.add_argument('--client-output',type=Path,default=Path(__file__).resolve().parents[1]/'client/src/imported/resources');p.add_argument('--source-pack',type=Path,default=Path(__file__).resolve().parents[1]/'core/src/imported/resources/default/source-pack.zip');a=p.parse_args();build(a.references,a.client_output,a.source_pack)

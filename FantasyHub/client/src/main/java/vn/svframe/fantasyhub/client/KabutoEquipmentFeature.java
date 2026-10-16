@@ -31,6 +31,8 @@ final class KabutoEquipmentFeature
   private static final Map<JsonObject, List<Vertex>> GEOMETRY = new IdentityHashMap<>();
   private net.minecraft.client.render.entity.model.BipedEntityModel<AbstractClientPlayerEntity>
       suit;
+  private net.minecraft.client.render.entity.model.BipedEntityModel<AbstractClientPlayerEntity>
+      originalOuter, originalLegs;
 
   KabutoEquipmentFeature(
       FeatureRendererContext<
@@ -70,7 +72,7 @@ final class KabutoEquipmentFeature
       model.copyBipedStateTo(suit);
       suit.setVisible(true);
       suit.head.visible = suit.hat.visible = false;
-      suit.render(
+      if (form.equals("masked")) suit.render(
           matrices,
           vertices.getBuffer(
               RenderLayer.getEntityCutoutNoCull(
@@ -79,7 +81,7 @@ final class KabutoEquipmentFeature
           OverlayTexture.DEFAULT_UV,
           0xffffffff);
       if (form.equals("rider")) {
-        renderParts("rider", "head", model.head, matrices, vertices, light);
+        renderOriginalArmor(model, matrices, vertices, light);
         matrices.push();
         model.head.rotate(matrices);
         HeadFeatureRenderer.translate(matrices, false);
@@ -99,17 +101,44 @@ final class KabutoEquipmentFeature
     }
     if (state != null && form.equals("masked"))
       renderParts(form, "head", model.head, matrices, vertices, light);
-    if (state != null) {
+    if (state != null && form.equals("masked")) {
       renderParts(form, "body", model.body, matrices, vertices, light);
       renderParts(form, "left_arm", model.leftArm, matrices, vertices, light);
       renderParts(form, "right_arm", model.rightArm, matrices, vertices, light);
-      if (state != null && state.hyper())
-        renderParts("hyper", "body", model.body, matrices, vertices, light);
     }
-    if (state != null) {
+    if (state != null && form.equals("masked")) {
       renderParts(form, "left_leg", model.leftLeg, matrices, vertices, light);
       renderParts(form, "right_leg", model.rightLeg, matrices, vertices, light);
     }
+  }
+
+  /** Rider and Hyper use the unchanged armor textures from the user's original Kabuto archive. */
+  private void renderOriginalArmor(PlayerEntityModel<AbstractClientPlayerEntity> source,
+      MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+    if (originalOuter == null) {
+      originalOuter = originalArmor(.5f);
+      originalLegs = originalArmor(.25f);
+    }
+    source.copyBipedStateTo(originalLegs);
+    originalLegs.setVisible(false);
+    originalLegs.body.visible = originalLegs.leftLeg.visible = originalLegs.rightLeg.visible = true;
+    originalLegs.render(matrices, vertices.getBuffer(RenderLayer.getArmorCutoutNoCull(
+        Identifier.of("fantasyhub", "textures/armor/additions/kabuto_layer_2.png"))),
+        light, OverlayTexture.DEFAULT_UV, 0xffffffff);
+    source.copyBipedStateTo(originalOuter);
+    originalOuter.setVisible(false);
+    originalOuter.body.visible = originalOuter.leftArm.visible = originalOuter.rightArm.visible = true;
+    originalOuter.leftLeg.visible = originalOuter.rightLeg.visible = true;
+    originalOuter.render(matrices, vertices.getBuffer(RenderLayer.getArmorCutoutNoCull(
+        Identifier.of("fantasyhub", "textures/armor/additions/kabuto_layer_1.png"))),
+        light, OverlayTexture.DEFAULT_UV, 0xffffffff);
+  }
+
+  private static net.minecraft.client.render.entity.model.BipedEntityModel<AbstractClientPlayerEntity> originalArmor(float dilation) {
+    return new net.minecraft.client.render.entity.model.BipedEntityModel<>(
+        net.minecraft.client.model.TexturedModelData.of(
+            net.minecraft.client.render.entity.model.BipedEntityModel.getModelData(
+                new net.minecraft.client.model.Dilation(dilation), 0), 64, 32).createModel());
   }
 
   private void renderBelt(

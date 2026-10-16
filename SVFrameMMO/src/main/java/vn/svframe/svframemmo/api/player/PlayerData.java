@@ -120,8 +120,10 @@ public final class PlayerData {
         applyTemporaryProgression();
         skillTrees.applyTemporary();
         if (isOnline()) vn.svframe.svframelib.fabric.runtime.PlayerStatInitialization.restoreEquipment(player);
-        clampAll();
         if (isOnline()) {
+            // Offline profiles have no live MythicLib stat owner. Preserve their
+            // saved resources until attach restores class/equipment attributes.
+            clampAll();
             setResource(PlayerResource.HEALTH, requestedHealth, ResourceUpdateReason.CHOOSE_CLASS);
             SVFrameMMO.skillRuntime().attach(this);
         }

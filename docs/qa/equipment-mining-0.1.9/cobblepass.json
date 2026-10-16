@@ -1,0 +1,9 @@
+{
+  "actual_flush_recreates_missing_directory": true,
+  "successful_flush_clears_dirty": true,
+  "actual_flush_does_not_crash_on_io_error": true,
+  "reward_transaction_requires_durable_save": true,
+  "last_good_quest_json_preserved": true,
+  "actual_flush_retries_dirty_state": true,
+  "verdict": "PASS"
+}

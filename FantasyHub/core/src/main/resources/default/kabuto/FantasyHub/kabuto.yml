@@ -1,5 +1,8 @@
 # User-designed Kabuto mechanics. Multipliers are final totals:3.0 means300%.
 # Unspecified balance values are defaults, editable here; no currency conversion.
+# Belt passives also work in human form; remove the belt to release its own effects.
+zecter-regeneration: true
+zecter-night-vision: true
 energy-per-hit: 10
 energy-per-block: 20
 gauge-per-hit: 10

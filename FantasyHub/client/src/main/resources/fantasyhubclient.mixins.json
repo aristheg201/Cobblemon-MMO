@@ -9,7 +9,8 @@
     "ClassArmorMixin",
     "ClassItemModelMixin",
     "KabutoPoseMixin",
-    "KabutoHeadMixin"
+    "KabutoHeadMixin",
+    "KunaiSoundQaMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -28,6 +28,7 @@ public final class RpgLifecycleQa {
     }
     private static int run(ServerPlayerEntity player,String scenario){
         var data=SVFrameMMO.playerData().get(player);LABELS.put(player.getUuid(),scenario);
+        if(scenario.startsWith("compat_"))return EquipmentCompatibilityQa.run(player,scenario.substring("compat_".length()));
         if(scenario.startsWith("kabuto_"))return KabutoQa.run(player,scenario.substring("kabuto_".length()));
         if(scenario.startsWith("hunter_"))return HunterQa.run(player,scenario.substring("hunter_".length()));
         if(scenario.startsWith("dragonborn_"))return DragonbornQa.run(player,scenario.substring("dragonborn_".length()));

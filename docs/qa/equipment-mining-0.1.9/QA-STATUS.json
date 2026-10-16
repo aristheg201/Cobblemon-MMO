@@ -1,0 +1,56 @@
+{
+  "release": "0.1.9",
+  "purpose": "TEST_BUILD",
+  "production_port_complete": false,
+  "unit_tests": {
+    "items": 24,
+    "core": 15,
+    "client": 14,
+    "failures": 0
+  },
+  "third_party_conformance_tests": 26,
+  "runtime": {
+    "enchant_table_equipment": {
+      "count": 73,
+      "verdict": "PASS",
+      "evidence": "qa/enchant.json"
+    },
+    "anvil_grindstone_glint": {
+      "checks": 10,
+      "verdict": "PASS",
+      "evidence": "qa/enchant.json"
+    },
+    "zecter_passive_leases": {
+      "checks": 12,
+      "verdict": "PASS",
+      "evidence": "qa/passives.json"
+    },
+    "cobblepass_save_failure_recovery": {
+      "checks": 6,
+      "verdict": "PASS",
+      "evidence": "qa/cobblepass.json"
+    },
+    "filament_henshin_hide": {
+      "verdict": "IMPLEMENTED_UNVERIFIED",
+      "observed": "Actual transformed player has no Filament holders; late tracking and restoration visuals not fully accepted."
+    },
+    "guild_mining_live": {
+      "verdict": "IMPLEMENTED_UNVERIFIED",
+      "evidence": "qa/failed-mining.json",
+      "reason": "Fixture asserted progress before GuildRuntime.signal queued publication completed. Standalone real GuildEngine tests pass. Live full mining completion and 2100-tick regeneration acceptance still pending; no production acceptance claimed."
+    },
+    "rider_original_texture": {
+      "verdict": "IMPLEMENTED_UNVERIFIED",
+      "observed": "Original armor rendering observed in native client, screenshot in qa; full Hyper/first-person matrix pending."
+    },
+    "kunai_audio": {
+      "verdict": "IMPLEMENTED_UNVERIFIED",
+      "observed": "Native blade sound playback observed on both actor and observer. Gun/cooldown final matrix pending."
+    },
+    "handshake": {
+      "verdict": "PASS",
+      "observed": "0.1.9 client accepted and joined final Bridge server through Velocity; first reconnect timed out during registry transfer; second connected."
+    }
+  },
+  "global_release_gate": "FAIL; full upstream class/MythicMobs/Skript parity is not complete."
+}
