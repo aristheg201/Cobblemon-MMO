@@ -134,8 +134,12 @@ public final class SVFrameMMO implements ModInitializer {
             CLASS_TRIGGERS.clear();
             CLASS_SELECTION.save();
             for (var data : PLAYER_DATA.online()) SKILL_RUNTIME.detach(data);
-            PLAYER_DATA.close();
-            EXTERNAL_PROGRESSION.close();
+        });
+        // STOPPING precedes script unload callbacks and player disconnects. Keep both writers
+        // alive through those callbacks so the final snapshot includes their mutations.
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            try { PLAYER_DATA.close(); }
+            finally { EXTERNAL_PROGRESSION.close(); }
             try { if (profileRegistration != null) profileRegistration.close(); }
             catch (Exception ignored) { }
         });
@@ -150,7 +154,7 @@ public final class SVFrameMMO implements ModInitializer {
             TEMPORARY_SKILLS.clear(handler.player.getUuid());
             CLASS_TRIGGERS.detach(handler.player.getUuid());
             PLAYER_DATA.quit(handler.player);
-            EXTERNAL_PROGRESSION.save();
+            if (EXTERNAL_PROGRESSION.isStarted()) EXTERNAL_PROGRESSION.save();
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             tick++;

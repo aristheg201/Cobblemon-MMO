@@ -117,8 +117,8 @@ vanilla-exp-redirection:
   enabled: false
   ratio: 0.8
 
-# VANILLA leaves Minecraft level/progress/total EXP completely authoritative.
-# MMO intentionally replaces the vanilla EXP bar with SVFrameMMO progression and cancels vanilla gains.
+# Both modes preserve real Minecraft EXP gains, costs, mending and death drops.
+# VANILLA shows Minecraft level/progress. MMO shows RPG progression in FantasyHubClient only.
 vanilla-exp-display:
   mode: VANILLA
 
