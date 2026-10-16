@@ -86,6 +86,7 @@ public final class KabutoVisuals {
   static void accept(Protocol.Kabuto state) {
     if (state.form() < 0) {
       STATES.remove(state.entityId());
+      POSES.remove(state.entityId());
       KabutoEffects.removeEntity(state.entityId());
     } else STATES.put(state.entityId(), state);
   }

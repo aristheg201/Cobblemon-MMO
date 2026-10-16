@@ -1,0 +1,40 @@
+{
+  "version": "0.1.8",
+  "asset_revision": "kabuto-toggle-v9",
+  "whole_port_release_gate": "FAIL",
+  "focused_toggle_checks": 18,
+  "focused_runtime": "PASS",
+  "artifacts": {
+    "Client": {
+      "file": "client/FantasyHubClient-0.1.8-human-fix.jar",
+      "bytes": 1285804,
+      "sha256": "88d3d5dbfa05bc766bec1578dec9e35f573f8917b7371bc8d9594bd74c7eb5e7",
+      "drive_id": "1QB7AOWTfqxch9XI-ATyX-HdW0EfS4Om1",
+      "drive_url": "https://drive.google.com/file/d/1QB7AOWTfqxch9XI-ATyX-HdW0EfS4Om1/view",
+      "drive_parent": "1mwt23RfskwG6KG6TTYBCPfqcVfqKfqWT",
+      "metadata_size_and_parent_readback_verified": true,
+      "remote_checksum_exposed": false
+    },
+    "Core": {
+      "file": "server/bundled/FantasyHubCore-0.1.8.jar",
+      "bytes": 8513667,
+      "sha256": "ea5e7481698e6c31eff54d2be8c9f74cb9abf508cbd2b67dcedb4b15efc5941a",
+      "drive_id": "135eJDRotlzlbkiKIWgkGMS2WD91kIDi_",
+      "drive_url": "https://drive.google.com/file/d/135eJDRotlzlbkiKIWgkGMS2WD91kIDi_/view",
+      "drive_parent": "1mwt23RfskwG6KG6TTYBCPfqcVfqKfqWT",
+      "metadata_size_and_parent_readback_verified": true,
+      "remote_checksum_exposed": false
+    },
+    "Bridge": {
+      "file": "server/separate/FantasyHubBridge-0.1.8.jar",
+      "bytes": 1112653,
+      "sha256": "c4b9bf904c54f981eaca9f094567d3475be6afa9326e1d5a01a02881e1ca4488",
+      "drive_id": "1BkKtyRaCDCXVrqcp6p2NraTpdus9q9jz",
+      "drive_url": "https://drive.google.com/file/d/1BkKtyRaCDCXVrqcp6p2NraTpdus9q9jz/view",
+      "drive_parent": "1mwt23RfskwG6KG6TTYBCPfqcVfqKfqWT",
+      "metadata_size_and_parent_readback_verified": true,
+      "remote_checksum_exposed": false
+    }
+  },
+  "preliminary_client_superseded": "FantasyHubClient-0.1.8.jar; use the distinct human-fix JAR. Do not install both client JARs."
+}

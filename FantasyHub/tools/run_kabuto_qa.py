@@ -36,8 +36,11 @@ def main():
   if evidence['prepare'].get('belt_equipped_via_real_api') is not True:failed.append('prepare: native belt API')
   if len(set(evidence['prepare'].get('equipment_definitions',[])))!=6:failed.append('prepare: six distinct equipment instances')
   if evidence['prepare'].get('belt_skill_damage')!=5:failed.append('prepare: real belt skill-damage stat')
+  if evidence['prepare'].get('initial',{}).get('active'):act('henshin',1.3,label='normalize_human')
   act('henshin',1.3);act('henshin',1.3,label='henshin_repeat');
-  if evidence['henshin_repeat'].get('current_health_before')!=evidence['henshin_repeat'].get('current_health_after'):failed.append('repeated henshin: current HP changed')
+  if evidence['henshin_repeat'].get('state_immediate',{}).get('active') is not False:failed.append('repeated henshin: did not return to human')
+  if evidence['henshin_repeat'].get('current_health_after')!=min(evidence['henshin_repeat']['current_health_before'],evidence['henshin_repeat']['health_max']):failed.append('repeated henshin: wrong health clamp')
+  act('henshin',1.3,label='henshin_restore')
   before_reload=send(f'data get entity {a.player} Health');reload_reply=send('kabuto reload');after_reload=send(f'data get entity {a.player} Health');evidence['reload']={'response':reload_reply,'health_before':before_reload,'health_after':after_reload}
   if 'fantasyhub.kabuto.reloaded' not in reload_reply and 'Kabuto configuration reloaded' not in reload_reply:failed.append('kabuto reload: command failed')
   if before_reload!=after_reload:failed.append('reload: current HP changed')

@@ -27,9 +27,9 @@ def main():
   report['inventory_preserved_after_henshin']=before==send(f'data get entity {a.player} Inventory')
   # Holding native hotbar1 maps bound Cast Off2 to visible input3.
   key('3');time.sleep(4.5);report['after_native_cast_off']=status();send(f'tp {a.player} 200.5 65 0.5 0 0');time.sleep(.5);shot('native-cast-off-rider')
-  key('f');time.sleep(.7);report['after_reopening_f']=status();shot('reopen-f-keeps-rider')
+  key('f');time.sleep(.7);report['after_manual_close_f']=status();shot('close-f-returns-human')
   report['inventory_preserved_after_cast_off']=before==send(f'data get entity {a.player} Inventory')
  finally:recorder.communicate(b'q',timeout=20)
- checks={'f_henshin':report['after_f'].get('active') and report['after_f'].get('form')=='MASKED','native_bound_cast_off':report['after_native_cast_off'].get('form')=='RIDER','reopening_f_keeps_rider':report['after_reopening_f'].get('form')=='RIDER','henshin_inventory':report['inventory_preserved_after_henshin'],'cast_off_inventory':report['inventory_preserved_after_cast_off']}
+ checks={'f_henshin':report['after_f'].get('active') and report['after_f'].get('form')=='MASKED','native_bound_cast_off':report['after_native_cast_off'].get('form')=='RIDER','closing_f_returns_human':report['after_manual_close_f'].get('active') is False,'henshin_inventory':report['inventory_preserved_after_henshin'],'cast_off_inventory':report['inventory_preserved_after_cast_off']}
  report['checks']=checks;report['result']='PASS' if all(checks.values()) else 'FAIL';(a.output/'verification.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report));return report['result']!='PASS'
 if __name__=='__main__':raise SystemExit(main())

@@ -1,3 +1,9 @@
+# Latest update — Kabuto toggle0.1.8
+
+Manual F close and Henshin recast now return to human; form modifiers/Clock/Hyper/leap clear without replacing items or refilling resources. Corrected client hides the whole dormant suit and helmet.26unit tests and18two-client runtime checks pass. Use FantasyHubClient-0.1.8-human-fix.jar with Core OR Bridge0.1.8. All3JARs uploaded individually; exact links/hashes in docs/KABUTO-0.1.8-DELIVERY.json. No config reset or new full asset pack. Do not use preliminary Client0.1.8.jar. Full-port gate remains FAIL.
+
+## Previous checkpoints
+
 # Latest checkpoint — Kabuto VFX/gun correction0.1.7
 
 Core/Bridge/Client/Protocol0.1.7, assets kabuto-vfx-v8. First-person gun stays as user confirmed; third-person corrected independently. New server-confirmed GUN_FIRE pose and KabutoFx S2C events. Native Minecraft plus11actual Cobblemon ParticleStorm effects; private fixes for upstream flash/metal sprite references. Config FantasyHub/kabuto-vfx.yml, /kabuto reload, F8Settings density. No damage authority on client.

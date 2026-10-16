@@ -34,3 +34,5 @@ Focused Hunter runtime acceptance is recorded in [HUNTER-IMPLEMENTATION-QA.md](H
 Focused Kabuto native-input/skill/reconnect acceptance is recorded in [KABUTO-IMPLEMENTATION-QA.md](KABUTO-IMPLEMENTATION-QA.md). Its narrow regression entry passes; the five broad addition entries remain IN_PROGRESS. The original inventory above is retained; additions and current exact counts are in the JSON/release-gate output.
 
 2026-10-16: narrow Kabuto VFX/gun acceptance0.1.7 is verified; see KABUTO-VFX-0.1.7-QA.md. Full-port release gate remains FAIL; left-hand and broader model/class acceptance are not promoted.
+
+0.1.8: new manual-close/Henshin human-toggle requirement verified by18real checks. The old combined F/reconnect acceptance row is IN_PROGRESS because its manual-close branch was superseded and its current-version combined evidence needs refresh. Historical evidence is retained.

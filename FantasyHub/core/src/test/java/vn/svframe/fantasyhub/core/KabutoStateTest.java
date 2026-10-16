@@ -6,6 +6,29 @@ import org.junit.jupiter.api.Test;
 
 class KabutoStateTest {
   @Test
+  void deactivationClearsTransformationAndClockWithoutRefillingMetersOrChangingWeaponMode() {
+    var s = new KabutoState();
+    s.transformed = true;
+    s.form = KabutoState.Form.RIDER;
+    s.hyper = true;
+    s.gun = false;
+    s.energy = 23;
+    s.gauge = 41;
+    s.combo = 7;
+    s.clockUntil = 200;
+    assertTrue(s.deactivate());
+    assertFalse(s.transformed);
+    assertFalse(s.hyper);
+    assertFalse(s.clock(50));
+    assertEquals(KabutoState.Form.MASKED, s.form);
+    assertEquals(0, s.combo);
+    assertEquals(23, s.energy);
+    assertEquals(41, s.gauge);
+    assertFalse(s.gun);
+    assertFalse(s.deactivate());
+  }
+
+  @Test
   void clockRequiresRiderAndEnoughGaugeAndExpiresExactlyAfterFiveSeconds() {
     var s = new KabutoState();
     s.gain(0, 100);

@@ -15,7 +15,7 @@ import net.minecraft.registry.Registries;
 public final class Protocol implements ModInitializer {
     private static boolean installed;
     public static final int VERSION=1;
-    public static final String ASSET_REVISION="kabuto-vfx-v8";
+    public static final String ASSET_REVISION="kabuto-toggle-v9";
     public record Handshake(int version,String assets,String clientVersion,String diagnostic) implements CustomPayload {
         public static final Id<Handshake> ID=new Id<>(Identifier.of("fantasyhub","handshake_v1"));
         public static final PacketCodec<PacketByteBuf,Handshake> CODEC=PacketCodec.of((p,b)->{b.writeVarInt(p.version);b.writeString(p.assets,128);b.writeString(p.clientVersion,32);b.writeString(p.diagnostic,512);},b->new Handshake(b.readVarInt(),b.readString(128),b.readString(32),b.readString(512)));

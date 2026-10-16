@@ -14,7 +14,6 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
@@ -98,16 +97,16 @@ final class KabutoEquipmentFeature
         matrices.pop();
       }
     }
-    if ((state != null || player.getEquippedStack(EquipmentSlot.HEAD).isOf(Protocol.kabutoHat))
-        && form.equals("masked")) renderParts(form, "head", model.head, matrices, vertices, light);
-    if (state != null || isArmor(player.getEquippedStack(EquipmentSlot.CHEST))) {
+    if (state != null && form.equals("masked"))
+      renderParts(form, "head", model.head, matrices, vertices, light);
+    if (state != null) {
       renderParts(form, "body", model.body, matrices, vertices, light);
       renderParts(form, "left_arm", model.leftArm, matrices, vertices, light);
       renderParts(form, "right_arm", model.rightArm, matrices, vertices, light);
       if (state != null && state.hyper())
         renderParts("hyper", "body", model.body, matrices, vertices, light);
     }
-    if (state != null || isArmor(player.getEquippedStack(EquipmentSlot.LEGS))) {
+    if (state != null) {
       renderParts(form, "left_leg", model.leftLeg, matrices, vertices, light);
       renderParts(form, "right_leg", model.rightLeg, matrices, vertices, light);
     }
@@ -305,12 +304,6 @@ final class KabutoEquipmentFeature
         }
     }
     return List.copyOf(compiled);
-  }
-
-  private static boolean isArmor(ItemStack stack) {
-    var data = stack.get(DataComponentTypes.CUSTOM_DATA);
-    return data != null
-        && data.copyNbt().getString("SVFRAME_ARMOR_TEXTURE").equals("fantasyhub:additions/kabuto");
   }
 
   private static float[] xyz(JsonObject object, String key) {

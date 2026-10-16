@@ -15,8 +15,7 @@ final class DragonbornHatFeature extends FeatureRenderer<AbstractClientPlayerEnt
     DragonbornHatFeature(FeatureRendererContext<AbstractClientPlayerEntity,PlayerEntityModel<AbstractClientPlayerEntity>> context){super(context);}
     @Override public void render(MatrixStack matrices,VertexConsumerProvider vertices,int light,AbstractClientPlayerEntity entity,float limbAngle,float limbDistance,float tickDelta,float age,float headYaw,float headPitch){
         if(KabutoVisuals.state(entity.getId())!=null)return;
-        var stack=entity.getEquippedStack(EquipmentSlot.HEAD);if((!stack.isOf(Protocol.kabutoHat)&&!stack.isOf(Protocol.dragonbornHat)&&!HunterArmorFeature.hat(stack))||entity.isInvisible())return;
-        var kabuto=KabutoVisuals.state(entity.getId());if(stack.isOf(Protocol.kabutoHat)&&kabuto!=null&&kabuto.form()==0)return;
+        var stack=entity.getEquippedStack(EquipmentSlot.HEAD);if((!stack.isOf(Protocol.dragonbornHat)&&!HunterArmorFeature.hat(stack))||entity.isInvisible())return;
         matrices.push();getContextModel().head.rotate(matrices);HeadFeatureRenderer.translate(matrices,false);
         MinecraftClient.getInstance().getItemRenderer().renderItem(stack,ModelTransformationMode.HEAD,light,OverlayTexture.DEFAULT_UV,matrices,vertices,entity.getWorld(),entity.getId());matrices.pop();
     }

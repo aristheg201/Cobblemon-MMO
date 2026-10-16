@@ -1,3 +1,15 @@
+# Latest checkpoint — Kabuto human toggle0.1.8
+
+User requested immediate JAR delivery. Final Client is FantasyHubClient-0.1.8-human-fix.jar, not preliminary FantasyHubClient-0.1.8.jar. Core/Bridge0.1.8 unchanged from the initially supplied build. All3uploaded separately to authorized Drive folder; URLs/hashes in docs/KABUTO-0.1.8-DELIVERY.json. Do not overwrite0.1.7 ZIP or preliminary loose JAR. No new full ZIP requested for this focused update.
+
+Behavior: manual F skill-bar close ->human; Henshin recast while transformed ->human; next Henshin ->Masked. Forced/post-cast exits preserve successful abilities. No inventory replacement. State deactivation removes form modifiers, ends Clock/Hyper/leap, releases own frozen mobs, keeps charge/weapon mode/cooldowns. Corrected client removes dormant suit AND helmet, including old DragonbornHatFeature Kabuto fallback; only own active Kabuto renderer draws it. Shared presentation revision kabuto-toggle-v9, exact handshake0.1.8.
+
+26fresh unit tests PASS(Core13+Client13),18focused real two-client checks PASS. Actual screenshots now show human head/body with belt and weapon; fullInventoryNBT unchanged, client/serverHP49.8 vsMasked65.8, speed/armor/attack restored, Clock mob pinned before and free after cancel. Source docs/KABUTO-TOGGLE-0.1.8-QA.md, docs/qa/kabuto-toggle-0.1.8. Test compares damage feedback specifically around toggles, not across preceding genuine movement. No damage feedback suppression.
+
+Live server35636 continuously running0.1.8; clients36789/36790 DISPLAY99/101 usehuman-fix. Server and exact uploaded JAR bytes verified separately. Runtime logs /workspace/qa-evidence/kabuto-toggle-0.1.8/{server-verified,client-human,observer-human}.log. Native full-skill regression rerun in progress; preserve its result. Build script /workspace/scratch/build_kabuto_toggle.py; local Java21/Gradle8.8. CoreBridge raw classes/nested5hashes same. Assets/private imported resources unchanged from0.1.7 source ZIP; public Git source changes supply updated code and metadata. Never install both Clientvariants or Core+Bridge. Full port gate remains FAIL.
+
+## Prior checkpoint history
+
 # Current continuation — Kabuto VFX / third-person gun fix0.1.7
 
 Latest steering: first-person gun was confirmed correct; third-person was reversed. Keep first-person Y=-90,Z=-3.5; third-person alone Y=-90,Z=-3.15, scale.45. Do not flip both again. Actual two-client firing frames in docs/qa/kabuto-vfx-0.1.7/gun-verified. Native GUN_FIRE cue fixes remote pose without requiring private Polymer item NBT. Actual Blockbench5.2.2 project and deterministic targeted editor operation included.

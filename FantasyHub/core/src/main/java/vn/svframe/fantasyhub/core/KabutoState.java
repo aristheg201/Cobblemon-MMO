@@ -14,6 +14,16 @@ final class KabutoState {
   boolean gun = true;
   long clockUntil;
 
+  boolean deactivate() {
+    if (!transformed) return false;
+    transformed = false;
+    form = Form.MASKED;
+    hyper = false;
+    clockUntil = 0;
+    combo = 0;
+    return true;
+  }
+
   void gain(int energyAmount, int gaugeAmount) {
     energy = Math.clamp(energy + energyAmount, 0, 100);
     gauge = Math.clamp(gauge + gaugeAmount, 0, 100);

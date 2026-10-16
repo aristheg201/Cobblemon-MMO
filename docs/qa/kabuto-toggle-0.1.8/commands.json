@@ -1,0 +1,322 @@
+[
+  {
+    "command": "list",
+    "response": "There are 2 of a max of 5 players online: QAPlayer, QAAttacker"
+  },
+  {
+    "command": "list",
+    "response": "There are 2 of a max of 5 players online: QAPlayer, QAAttacker"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "kill @e[tag=qa_kabuto]",
+    "response": "Killed Cow"
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 0.5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "gamemode spectator QAAttacker",
+    "response": ""
+  },
+  {
+    "command": "tp QAAttacker 201.8 65.0 2.7 149.42 15.73",
+    "response": "Teleported QAAttacker to 201.800000, 65.000000, 2.700000"
+  },
+  {
+    "command": "data get entity QAPlayer Inventory",
+    "response": "QAPlayer has the following entity data: [{count: 1, Slot: 0b, components: {\"minecraft:lore\": ['{\"color\":\"gray\",\"italic\":false,\"translate\":\"svframeitems.item.level\",\"with\":[1]}', '{\"color\":\"green\",\"italic\":false,\"translate\":\"svframeitems.item.stat\",\"with\":[{\"translate\":\"svframeitems.stat.attack_damage\"},\"6\"]}'], \"minecraft:attribute_modifiers\": {show_in_tooltip: 0b, modifiers: []}, \"minecraft:unbreakable\": {show_in_tooltip: 0b}, \"minecraft:custom_name\": '{\"translate\":\"item.fantasyhub.kabuto_kunai_gun\"}', \"minecraft:custom_data\": {SVFRAME_ITEM_FLAGS: {disable-droping: 0b, disable-repairing: 0b, disable-crafting: 0b, disable-smithing: 0b, disable-smelting: 0b, disable-enchanting: 0b, disable-death-drop: 0b}, SVFRAMEITEMS_ITEM_TYPE: \"sword\", SVFRAME_ITEM_MODEL: \"fantasyhub:item/additions/kunai_gun\", SVFRAMEITEMS_ITEM_LEVEL: 1, SVFRAMEITEMS_ITEM_ID: \"kabuto_kunai_gun\", SVFRAMEITEMS_UPGRADE_LEVEL: 0, SVFrameItems: {definition-id: \"kabuto_kunai_gun\", state-revision: 0L, item-level: 1, rarity-id: \"common\", upgrade-level: 0, seed: -7270874785357466614L, stats: [{id: \"ATTACK_DAMAGE\", type: \"FLAT\", value: 6.0d}], instance-id: \"8f5191ec-42cc-909d-e4b1-6bc50fc03830\", type-id: \"sword\", definition-revision: 1, sockets: []}}}, id: \"fantasyhub:kunai_gun\"}, {count: 8, Slot: 1b, id: \"minecraft:leather\"}, {count: 11, Slot: 2b, id: \"minecraft:beef\"}, {count: 1, Slot: 100b, components: {\"minecraft:lore\": ['{\"color\":\"gray\",\"italic\":false,\"translate\":\"svframeitems.item.level\",\"with\":[1]}', '{\"color\":\"green\",\"italic\":false,\"translate\":\"svframeitems.item.stat\",\"with\":[{\"translate\":\"svframeitems.stat.armor\"},\"1\"]}'], \"minecraft:attribute_modifiers\": {show_in_tooltip: 0b, modifiers: []}, \"minecraft:unbreakable\": {show_in_tooltip: 0b}, \"minecraft:custom_name\": '{\"translate\":\"item.fantasyhub.kabuto_boots\"}', \"minecraft:custom_data\": {SVFRAME_ITEM_FLAGS: {disable-droping: 0b, disable-repairing: 0b, disable-crafting: 0b, disable-smithing: 0b, disable-smelting: 0b, disable-enchanting: 0b, disable-death-drop: 0b}, SVFRAMEITEMS_ITEM_TYPE: \"armor\", SVFRAME_ITEM_MODEL: \"fantasyhub:item/additions/kabuto_boots\", SVFRAMEITEMS_ITEM_LEVEL: 1, SVFRAME_ARMOR_TEXTURE: \"fantasyhub:additions/kabuto\", SVFRAMEITEMS_ITEM_ID: \"kabuto_boots\", SVFRAMEITEMS_UPGRADE_LEVEL: 0, SVFrameItems: {definition-id: \"kabuto_boots\", state-revision: 0L, item-level: 1, rarity-id: \"common\", upgrade-level: 0, seed: -4024065293357180326L, stats: [{id: \"ARMOR\", type: \"FLAT\", value: 1.0d}], instance-id: \"a0f185b1-10c7-ba3a-03f5-0d509b881e21\", type-id: \"armor\", definition-revision: 1, sockets: []}}}, id: \"minecraft:leather_boots\"}, {count: 1, Slot: 101b, components: {\"minecraft:lore\": ['{\"color\":\"gray\",\"italic\":false,\"translate\":\"svframeitems.item.level\",\"with\":[1]}', '{\"color\":\"green\",\"italic\":false,\"translate\":\"svframeitems.item.stat\",\"with\":[{\"translate\":\"svframeitems.stat.armor\"},\"2\"]}'], \"minecraft:attribute_modifiers\": {show_in_tooltip: 0b, modifiers: []}, \"minecraft:unbreakable\": {show_in_tooltip: 0b}, \"minecraft:custom_name\": '{\"translate\":\"item.fantasyhub.kabuto_leggings\"}', \"minecraft:custom_data\": {SVFRAME_ITEM_FLAGS: {disable-droping: 0b, disable-repairing: 0b, disable-crafting: 0b, disable-smithing: 0b, disable-smelting: 0b, disable-enchanting: 0b, disable-death-drop: 0b}, SVFRAMEITEMS_ITEM_TYPE: \"armor\", SVFRAME_ITEM_MODEL: \"fantasyhub:item/additions/kabuto_leggings\", SVFRAMEITEMS_ITEM_LEVEL: 1, SVFRAME_ARMOR_TEXTURE: \"fantasyhub:additions/kabuto\", SVFRAMEITEMS_ITEM_ID: \"kabuto_leggings\", SVFRAMEITEMS_UPGRADE_LEVEL: 0, SVFrameItems: {definition-id: \"kabuto_leggings\", state-revision: 0L, item-level: 1, rarity-id: \"common\", upgrade-level: 0, seed: 4305802099762683828L, stats: [{id: \"ARMOR\", type: \"FLAT\", value: 2.0d}], instance-id: \"1394a5f4-45d9-c409-fb46-59cb685c66f0\", type-id: \"armor\", definition-revision: 1, sockets: []}}}, id: \"minecraft:leather_leggings\"}, {count: 1, Slot: 102b, components: {\"minecraft:lore\": ['{\"color\":\"gray\",\"italic\":false,\"translate\":\"svframeitems.item.level\",\"with\":[1]}', '{\"color\":\"green\",\"italic\":false,\"translate\":\"svframeitems.item.stat\",\"with\":[{\"translate\":\"svframeitems.stat.armor\"},\"3\"]}'], \"minecraft:attribute_modifiers\": {show_in_tooltip: 0b, modifiers: []}, \"minecraft:unbreakable\": {show_in_tooltip: 0b}, \"minecraft:custom_name\": '{\"translate\":\"item.fantasyhub.kabuto_chestplate\"}', \"minecraft:custom_data\": {SVFRAME_ITEM_FLAGS: {disable-droping: 0b, disable-repairing: 0b, disable-crafting: 0b, disable-smithing: 0b, disable-smelting: 0b, disable-enchanting: 0b, disable-death-drop: 0b}, SVFRAMEITEMS_ITEM_TYPE: \"armor\", SVFRAME_ITEM_MODEL: \"fantasyhub:item/additions/kabuto_chestplate\", SVFRAMEITEMS_ITEM_LEVEL: 1, SVFRAME_ARMOR_TEXTURE: \"fantasyhub:additions/kabuto\", SVFRAMEITEMS_ITEM_ID: \"kabuto_chestplate\", SVFRAMEITEMS_UPGRADE_LEVEL: 0, SVFrameItems: {definition-id: \"kabuto_chestplate\", state-revision: 0L, item-level: 1, rarity-id: \"common\", upgrade-level: 0, seed: 6021851068836152091L, stats: [{id: \"ARMOR\", type: \"FLAT\", value: 3.0d}], instance-id: \"f8fcdade-9acb-c311-e282-3917b4676157\", type-id: \"armor\", definition-revision: 1, sockets: []}}}, id: \"minecraft:leather_chestplate\"}, {count: 1, Slot: 103b, components: {\"minecraft:lore\": ['{\"color\":\"gray\",\"italic\":false,\"translate\":\"svframeitems.item.level\",\"with\":[1]}', '{\"color\":\"green\",\"italic\":false,\"translate\":\"svframeitems.item.stat\",\"with\":[{\"translate\":\"svframeitems.stat.armor\"},\"1\"]}'], \"minecraft:attribute_modifiers\": {show_in_tooltip: 0b, modifiers: []}, \"minecraft:unbreakable\": {show_in_tooltip: 0b}, \"minecraft:custom_name\": '{\"translate\":\"item.fantasyhub.kabuto_helmet\"}', \"minecraft:custom_data\": {SVFRAME_ITEM_FLAGS: {disable-droping: 0b, disable-repairing: 0b, disable-crafting: 0b, disable-smithing: 0b, disable-smelting: 0b, disable-enchanting: 0b, disable-death-drop: 0b}, SVFRAMEITEMS_ITEM_TYPE: \"armor\", SVFRAME_ITEM_MODEL: \"fantasyhub:item/additions/kabuto_helmet\", SVFRAMEITEMS_ITEM_LEVEL: 1, SVFRAME_ARMOR_TEXTURE: \"fantasyhub:additions/kabuto\", SVFRAMEITEMS_ITEM_ID: \"kabuto_helmet\", SVFRAMEITEMS_UPGRADE_LEVEL: 0, SVFrameItems: {definition-id: \"kabuto_helmet\", state-revision: 0L, item-level: 1, rarity-id: \"common\", upgrade-level: 0, seed: 4160141380754118584L, stats: [{id: \"ARMOR\", type: \"FLAT\", value: 1.0d}], instance-id: \"88354b7f-4d4d-7986-4ebe-64309643357c\", type-id: \"armor\", definition-revision: 1, sockets: []}}}, id: \"fantasyhub:kabuto_hat\"}]"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.max_health get",
+    "response": "Value of attribute Max Health for entity QAPlayer is 49.8"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.armor get",
+    "response": "Value of attribute Armor for entity QAPlayer is 11.98"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.knockback_resistance get",
+    "response": "Value of attribute Knockback Resistance for entity QAPlayer is 0.0"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.movement_speed get",
+    "response": "Value of attribute Speed for entity QAPlayer is 0.10000000149011612"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.attack_speed get",
+    "response": "Value of attribute Attack Speed for entity QAPlayer is 4.0"
+  },
+  {
+    "command": "data get entity QAPlayer UUID",
+    "response": "QAPlayer has the following entity data: [I; 429859909, 2135045266, -1183059546, -1671958896]"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.max_health get",
+    "response": "Value of attribute Max Health for entity QAPlayer is 65.8"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.armor get",
+    "response": "Value of attribute Armor for entity QAPlayer is 23.98"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.knockback_resistance get",
+    "response": "Value of attribute Knockback Resistance for entity QAPlayer is 0.6"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.movement_speed get",
+    "response": "Value of attribute Speed for entity QAPlayer is 0.0800000011920929"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.attack_speed get",
+    "response": "Value of attribute Attack Speed for entity QAPlayer is 4.0"
+  },
+  {
+    "command": "data get entity QAPlayer UUID",
+    "response": "QAPlayer has the following entity data: [I; 429859909, 2135045266, -1183059546, -1671958896]"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.max_health get",
+    "response": "Value of attribute Max Health for entity QAPlayer is 49.8"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.armor get",
+    "response": "Value of attribute Armor for entity QAPlayer is 11.98"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.knockback_resistance get",
+    "response": "Value of attribute Knockback Resistance for entity QAPlayer is 0.0"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.movement_speed get",
+    "response": "Value of attribute Speed for entity QAPlayer is 0.10000000149011612"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.attack_speed get",
+    "response": "Value of attribute Attack Speed for entity QAPlayer is 4.0"
+  },
+  {
+    "command": "data get entity QAPlayer UUID",
+    "response": "QAPlayer has the following entity data: [I; 429859909, 2135045266, -1183059546, -1671958896]"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.max_health get",
+    "response": "Value of attribute Max Health for entity QAPlayer is 49.8"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.armor get",
+    "response": "Value of attribute Armor for entity QAPlayer is 11.98"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.knockback_resistance get",
+    "response": "Value of attribute Knockback Resistance for entity QAPlayer is 0.0"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.movement_speed get",
+    "response": "Value of attribute Speed for entity QAPlayer is 0.10000000149011612"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.attack_speed get",
+    "response": "Value of attribute Attack Speed for entity QAPlayer is 6.4"
+  },
+  {
+    "command": "data get entity QAPlayer UUID",
+    "response": "QAPlayer has the following entity data: [I; 429859909, 2135045266, -1183059546, -1671958896]"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.max_health get",
+    "response": "Value of attribute Max Health for entity QAPlayer is 49.8"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.armor get",
+    "response": "Value of attribute Armor for entity QAPlayer is 11.98"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.knockback_resistance get",
+    "response": "Value of attribute Knockback Resistance for entity QAPlayer is 0.0"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.movement_speed get",
+    "response": "Value of attribute Speed for entity QAPlayer is 0.10000000149011612"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.attack_speed get",
+    "response": "Value of attribute Attack Speed for entity QAPlayer is 4.0"
+  },
+  {
+    "command": "data get entity QAPlayer UUID",
+    "response": "QAPlayer has the following entity data: [I; 429859909, 2135045266, -1183059546, -1671958896]"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.max_health get",
+    "response": "Value of attribute Max Health for entity QAPlayer is 65.8"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.armor get",
+    "response": "Value of attribute Armor for entity QAPlayer is 23.98"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.knockback_resistance get",
+    "response": "Value of attribute Knockback Resistance for entity QAPlayer is 0.6"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.movement_speed get",
+    "response": "Value of attribute Speed for entity QAPlayer is 0.0800000011920929"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.attack_speed get",
+    "response": "Value of attribute Attack Speed for entity QAPlayer is 4.0"
+  },
+  {
+    "command": "data get entity QAPlayer UUID",
+    "response": "QAPlayer has the following entity data: [I; 429859909, 2135045266, -1183059546, -1671958896]"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_cast_off",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 0.5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_charge",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_hyper_form",
+    "response": ""
+  },
+  {
+    "command": "summon minecraft:cow 202.0 65.0 1.5 {Tags:[\"qa_kabuto\",\"qa_toggle_freeze\"],PersistenceRequired:1b}",
+    "response": "Summoned new Cow"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_clock_up",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "data get entity @e[type=minecraft:cow,tag=qa_toggle_freeze,limit=1] Pos",
+    "response": "Cow has the following entity data: [202.0d, 65.0d, 1.5d]"
+  },
+  {
+    "command": "execute as @e[type=minecraft:cow,tag=qa_toggle_freeze,limit=1] at @s run tp @s ~ ~ ~1",
+    "response": "Teleported Cow to 202.000000, 65.000000, 2.500000"
+  },
+  {
+    "command": "data get entity @e[type=minecraft:cow,tag=qa_toggle_freeze,limit=1] Pos",
+    "response": "Cow has the following entity data: [202.0d, 65.0d, 1.5d]"
+  },
+  {
+    "command": "data get entity QAPlayer UUID",
+    "response": "QAPlayer has the following entity data: [I; 429859909, 2135045266, -1183059546, -1671958896]"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "execute at QAPlayer run data get entity @e[type=minecraft:cow,tag=qa_toggle_freeze,limit=1] Pos",
+    "response": "Cow has the following entity data: [202.0d, 65.0d, 1.5d]"
+  },
+  {
+    "command": "execute at QAPlayer as @e[type=minecraft:cow,tag=qa_toggle_freeze,limit=1] at @s run tp @s ~ ~ ~1",
+    "response": "Teleported Cow to 202.000000, 65.000000, 2.500000"
+  },
+  {
+    "command": "execute at QAPlayer run data get entity @e[type=minecraft:cow,tag=qa_toggle_freeze,limit=1] Pos",
+    "response": "Cow has the following entity data: [202.0d, 65.0d, 2.5d]"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.max_health get",
+    "response": "Value of attribute Max Health for entity QAPlayer is 49.8"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.armor get",
+    "response": "Value of attribute Armor for entity QAPlayer is 11.98"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.knockback_resistance get",
+    "response": "Value of attribute Knockback Resistance for entity QAPlayer is 0.0"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.movement_speed get",
+    "response": "Value of attribute Speed for entity QAPlayer is 0.10000000149011612"
+  },
+  {
+    "command": "attribute QAPlayer minecraft:generic.attack_speed get",
+    "response": "Value of attribute Attack Speed for entity QAPlayer is 4.0"
+  },
+  {
+    "command": "data get entity QAPlayer UUID",
+    "response": "QAPlayer has the following entity data: [I; 429859909, 2135045266, -1183059546, -1671958896]"
+  },
+  {
+    "command": "data get entity QAPlayer Inventory",
+    "response": "QAPlayer has the following entity data: [{count: 1, Slot: 0b, components: {\"minecraft:lore\": ['{\"color\":\"gray\",\"italic\":false,\"translate\":\"svframeitems.item.level\",\"with\":[1]}', '{\"color\":\"green\",\"italic\":false,\"translate\":\"svframeitems.item.stat\",\"with\":[{\"translate\":\"svframeitems.stat.attack_damage\"},\"6\"]}'], \"minecraft:attribute_modifiers\": {show_in_tooltip: 0b, modifiers: []}, \"minecraft:unbreakable\": {show_in_tooltip: 0b}, \"minecraft:custom_name\": '{\"translate\":\"item.fantasyhub.kabuto_kunai_gun\"}', \"minecraft:custom_data\": {SVFRAME_ITEM_FLAGS: {disable-droping: 0b, disable-repairing: 0b, disable-crafting: 0b, disable-smithing: 0b, disable-smelting: 0b, disable-enchanting: 0b, disable-death-drop: 0b}, SVFRAMEITEMS_ITEM_TYPE: \"sword\", SVFRAME_ITEM_MODEL: \"fantasyhub:item/additions/kunai_gun\", SVFRAMEITEMS_ITEM_LEVEL: 1, SVFRAMEITEMS_ITEM_ID: \"kabuto_kunai_gun\", SVFRAMEITEMS_UPGRADE_LEVEL: 0, SVFrameItems: {definition-id: \"kabuto_kunai_gun\", state-revision: 0L, item-level: 1, rarity-id: \"common\", upgrade-level: 0, seed: -7270874785357466614L, stats: [{id: \"ATTACK_DAMAGE\", type: \"FLAT\", value: 6.0d}], instance-id: \"8f5191ec-42cc-909d-e4b1-6bc50fc03830\", type-id: \"sword\", definition-revision: 1, sockets: []}}}, id: \"fantasyhub:kunai_gun\"}, {count: 8, Slot: 1b, id: \"minecraft:leather\"}, {count: 11, Slot: 2b, id: \"minecraft:beef\"}, {count: 1, Slot: 100b, components: {\"minecraft:lore\": ['{\"color\":\"gray\",\"italic\":false,\"translate\":\"svframeitems.item.level\",\"with\":[1]}', '{\"color\":\"green\",\"italic\":false,\"translate\":\"svframeitems.item.stat\",\"with\":[{\"translate\":\"svframeitems.stat.armor\"},\"1\"]}'], \"minecraft:attribute_modifiers\": {show_in_tooltip: 0b, modifiers: []}, \"minecraft:unbreakable\": {show_in_tooltip: 0b}, \"minecraft:custom_name\": '{\"translate\":\"item.fantasyhub.kabuto_boots\"}', \"minecraft:custom_data\": {SVFRAME_ITEM_FLAGS: {disable-droping: 0b, disable-repairing: 0b, disable-crafting: 0b, disable-smithing: 0b, disable-smelting: 0b, disable-enchanting: 0b, disable-death-drop: 0b}, SVFRAMEITEMS_ITEM_TYPE: \"armor\", SVFRAME_ITEM_MODEL: \"fantasyhub:item/additions/kabuto_boots\", SVFRAMEITEMS_ITEM_LEVEL: 1, SVFRAME_ARMOR_TEXTURE: \"fantasyhub:additions/kabuto\", SVFRAMEITEMS_ITEM_ID: \"kabuto_boots\", SVFRAMEITEMS_UPGRADE_LEVEL: 0, SVFrameItems: {definition-id: \"kabuto_boots\", state-revision: 0L, item-level: 1, rarity-id: \"common\", upgrade-level: 0, seed: -4024065293357180326L, stats: [{id: \"ARMOR\", type: \"FLAT\", value: 1.0d}], instance-id: \"a0f185b1-10c7-ba3a-03f5-0d509b881e21\", type-id: \"armor\", definition-revision: 1, sockets: []}}}, id: \"minecraft:leather_boots\"}, {count: 1, Slot: 101b, components: {\"minecraft:lore\": ['{\"color\":\"gray\",\"italic\":false,\"translate\":\"svframeitems.item.level\",\"with\":[1]}', '{\"color\":\"green\",\"italic\":false,\"translate\":\"svframeitems.item.stat\",\"with\":[{\"translate\":\"svframeitems.stat.armor\"},\"2\"]}'], \"minecraft:attribute_modifiers\": {show_in_tooltip: 0b, modifiers: []}, \"minecraft:unbreakable\": {show_in_tooltip: 0b}, \"minecraft:custom_name\": '{\"translate\":\"item.fantasyhub.kabuto_leggings\"}', \"minecraft:custom_data\": {SVFRAME_ITEM_FLAGS: {disable-droping: 0b, disable-repairing: 0b, disable-crafting: 0b, disable-smithing: 0b, disable-smelting: 0b, disable-enchanting: 0b, disable-death-drop: 0b}, SVFRAMEITEMS_ITEM_TYPE: \"armor\", SVFRAME_ITEM_MODEL: \"fantasyhub:item/additions/kabuto_leggings\", SVFRAMEITEMS_ITEM_LEVEL: 1, SVFRAME_ARMOR_TEXTURE: \"fantasyhub:additions/kabuto\", SVFRAMEITEMS_ITEM_ID: \"kabuto_leggings\", SVFRAMEITEMS_UPGRADE_LEVEL: 0, SVFrameItems: {definition-id: \"kabuto_leggings\", state-revision: 0L, item-level: 1, rarity-id: \"common\", upgrade-level: 0, seed: 4305802099762683828L, stats: [{id: \"ARMOR\", type: \"FLAT\", value: 2.0d}], instance-id: \"1394a5f4-45d9-c409-fb46-59cb685c66f0\", type-id: \"armor\", definition-revision: 1, sockets: []}}}, id: \"minecraft:leather_leggings\"}, {count: 1, Slot: 102b, components: {\"minecraft:lore\": ['{\"color\":\"gray\",\"italic\":false,\"translate\":\"svframeitems.item.level\",\"with\":[1]}', '{\"color\":\"green\",\"italic\":false,\"translate\":\"svframeitems.item.stat\",\"with\":[{\"translate\":\"svframeitems.stat.armor\"},\"3\"]}'], \"minecraft:attribute_modifiers\": {show_in_tooltip: 0b, modifiers: []}, \"minecraft:unbreakable\": {show_in_tooltip: 0b}, \"minecraft:custom_name\": '{\"translate\":\"item.fantasyhub.kabuto_chestplate\"}', \"minecraft:custom_data\": {SVFRAME_ITEM_FLAGS: {disable-droping: 0b, disable-repairing: 0b, disable-crafting: 0b, disable-smithing: 0b, disable-smelting: 0b, disable-enchanting: 0b, disable-death-drop: 0b}, SVFRAMEITEMS_ITEM_TYPE: \"armor\", SVFRAME_ITEM_MODEL: \"fantasyhub:item/additions/kabuto_chestplate\", SVFRAMEITEMS_ITEM_LEVEL: 1, SVFRAME_ARMOR_TEXTURE: \"fantasyhub:additions/kabuto\", SVFRAMEITEMS_ITEM_ID: \"kabuto_chestplate\", SVFRAMEITEMS_UPGRADE_LEVEL: 0, SVFrameItems: {definition-id: \"kabuto_chestplate\", state-revision: 0L, item-level: 1, rarity-id: \"common\", upgrade-level: 0, seed: 6021851068836152091L, stats: [{id: \"ARMOR\", type: \"FLAT\", value: 3.0d}], instance-id: \"f8fcdade-9acb-c311-e282-3917b4676157\", type-id: \"armor\", definition-revision: 1, sockets: []}}}, id: \"minecraft:leather_chestplate\"}, {count: 1, Slot: 103b, components: {\"minecraft:lore\": ['{\"color\":\"gray\",\"italic\":false,\"translate\":\"svframeitems.item.level\",\"with\":[1]}', '{\"color\":\"green\",\"italic\":false,\"translate\":\"svframeitems.item.stat\",\"with\":[{\"translate\":\"svframeitems.stat.armor\"},\"1\"]}'], \"minecraft:attribute_modifiers\": {show_in_tooltip: 0b, modifiers: []}, \"minecraft:unbreakable\": {show_in_tooltip: 0b}, \"minecraft:custom_name\": '{\"translate\":\"item.fantasyhub.kabuto_helmet\"}', \"minecraft:custom_data\": {SVFRAME_ITEM_FLAGS: {disable-droping: 0b, disable-repairing: 0b, disable-crafting: 0b, disable-smithing: 0b, disable-smelting: 0b, disable-enchanting: 0b, disable-death-drop: 0b}, SVFRAMEITEMS_ITEM_TYPE: \"armor\", SVFRAME_ITEM_MODEL: \"fantasyhub:item/additions/kabuto_helmet\", SVFRAMEITEMS_ITEM_LEVEL: 1, SVFRAME_ARMOR_TEXTURE: \"fantasyhub:additions/kabuto\", SVFRAMEITEMS_ITEM_ID: \"kabuto_helmet\", SVFRAMEITEMS_UPGRADE_LEVEL: 0, SVFrameItems: {definition-id: \"kabuto_helmet\", state-revision: 0L, item-level: 1, rarity-id: \"common\", upgrade-level: 0, seed: 4160141380754118584L, stats: [{id: \"ARMOR\", type: \"FLAT\", value: 1.0d}], instance-id: \"88354b7f-4d4d-7986-4ebe-64309643357c\", type-id: \"armor\", definition-revision: 1, sockets: []}}}, id: \"fantasyhub:kabuto_hat\"}]"
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "result": "FAIL",
+  "checks": {
+    "f_on_masked": true,
+    "masked_bonus_applies": true,
+    "f_off_restores_attributes": true,
+    "client_form_cleared": true,
+    "client_actual_health_restored": true,
+    "cast_off_preserved": true,
+    "henshin_recast_restores_attributes": true,
+    "henshin_recast_can_transform_again": true,
+    "clock_was_active": true,
+    "hyper_was_active": true,
+    "mob_was_frozen": true,
+    "clock_freeze_released": true,
+    "clock_and_hyper_cancelled": true,
+    "clock_speed_restored": true,
+    "effects_cleaned": true,
+    "inventory_unchanged": true,
+    "no_new_hurt_packets": false,
+    "no_new_hurt_camera": true
+  }
+}

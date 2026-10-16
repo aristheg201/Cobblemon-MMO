@@ -141,5 +141,6 @@
   "subtitle.fantasyhub.kabuto_hyper": "Hyper Zecter!",
   "fantasyhub.kabuto.reloaded": "Đã tải lại cấu hình Kabuto.",
   "fantasyhub.kabuto.invalid_config": "Không thể tải lại cấu hình Kabuto: %s",
-  "fantasyhub.effects.density": "Hiệu ứng kỹ năng: %s%%"
+  "fantasyhub.effects.density": "Hiệu ứng kỹ năng: %s%%",
+  "fantasyhub.kabuto.henshin_toggle": "Henshin: biến hình; dùng lại để trở về dạng người. Tắt skill bar cũng hủy biến hình."
 }

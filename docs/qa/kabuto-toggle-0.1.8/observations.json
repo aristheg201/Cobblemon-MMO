@@ -1,0 +1,1099 @@
+{
+  "baseline": {
+    "attributes": {
+      "max_health": 49.8,
+      "armor": 11.98,
+      "knockback_resistance": 0.0,
+      "movement_speed": 0.10000000149011612,
+      "attack_speed": 4.0
+    },
+    "client": {
+      "clientHealth": 49.8,
+      "kabutoEffects": {
+        "phases": {
+          "HENSHIN": 3,
+          "CAST_OFF": 2,
+          "LEAP": 2,
+          "LAND": 1,
+          "CLOCK": 1,
+          "DASH": 1
+        },
+        "minecraftParticleRequests": 7450,
+        "activeTimelines": 0,
+        "budgetDrops": 0,
+        "density": 1.0,
+        "cobblemon": {
+          "nativeParticlesPeak": 63,
+          "textureRepairs": {
+            "metal_sparks": "cobblemon:generic/orb/scaling",
+            "explosion_burst_flash": "cobblemon:vanilla/flash"
+          },
+          "available": true,
+          "backend": "Cobblemon 1.8 ParticleStorm",
+          "emitters": {
+            "swordsdance_sparkle": 4,
+            "metal_sparks": 5,
+            "explosion_burst_flash": 3,
+            "impact_steel": 2,
+            "bulletpunch_targetsparks": 1,
+            "quickattack_dashlines": 4,
+            "thundershock_actorbolts": 1
+          }
+        }
+      },
+      "equippedModels": {
+        "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+        "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+        "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+        "FEET": "fantasyhub:item/additions/kabuto_boots"
+      },
+      "clientMaxHealth": 49.8,
+      "hurtTime": 0,
+      "maxHurtTime": 10,
+      "stateHealth": 49.79999923706055,
+      "stateMaxHealth": 49.79999923706055,
+      "clientTick": 4790,
+      "clientVanillaLevel": 3,
+      "clientVanillaProgress": 0.15384626,
+      "clientVanillaTotal": 29,
+      "rpgExperienceRendered": false,
+      "experienceDisplay": "VANILLA",
+      "trackedPlayers": [
+        "QAPlayer"
+      ],
+      "clientCasting": {
+        "mode": "",
+        "active": false,
+        "slots": []
+      },
+      "displayedSkillSlots": [],
+      "renderedSkillSlots": 0,
+      "damagePackets": 1,
+      "hurtCameraFrames": 0,
+      "serverMaxHealth": 49.8,
+      "serverHealth": 49.8,
+      "serverVanillaLevel": 3,
+      "serverVanillaProgress": 0.15384626,
+      "serverVanillaTotal": 29,
+      "serverTick": 13130,
+      "scenario": "kabuto_status"
+    }
+  },
+  "f-on-masked": {
+    "server": {
+      "form": "MASKED",
+      "active": true,
+      "energy": 0,
+      "gauge": 0,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": true
+    },
+    "attributes": {
+      "max_health": 65.8,
+      "armor": 23.98,
+      "knockback_resistance": 0.6,
+      "movement_speed": 0.0800000011920929,
+      "attack_speed": 4.0
+    },
+    "client": {
+      "clientHealth": 49.999996,
+      "kabutoEffects": {
+        "phases": {
+          "HENSHIN": 4,
+          "CAST_OFF": 2,
+          "LEAP": 2,
+          "LAND": 1,
+          "CLOCK": 1,
+          "DASH": 1
+        },
+        "minecraftParticleRequests": 8046,
+        "activeTimelines": 1,
+        "budgetDrops": 0,
+        "density": 1.0,
+        "cobblemon": {
+          "nativeParticlesPeak": 63,
+          "textureRepairs": {
+            "metal_sparks": "cobblemon:generic/orb/scaling",
+            "explosion_burst_flash": "cobblemon:vanilla/flash"
+          },
+          "available": true,
+          "backend": "Cobblemon 1.8 ParticleStorm",
+          "emitters": {
+            "swordsdance_sparkle": 5,
+            "metal_sparks": 6,
+            "explosion_burst_flash": 3,
+            "impact_steel": 2,
+            "bulletpunch_targetsparks": 1,
+            "quickattack_dashlines": 4,
+            "thundershock_actorbolts": 1
+          }
+        }
+      },
+      "equippedModels": {
+        "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+        "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+        "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+        "FEET": "fantasyhub:item/additions/kabuto_boots"
+      },
+      "kabuto": {
+        "form": 0,
+        "clock": false,
+        "hyper": false,
+        "energy": 0,
+        "gauge": 0
+      },
+      "clientMaxHealth": 65.8,
+      "hurtTime": 0,
+      "maxHurtTime": 10,
+      "stateHealth": 49.999996185302734,
+      "stateMaxHealth": 65.80000305175781,
+      "clientTick": 4820,
+      "clientVanillaLevel": 3,
+      "clientVanillaProgress": 0.15384626,
+      "clientVanillaTotal": 29,
+      "rpgExperienceRendered": false,
+      "experienceDisplay": "VANILLA",
+      "trackedPlayers": [
+        "QAPlayer"
+      ],
+      "clientCasting": {
+        "mode": "SKILL_BAR",
+        "active": true,
+        "slots": [
+          {
+            "inputSlot": 2,
+            "id": "KABUTO_HENSHIN",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 3,
+            "id": "KABUTO_CAST_OFF",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 4,
+            "id": "KABUTO_CLOCK_UP",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 5,
+            "id": "KABUTO_RIDER_KICK",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 6,
+            "id": "KABUTO_KUNAI_MODE",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 7,
+            "id": "KABUTO_KUNAI_STRIKE",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 8,
+            "id": "KABUTO_HYPER_FORM",
+            "cooldownRemaining": 0.0
+          }
+        ]
+      },
+      "displayedSkillSlots": [
+        {
+          "inputSlot": 2,
+          "id": "KABUTO_HENSHIN",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 3,
+          "id": "KABUTO_CAST_OFF",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 4,
+          "id": "KABUTO_CLOCK_UP",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 5,
+          "id": "KABUTO_RIDER_KICK",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 6,
+          "id": "KABUTO_KUNAI_MODE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 7,
+          "id": "KABUTO_KUNAI_STRIKE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 8,
+          "id": "KABUTO_HYPER_FORM",
+          "cooldownRemaining": 0.0
+        }
+      ],
+      "renderedSkillSlots": 7,
+      "damagePackets": 1,
+      "hurtCameraFrames": 0,
+      "serverMaxHealth": 65.8,
+      "serverHealth": 49.999996,
+      "serverVanillaLevel": 3,
+      "serverVanillaProgress": 0.15384626,
+      "serverVanillaTotal": 29,
+      "serverTick": 13165,
+      "scenario": "kabuto_status"
+    }
+  },
+  "f-off-human": {
+    "server": {
+      "form": "MASKED",
+      "active": false,
+      "energy": 0,
+      "gauge": 0,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": true
+    },
+    "attributes": {
+      "max_health": 49.8,
+      "armor": 11.98,
+      "knockback_resistance": 0.0,
+      "movement_speed": 0.10000000149011612,
+      "attack_speed": 4.0
+    },
+    "client": {
+      "clientHealth": 49.8,
+      "kabutoEffects": {
+        "phases": {
+          "HENSHIN": 4,
+          "CAST_OFF": 2,
+          "LEAP": 2,
+          "LAND": 1,
+          "CLOCK": 1,
+          "DASH": 1
+        },
+        "minecraftParticleRequests": 8266,
+        "activeTimelines": 0,
+        "budgetDrops": 0,
+        "density": 1.0,
+        "cobblemon": {
+          "nativeParticlesPeak": 63,
+          "textureRepairs": {
+            "metal_sparks": "cobblemon:generic/orb/scaling",
+            "explosion_burst_flash": "cobblemon:vanilla/flash"
+          },
+          "available": true,
+          "backend": "Cobblemon 1.8 ParticleStorm",
+          "emitters": {
+            "swordsdance_sparkle": 5,
+            "metal_sparks": 6,
+            "explosion_burst_flash": 3,
+            "impact_steel": 2,
+            "bulletpunch_targetsparks": 1,
+            "quickattack_dashlines": 4,
+            "thundershock_actorbolts": 1
+          }
+        }
+      },
+      "equippedModels": {
+        "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+        "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+        "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+        "FEET": "fantasyhub:item/additions/kabuto_boots"
+      },
+      "clientMaxHealth": 49.8,
+      "hurtTime": 0,
+      "maxHurtTime": 10,
+      "stateHealth": 49.79999923706055,
+      "stateMaxHealth": 49.79999923706055,
+      "clientTick": 4890,
+      "clientVanillaLevel": 3,
+      "clientVanillaProgress": 0.15384626,
+      "clientVanillaTotal": 29,
+      "rpgExperienceRendered": false,
+      "experienceDisplay": "VANILLA",
+      "trackedPlayers": [
+        "QAPlayer"
+      ],
+      "clientCasting": {
+        "mode": "",
+        "active": false,
+        "slots": []
+      },
+      "displayedSkillSlots": [],
+      "renderedSkillSlots": 0,
+      "damagePackets": 1,
+      "hurtCameraFrames": 0,
+      "serverMaxHealth": 49.8,
+      "serverHealth": 49.8,
+      "serverVanillaLevel": 3,
+      "serverVanillaProgress": 0.15384626,
+      "serverVanillaTotal": 29,
+      "serverTick": 13240,
+      "scenario": "kabuto_status"
+    }
+  },
+  "cast-off-rider": {
+    "server": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 0,
+      "gauge": 0,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": true
+    },
+    "attributes": {
+      "max_health": 49.8,
+      "armor": 11.98,
+      "knockback_resistance": 0.0,
+      "movement_speed": 0.10000000149011612,
+      "attack_speed": 6.4
+    },
+    "client": {
+      "clientHealth": 49.8,
+      "kabutoEffects": {
+        "phases": {
+          "HENSHIN": 5,
+          "CAST_OFF": 3,
+          "LEAP": 3,
+          "LAND": 2,
+          "CLOCK": 1,
+          "DASH": 1
+        },
+        "minecraftParticleRequests": 11453,
+        "activeTimelines": 0,
+        "budgetDrops": 0,
+        "density": 1.0,
+        "cobblemon": {
+          "nativeParticlesPeak": 63,
+          "textureRepairs": {
+            "metal_sparks": "cobblemon:generic/orb/scaling",
+            "explosion_burst_flash": "cobblemon:vanilla/flash"
+          },
+          "available": true,
+          "backend": "Cobblemon 1.8 ParticleStorm",
+          "emitters": {
+            "swordsdance_sparkle": 6,
+            "metal_sparks": 8,
+            "explosion_burst_flash": 5,
+            "impact_steel": 3,
+            "bulletpunch_targetsparks": 2,
+            "quickattack_dashlines": 4,
+            "thundershock_actorbolts": 1
+          }
+        }
+      },
+      "equippedModels": {
+        "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+        "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+        "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+        "FEET": "fantasyhub:item/additions/kabuto_boots"
+      },
+      "kabuto": {
+        "form": 1,
+        "clock": false,
+        "hyper": false,
+        "energy": 0,
+        "gauge": 0
+      },
+      "clientMaxHealth": 49.8,
+      "hurtTime": 0,
+      "maxHurtTime": 10,
+      "stateHealth": 49.79999923706055,
+      "stateMaxHealth": 49.79999923706055,
+      "clientTick": 5040,
+      "clientVanillaLevel": 3,
+      "clientVanillaProgress": 0.15384626,
+      "clientVanillaTotal": 29,
+      "rpgExperienceRendered": false,
+      "experienceDisplay": "VANILLA",
+      "trackedPlayers": [
+        "QAPlayer"
+      ],
+      "clientCasting": {
+        "mode": "SKILL_BAR",
+        "active": true,
+        "slots": [
+          {
+            "inputSlot": 2,
+            "id": "KABUTO_HENSHIN",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 3,
+            "id": "KABUTO_CAST_OFF",
+            "cooldownRemaining": 6.884
+          },
+          {
+            "inputSlot": 4,
+            "id": "KABUTO_CLOCK_UP",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 5,
+            "id": "KABUTO_RIDER_KICK",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 6,
+            "id": "KABUTO_KUNAI_MODE",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 7,
+            "id": "KABUTO_KUNAI_STRIKE",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 8,
+            "id": "KABUTO_HYPER_FORM",
+            "cooldownRemaining": 0.0
+          }
+        ]
+      },
+      "displayedSkillSlots": [
+        {
+          "inputSlot": 2,
+          "id": "KABUTO_HENSHIN",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 3,
+          "id": "KABUTO_CAST_OFF",
+          "cooldownRemaining": 6.884
+        },
+        {
+          "inputSlot": 4,
+          "id": "KABUTO_CLOCK_UP",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 5,
+          "id": "KABUTO_RIDER_KICK",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 6,
+          "id": "KABUTO_KUNAI_MODE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 7,
+          "id": "KABUTO_KUNAI_STRIKE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 8,
+          "id": "KABUTO_HYPER_FORM",
+          "cooldownRemaining": 0.0
+        }
+      ],
+      "renderedSkillSlots": 7,
+      "damagePackets": 1,
+      "hurtCameraFrames": 0,
+      "serverMaxHealth": 49.8,
+      "serverHealth": 49.8,
+      "serverVanillaLevel": 3,
+      "serverVanillaProgress": 0.15384626,
+      "serverVanillaTotal": 29,
+      "serverTick": 13395,
+      "scenario": "kabuto_status"
+    }
+  },
+  "henshin-again-human": {
+    "server": {
+      "form": "MASKED",
+      "active": false,
+      "energy": 0,
+      "gauge": 0,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": true
+    },
+    "attributes": {
+      "max_health": 49.8,
+      "armor": 11.98,
+      "knockback_resistance": 0.0,
+      "movement_speed": 0.10000000149011612,
+      "attack_speed": 4.0
+    },
+    "client": {
+      "clientHealth": 49.8,
+      "kabutoEffects": {
+        "phases": {
+          "HENSHIN": 5,
+          "CAST_OFF": 3,
+          "LEAP": 3,
+          "LAND": 2,
+          "CLOCK": 1,
+          "DASH": 1
+        },
+        "minecraftParticleRequests": 11453,
+        "activeTimelines": 0,
+        "budgetDrops": 0,
+        "density": 1.0,
+        "cobblemon": {
+          "nativeParticlesPeak": 63,
+          "textureRepairs": {
+            "metal_sparks": "cobblemon:generic/orb/scaling",
+            "explosion_burst_flash": "cobblemon:vanilla/flash"
+          },
+          "available": true,
+          "backend": "Cobblemon 1.8 ParticleStorm",
+          "emitters": {
+            "swordsdance_sparkle": 6,
+            "metal_sparks": 8,
+            "explosion_burst_flash": 5,
+            "impact_steel": 3,
+            "bulletpunch_targetsparks": 2,
+            "quickattack_dashlines": 4,
+            "thundershock_actorbolts": 1
+          }
+        }
+      },
+      "equippedModels": {
+        "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+        "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+        "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+        "FEET": "fantasyhub:item/additions/kabuto_boots"
+      },
+      "clientMaxHealth": 49.8,
+      "hurtTime": 0,
+      "maxHurtTime": 10,
+      "stateHealth": 49.79999923706055,
+      "stateMaxHealth": 49.79999923706055,
+      "clientTick": 5110,
+      "clientVanillaLevel": 3,
+      "clientVanillaProgress": 0.15384626,
+      "clientVanillaTotal": 29,
+      "rpgExperienceRendered": false,
+      "experienceDisplay": "VANILLA",
+      "trackedPlayers": [
+        "QAPlayer"
+      ],
+      "clientCasting": {
+        "mode": "SKILL_BAR",
+        "active": true,
+        "slots": [
+          {
+            "inputSlot": 2,
+            "id": "KABUTO_HENSHIN",
+            "cooldownRemaining": 1.081
+          },
+          {
+            "inputSlot": 3,
+            "id": "KABUTO_CAST_OFF",
+            "cooldownRemaining": 3.522
+          },
+          {
+            "inputSlot": 4,
+            "id": "KABUTO_CLOCK_UP",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 5,
+            "id": "KABUTO_RIDER_KICK",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 6,
+            "id": "KABUTO_KUNAI_MODE",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 7,
+            "id": "KABUTO_KUNAI_STRIKE",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 8,
+            "id": "KABUTO_HYPER_FORM",
+            "cooldownRemaining": 0.0
+          }
+        ]
+      },
+      "displayedSkillSlots": [
+        {
+          "inputSlot": 2,
+          "id": "KABUTO_HENSHIN",
+          "cooldownRemaining": 1.081
+        },
+        {
+          "inputSlot": 3,
+          "id": "KABUTO_CAST_OFF",
+          "cooldownRemaining": 3.522
+        },
+        {
+          "inputSlot": 4,
+          "id": "KABUTO_CLOCK_UP",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 5,
+          "id": "KABUTO_RIDER_KICK",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 6,
+          "id": "KABUTO_KUNAI_MODE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 7,
+          "id": "KABUTO_KUNAI_STRIKE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 8,
+          "id": "KABUTO_HYPER_FORM",
+          "cooldownRemaining": 0.0
+        }
+      ],
+      "renderedSkillSlots": 7,
+      "damagePackets": 1,
+      "hurtCameraFrames": 0,
+      "serverMaxHealth": 49.8,
+      "serverHealth": 49.8,
+      "serverVanillaLevel": 3,
+      "serverVanillaProgress": 0.15384626,
+      "serverVanillaTotal": 29,
+      "serverTick": 13454,
+      "scenario": "kabuto_status"
+    }
+  },
+  "henshin-again-masked": {
+    "server": {
+      "form": "MASKED",
+      "active": true,
+      "energy": 0,
+      "gauge": 0,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": true
+    },
+    "attributes": {
+      "max_health": 65.8,
+      "armor": 23.98,
+      "knockback_resistance": 0.6,
+      "movement_speed": 0.0800000011920929,
+      "attack_speed": 4.0
+    },
+    "client": {
+      "clientHealth": 49.899998,
+      "kabutoEffects": {
+        "phases": {
+          "HENSHIN": 6,
+          "CAST_OFF": 3,
+          "LEAP": 3,
+          "LAND": 2,
+          "CLOCK": 1,
+          "DASH": 1
+        },
+        "minecraftParticleRequests": 11913,
+        "activeTimelines": 1,
+        "budgetDrops": 0,
+        "density": 1.0,
+        "cobblemon": {
+          "nativeParticlesPeak": 63,
+          "textureRepairs": {
+            "metal_sparks": "cobblemon:generic/orb/scaling",
+            "explosion_burst_flash": "cobblemon:vanilla/flash"
+          },
+          "available": true,
+          "backend": "Cobblemon 1.8 ParticleStorm",
+          "emitters": {
+            "swordsdance_sparkle": 7,
+            "metal_sparks": 9,
+            "explosion_burst_flash": 5,
+            "impact_steel": 3,
+            "bulletpunch_targetsparks": 2,
+            "quickattack_dashlines": 4,
+            "thundershock_actorbolts": 1
+          }
+        }
+      },
+      "equippedModels": {
+        "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+        "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+        "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+        "FEET": "fantasyhub:item/additions/kabuto_boots"
+      },
+      "kabuto": {
+        "form": 0,
+        "clock": false,
+        "hyper": false,
+        "energy": 0,
+        "gauge": 0
+      },
+      "clientMaxHealth": 65.8,
+      "hurtTime": 0,
+      "maxHurtTime": 10,
+      "stateHealth": 49.79999923706055,
+      "stateMaxHealth": 65.80000305175781,
+      "clientTick": 5210,
+      "clientVanillaLevel": 3,
+      "clientVanillaProgress": 0.15384626,
+      "clientVanillaTotal": 29,
+      "rpgExperienceRendered": false,
+      "experienceDisplay": "VANILLA",
+      "trackedPlayers": [
+        "QAPlayer"
+      ],
+      "clientCasting": {
+        "mode": "SKILL_BAR",
+        "active": true,
+        "slots": [
+          {
+            "inputSlot": 2,
+            "id": "KABUTO_HENSHIN",
+            "cooldownRemaining": 1.619
+          },
+          {
+            "inputSlot": 3,
+            "id": "KABUTO_CAST_OFF",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 4,
+            "id": "KABUTO_CLOCK_UP",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 5,
+            "id": "KABUTO_RIDER_KICK",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 6,
+            "id": "KABUTO_KUNAI_MODE",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 7,
+            "id": "KABUTO_KUNAI_STRIKE",
+            "cooldownRemaining": 0.0
+          },
+          {
+            "inputSlot": 8,
+            "id": "KABUTO_HYPER_FORM",
+            "cooldownRemaining": 0.0
+          }
+        ]
+      },
+      "displayedSkillSlots": [
+        {
+          "inputSlot": 2,
+          "id": "KABUTO_HENSHIN",
+          "cooldownRemaining": 1.619
+        },
+        {
+          "inputSlot": 3,
+          "id": "KABUTO_CAST_OFF",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 4,
+          "id": "KABUTO_CLOCK_UP",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 5,
+          "id": "KABUTO_RIDER_KICK",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 6,
+          "id": "KABUTO_KUNAI_MODE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 7,
+          "id": "KABUTO_KUNAI_STRIKE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 8,
+          "id": "KABUTO_HYPER_FORM",
+          "cooldownRemaining": 0.0
+        }
+      ],
+      "renderedSkillSlots": 7,
+      "damagePackets": 1,
+      "hurtCameraFrames": 0,
+      "serverMaxHealth": 65.8,
+      "serverHealth": 49.899998,
+      "serverVanillaLevel": 3,
+      "serverVanillaProgress": 0.15384626,
+      "serverVanillaTotal": 29,
+      "serverTick": 13566,
+      "scenario": "kabuto_status"
+    }
+  },
+  "clock_before_close": {
+    "form": "RIDER",
+    "active": true,
+    "energy": 0,
+    "gauge": 0,
+    "hyper": true,
+    "clock": true,
+    "combo": 10,
+    "gun": true
+  },
+  "feedback_before_clock_close": {
+    "clientHealth": 49.8,
+    "kabutoEffects": {
+      "phases": {
+        "HENSHIN": 6,
+        "CAST_OFF": 4,
+        "LEAP": 4,
+        "LAND": 2,
+        "CLOCK": 2,
+        "DASH": 2,
+        "EMPOWER": 1,
+        "HYPER": 1
+      },
+      "minecraftParticleRequests": 15605,
+      "activeTimelines": 1,
+      "budgetDrops": 0,
+      "density": 1.0,
+      "cobblemon": {
+        "nativeParticlesPeak": 84,
+        "textureRepairs": {
+          "metal_sparks": "cobblemon:generic/orb/scaling",
+          "explosion_burst_flash": "cobblemon:vanilla/flash"
+        },
+        "available": true,
+        "backend": "Cobblemon 1.8 ParticleStorm",
+        "emitters": {
+          "swordsdance_sparkle": 10,
+          "metal_sparks": 10,
+          "explosion_burst_flash": 6,
+          "impact_steel": 4,
+          "bulletpunch_targetsparks": 2,
+          "quickattack_dashlines": 7,
+          "thundershock_actorbolts": 3
+        }
+      }
+    },
+    "equippedModels": {
+      "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+      "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+      "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+      "FEET": "fantasyhub:item/additions/kabuto_boots"
+    },
+    "kabuto": {
+      "form": 1,
+      "clock": true,
+      "hyper": true,
+      "energy": 0,
+      "gauge": 0
+    },
+    "clientMaxHealth": 49.8,
+    "hurtTime": 0,
+    "maxHurtTime": 10,
+    "stateHealth": 49.79999923706055,
+    "stateMaxHealth": 49.79999923706055,
+    "clientTick": 5350,
+    "clientVanillaLevel": 3,
+    "clientVanillaProgress": 0.15384626,
+    "clientVanillaTotal": 29,
+    "rpgExperienceRendered": false,
+    "experienceDisplay": "VANILLA",
+    "trackedPlayers": [
+      "QAPlayer"
+    ],
+    "clientCasting": {
+      "mode": "SKILL_BAR",
+      "active": true,
+      "slots": [
+        {
+          "inputSlot": 2,
+          "id": "KABUTO_HENSHIN",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 3,
+          "id": "KABUTO_CAST_OFF",
+          "cooldownRemaining": 5.877
+        },
+        {
+          "inputSlot": 4,
+          "id": "KABUTO_CLOCK_UP",
+          "cooldownRemaining": 44.124
+        },
+        {
+          "inputSlot": 5,
+          "id": "KABUTO_RIDER_KICK",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 6,
+          "id": "KABUTO_KUNAI_MODE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 7,
+          "id": "KABUTO_KUNAI_STRIKE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 8,
+          "id": "KABUTO_HYPER_FORM",
+          "cooldownRemaining": 43.77
+        }
+      ]
+    },
+    "displayedSkillSlots": [
+      {
+        "inputSlot": 2,
+        "id": "KABUTO_HENSHIN",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 3,
+        "id": "KABUTO_CAST_OFF",
+        "cooldownRemaining": 5.877
+      },
+      {
+        "inputSlot": 4,
+        "id": "KABUTO_CLOCK_UP",
+        "cooldownRemaining": 44.124
+      },
+      {
+        "inputSlot": 5,
+        "id": "KABUTO_RIDER_KICK",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 6,
+        "id": "KABUTO_KUNAI_MODE",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 7,
+        "id": "KABUTO_KUNAI_STRIKE",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 8,
+        "id": "KABUTO_HYPER_FORM",
+        "cooldownRemaining": 43.77
+      }
+    ],
+    "renderedSkillSlots": 7,
+    "damagePackets": 2,
+    "hurtCameraFrames": 0,
+    "serverMaxHealth": 49.8,
+    "serverHealth": 49.8,
+    "serverVanillaLevel": 3,
+    "serverVanillaProgress": 0.15384626,
+    "serverVanillaTotal": 29,
+    "serverTick": 13724,
+    "scenario": "kabuto_status"
+  },
+  "freeze_release": {
+    "before": "Cow has the following entity data: [202.0d, 65.0d, 1.5d]",
+    "after": "Cow has the following entity data: [202.0d, 65.0d, 2.5d]"
+  },
+  "clock-cancel-human": {
+    "server": {
+      "form": "MASKED",
+      "active": false,
+      "energy": 0,
+      "gauge": 0,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": true
+    },
+    "attributes": {
+      "max_health": 49.8,
+      "armor": 11.98,
+      "knockback_resistance": 0.0,
+      "movement_speed": 0.10000000149011612,
+      "attack_speed": 4.0
+    },
+    "client": {
+      "clientHealth": 49.8,
+      "kabutoEffects": {
+        "phases": {
+          "HENSHIN": 6,
+          "CAST_OFF": 4,
+          "LEAP": 4,
+          "LAND": 2,
+          "CLOCK": 2,
+          "DASH": 2,
+          "EMPOWER": 1,
+          "HYPER": 1
+        },
+        "minecraftParticleRequests": 15695,
+        "activeTimelines": 0,
+        "budgetDrops": 0,
+        "density": 1.0,
+        "cobblemon": {
+          "nativeParticlesPeak": 84,
+          "textureRepairs": {
+            "metal_sparks": "cobblemon:generic/orb/scaling",
+            "explosion_burst_flash": "cobblemon:vanilla/flash"
+          },
+          "available": true,
+          "backend": "Cobblemon 1.8 ParticleStorm",
+          "emitters": {
+            "swordsdance_sparkle": 10,
+            "metal_sparks": 10,
+            "explosion_burst_flash": 6,
+            "impact_steel": 4,
+            "bulletpunch_targetsparks": 2,
+            "quickattack_dashlines": 9,
+            "thundershock_actorbolts": 3
+          }
+        }
+      },
+      "equippedModels": {
+        "HEAD": "fantasyhub:item/additions/kabuto_helmet",
+        "CHEST": "fantasyhub:item/additions/kabuto_chestplate",
+        "LEGS": "fantasyhub:item/additions/kabuto_leggings",
+        "FEET": "fantasyhub:item/additions/kabuto_boots"
+      },
+      "clientMaxHealth": 49.8,
+      "hurtTime": 0,
+      "maxHurtTime": 10,
+      "stateHealth": 49.79999923706055,
+      "stateMaxHealth": 49.79999923706055,
+      "clientTick": 5400,
+      "clientVanillaLevel": 3,
+      "clientVanillaProgress": 0.15384626,
+      "clientVanillaTotal": 29,
+      "rpgExperienceRendered": false,
+      "experienceDisplay": "VANILLA",
+      "trackedPlayers": [
+        "QAPlayer"
+      ],
+      "clientCasting": {
+        "mode": "",
+        "active": false,
+        "slots": []
+      },
+      "displayedSkillSlots": [],
+      "renderedSkillSlots": 0,
+      "damagePackets": 2,
+      "hurtCameraFrames": 0,
+      "serverMaxHealth": 49.8,
+      "serverHealth": 49.8,
+      "serverVanillaLevel": 3,
+      "serverVanillaProgress": 0.15384626,
+      "serverVanillaTotal": 29,
+      "serverTick": 13770,
+      "scenario": "kabuto_status"
+    }
+  }
+}

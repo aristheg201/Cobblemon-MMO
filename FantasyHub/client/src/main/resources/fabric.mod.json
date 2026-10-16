@@ -14,7 +14,7 @@
     "fabricloader": ">=0.18.4",
     "java": ">=21",
     "fabric-api": "*",
-    "fantasyhubprotocol": "0.1.7"
+    "fantasyhubprotocol": "0.1.8"
   },
   "mixins": [
     "fantasyhubclient.mixins.json"

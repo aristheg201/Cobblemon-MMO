@@ -8,7 +8,8 @@
     "HurtCameraQaMixin",
     "ClassArmorMixin",
     "ClassItemModelMixin",
-    "KabutoPoseMixin"
+    "KabutoPoseMixin",
+    "KabutoHeadMixin"
   ],
   "injectors": {
     "defaultRequire": 1

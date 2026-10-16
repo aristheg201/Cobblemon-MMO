@@ -47,6 +47,7 @@ public final class HubScreen extends Screen {
                 if(parameters!=null){
                     var details=Text.translatable("fantasyhub.skill.details",row.get("level").getAsInt(),row.has("requiredLevel")?row.get("requiredLevel").getAsInt():1,parameter(parameters,"mana"),parameter(parameters,"stamina"),parameter(parameters,"cooldown"),row.get("cooldownRemaining").getAsDouble());
                     if(row.has("lore"))for(var raw:row.getAsJsonArray("lore")){String line=raw.getAsString();for(var value:parameters.entrySet())line=line.replace("{"+value.getKey()+"}",parameter(parameters,value.getKey()));details.append("\n").append(FantasyHubClient.name(line));}
+                    if(id.equals("KABUTO_HENSHIN"))details.append("\n").append(Text.translatable("fantasyhub.kabuto.henshin_toggle"));
                     b.setTooltip(net.minecraft.client.gui.tooltip.Tooltip.of(details));
                 }
                 addDrawableChild(b);

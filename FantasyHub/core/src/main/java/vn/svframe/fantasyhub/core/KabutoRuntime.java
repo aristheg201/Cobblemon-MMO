@@ -201,6 +201,20 @@ public final class KabutoRuntime {
                     cue(session, "HENSHIN", 24);
                   }
                 }));
+    vn.svframe.svframemmo.api.event.PlayerExitCastingModeEvent.EVENT.register(
+        event -> {
+          // SKILL_BAR exits here are explicit closes; forced/post-cast exits skip
+          // this event. Scroller quit-on-cast must not undo a successful Cast Off.
+          if (!"SKILL_BAR".equals(SVFrameMMO.skillBar().mode(event.getPlayer().getUuid()))) return;
+          later(
+              1,
+              () -> {
+                var p = event.getPlayer();
+                if (event.isCancelled() || SVFrameMMO.skillBar().isCasting(p.getUuid())) return;
+                var s = PLAYERS.get(p.getUuid());
+                if (s != null && valid(s)) detransform(s);
+              });
+        });
     ServerTickEvents.END_SERVER_TICK.register(
         server -> {
           tick++;
@@ -457,7 +471,10 @@ public final class KabutoRuntime {
       s.executing = true;
       try {
         switch (ability) {
-          case "HENSHIN" -> henshin(s);
+          case "HENSHIN" -> {
+            if (s.state.transformed) detransform(s);
+            else henshin(s);
+          }
           case "CAST_OFF" -> {
             s.state.form = KabutoState.Form.RIDER;
             applyForm(s);
@@ -524,7 +541,9 @@ public final class KabutoRuntime {
         publish(s);
         cue(
             s,
-            ability.equals("KUNAI_STRIKE") && s.state.gun ? "GUN_FIRE" : ability,
+            ability.equals("HENSHIN") && !s.state.transformed
+                ? "DETRANSFORM"
+                : ability.equals("KUNAI_STRIKE") && s.state.gun ? "GUN_FIRE" : ability,
             ability.equals("RIDER_KICK") ? 14 : 24);
       }
     }
@@ -840,6 +859,15 @@ public final class KabutoRuntime {
     applyForm(s);
     fx(s, "HENSHIN", s.player.getPos(), s.player.getPos(), 24, .8);
     sound(s, "henshin", 1);
+  }
+
+  private static void detransform(Session s) {
+    if (!s.state.deactivate()) return;
+    s.leapUntil = 0;
+    s.player.fallDistance = 0;
+    FROZEN.values().removeIf(lease -> lease.actor == s.player);
+    applyForm(s);
+    publish(s);
   }
 
   private static void applyForm(Session s) {

@@ -27,6 +27,7 @@ public abstract class ClassArmorMixin {
         // Reset all axes on entry because armor models are reused across players.
         model.leftArm.xScale=model.rightArm.xScale=model.leftArm.zScale=model.rightArm.zScale=1;
         var data=stack.get(DataComponentTypes.CUSTOM_DATA);if(data==null)return;
+        if(entity instanceof net.minecraft.entity.player.PlayerEntity&&data.copyNbt().getString("SVFRAME_ARMOR_TEXTURE").equals("fantasyhub:additions/kabuto")){ci.cancel();return;}
         if(slot==EquipmentSlot.CHEST&&data.copyNbt().getString("SVFRAME_ARMOR_TEXTURE").equals("fantasyhub:additions/grandmaster_wolven"))model.leftArm.xScale=model.rightArm.xScale=model.leftArm.zScale=model.rightArm.zScale=.9f;
         String name=data.copyNbt().getString("SVFRAME_ARMOR_TEXTURE");fantasyhub$kabutoArms=slot==EquipmentSlot.CHEST&&name.equals("fantasyhub:additions/kabuto");Identifier base=Identifier.tryParse(name);
         if(base!=null&&base.getNamespace().equals("fantasyhub")&&(base.getPath().startsWith("additions/")||base.getPath().startsWith("dragonborn/")||base.getPath().equals("hunter/halfmoon")))

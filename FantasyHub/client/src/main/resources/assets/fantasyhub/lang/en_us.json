@@ -141,5 +141,6 @@
   "subtitle.fantasyhub.kabuto_hyper": "Hyper Zecter!",
   "fantasyhub.kabuto.reloaded": "Kabuto configuration reloaded.",
   "fantasyhub.kabuto.invalid_config": "Cannot reload Kabuto configuration: %s",
-  "fantasyhub.effects.density": "Skill effects: %s%%"
+  "fantasyhub.effects.density": "Skill effects: %s%%",
+  "fantasyhub.kabuto.henshin_toggle": "Henshin: transform; cast again to return to human. Closing the skill bar also cancels transformation."
 }
