@@ -10,6 +10,6 @@ if [[ -d SVFrameMMOCobblemon ]]; then
     ./SVFrameMMOCobblemon/gradlew --no-daemon --max-workers=3 -p SVFrameMMOCobblemon build nativeIntegrationSmoke
 fi
 
-if [[ -d SVFrameMobs ]]; then ./gradlew --no-daemon --max-workers=3 -p SVFrameMobs build; fi
+if [[ -d SVFrameMobs ]]; then ./SVFrameMobs/gradlew --no-daemon --max-workers=3 -p SVFrameMobs build; fi
 python3 SVFrameLib/tools/build_visual_pack.py
 python3 scripts/verify-artifacts.py

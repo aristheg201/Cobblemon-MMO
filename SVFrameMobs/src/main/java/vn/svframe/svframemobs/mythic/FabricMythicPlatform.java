@@ -37,7 +37,7 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
     static {
         fields("skill","s skill");fields("delay","ticks t");fields("randomskill","skills s");
         fields("damage mmodamage","a amount pkb preventknockback hnp hp type ignoreinvulnerability preventimmunity pi damagecause dc");
-        fields("heal","a amount percent");fields("potion","type duration d level l hasparticles particles ambient overwrite");
+        fields("heal","a amount percent");fields("potion","type duration level hasparticles ambient overwrite icon");
         fields("velocity","x y z mode");fields("throw","v velocity vy velocityy");fields("lunge","v velocity vy velocityy");
         fields("teleport","");fields("addtag removetag","t tag tags");fields("remove","delay");fields("ignite","ticks duration");fields("extinguish"," ");
         fields("setai ai","ai");fields("setspeed","speed s type");fields("gcd","ticks");fields("setstance","stance s");
@@ -103,7 +103,11 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
     private double n(MythicLine line,String key,String alias,double fallback,Context c,Target t){return number(line.value(key,line.value(alias,Double.toString(fallback))),c,t);}
     private static boolean bool(MythicLine line,String key,boolean fallback){String value=line.value(key,Boolean.toString(fallback));if(!Set.of("true","false").contains(value.toLowerCase(Locale.ROOT)))throw new IllegalArgumentException("Expected boolean "+key);return Boolean.parseBoolean(value);}
     private static Identifier id(String input){return Identifier.of(input.contains(":")?input.toLowerCase(Locale.ROOT):"minecraft:"+input.toLowerCase(Locale.ROOT));}
-    private static Identifier potionId(String raw){return id(switch(raw.toUpperCase(Locale.ROOT)){case "SLOW"->"slowness";case "FAST_DIGGING"->"haste";case "INCREASE_DAMAGE"->"strength";case "DAMAGE_RESISTANCE"->"resistance";case "SLOW_DIGGING"->"mining_fatigue";case "CONFUSION"->"nausea";case "JUMP"->"jump_boost";default->raw;});}
+    private static Identifier potionId(String raw){return id(vn.svframe.svframemobs.PotionParameters.type(raw));}
+    private int potionInteger(MythicLine line,String key,int fallback,int min,int max,Context context,Target target){
+        double value=expressions.evaluate(text(line.value(key,Integer.toString(fallback)),context,target),Map.of());
+        return vn.svframe.svframemobs.PotionParameters.integer(value,min,max);
+    }
     @Override public List<Target> select(MythicLine.Selector selector,Context context) {
         Entity caster=entity(context.caster());if(caster==null)return List.of();String name=selector.name();Map<String,String> parameters=selector.parameters();
         if(Set.of("self","caster").contains(name))return List.of(new Target(caster.getUuid(),null));
@@ -179,8 +183,11 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
             }
             case "heal"->{if(victim instanceof LivingEntity living){double amount=n(line,"amount","a",1,context,target);if(bool(line,"percent",false))amount*=living.getMaxHealth();RpgEntityAdapters.heal(actor,living,amount);}}
             case "potion"->{if(victim instanceof LivingEntity living&&RpgEntityAdapters.allows(actor,living,RpgEntityAdapters.Effect.STATUS)) {
-                var entry=Registries.STATUS_EFFECT.getEntry(potionId(line.value("type","slowness"))).orElseThrow();int duration=MythicEngine.ticks(n(line,"duration","d",60,context,target),1,72000),level=MythicEngine.ticks(n(line,"level","l",0,context,target),0,255);
-                if(bool(line,"overwrite",false))living.removeStatusEffect(entry);living.addStatusEffect(new StatusEffectInstance(entry,duration,level,bool(line,"ambient",false),bool(line,"hasparticles",bool(line,"particles",true))),actor);
+                var entry=Registries.STATUS_EFFECT.getEntry(potionId(line.value("type","slowness"))).orElseThrow();
+                int duration=potionInteger(line,"duration",60,1,Integer.MAX_VALUE,context,target),level=potionInteger(line,"level",0,0,255,context,target);
+                boolean particles=bool(line,"hasparticles",true);
+                if(bool(line,"overwrite",false))living.removeStatusEffect(entry);
+                living.addStatusEffect(new StatusEffectInstance(entry,duration,level,bool(line,"ambient",false),particles,bool(line,"icon",particles)),actor);
             }}
             case "velocity"->{if(victim!=null)move(actor,victim,new Vec3d(n(line,"x",0,context,target),n(line,"y",0,context,target),n(line,"z",0,context,target)),line.value("mode","SET"));}
             case "throw"->{if(victim!=null){Vec3d direction=victim.getPos().subtract(actor.getPos()).multiply(1,0,1).normalize().multiply(n(line,"velocity","v",1,context,target)/10);move(actor,victim,direction.add(0,n(line,"velocityy","vy",1,context,target)/10,0),"SET");}}

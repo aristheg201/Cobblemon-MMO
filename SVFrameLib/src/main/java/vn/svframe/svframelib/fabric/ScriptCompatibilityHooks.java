@@ -10,6 +10,10 @@ public final class ScriptCompatibilityHooks {
     private static final Map<String,Consumer<ServerPlayerEntity>> MENUS=new HashMap<>();
     public interface ClassPolicy {boolean request(ServerPlayerEntity player,String classId);Map<String,Object> details(ServerPlayerEntity player);default boolean selectable(String classId){return true;}}
     private static ClassPolicy classPolicy;
+    public interface NativeRuntime {boolean hasFunction(String name);Object invokeFunction(String name,List<Object> arguments);}
+    private static volatile NativeRuntime nativeRuntime;
+    public static void nativeRuntime(NativeRuntime runtime){nativeRuntime=runtime;}
+    public static NativeRuntime nativeRuntime(){return nativeRuntime;}
     public static void registerMenu(String id,Consumer<ServerPlayerEntity> menu){MENUS.put(id,Objects.requireNonNull(menu));}
     public static boolean openMenu(String id,ServerPlayerEntity player){var menu=MENUS.get(id);if(menu==null)return false;menu.accept(player);return true;}
     public static void classPolicy(ClassPolicy policy){classPolicy=policy;}

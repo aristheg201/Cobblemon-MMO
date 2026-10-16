@@ -83,6 +83,7 @@ public final class MythicEngine {
         result.remove("");return result;
     }
     public boolean available(String id){return definitions.containsKey(id)&&!failures.containsKey(id);}
+    public boolean defined(String id){return definitions.containsKey(id)||failures.containsKey(id);}
     public Map<String,List<String>> failures(){return failures;}
     public int count(){return definitions.size();}
     public boolean cast(String id,UUID caster,UUID trigger,Target target,Point origin,Map<String,?> parameters) {

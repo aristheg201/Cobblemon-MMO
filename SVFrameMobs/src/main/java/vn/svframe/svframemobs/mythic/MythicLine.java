@@ -38,6 +38,7 @@ public record MythicLine(String mechanic, Map<String,String> parameters, Selecto
             else chance=Double.parseDouble(word);
         }
         if(!Double.isFinite(chance)||chance<0||chance>1||interval<1||interval>72000)throw new IllegalArgumentException("Invalid chance/timer in "+source);
+        if(action.getKey().equalsIgnoreCase("potion"))parameters=vn.svframe.svframemobs.PotionParameters.normalize(parameters,true,Set.of("repeat","repeatinterval","delay"));
         return new MythicLine(action.getKey().toLowerCase(Locale.ROOT),parameters,selector,chance,trigger,interval);
     }
     public static Condition condition(String source) {

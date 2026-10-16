@@ -12,7 +12,8 @@ public record SkillLine(String mechanic, Map<String, String> parameters, String 
         String mechanic = config.getKey().toLowerCase(Locale.ROOT);
         if (!Set.of("damage", "velocity", "potion", "message", "effect:particles", "skill").contains(mechanic)) throw new IllegalArgumentException("Unsupported mechanic " + mechanic);
         Map<String, String> parameters = new LinkedHashMap<>();
-        config.asMap().forEach((k,v) -> parameters.put(k.toLowerCase(Locale.ROOT), String.valueOf(v)));
+        for(var entry:config.asMap().entrySet())parameters.put(entry.getKey().toLowerCase(Locale.ROOT),String.valueOf(entry.getValue()));
+        if(mechanic.equals("potion"))parameters=PotionParameters.normalize(parameters,false,Set.of());
         String target = "self", trigger = "ontimer"; int interval = 20; double radius = 8, chance = 1;
         for (int i = 1; i < tokens.size(); i++) {
             String token = tokens.get(i);
@@ -30,12 +31,16 @@ public record SkillLine(String mechanic, Map<String, String> parameters, String 
             } else chance = Double.parseDouble(token);
         }
         if (interval < 1 || interval > 72000 || !Double.isFinite(radius) || radius < 0 || radius > 64 || !Double.isFinite(chance) || chance < 0 || chance > 1) throw new IllegalArgumentException("Invalid skill timer, radius or chance");
-        for (String key : List.of("amount", "a", "x", "y", "z", "duration", "level")) if (parameters.containsKey(key)) {
+        for (String key : List.of("amount", "a", "x", "y", "z")) if (parameters.containsKey(key)) {
             double value = Double.parseDouble(parameters.get(key));
             if (!Double.isFinite(value) || Math.abs(value) > 100000) throw new IllegalArgumentException("Invalid mechanic parameter " + key);
         }
         return new SkillLine(mechanic, Map.copyOf(parameters), target, radius, trigger, interval, chance);
     }
+    public String potionType(){
+        return PotionParameters.type(value("type","slowness"));
+    }
+    public boolean flag(String key,boolean fallback){return Boolean.parseBoolean(value(key,Boolean.toString(fallback)));}
     /** Split only outside braces/quotes, so mechanic and targeter parameter maps stay separate. */
     private static List<String> tokens(String line) {
         List<String> out = new ArrayList<>(); StringBuilder token = new StringBuilder(); int braces = 0; char quote = 0;

@@ -86,7 +86,10 @@ public final class SVFrameMobs implements ModInitializer {
         try (var files = Files.list(folder)) {
             for (Path file : files.filter(path -> path.toString().endsWith(".yml") || path.toString().endsWith(".yaml")).sorted().toList()) {
                 for (var entry : YamlLite.map(YamlLite.parse(file)).entrySet()) {
-                    MobDefinition definition = MobDefinition.parse(entry.getKey(), YamlLite.map(entry.getValue()));
+                    Map<String,Object> original=YamlLite.map(entry.getValue());
+                    Map<String,Object> effective=SourceWaivers.apply(entry.getKey(),original,name->SVFrameLibFabricMod.hasSkill(name)||vn.svframe.svframemobs.mythic.MythicRuntime.instance().engine().defined(name));
+                    if(effective!=original)LOG.warn("{}: omitted absent NinjaDamageEvent reference from WardenAttackDummy by the owner's explicit source waiver; other mechanics remain subject to validation",file.getFileName());
+                    MobDefinition definition = MobDefinition.parse(entry.getKey(), effective);
                     var factory=vn.svframe.svframelib.entity.NativeMobFactories.get(factoryId(definition.type()));
                     if(factory!=null)factory.validate(definition.pokemon());
                     else {if(!definition.pokemon().isBlank())throw new IllegalArgumentException("Missing native Pokemon entity integration");EntityType<?> type = type(definition.type());
@@ -104,7 +107,7 @@ public final class SVFrameMobs implements ModInitializer {
         if (skill.mechanic().equals("effect:particles")) NativeParticles.effect(skill.value("particle",skill.value("p","end_rod")),color(skill),1,skill.value("material","stone"));
         if (skill.mechanic().equals("skill") && !SVFrameLibFabricMod.hasSkill(skill.value("s", skill.value("skill", "")))
                 && !vn.svframe.svframemobs.mythic.MythicRuntime.instance().available(skill.value("s",skill.value("skill","")))) throw new IllegalArgumentException("Unknown/unavailable native skill in " + skill);
-        if (skill.mechanic().equals("potion") && !Registries.STATUS_EFFECT.containsId(identifier(skill.value("type", "slowness")))) throw new IllegalArgumentException("Unknown potion in " + skill);
+        if (skill.mechanic().equals("potion") && !Registries.STATUS_EFFECT.containsId(identifier(skill.potionType()))) throw new IllegalArgumentException("Unknown potion in " + skill);
     }
     private MobEntity spawn(String key, ServerWorld world, Vec3d position) {
         MobDefinition definition = definitions.get(key); if (definition == null) throw new IllegalArgumentException("Unknown mob: " + key);
@@ -162,7 +165,11 @@ public final class SVFrameMobs implements ModInitializer {
         switch (skill.mechanic()) {
             case "damage" -> { if (target instanceof LivingEntity living && !living.isSpectator() && !(living instanceof ServerPlayerEntity p && p.isCreative()) && !mob.isTeammate(living)) living.damage(living.getDamageSources().mobAttack(mob),(float)Math.max(0,skill.number("amount",skill.number("a",1)))); }
             case "velocity" -> { target.setVelocity(new Vec3d(bounded(skill.number("x",0),-3,3),bounded(skill.number("y",1),-3,3),bounded(skill.number("z",0),-3,3))); target.velocityModified = true; target.velocityDirty = true; if (target instanceof ServerPlayerEntity player) player.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(player)); }
-            case "potion" -> { if (target instanceof LivingEntity living) Registries.STATUS_EFFECT.getEntry(identifier(skill.value("type","slowness"))).ifPresent(effect -> living.addStatusEffect(new StatusEffectInstance(effect,(int)bounded(skill.number("duration",60),1,72000),(int)bounded(skill.number("level",0),0,255)),mob)); }
+            case "potion" -> { if (target instanceof LivingEntity living) Registries.STATUS_EFFECT.getEntry(identifier(skill.potionType())).ifPresent(effect -> {
+                boolean particles=skill.flag("hasparticles",true);
+                if(skill.flag("overwrite",false))living.removeStatusEffect(effect);
+                living.addStatusEffect(new StatusEffectInstance(effect,(int)skill.number("duration",60),(int)skill.number("level",0),skill.flag("ambient",false),particles,skill.flag("icon",particles)),mob);
+            }); }
             case "message" -> { if (target instanceof ServerPlayerEntity player) player.sendMessage(Text.literal(colors(skill.value("m",skill.value("message","")))),false); }
             case "effect:particles" -> ((ServerWorld)mob.getWorld()).spawnParticles(NativeParticles.effect(skill.value("particle",skill.value("p","end_rod")),color(skill),(float)skill.number("size",1),skill.value("material","stone")),target.getX(),target.getY()+1,target.getZ(),(int)bounded(skill.number("amount",10),1,100),0.3,0.3,0.3,0.02);
             case "skill" -> {
