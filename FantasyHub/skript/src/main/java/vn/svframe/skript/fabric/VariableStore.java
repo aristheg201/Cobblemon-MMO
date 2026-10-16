@@ -23,7 +23,7 @@ final class VariableStore implements AutoCloseable {
         if(value instanceof Span span){if(!Double.isFinite(span.milliseconds()))throw new IllegalArgumentException("Persistent duration must be finite");return;}
         if(value instanceof Location loc){if(!Double.isFinite(loc.x())||!Double.isFinite(loc.y())||!Double.isFinite(loc.z())||!Float.isFinite(loc.yaw())||!Float.isFinite(loc.pitch()))throw new IllegalArgumentException("Invalid persistent location");return;}
         if(value instanceof NativeApiBridge.Vector v){if(!Double.isFinite(v.x())||!Double.isFinite(v.y())||!Double.isFinite(v.z()))throw new IllegalArgumentException("Invalid persistent vector");return;}
-        if(value instanceof Boolean||value instanceof String||value instanceof UUID||value instanceof EntityRef||value instanceof WorldRef||value instanceof vn.svframe.skript.lang.Values.Date||value instanceof FabricPlatform.ItemValue)return;
+        if(value instanceof Boolean||value instanceof String||value instanceof UUID||value instanceof EntityRef||value instanceof WorldRef||value instanceof GameTime||value instanceof vn.svframe.skript.lang.Values.Date||value instanceof FabricPlatform.ItemValue)return;
         throw new IllegalArgumentException("Variable type cannot persist: "+value.getClass().getSimpleName());
     }
     Map<String,Object> load() throws IOException {
@@ -45,6 +45,7 @@ final class VariableStore implements AutoCloseable {
         else if(value instanceof UUID v){out.addProperty("type","uuid");out.addProperty("value",v.toString());}
         else if(value instanceof EntityRef v){out.addProperty("type","entity");out.addProperty("uuid",v.id().toString());out.addProperty("player",v.player());}
         else if(value instanceof WorldRef v){out.addProperty("type","world");out.addProperty("value",v.id());}
+        else if(value instanceof GameTime v){out.addProperty("type","game-time");out.addProperty("value",v.ticks());}
         else if(value instanceof vn.svframe.skript.lang.Values.Date v){out.addProperty("type","date");out.addProperty("value",v.milliseconds());}
         else if(value instanceof Span v){out.addProperty("type","duration");out.addProperty("value",v.milliseconds());}
         else if(value instanceof Location v){out.addProperty("type","location");out.addProperty("world",v.world().id());out.addProperty("x",v.x());out.addProperty("y",v.y());out.addProperty("z",v.z());out.addProperty("yaw",v.yaw());out.addProperty("pitch",v.pitch());}
@@ -56,6 +57,7 @@ final class VariableStore implements AutoCloseable {
     private Object decode(JsonObject json){return switch(json.get("type").getAsString()){
         case "boolean"->json.get("value").getAsBoolean();case "number"->json.get("value").getAsDouble();case "text"->json.get("value").getAsString();case "uuid"->UUID.fromString(json.get("value").getAsString());
         case "entity"->new EntityRef(UUID.fromString(json.get("uuid").getAsString()),json.get("player").getAsBoolean());case "world"->new WorldRef(json.get("value").getAsString());
+        case "game-time"->new GameTime(json.get("value").getAsInt());
         case "date"->new vn.svframe.skript.lang.Values.Date(json.get("value").getAsLong());case "duration"->new Span(json.get("value").getAsDouble());
         case "location"->new Location(new WorldRef(json.get("world").getAsString()),json.get("x").getAsDouble(),json.get("y").getAsDouble(),json.get("z").getAsDouble(),json.get("yaw").getAsFloat(),json.get("pitch").getAsFloat());
         case "vector"->new NativeApiBridge.Vector(json.get("x").getAsDouble(),json.get("y").getAsDouble(),json.get("z").getAsDouble());

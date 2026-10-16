@@ -1,0 +1,15 @@
+{
+  "mode": "VANILLA",
+  "vanillaGain": true,
+  "mirroredRpgExperience": 0.0,
+  "realOrbPickup": true,
+  "mendingConsumesOrbForDurability": true,
+  "nativeEnchantButton": true,
+  "anvilOutputAvailable": true,
+  "nativeAnvilCost": true,
+  "costsNotOverwrittenByRpgTicks": true,
+  "actualVanillaLevel": 28,
+  "runtimeVerdict": "PASS",
+  "redirectionEnabled": false,
+  "redirectionRatio": 0.8
+}

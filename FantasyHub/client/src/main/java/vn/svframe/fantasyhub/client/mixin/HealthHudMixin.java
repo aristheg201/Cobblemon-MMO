@@ -34,9 +34,9 @@ public abstract class HealthHudMixin {
         if(CompactHud.visible("stamina"))args.set(2,(int)args.get(2)-10);
     }
     @Inject(method="renderExperienceBar",at=@At("HEAD"),cancellable=true)
-    private void fantasyhub$experience(DrawContext context,int x,CallbackInfo ci){if(CompactHud.active()){CompactHud.experience(context,x);ci.cancel();}}
+    private void fantasyhub$experience(DrawContext context,int x,CallbackInfo ci){if(CompactHud.rpgExperience()){CompactHud.experience(context,x);ci.cancel();}}
     @Inject(method="renderExperienceLevel",at=@At("HEAD"),cancellable=true)
-    private void fantasyhub$level(DrawContext context,RenderTickCounter counter,CallbackInfo ci){if(CompactHud.active()){CompactHud.level(context);ci.cancel();}}
+    private void fantasyhub$level(DrawContext context,RenderTickCounter counter,CallbackInfo ci){if(CompactHud.rpgExperience()){CompactHud.level(context);ci.cancel();}}
     @ModifyArg(method="renderStatusBars",at=@At(value="INVOKE",target="Lnet/minecraft/client/gui/DrawContext;drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"),index=2)
     private int fantasyhub$oxygenAboveMana(int y){return CompactHud.oxygenY(y);}
 }

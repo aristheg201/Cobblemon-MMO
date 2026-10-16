@@ -1,0 +1,895 @@
+{
+  "expectedFailureCommand": "svqa_missing_command_for_rollback",
+  "commandResult": "",
+  "before": {
+    "classId": "DEATH_KNIGHT",
+    "level": 100,
+    "attributePoints": 2,
+    "skillPoints": 0,
+    "health": 43.278499603271484,
+    "healthMax": 43.278499603271484,
+    "attributes": [
+      {
+        "id": "strength",
+        "name": "Strength",
+        "base": 1,
+        "total": 1,
+        "max": 40
+      },
+      {
+        "id": "dexterity",
+        "name": "Dexterity",
+        "base": 0,
+        "total": 0,
+        "max": 40
+      },
+      {
+        "id": "intelligence",
+        "name": "Intelligence",
+        "base": 0,
+        "total": 0,
+        "max": 40
+      }
+    ],
+    "skills": [
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_CURSED_SEAL",
+        "name": "Cursed Seal",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          1
+        ],
+        "passive": true,
+        "requiredLevel": 1,
+        "maxLevel": 30,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&8Passive: \u0111\u00f2n \u0111\u00e1nh t\u1eed kh\u00ed t\u00edch d\u1ea5u \u1ea5n l\u00ean m\u1ee5c ti\u00eau.",
+          "&7Kh\u00f4ng gi\u1ebft ngay, ch\u1ec9 \u0111\u1ec3 n\u00f3 bi\u1ebft chuy\u1ec7n x\u1ea5u \u0111ang \u0111\u1ebfn r\u1ea5t c\u00f3 l\u1ecbch tr\u00ecnh."
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2259
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_DEATH_SENTENCE",
+        "name": "Death Sentence",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "passive": false,
+        "requiredLevel": 25,
+        "maxLevel": 20,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&8Ultimate: lao xu\u1ed1ng b\u1eb1ng l\u01b0\u1ee1i linh h\u1ed3n, g\u00e2y s\u00e1t th\u01b0\u01a1ng l\u1edbn nh\u01b0ng kh\u00f4ng x\u00f3a player t\u1ee9c th\u00ec.",
+          "",
+          "&c\u2694 {damage} S\u00e1t th\u01b0\u01a1ng",
+          "&e\u231b {cooldown}s H\u1ed3i chi\u00eau"
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2260
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_DEATH_STRIKE_ST",
+        "name": "Death Strike",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "passive": false,
+        "requiredLevel": 1,
+        "maxLevel": 30,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&7Chu\u1ed7i ch\u00e9m t\u1eed kh\u00ed b\u1ed1n nh\u1ecbp, c\u00f3 k\u00e9o/\u0111\u1ea9y nh\u01b0ng s\u00e1t th\u01b0\u01a1ng gi\u1eef \u1edf m\u1ee9c v\u1eeba.",
+          "",
+          "&c\u2694 {damage} S\u00e1t th\u01b0\u01a1ng",
+          "&e\u231b {cooldown}s H\u1ed3i chi\u00eau"
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2261
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_NECROTIC_WHIRLWIND",
+        "name": "Necrotic Whirlwind",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "passive": false,
+        "requiredLevel": 20,
+        "maxLevel": 30,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&7Xo\u00e1y t\u1eed kh\u00ed, h\u1ea5t nh\u1eb9 v\u00e0 l\u00e0m ch\u1eadm. H\u1ed3i m\u00e1u \u00edt theo s\u1ed1 m\u1ee5c ti\u00eau tr\u00fang.",
+          "",
+          "&c\u2694 {damage} S\u00e1t th\u01b0\u01a1ng",
+          "&a\u2764 {heal} H\u1ed3i m\u00e1u",
+          "&e\u231b {cooldown}s H\u1ed3i chi\u00eau"
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2262
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_PHANTOM_CHARGE",
+        "name": "Phantom Charge",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "passive": false,
+        "requiredLevel": 5,
+        "maxLevel": 30,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&7Lao t\u1edbi b\u1eb1ng c\u00e1nh t\u1eed kh\u00ed, k\u00e9o \u0111\u1ed9i h\u00ecnh nh\u01b0ng kh\u00f4ng ph\u1ea3i xe t\u1ea3i m\u1ed9t chi\u1ec1u.",
+          "",
+          "&c\u2694 {damage} S\u00e1t th\u01b0\u01a1ng",
+          "&e\u231b {cooldown}s H\u1ed3i chi\u00eau"
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2263
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_SOUL_BARRIER",
+        "name": "Soul Barrier",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "passive": false,
+        "requiredLevel": 15,
+        "maxLevel": 20,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&7D\u1ef1ng khi\u00ean linh h\u1ed3n, h\u1ea5p th\u1ee5 s\u00e1t th\u01b0\u01a1ng ng\u1eafn r\u1ed3i h\u1ed3i l\u1ea1i m\u1ed9t ph\u1ea7n.",
+          "",
+          "&a\u2764 {heal} H\u1ed3i m\u00e1u",
+          "&e\u2620 {duration}s Th\u1eddi l\u01b0\u1ee3ng",
+          "&e\u231b {cooldown}s H\u1ed3i chi\u00eau"
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2264
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_WRAITHBOUND_CHAINS",
+        "name": "Wraithbound Chains",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "passive": false,
+        "requiredLevel": 10,
+        "maxLevel": 30,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&7Tr\u00f3i v\u00e0 k\u00e9o m\u1ee5c ti\u00eau b\u1eb1ng xi\u1ec1ng t\u1eed kh\u00ed. Kh\u1ed1ng ch\u1ebf t\u1ed1t, s\u00e1t th\u01b0\u01a1ng th\u1ea5p.",
+          "",
+          "&c\u2694 {damage} S\u00e1t th\u01b0\u01a1ng",
+          "&e\u2620 {duration}s Control",
+          "&e\u231b {cooldown}s H\u1ed3i chi\u00eau"
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2265
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_ABSORB",
+        "name": "Absorb",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "A nutrient-draining attack. The user's HP is restored by up to half the damage taken by the target.",
+          "&7H\u1ec7: &fGrass &8/ &7Lo\u1ea1i: &fspecial",
+          "&cS\u00e1t th\u01b0\u01a1ng: &f{damage}",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:grass_gem"
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_ACCELEROCK",
+        "name": "Accelerock",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "The user smashes into the target at high speed. This move always goes first.",
+          "&7H\u1ec7: &fRock &8/ &7Lo\u1ea1i: &fphysical",
+          "&cS\u00e1t th\u01b0\u01a1ng: &f{damage}",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:rock_gem"
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_ACID",
+        "name": "Acid",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "Opposing Pok\u00e9mon are attacked with a spray of harsh acid. This may also lower their Sp. Def stats.",
+          "&7H\u1ec7: &fPoison &8/ &7Lo\u1ea1i: &fspecial",
+          "&cS\u00e1t th\u01b0\u01a1ng: &f{damage}",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:poison_gem"
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_ACIDARMOR",
+        "name": "Acid Armor",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "The user alters its cellular structure to liquefy itself, sharply boosting its Defense stat.",
+          "&7H\u1ec7: &fPoison &8/ &7Lo\u1ea1i: &fstatus",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:poison_gem"
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_BITE",
+        "name": "Bite",
+        "owned": true,
+        "level": 3,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "The target is bitten with viciously sharp fangs. This may also make the target flinch.",
+          "&7H\u1ec7: &fDark &8/ &7Lo\u1ea1i: &fphysical",
+          "&cS\u00e1t th\u01b0\u01a1ng: &f{damage}",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:dark_gem"
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_CUT",
+        "name": "Cut",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "The target is cut with a scythe, a claw, or the like to inflict damage.",
+          "&7H\u1ec7: &fNormal &8/ &7Lo\u1ea1i: &fphysical",
+          "&cS\u00e1t th\u01b0\u01a1ng: &f{damage}",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:normal_gem"
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_LICK",
+        "name": "Lick",
+        "owned": true,
+        "level": 3,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "The user licks the target with a long tongue to inflict damage. This may also leave the target with paralysis.",
+          "&7H\u1ec7: &fGhost &8/ &7Lo\u1ea1i: &fphysical",
+          "&cS\u00e1t th\u01b0\u01a1ng: &f{damage}",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:ghost_gem"
+      }
+    ],
+    "loadout": {
+      "3": "COBBLEMON_MOVE_LICK",
+      "4": "COBBLEMON_MOVE_BITE"
+    }
+  },
+  "after": {
+    "classId": "DEATH_KNIGHT",
+    "level": 100,
+    "attributePoints": 2,
+    "skillPoints": 0,
+    "health": 43.278499603271484,
+    "healthMax": 43.278499603271484,
+    "attributes": [
+      {
+        "id": "strength",
+        "name": "Strength",
+        "base": 1,
+        "total": 1,
+        "max": 40
+      },
+      {
+        "id": "dexterity",
+        "name": "Dexterity",
+        "base": 0,
+        "total": 0,
+        "max": 40
+      },
+      {
+        "id": "intelligence",
+        "name": "Intelligence",
+        "base": 0,
+        "total": 0,
+        "max": 40
+      }
+    ],
+    "skills": [
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_CURSED_SEAL",
+        "name": "Cursed Seal",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          1
+        ],
+        "passive": true,
+        "requiredLevel": 1,
+        "maxLevel": 30,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&8Passive: \u0111\u00f2n \u0111\u00e1nh t\u1eed kh\u00ed t\u00edch d\u1ea5u \u1ea5n l\u00ean m\u1ee5c ti\u00eau.",
+          "&7Kh\u00f4ng gi\u1ebft ngay, ch\u1ec9 \u0111\u1ec3 n\u00f3 bi\u1ebft chuy\u1ec7n x\u1ea5u \u0111ang \u0111\u1ebfn r\u1ea5t c\u00f3 l\u1ecbch tr\u00ecnh."
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2259
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_DEATH_SENTENCE",
+        "name": "Death Sentence",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "passive": false,
+        "requiredLevel": 25,
+        "maxLevel": 20,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&8Ultimate: lao xu\u1ed1ng b\u1eb1ng l\u01b0\u1ee1i linh h\u1ed3n, g\u00e2y s\u00e1t th\u01b0\u01a1ng l\u1edbn nh\u01b0ng kh\u00f4ng x\u00f3a player t\u1ee9c th\u00ec.",
+          "",
+          "&c\u2694 {damage} S\u00e1t th\u01b0\u01a1ng",
+          "&e\u231b {cooldown}s H\u1ed3i chi\u00eau"
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2260
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_DEATH_STRIKE_ST",
+        "name": "Death Strike",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "passive": false,
+        "requiredLevel": 1,
+        "maxLevel": 30,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&7Chu\u1ed7i ch\u00e9m t\u1eed kh\u00ed b\u1ed1n nh\u1ecbp, c\u00f3 k\u00e9o/\u0111\u1ea9y nh\u01b0ng s\u00e1t th\u01b0\u01a1ng gi\u1eef \u1edf m\u1ee9c v\u1eeba.",
+          "",
+          "&c\u2694 {damage} S\u00e1t th\u01b0\u01a1ng",
+          "&e\u231b {cooldown}s H\u1ed3i chi\u00eau"
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2261
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_NECROTIC_WHIRLWIND",
+        "name": "Necrotic Whirlwind",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "passive": false,
+        "requiredLevel": 20,
+        "maxLevel": 30,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&7Xo\u00e1y t\u1eed kh\u00ed, h\u1ea5t nh\u1eb9 v\u00e0 l\u00e0m ch\u1eadm. H\u1ed3i m\u00e1u \u00edt theo s\u1ed1 m\u1ee5c ti\u00eau tr\u00fang.",
+          "",
+          "&c\u2694 {damage} S\u00e1t th\u01b0\u01a1ng",
+          "&a\u2764 {heal} H\u1ed3i m\u00e1u",
+          "&e\u231b {cooldown}s H\u1ed3i chi\u00eau"
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2262
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_PHANTOM_CHARGE",
+        "name": "Phantom Charge",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "passive": false,
+        "requiredLevel": 5,
+        "maxLevel": 30,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&7Lao t\u1edbi b\u1eb1ng c\u00e1nh t\u1eed kh\u00ed, k\u00e9o \u0111\u1ed9i h\u00ecnh nh\u01b0ng kh\u00f4ng ph\u1ea3i xe t\u1ea3i m\u1ed9t chi\u1ec1u.",
+          "",
+          "&c\u2694 {damage} S\u00e1t th\u01b0\u01a1ng",
+          "&e\u231b {cooldown}s H\u1ed3i chi\u00eau"
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2263
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_SOUL_BARRIER",
+        "name": "Soul Barrier",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "passive": false,
+        "requiredLevel": 15,
+        "maxLevel": 20,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&7D\u1ef1ng khi\u00ean linh h\u1ed3n, h\u1ea5p th\u1ee5 s\u00e1t th\u01b0\u01a1ng ng\u1eafn r\u1ed3i h\u1ed3i l\u1ea1i m\u1ed9t ph\u1ea7n.",
+          "",
+          "&a\u2764 {heal} H\u1ed3i m\u00e1u",
+          "&e\u2620 {duration}s Th\u1eddi l\u01b0\u1ee3ng",
+          "&e\u231b {cooldown}s H\u1ed3i chi\u00eau"
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2264
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "CLS_DEATH_KNIGHT_WRAITHBOUND_CHAINS",
+        "name": "Wraithbound Chains",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "passive": false,
+        "requiredLevel": 10,
+        "maxLevel": 30,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "&7Tr\u00f3i v\u00e0 k\u00e9o m\u1ee5c ti\u00eau b\u1eb1ng xi\u1ec1ng t\u1eed kh\u00ed. Kh\u1ed1ng ch\u1ebf t\u1ed1t, s\u00e1t th\u01b0\u01a1ng th\u1ea5p.",
+          "",
+          "&c\u2694 {damage} S\u00e1t th\u01b0\u01a1ng",
+          "&e\u2620 {duration}s Control",
+          "&e\u231b {cooldown}s H\u1ed3i chi\u00eau"
+        ],
+        "iconMaterial": "minecraft:coal",
+        "iconCustomModelData": 2265
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_ABSORB",
+        "name": "Absorb",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "A nutrient-draining attack. The user's HP is restored by up to half the damage taken by the target.",
+          "&7H\u1ec7: &fGrass &8/ &7Lo\u1ea1i: &fspecial",
+          "&cS\u00e1t th\u01b0\u01a1ng: &f{damage}",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:grass_gem"
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_ACCELEROCK",
+        "name": "Accelerock",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "The user smashes into the target at high speed. This move always goes first.",
+          "&7H\u1ec7: &fRock &8/ &7Lo\u1ea1i: &fphysical",
+          "&cS\u00e1t th\u01b0\u01a1ng: &f{damage}",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:rock_gem"
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_ACID",
+        "name": "Acid",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "Opposing Pok\u00e9mon are attacked with a spray of harsh acid. This may also lower their Sp. Def stats.",
+          "&7H\u1ec7: &fPoison &8/ &7Lo\u1ea1i: &fspecial",
+          "&cS\u00e1t th\u01b0\u01a1ng: &f{damage}",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:poison_gem"
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_ACIDARMOR",
+        "name": "Acid Armor",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "The user alters its cellular structure to liquefy itself, sharply boosting its Defense stat.",
+          "&7H\u1ec7: &fPoison &8/ &7Lo\u1ea1i: &fstatus",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:poison_gem"
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_BITE",
+        "name": "Bite",
+        "owned": true,
+        "level": 3,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "The target is bitten with viciously sharp fangs. This may also make the target flinch.",
+          "&7H\u1ec7: &fDark &8/ &7Lo\u1ea1i: &fphysical",
+          "&cS\u00e1t th\u01b0\u01a1ng: &f{damage}",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:dark_gem"
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_CUT",
+        "name": "Cut",
+        "owned": true,
+        "level": 1,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "The target is cut with a scythe, a claw, or the like to inflict damage.",
+          "&7H\u1ec7: &fNormal &8/ &7Lo\u1ea1i: &fphysical",
+          "&cS\u00e1t th\u01b0\u01a1ng: &f{damage}",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:normal_gem"
+      },
+      {
+        "available": true,
+        "issues": [],
+        "id": "COBBLEMON_MOVE_LICK",
+        "name": "Lick",
+        "owned": true,
+        "level": 3,
+        "bindable": true,
+        "slots": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "passive": false,
+        "requiredLevel": 0,
+        "maxLevel": 10,
+        "upgradable": true,
+        "cooldownRemaining": 0.0,
+        "lore": [
+          "The user licks the target with a long tongue to inflict damage. This may also leave the target with paralysis.",
+          "&7H\u1ec7: &fGhost &8/ &7Lo\u1ea1i: &fphysical",
+          "&cS\u00e1t th\u01b0\u01a1ng: &f{damage}",
+          "&eH\u1ed3i chi\u00eau: &6{cooldown}s",
+          "&8Ngu\u1ed3n: Cobblemon"
+        ],
+        "iconMaterial": "cobblemon:ghost_gem"
+      }
+    ],
+    "loadout": {
+      "3": "COBBLEMON_MOVE_LICK",
+      "4": "COBBLEMON_MOVE_BITE"
+    }
+  },
+  "restored": true
+}

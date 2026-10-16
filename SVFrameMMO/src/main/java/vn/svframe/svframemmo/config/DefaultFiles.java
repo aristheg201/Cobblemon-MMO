@@ -80,13 +80,17 @@ public final class DefaultFiles {
     /**
      * Legacy builds used override-vanilla-exp, which could silently take ownership of Minecraft XP.
      * The v13 contract is explicit: missing/newly migrated configs use VANILLA, while MMO takeover
-     * requires vanilla-exp-display.mode: MMO to be written intentionally after migration.
+     * uses vanilla-exp-display.mode: MMO for presentation only; native EXP always stays independent.
      */
     private static void migrateVanillaXpDisplayMode() throws IOException {
         Path config = ROOT.resolve("config.yml");
         if (!Files.isRegularFile(config)) return;
         String text = Files.readString(config, StandardCharsets.UTF_8);
         String migrated = text.replaceFirst("(?m)^config-version:\\s*\\d+\\s*$", "config-version: 13");
+        migrated = migrated.replace("# VANILLA leaves Minecraft level/progress/total EXP completely authoritative.\n"
+                        + "# MMO intentionally replaces the vanilla EXP bar with SVFrameMMO progression and cancels vanilla gains.\n",
+                "# Both modes preserve real Minecraft EXP gains, costs, mending and death drops.\n"
+                        + "# VANILLA shows Minecraft level/progress. MMO shows RPG progression in FantasyHubClient only.\n");
 
         if (!migrated.contains("\nvanilla-exp-display:\n") && !migrated.startsWith("vanilla-exp-display:\n")) {
             migrated = migrated.replace("override-vanilla-exp: true\n", "")

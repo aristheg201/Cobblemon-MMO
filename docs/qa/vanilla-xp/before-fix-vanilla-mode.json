@@ -1,0 +1,31 @@
+{
+  "mode": "VANILLA",
+  "commands": [
+    {
+      "command": "experience set QAPlayer 10 levels",
+      "result": "Set 10 experience levels on QAPlayer"
+    },
+    {
+      "command": "experience set QAPlayer 0 points",
+      "result": "Set 0 experience points on QAPlayer"
+    },
+    {
+      "command": "experience add QAPlayer 7 points",
+      "result": "Gave 7 experience points to QAPlayer"
+    },
+    {
+      "command": "experience query QAPlayer levels",
+      "result": "QAPlayer has 10 experience levels"
+    },
+    {
+      "command": "experience query QAPlayer points",
+      "result": "QAPlayer has 7 experience points"
+    },
+    {
+      "command": "data get entity QAPlayer XpTotal",
+      "result": "QAPlayer has the following entity data: 107"
+    }
+  ],
+  "hudExpectedLevel": 10,
+  "oldHudActuallyShowsClassLevel": 100
+}

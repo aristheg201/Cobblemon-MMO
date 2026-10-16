@@ -1,0 +1,60 @@
+{
+  "sourceFiles": [
+    {
+      "file": "amk/sv_anti_mage_knight.sk",
+      "compiled": true,
+      "functions": 12,
+      "commands": 1,
+      "triggers": 4,
+      "diagnostics": []
+    },
+    {
+      "file": "config2/sv_class_switch.sk",
+      "compiled": true,
+      "functions": 7,
+      "commands": 4,
+      "triggers": 0,
+      "diagnostics": []
+    },
+    {
+      "file": "config2/sv_dash_mmocore.sk",
+      "compiled": true,
+      "functions": 0,
+      "commands": 1,
+      "triggers": 8,
+      "diagnostics": []
+    },
+    {
+      "file": "qa/native-conformance.sk",
+      "compiled": true,
+      "functions": 2,
+      "commands": 4,
+      "triggers": 1,
+      "diagnostics": []
+    }
+  ],
+  "maxHealth": 55.82,
+  "shieldCancelsNativeDamage": true,
+  "shieldSourceUnits": true,
+  "shieldRemaining": 6.931199951171875,
+  "shieldBreaksAndRemovesVariable": true,
+  "shieldLastProcPreserved": true,
+  "guardStoresUnreducedSourceDamage": true,
+  "guardReducesRealDamage": true,
+  "guardActualLoss": 3.6416016,
+  "guardStored": 5.0,
+  "sourcePlayerDamageHonorsPvpOff": true,
+  "tauntStartTick": 5527,
+  "peer": "QAPlayerTwo",
+  "tauntUsesOriginalPeriodicOwner": true,
+  "tauntCancelsOriginalVictimDamage": true,
+  "tauntRedirectsToKnight": true,
+  "tauntStoresDamageOnce": true,
+  "tauntActualRedirectLoss": 2.0,
+  "tauntVictimBefore": 10.0,
+  "tauntExpiresOnOriginalTimer": true,
+  "guardReleaseHitsRealEntity": true,
+  "tauntEndTick": 5680,
+  "releaseCowHealth": 2.75,
+  "runtimeVerdict": "PASS"
+}

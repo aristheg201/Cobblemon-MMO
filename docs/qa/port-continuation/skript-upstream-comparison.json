@@ -1,0 +1,20 @@
+{
+  "reference": "official upstream Skript 2.13.2 on Paper 1.21.1-133",
+  "fixture": "# Internal runtime fixture, removed after QA; no production gameplay defaults.\nlocal function svqa_local() :: number:\n    return 3\nfunction svqa_semantics():\n    delete {qa.skript.sum}\n    delete {qa.skript.once}\n    delete {qa.skript.delayed}\n    loop 3 times:\n        loop-number is greater than 1\n        add loop-number to {qa.skript.sum}\n    do while true is false:\n        add 1 to {qa.skript.once}\n    set {qa.skript.local} to svqa_local()\n    set {qa.skript.clock} to 1:45\n    wait 2 ticks\n    set {qa.skript.delayed} to true\ncommand /svqatest:\n    executable by: console\n    trigger:\n        svqa_semantics()\nat 18:00:\n    add 1 to {qa.skript.timefires}\n    set the time to 7:00\n\ncommand /svqareport:\n    executable by: console\n    trigger:\n        send \"SVQA|sum=%{qa.skript.sum}%|once=%{qa.skript.once}%|local=%{qa.skript.local}%|clock=%{qa.skript.clock}%|delayed=%{qa.skript.delayed}%|timefires=%{qa.skript.timefires}%\" to sender\n\ncommand /svqatrigger:\n    executable by: console\n    trigger:\n        delete {qa.skript.timefires}\n        set time of all worlds to 18:00\n",
+  "fabricOutput": "SVQA|sum=5|once=1|local=3|clock=1:45|delayed=true|timefires=3",
+  "upstreamOutput": "SVQA|sum=5|once=1|local=3|clock=1:45|delayed=true|timefires=3",
+  "observableOutputMatches": true,
+  "scope": [
+    "file-local function",
+    "standalone loop condition",
+    "do while first iteration",
+    "HH:MM value",
+    "delayed execution",
+    "all-world time trigger"
+  ],
+  "remainingIncompatibilities": [
+    "Native dimensions share vanilla world time; independent Paper world clocks remain incomplete.",
+    "Command-block versus console sender distinction is not certified.",
+    "This fixture does not certify the complete supplied pack or upstream language."
+  ]
+}

@@ -18,6 +18,7 @@ final class SkriptQa {
     }
     static int run(ServerPlayerEntity player,String action)throws java.io.IOException {
         if(!"1".equals(System.getenv("SVFRAME_RUNTIME_QA")))throw new IllegalStateException("Runtime QA is disabled");
+        if(action.startsWith("combat_"))return SkriptCombatQa.run(player,action);
         Map<String,Object> record=checks.computeIfAbsent(player.getUuid(),id->new LinkedHashMap<>());
         switch(action){
             case "begin_case"->{record.clear();record.put("skillStaminaDebited",0d);}

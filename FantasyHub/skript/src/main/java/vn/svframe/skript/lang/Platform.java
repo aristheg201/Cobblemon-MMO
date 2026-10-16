@@ -4,6 +4,8 @@ import java.util.*;
 
 /** Native platform extension points. No Bukkit server, command dispatcher or event objects are required. */
 public interface Platform {
+    default void requireExecutionThread(){}
+    default Map<Values.WorldRef,Integer> worldTimes(){return Map.of();}
     boolean supportsEvent(String event);
     Object property(String property,Object subject,Context context);
     void changeProperty(String property,Object subject,Object value,String mode,Context context);

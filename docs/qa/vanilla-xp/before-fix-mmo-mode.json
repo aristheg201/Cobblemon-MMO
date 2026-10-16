@@ -1,0 +1,44 @@
+{
+  "serverJar": "FantasyHubCore-0.1.3.jar",
+  "mode": "MMO",
+  "expectedVanillaLevelAfterGain": 10,
+  "expectedVanillaPointsAfterGain": 7,
+  "commands": [
+    {
+      "command": "list",
+      "result": "There are 1 of a max of 5 players online: QAPlayer"
+    },
+    {
+      "command": "experience query QAPlayer levels",
+      "result": "QAPlayer has 100 experience levels"
+    },
+    {
+      "command": "data get entity QAPlayer XpTotal",
+      "result": "QAPlayer has the following entity data: 100"
+    },
+    {
+      "command": "experience set QAPlayer 10 levels",
+      "result": "Set 10 experience levels on QAPlayer"
+    },
+    {
+      "command": "experience set QAPlayer 0 points",
+      "result": "Set 0 experience points on QAPlayer"
+    },
+    {
+      "command": "experience add QAPlayer 7 points",
+      "result": "Gave 7 experience points to QAPlayer"
+    },
+    {
+      "command": "experience query QAPlayer levels",
+      "result": "QAPlayer has 100 experience levels"
+    },
+    {
+      "command": "experience query QAPlayer points",
+      "result": "QAPlayer has 0 experience points"
+    },
+    {
+      "command": "data get entity QAPlayer XpTotal",
+      "result": "QAPlayer has the following entity data: 100"
+    }
+  ]
+}

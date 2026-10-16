@@ -2,7 +2,7 @@ plugins { id 'fabric-loom' version '1.7.4' apply false }
 subprojects {
     apply plugin: 'fabric-loom'
     group='vn.svframe.fantasyhub'
-    version=project.name in ['core','client','protocol'] ? '0.1.3' : '0.1.0'
+    version=project.name in ['core','client','protocol'] ? '0.1.4' : '0.1.0'
     repositories { mavenCentral(); maven { url='https://maven.fabricmc.net/' } }
     dependencies {
         minecraft "com.mojang:minecraft:${minecraft_version}"
@@ -23,11 +23,13 @@ project(':core') {
         implementation project(path: ':protocol', configuration: 'namedElements')
         include project(':protocol')
         modImplementation files(rootProject.file('../SVFrameLib/build/libs/SVFrameLib-1.7.2-fabric.jar'))
-        modImplementation files(rootProject.file('../SVFrameMMO/build/libs/SVFrameMMO-1.13.2-fabric.jar'))
-        modImplementation files(rootProject.file('../../items/SVFrameItems/build/libs/SVFrameItems-0.1.1-fabric.jar'))
+        modImplementation files(rootProject.file('../SVFrameMMO/build/libs/SVFrameMMO-1.13.3-fabric.jar'))
+        modImplementation files(rootProject.file('../SVFrameItems').isDirectory()
+                ? rootProject.file('../SVFrameItems/build/libs/SVFrameItems-0.1.1-fabric.jar')
+                : rootProject.file('../../items/SVFrameItems/build/libs/SVFrameItems-0.1.1-fabric.jar'))
         if(rootProject.hasProperty('frameworkBundle')){
             include 'vn.svframe.local:SVFrameLib:1.7.2-fabric'
-            include 'vn.svframe.local:SVFrameMMO:1.13.2-fabric'
+            include 'vn.svframe.local:SVFrameMMO:1.13.3-fabric'
             include 'vn.svframe.local:SVFrameItems:0.1.1-fabric'
             include 'vn.svframe.local:SVFrameMobs:0.1.0-fabric'
             include 'vn.svframe.local:SVFrameMMO-Cobblemon-Integration:0.1.18'
@@ -54,7 +56,7 @@ project(':skript') {
     base.archivesName='SVFrameSkript'
     dependencies {
         modImplementation files(rootProject.file('../SVFrameLib/build/libs/SVFrameLib-1.7.2-fabric.jar'))
-        modImplementation files(rootProject.file('../SVFrameMMO/build/libs/SVFrameMMO-1.13.2-fabric.jar'))
+        modImplementation files(rootProject.file('../SVFrameMMO/build/libs/SVFrameMMO-1.13.3-fabric.jar'))
         testImplementation platform('org.junit:junit-bom:5.11.4')
         testImplementation 'org.junit.jupiter:junit-jupiter'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

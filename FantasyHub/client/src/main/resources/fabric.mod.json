@@ -14,12 +14,12 @@
     "fabricloader": ">=0.18.4",
     "java": ">=21",
     "fabric-api": "*",
-    "fantasyhubprotocol": "0.1.3"
+    "fantasyhubprotocol": "0.1.4"
   },
   "mixins": [
     "fantasyhubclient.mixins.json"
   ],
   "custom": {
-    "svframe-client-patch": "mana-thirst-clearance-1"
+    "svframe-client-patch": "vanilla-xp-preserved-1"
   }
 }

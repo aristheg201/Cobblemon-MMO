@@ -1,6 +1,7 @@
 package vn.svframe.svframemmo.cobblemon.integration;
 
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
+import com.cobblemon.mod.common.battles.BattleRegistry;
 import com.cobblemon.mod.common.api.pokemon.status.Statuses;
 import com.cobblemon.mod.common.pokemon.status.PersistentStatus;
 import net.minecraft.entity.Entity;
@@ -15,12 +16,16 @@ public final class CobblemonEntityAdapter implements RpgEntityAdapters.Adapter {
     public static final CobblemonEntityAdapter INSTANCE=new CobblemonEntityAdapter();
     @Override public boolean supports(LivingEntity target){return target instanceof PokemonEntity;}
     @Override public boolean allowsFrom(Entity actor,RpgEntityAdapters.Effect effect){
+        if(actor instanceof ServerPlayerEntity player)return BattleRegistry.getBattleByParticipatingPlayer(player)==null;
         if(!(actor instanceof PokemonEntity entity))return true;
         var pokemon=entity.getPokemon();
-        return entity.isAlive()&&!entity.isBattling()&&!entity.isBusy()&&!pokemon.isBattleClone()&&!pokemon.isFainted();
+        UUID owner=pokemon.getOwnerUUID();
+        return entity.isAlive()&&!entity.isBattling()&&!entity.isBusy()&&!pokemon.isBattleClone()&&!pokemon.isFainted()
+                &&(owner==null||BattleRegistry.getBattleByParticipatingPlayerId(owner)==null);
     }
     @Override public boolean allowsFrom(Entity actor,LivingEntity target,RpgEntityAdapters.Effect effect){
         if(!allowsFrom(actor,effect))return false;
+        if(target instanceof ServerPlayerEntity player&&BattleRegistry.getBattleByParticipatingPlayer(player)!=null)return false;
         if(effect==RpgEntityAdapters.Effect.HEAL||!(actor instanceof PokemonEntity pokemon))return true;
         UUID owner=pokemon.getPokemon().getOwnerUUID();
         if(owner==null)return true;

@@ -1,1 +1,6 @@
-{"svframeskript.reload":"Đã tải lại Skript: %s/%s file hoạt động.","svframeskript.arguments":"Tham số lệnh script không hợp lệ.","svframeskript.command.unavailable":"Lệnh script chưa khả dụng; hãy kiểm tra chẩn đoán script."}
+{
+  "svframeskript.reload": "Đã tải lại Skript: %s/%s file hoạt động.",
+  "svframeskript.arguments": "Tham số lệnh script không hợp lệ.",
+  "svframeskript.command.unavailable": "Lệnh script chưa khả dụng; hãy kiểm tra chẩn đoán script.",
+  "svframeskript.conformance": "Kiểm tra Skript: %s file biên dịch riêng, %s file biên dịch trong cả bộ (tổng %s file). Xem config/SVFrameSkript/conformance.json; cần kiểm chứng runtime riêng."
+}

@@ -1,1 +1,6 @@
-{"svframeskript.reload":"Skript reloaded: %s of %s files active.","svframeskript.arguments":"Invalid script command arguments.","svframeskript.command.unavailable":"This script command is unavailable; check script diagnostics."}
+{
+  "svframeskript.reload": "Skript reloaded: %s of %s files active.",
+  "svframeskript.arguments": "Invalid script command arguments.",
+  "svframeskript.command.unavailable": "This script command is unavailable; check script diagnostics.",
+  "svframeskript.conformance": "Skript conformance: %s sources compile individually, %s compile in the combined pack (%s files). See config/SVFrameSkript/conformance.json; runtime verification is separate."
+}

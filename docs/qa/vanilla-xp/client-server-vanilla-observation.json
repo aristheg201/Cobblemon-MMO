@@ -1,0 +1,13 @@
+{
+  "experienceDisplay": "VANILLA",
+  "rpgExperienceRendered": false,
+  "clientVanillaLevel": 10,
+  "clientVanillaProgress": 0.25925925,
+  "clientVanillaTotal": 107,
+  "serverVanillaLevel": 10,
+  "serverVanillaProgress": 0.25925925,
+  "serverVanillaTotal": 107,
+  "clientMaxHealth": 43.2785,
+  "serverMaxHealth": 43.2785,
+  "hurtCameraFrames": 0
+}

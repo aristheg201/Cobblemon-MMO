@@ -48,7 +48,7 @@ dependencies {
     modCompileOnly "maven.modrinth:placeholder-api:2.4.2+1.21"
     compileOnly "net.luckperms:api:5.4"
     modImplementation files('../SVFrameLib/build/libs/SVFrameLib-1.7.2-fabric.jar')
-    modImplementation files('../SVFrameMMO/build/libs/SVFrameMMO-1.13.2-fabric.jar')
+    modImplementation files('../SVFrameMMO/build/libs/SVFrameMMO-1.13.3-fabric.jar')
 
     productionRuntimeDeps "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     productionRuntimeDeps "maven.modrinth:MdwFAVRL:YgmyyFcs"

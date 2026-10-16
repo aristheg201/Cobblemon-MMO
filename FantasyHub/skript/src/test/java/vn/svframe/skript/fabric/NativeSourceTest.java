@@ -18,7 +18,7 @@ class NativeSourceTest {
         assertEquals(3,program.files.size());
     }
     @Test void vectorChainsMutateReceiverAndClonesRemainIndependent(){
-        Engine engine=new Engine(new FabricPlatform(){@Override public void trace(Syntax.Source source,String kind,Platform.Context context){}@Override public void error(Syntax.Source source,Throwable error){throw new AssertionError(source.toString(),error);}});Program program=new Parser(engine.platform()).compile(Map.of("vector.sk","""
+        Engine engine=new Engine(new FabricPlatform(){@Override public void requireExecutionThread(){}@Override public void trace(Syntax.Source source,String kind,Platform.Context context){}@Override public void error(Syntax.Source source,Throwable error){throw new AssertionError(source.toString(),error);}});Program program=new Parser(engine.platform()).compile(Map.of("vector.sk","""
             on load:
                 set {_v} to new Vector(3, 0, 4)
                 set {_clone} to {_v}.clone()
@@ -32,7 +32,7 @@ class NativeSourceTest {
         assertEquals(.6,(double)engine.variables().get("x",Map.of()),1e-8);assertEquals(.25,engine.variables().get("y",Map.of()));assertEquals(3d,engine.variables().get("originalX",Map.of()));assertEquals(.6,(double)engine.variables().get("dot",Map.of()),1e-8);
     }
     @Test void originalRingStyleCoordinateChangesKeepTheCenterUnchanged(){
-        Engine engine=new Engine(new FabricPlatform(){@Override public void trace(Syntax.Source source,String kind,Platform.Context context){}@Override public void error(Syntax.Source source,Throwable error){throw new AssertionError(source.toString(),error);}});
+        Engine engine=new Engine(new FabricPlatform(){@Override public void requireExecutionThread(){}@Override public void trace(Syntax.Source source,String kind,Platform.Context context){}@Override public void error(Syntax.Source source,Throwable error){throw new AssertionError(source.toString(),error);}});
         var center=new Values.Location(new Values.WorldRef("minecraft:overworld"),10,64,20,0,0);engine.variables().set("center",center,Map.of());
         Program program=new Parser(engine.platform()).compile(Map.of("ring.sk","""
             on load:

@@ -115,6 +115,7 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             CosmeticCommands.register(dispatcher, COSMETICS);
             if("1".equals(System.getenv("SVFRAME_RUNTIME_QA"))){
                 dispatcher.register(net.minecraft.server.command.CommandManager.literal("cobblemonentityqa").requires(s->s.hasPermissionLevel(2)).executes(ctx->vn.svframe.svframemmo.cobblemon.validation.CobblemonEntityRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
+                dispatcher.register(net.minecraft.server.command.CommandManager.literal("cobblemonskriptqa").requires(s->s.hasPermissionLevel(4)).executes(ctx->vn.svframe.svframemmo.cobblemon.validation.CobblemonSkriptRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
                 dispatcher.register(net.minecraft.server.command.CommandManager.literal("cobblemonshopqa").requires(s->s.hasPermissionLevel(2)).executes(ctx->vn.svframe.svframemmo.cobblemon.validation.CobblemonShopRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
             }
         });

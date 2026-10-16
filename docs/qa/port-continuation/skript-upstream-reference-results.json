@@ -1,0 +1,18 @@
+[
+  {
+    "command": "skript reload native-conformance",
+    "result": "\u00a77[\u00a76Skript\u00a77] \u00a7rReloading \u00a76\u00a76native-conformance.sk\u00a7r\u00a7r...\n\u00a76\u00a7lLine 11:\u00a77 (native-conformance.sk)\u00a7r\n\u00a7e    The condition 'true is equal to false' will always be false.\u00a7r\n\u00a76    Line: \u00a77do while true is false:\u00a7r\n \u00a7r\n\u00a7aSuccessfully reloaded \u00a76\u00a76native-conformance.sk\u00a7r\u00a7a. \u00a77(\u00a76375ms\u00a77)\n"
+  },
+  {
+    "command": "svqatest",
+    "result": ""
+  },
+  {
+    "command": "svqatrigger",
+    "result": ""
+  },
+  {
+    "command": "svqareport",
+    "result": "SVQA|sum=5|once=1|local=3|clock=1:45|delayed=true|timefires=3\n"
+  }
+]

@@ -10,7 +10,11 @@ class EngineTest {
     static final class TestPlatform implements Platform {
         final List<String> messages=new ArrayList<>(),commands=new ArrayList<>(),errors=new ArrayList<>(),potions=new ArrayList<>();
         final Map<String,Object> properties=new HashMap<>();final Set<String> permissions=new HashSet<>();
-        boolean commandFailure;
+        boolean commandFailure,threadFailure;
+        Runnable commandHook;
+        final Map<Values.WorldRef,Integer> clocks=new LinkedHashMap<>();
+        @Override public Map<Values.WorldRef,Integer> worldTimes(){return Map.copyOf(clocks);}
+        @Override public void requireExecutionThread(){if(threadFailure)throw new IllegalStateException("not the server thread");}
         @Override public boolean supportsEvent(String event){return Set.of("join","load","unload","quit","command","world change","teleport","inventory click","death of player","respawn").contains(event);}
         @Override public boolean supportsProperty(String name,boolean writable){return Set.of("name","uuid","world","location","inventory","tool","helmet","chestplate","leggings","boots","type","amount","balance","level","experience","flight mode","online","op").contains(name);}
         @Override public Object property(String property,Object subject,Context c){if(property.equals("all players"))return List.of("Alice","Bob");if(property.equals("uuid"))return subject+"-uuid";if(property.equals("name"))return subject;if(property.equals("world"))return new Values.WorldRef("test_dungeon1");if(property.equals("inventory"))return "inventory";return properties.getOrDefault(property+":"+subject,property.equals("op")?false:null);}
@@ -21,7 +25,7 @@ class EngineTest {
         @Override public boolean isPlayer(Object p){return Set.of("Alice","Bob").contains(p);}
         @Override public void send(Object recipient,String message){messages.add(recipient+":"+message);}
         @Override public void broadcast(String message){messages.add(message);}
-        @Override public void command(Object sender,String command){if(commandFailure)throw new IllegalStateException("Economy failed");commands.add(command);}
+        @Override public void command(Object sender,String command){if(commandFailure)throw new IllegalStateException("Economy failed");commands.add(command);if(commandHook!=null)commandHook.run();}
         @Override public void give(Object p,Object item){properties.put("given:"+p,item);}
         @Override public void teleport(Object p,Object destination){properties.put("location:"+p,destination);}
         @Override public void potion(Object p,String type,int level,Values.Span duration){potions.add(p+":"+type+":"+level+":"+duration.ticks());}
@@ -34,6 +38,194 @@ class EngineTest {
     Object global(String name){return engine.variables().get(name,Map.of());}
     void join(){engine.dispatch("join",Map.of("player","Alice","sender","Alice"));}
     Context context(){return new Context(engine,Map.of("player","Alice"),new HashMap<>(),50000);}
+    @Test void nativeFunctionEntryExecutesInstalledSourceAndCommits(){
+        install("""
+            function grant(n: number) :: number:
+                add {_n} to {total}
+                return {total}
+            """);
+        assertEquals(3d,engine.invokeFunction("grant",List.of(3d)));
+        assertEquals(5d,engine.invokeFunction("grant",List.of(2d)));
+        assertEquals(5d,global("total"));
+    }
+    @Test void nativeFunctionRejectsOffThreadEntryBeforeTouchingVariables(){
+        TestPlatform guardedPlatform=new TestPlatform();
+        Engine guarded=new Engine(guardedPlatform);
+        guarded.install(new Parser(guarded.platform()).compile(Map.of("thread.sk","""
+            function mutate():
+                set {state} to true
+            """)));
+        guardedPlatform.threadFailure=true;
+        assertThrows(IllegalStateException.class,()->guarded.invokeFunction("mutate",List.of()));
+        assertNull(guarded.variables().get("state",Map.of()));
+    }
+    @Test void nativeFunctionEntryRollsBackNestedSourceFailures(){
+        install("""
+            function grant(n: number):
+                set {lock} to true
+                add {_n} to {total}
+                execute console command "required-economy"
+            """);
+        engine.variables().set("total",7d,Map.of());platform.commandFailure=true;
+        assertThrows(IllegalStateException.class,()->engine.invokeFunction("grant",List.of(2d)));
+        assertEquals(7d,global("total"));assertNull(global("lock"));
+    }
+    @Test void localFunctionsArePrivateAndDoNotOverwriteOtherScripts(){
+        Program pack=new Parser(platform).compile(Map.of("a.sk","""
+            local function value() :: number:
+                return 1
+            on load:
+                set {a} to value()
+            ""","b.sk","""
+            local function value() :: number:
+                return 2
+            on load:
+                set {b} to value()
+            """));
+        assertTrue(pack.files.values().stream().allMatch(Program.File::valid));
+        engine.install(pack);assertEquals(1d,global("a"));assertEquals(2d,global("b"));
+        assertFalse(pack.functions.containsKey("value"));
+        assertThrows(IllegalArgumentException.class,()->engine.invokeFunction("value",List.of()));
+        Program caller=new Parser(platform).compile(Map.of("private.sk","""
+            local function private_value() :: number:
+                return 1
+            ""","outside.sk","""
+            on load:
+                set {outside} to private_value()
+            """));
+        assertTrue(caller.files.get("private.sk").valid());assertFalse(caller.files.get("outside.sk").valid());
+    }
+    @Test void duplicateGlobalsAreRejectedInsteadOfSelectingLastFile(){
+        Program pack=new Parser(platform).compile(Map.of("a.sk","function shared() :: number:\n    return 1", "b.sk","function shared() :: number:\n    return 2"));
+        assertTrue(pack.functions.isEmpty());
+        assertTrue(pack.files.values().stream().allMatch(f->f.diagnostics().stream().anyMatch(d->d.message().contains("Duplicate global"))));
+    }
+    @Test void functionReferencesInPlainTextDoNotDisableValidFiles(){
+        Program pack=new Parser(platform).compile(Map.of("failed.sk","""
+            function unavailable():
+                unsupported effect
+            ""","text.sk","""
+            on load:
+                set {text} to "unavailable()"
+            ""","caller.sk","""
+            on load:
+                unavailable()
+            """));
+        assertFalse(pack.files.get("failed.sk").valid());assertFalse(pack.files.get("caller.sk").valid());
+        assertTrue(pack.files.get("text.sk").valid());engine.install(pack);assertEquals("unavailable()",global("text"));
+    }
+    @Test void standaloneConditionsEndOnlyTheirCurrentSection(){
+        install("""
+            on join:
+                loop 3 times:
+                    loop-number is greater than 1
+                    add loop-number to {sum}
+                if true is true:
+                    player has permission "required"
+                    set {denied} to true
+                set {after} to "this is text"
+                true is false
+                set {unreachable} to true
+            """);
+        join();assertEquals(5d,global("sum"));assertNull(global("denied"));
+        assertEquals("this is text",global("after"));assertNull(global("unreachable"));
+    }
+    @Test void doWhileRunsOnceThenEvaluatesTheConditionAfterDelays(){
+        install("""
+            on join:
+                do while true is false:
+                    add 1 to {once}
+                set {_n} to 0
+                do while {_n} is less than 3:
+                    wait 1 tick
+                    add 1 to {_n}
+                    add 1 to {count}
+                set {finished} to true
+            """);
+        join();assertEquals(1d,global("once"));assertNull(global("finished"));
+        for(int i=0;i<3;i++)engine.tick();assertEquals(3d,global("count"));assertEquals(true,global("finished"));
+    }
+    @Test void worldClockTriggersCrossMidnightAndDoNotReplaySkippedTime(){
+        var world=new Values.WorldRef("world");platform.clocks.put(world,23995);
+        install("""
+            at 6:00:
+                add 1 to {dawn}
+                set {world} to event-world
+            at 7:00:
+                add 1 to {morning}
+            at 13:00:
+                add 1 to {afternoon}
+            """);
+        platform.clocks.put(world,5);for(int i=0;i<10;i++)engine.tick();
+        assertEquals(1d,global("dawn"));assertEquals(world,global("world"));
+        platform.clocks.put(world,7000);for(int i=0;i<10;i++)engine.tick();
+        assertNull(global("morning"));assertEquals(1d,global("afternoon"));
+        for(int i=0;i<20;i++)engine.tick();assertEquals(1d,global("afternoon"));
+        engine.install(new Program(Map.of()));platform.clocks.put(world,0);
+        for(int i=0;i<10;i++)engine.tick();assertEquals(1d,global("dawn"));
+    }
+    @Test void clockLiteralsPreserveMinecraftSixHourOffsetAndRejectInvalidTimes(){
+        assertEquals(19750,Values.GameTime.parse("1:45").ticks());
+        assertEquals(17,Values.GameTime.parse("6:01").ticks());
+        assertEquals("6:01",Values.GameTime.parse("6:01").toString());
+        assertThrows(IllegalArgumentException.class,()->Values.GameTime.parse("24:00"));
+        assertThrows(IllegalArgumentException.class,()->Values.GameTime.parse("7:60"));
+        Program invalid=new Parser(platform).compile(Map.of("clock.sk","at 24:00:\n    set {invalid} to true"));
+        assertFalse(invalid.files.get("clock.sk").valid());
+    }
+    @Test void consoleOnlyCommandsRejectPlayersEvenWhenTheyHavePermission(){
+        install("""
+            command /consoleonly:
+                permission: test.allowed
+                executable by: console
+                trigger:
+                    add 1 to {commands}
+            """);
+        var command=engine.program().files.get("test.sk").commands().getFirst();
+        platform.permissions.add("test.allowed");
+        assertFalse(engine.command(command,"Alice",List.of()));assertNull(global("commands"));
+        assertTrue(engine.command(command,"Console",List.of()));assertEquals(1d,global("commands"));
+    }
+    @Test void invalidBareBooleanConditionsMatchUpstreamRejection(){
+        for(String section:List.of("if true","while true","do while false")){
+            Program program=new Parser(platform).compile(Map.of("invalid.sk","on join:\n    "+section+":\n        set {invalid} to true"));
+            assertFalse(program.files.get("invalid.sk").valid(),section);
+        }
+    }
+    @Test void reloadDuringPeriodicExecutionCancelsOldFramesAndTimers(){
+        install("""
+            every 1 tick:
+                execute console command "reload"
+                set {stale-frame} to true
+            every 1 tick:
+                set {stale-timer} to true
+            """);
+        Program next=new Parser(platform).compile(Map.of("new.sk","on load:\n    set {fresh} to true"));
+        platform.commandHook=()->engine.install(next);
+        assertDoesNotThrow(engine::tick);assertEquals(true,global("fresh"));
+        assertNull(global("stale-frame"));assertNull(global("stale-timer"));
+    }
+    @Test void reloadDuringWorldClockExecutionDoesNotUseStaleClockHandlers(){
+        var world=new Values.WorldRef("world");platform.clocks.put(world,995);
+        install("""
+            at 7:00:
+                execute console command "reload"
+            at 7:00:
+                set {stale-clock} to true
+            """);
+        platform.commandHook=()->engine.install(new Program(Map.of()));
+        platform.clocks.put(world,1000);
+        assertDoesNotThrow(()->{for(int i=0;i<10;i++)engine.tick();});assertNull(global("stale-clock"));
+    }
+    @Test void reloadDuringAnEventDoesNotExecuteUnloadedHandlers(){
+        install("""
+            on join:
+                execute console command "reload"
+            on join:
+                set {stale-event} to true
+            """);
+        platform.commandHook=()->engine.install(new Program(Map.of()));join();assertNull(global("stale-event"));
+    }
     @Test void delayedNestedLoopsKeepScopeAndOrder(){
         install("""
             on join:
@@ -84,7 +276,7 @@ class EngineTest {
                 set {_v} to 5
                 set {result} to bump({_v})
                 set {caller} to {_v}
-                if true or explode():
+                if true is true or explode():
                     set {short} to true
             """);platform.commandFailure=true;join();assertEquals(7d,global("result"));assertEquals(5d,global("caller"));assertEquals(true,global("short"));assertTrue(platform.errors.isEmpty());
     }
@@ -118,7 +310,7 @@ class EngineTest {
     @Test void unknownSyntaxDisablesWholeFileAndDependentCallers(){
         Program p=new Parser(platform).compile(Map.of("broken.sk","function unavailable():\n    invent fake effect\n","caller.sk","on join:\n    unavailable()\n    set {fake} to true\n"));assertFalse(p.files.get("broken.sk").valid());assertFalse(p.files.get("caller.sk").valid());engine.install(p);join();assertNull(global("fake"));assertEquals(2,p.files.get("broken.sk").diagnostics().getFirst().source().line());
     }
-    @Test void infiniteLoopStopsUnderBudget(){install("on join:\n    while true:\n        add 1 to {count}\n");join();assertEquals(1,platform.errors.size());assertTrue(platform.errors.getFirst().contains("budget"));assertNull(global("count"));}
+    @Test void infiniteLoopStopsUnderBudget(){install("on join:\n    while true is true:\n        add 1 to {count}\n");join();assertEquals(1,platform.errors.size());assertTrue(platform.errors.getFirst().contains("budget"));assertNull(global("count"));}
     @Test void failedCommandRestoresLocksAndSparseGlobalVariables(){
         engine.variables().set("members::1","first",Map.of());engine.variables().set("members::3","third",Map.of());
         install("""

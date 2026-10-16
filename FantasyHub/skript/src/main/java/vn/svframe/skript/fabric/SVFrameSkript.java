@@ -38,14 +38,18 @@ public final class SVFrameSkript implements ModInitializer {
     private static boolean dirty;private static VariableStore store;private static MinecraftServer server;private static boolean active;
     @Override public void onInitialize(){
         CommandRegistrationCallback.EVENT.register((dispatcher,registries,environment)->dispatcher.register(literal("skript").requires(s->s.hasPermissionLevel(2))
+            .then(literal("conformance").executes(context->{try{PLATFORM.requireExecutionThread();var result=ScriptPackConformance.inspect(ROOT.resolve("scripts"),ROOT.resolve("conformance.json"));context.getSource().sendFeedback(()->Text.translatable("svframeskript.conformance",result.get("individuallyCompiled"),result.get("packCompiled"),((List<?>)result.get("files")).size()),false);return 1;}catch(IOException failure){throw new IllegalStateException("Cannot write script conformance report",failure);}}))
             .then(literal("reload").executes(context->{reload();context.getSource().sendFeedback(()->Text.translatable("svframeskript.reload",validFiles(),ENGINE.program().files.size()),false);return 1;}))
             .then(literal("qa").requires(s->s.hasPermissionLevel(4)&&"1".equals(System.getenv("SVFRAME_RUNTIME_QA"))).then(argument("stage",StringArgumentType.word()).executes(c->{try{return SkriptQa.run(c.getSource().getPlayerOrThrow(),StringArgumentType.getString(c,"stage"));}catch(IOException e){throw new IllegalStateException(e);}})))
             .then(literal("diagnostics").executes(context->{context.getSource().sendFeedback(()->Text.literal(new Gson().toJson(report())),false);return 1;}))));
         ServerLifecycleEvents.SERVER_STARTED.register(s->{server=s;PLATFORM.server(s);registeredCommands.clear();counters.clear();failures.clear();screenTitles.clear();dirty=false;store=null;try{Files.createDirectories(ROOT.resolve("scripts"));store=new VariableStore(ROOT.resolve("variables.json"),s);ENGINE.variables().restore(store.load());ENGINE.variables().validateWith(VariableStore::validate);ENGINE.variables().onChange(()->dirty=true);active=true;reload();}catch(IOException e){LOG.error("Skript startup failed; execution remains disabled",e);active=false;}});
-        ServerLifecycleEvents.SERVER_STOPPING.register(s->{boolean running=active;if(running)ENGINE.stop();active=false;vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.classPolicy(null);vn.svframe.svframelib.fabric.ReferenceClassSkillRuntime.scriptAdapter(null);if(store!=null)try{if(running)store.save(ENGINE.variables().snapshot());store.close();}catch(IOException e){LOG.error("Skript shutdown persistence failed",e);}});
+        ServerLifecycleEvents.SERVER_STOPPING.register(s->{boolean running=active;if(running)ENGINE.stop();active=false;vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.classPolicy(null);vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.nativeRuntime(null);vn.svframe.svframelib.fabric.ReferenceClassSkillRuntime.scriptAdapter(null);if(store!=null)try{if(running)store.save(ENGINE.variables().snapshot());store.close();}catch(IOException e){LOG.error("Skript shutdown persistence failed",e);}});
         ServerTickEvents.END_SERVER_TICK.register(s->{if(active){ENGINE.tick();if(dirty){store.save(ENGINE.variables().snapshot());dirty=false;}}});
         ServerPlayConnectionEvents.JOIN.register((handler,sender,s)->{if(!active)return;ServerPlayerEntity player=handler.player;PLATFORM.remember(player);Map<String,Object> event=playerEvent(player);ENGINE.dispatch("join",event);Path data=s.getSavePath(net.minecraft.util.WorldSavePath.PLAYERDATA).resolve(player.getUuid()+".dat");if(!Files.exists(data))ENGINE.dispatch("first join",event);});
-        ServerPlayConnectionEvents.DISCONNECT.register((handler,s)->{dispatch("quit",playerEvent(handler.player));screenTitles.remove(handler.player.getUuid());});
+        ServerPlayConnectionEvents.DISCONNECT.register((handler,s)->{
+            Runnable quit=()->{if(!active)return;dispatch("quit",playerEvent(handler.player));SkriptCombatQa.disconnected(handler.player);screenTitles.remove(handler.player.getUuid());};
+            if(s.isOnThread())quit.run();else if(!s.isStopping())s.execute(quit);
+        });
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer,newPlayer,alive)->dispatch("respawn",playerEvent(newPlayer)));
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register((player,origin,destination)->dispatch("world change",playerEvent(player)));
         UseItemCallback.EVENT.register((player,world,hand)->net.minecraft.util.TypedActionResult.pass(player.getStackInHand(hand)));
@@ -81,6 +85,10 @@ public final class SVFrameSkript implements ModInitializer {
         for(ServerPlayerEntity player:server.getPlayerManager().getPlayerList())server.getCommandManager().sendCommandTree(player);
     }
     private static void installClassAdapter(){
+        vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.nativeRuntime(new vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.NativeRuntime(){
+            public boolean hasFunction(String name){return active&&ENGINE.program().functions.containsKey(name.toLowerCase(Locale.ROOT));}
+            public Object invokeFunction(String name,List<Object> arguments){if(!active)throw new IllegalStateException("Skript runtime is inactive");return ENGINE.invokeFunction(name,arguments.stream().map(value->value instanceof net.minecraft.entity.Entity entity?FabricPlatform.ref(entity):value).toList());}
+        });
         var source=ENGINE.program().files.values().stream().filter(Program.File::valid).filter(f->f.commands().stream().anyMatch(c->c.name().equals("svclass"))).findFirst().orElse(null);
         vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.classPolicy(source==null?null:new vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.ClassPolicy(){
             private final Program.Command command=source.commands().stream().filter(c->c.name().equals("svclass")).findFirst().orElseThrow();

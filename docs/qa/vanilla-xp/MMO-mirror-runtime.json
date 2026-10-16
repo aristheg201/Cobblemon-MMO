@@ -1,0 +1,15 @@
+{
+  "mode": "MMO",
+  "vanillaGain": true,
+  "mirroredRpgExperience": 5.6000000000000005,
+  "realOrbPickup": true,
+  "mendingConsumesOrbForDurability": true,
+  "nativeEnchantButton": true,
+  "anvilOutputAvailable": true,
+  "nativeAnvilCost": true,
+  "costsNotOverwrittenByRpgTicks": true,
+  "actualVanillaLevel": 28,
+  "runtimeVerdict": "PASS",
+  "redirectionEnabled": true,
+  "redirectionRatio": 0.8
+}

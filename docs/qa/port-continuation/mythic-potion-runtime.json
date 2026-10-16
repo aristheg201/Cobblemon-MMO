@@ -1,0 +1,30 @@
+{
+  "runtimeVerdict": "PASS",
+  "scope": "simple mob and nested meta-skill potion parameters",
+  "actors": [
+    {
+      "entity": "b8b8a1ea-ad50-44b5-ba5d-88fe33435e73",
+      "actualNbt": "PotionAliasProbe has the following entity data: [{duration: 997653, show_icon: 0b, amplifier: 10b, id: \"minecraft:slowness\", show_particles: 0b}]",
+      "durationNotClamped": true,
+      "sourceAmplifierRetained": true,
+      "particlesHidden": true,
+      "iconHidden": true
+    },
+    {
+      "entity": "7bb3e715-fe3c-4f03-9f50-911359562fee",
+      "actualNbt": "PotionGraphProbe has the following entity data: [{duration: 997652, show_icon: 0b, amplifier: 10b, id: \"minecraft:resistance\", show_particles: 0b}]",
+      "durationNotClamped": true,
+      "sourceAmplifierRetained": true,
+      "particlesHidden": true,
+      "iconHidden": true
+    }
+  ],
+  "sourceExamples": [
+    "config2/MythicMobs/Mobs/svframe_season1/skeleton_king.yml",
+    "config2/MythicMobs/Mobs/[BOSS]phoenix.yml"
+  ],
+  "remainingIncompatibilities": [
+    "Negative amplifiers remain rejected pending differential verification.",
+    "This verifies potion semantics, not complete source encounters."
+  ]
+}

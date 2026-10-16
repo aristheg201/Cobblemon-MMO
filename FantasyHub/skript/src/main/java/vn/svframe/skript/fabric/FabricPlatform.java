@@ -27,6 +27,11 @@ public class FabricPlatform implements Platform {
     final NativeApiBridge api=new NativeApiBridge(this);
     private final Map<UUID,String> names=new HashMap<>();
     public void remember(ServerPlayerEntity player){names.put(player.getUuid(),player.getName().getString());}
+    @Override public void requireExecutionThread(){if(server==null||!server.isOnThread())throw new IllegalStateException("Native Skript function execution requires the server thread");}
+    @Override public Map<WorldRef,Integer> worldTimes(){
+        requireExecutionThread();var out=new LinkedHashMap<WorldRef,Integer>();
+        for(ServerWorld world:server.getWorlds())out.put(ref(world),(int)Math.floorMod(world.getTimeOfDay(),24000));return out;
+    }
     public void server(MinecraftServer server){this.server=server;names.clear();java.nio.file.Path cache=server.getRunDirectory().resolve("usercache.json");if(java.nio.file.Files.isRegularFile(cache))try{for(var row:com.google.gson.JsonParser.parseString(java.nio.file.Files.readString(cache)).getAsJsonArray()){var json=row.getAsJsonObject();names.put(UUID.fromString(json.get("uuid").getAsString()),json.get("name").getAsString());}}catch(java.io.IOException|RuntimeException e){SVFrameSkript.LOG.warn("Could not read offline profile cache: {}",e.getMessage());}}
     public record InventoryRef(EntityRef owner,String title,int syncId){public InventoryRef(EntityRef owner){this(owner,"Inventory",-1);}}
     public static final class ItemValue implements Values.Copyable {
@@ -42,7 +47,7 @@ public class FabricPlatform implements Platform {
     @Override public boolean supportsEvent(String event){return EVENTS.contains(event);}
     @Override public boolean supportsImport(String name){return api.supportsImport(name);}
     @Override public boolean isType(Object value,String type){return switch(type){case "player"->isPlayer(value);case "living entity"->entity(value) instanceof LivingEntity;case "armor stand"->entity(value) instanceof net.minecraft.entity.decoration.ArmorStandEntity;default->false;};}
-    @Override public boolean supportsProperty(String property,boolean writable){return (writable?WRITE:PROPERTIES).contains(property);}
+    @Override public boolean supportsProperty(String property,boolean writable){return property.equals("time")||(writable?WRITE:PROPERTIES).contains(property);}
     public static EntityRef ref(Entity entity){return new EntityRef(entity.getUuid(),entity instanceof ServerPlayerEntity);}
     public Entity entity(Object value){
         if(value instanceof Entity e)return e;
@@ -54,6 +59,9 @@ public class FabricPlatform implements Platform {
     public static WorldRef ref(ServerWorld world){return new WorldRef(world.getRegistryKey().getValue().toString());}
     public static Location location(Entity entity){return new Location(new WorldRef(entity.getWorld().getRegistryKey().getValue().toString()),entity.getX(),entity.getY(),entity.getZ(),entity.getYaw(),entity.getPitch());}
     @Override public Object property(String property,Object subject,Context context){
+        if(property.equals("all worlds"))return new ArrayList<>(worldTimes().keySet());
+        if(property.equals("time")&&subject instanceof Collection<?> worlds)return worlds.stream().map(world->property("time",world,context)).toList();
+        if(property.equals("time"))return new GameTime((int)Math.floorMod(timeWorld(subject,context).getTimeOfDay(),24000));
         if(property.equals("all players"))return server.getPlayerManager().getPlayerList().stream().map(FabricPlatform::ref).toList();
         if(property.equals("offline player lookup")){String name=display(subject);ServerPlayerEntity online=server.getPlayerManager().getPlayer(name);if(online!=null)return ref(online);for(var entry:names.entrySet())if(entry.getValue().equalsIgnoreCase(name))return new EntityRef(entry.getKey(),true);return null;}
         if(property.equals("player lookup")){ServerPlayerEntity p=server.getPlayerManager().getPlayer(display(subject));return p==null?null:ref(p);}
@@ -99,6 +107,13 @@ public class FabricPlatform implements Platform {
     private EquipmentSlot slot(String name){return switch(name){case "helmet"->EquipmentSlot.HEAD;case "chestplate"->EquipmentSlot.CHEST;case "leggings"->EquipmentSlot.LEGS;case "boots"->EquipmentSlot.FEET;default->EquipmentSlot.MAINHAND;};}
     @Override public void changeProperty(String property,Object subject,Object value,String mode,Context context){
         if(!server.isOnThread())throw new IllegalStateException("Script world mutation outside server thread");
+        if(property.equals("time")&&subject instanceof Collection<?> worlds){for(Object world:worlds)changeProperty("time",world,value,mode,context);return;}
+        if(property.equals("time")){
+            ServerWorld world=timeWorld(subject,context);long before=world.getTimeOfDay();
+            if(!mode.equals("set")||!(value instanceof GameTime time))throw new IllegalArgumentException("World time requires set to a Minecraft clock time");
+            context.rollbackWith(()->world.setTimeOfDay(before));
+            world.setTimeOfDay(Math.floorDiv(before,24000)*24000+time.ticks());return;
+        }
         if(subject instanceof ItemValue item&&property.equals("amount")){item.stack.setCount(Math.max(0,(int)Values.number(value)));return;}
         ServerPlayerEntity player=player(subject);Entity entity=entity(subject);
         if(entity==null)throw new IllegalArgumentException("Script target is no longer loaded");
@@ -125,6 +140,12 @@ public class FabricPlatform implements Platform {
             case "stamina"->SVFrameMMO.playerData().get(requirePlayer(player)).setStamina(next,vn.svframe.svframelib.player.resource.ResourceUpdateReason.OTHER);
             default->throw new IllegalArgumentException("Read-only property "+property);
         }
+    }
+    private ServerWorld timeWorld(Object subject,Context context){
+        if(subject instanceof WorldRef ref){ServerWorld world=world(ref);if(world==null)throw new IllegalArgumentException("Script world is not loaded: "+ref.id());return world;}
+        if(subject!=null)throw new IllegalArgumentException("Expected world for clock time");
+        if(context.event("world") instanceof WorldRef ref)return timeWorld(ref,context);
+        ServerPlayerEntity player=player(context.event("player"));return player==null?server.getOverworld():player.getServerWorld();
     }
     private ServerPlayerEntity requirePlayer(ServerPlayerEntity player){if(player==null)throw new IllegalArgumentException("Expected online player");return player;}
     @Override public Object literal(String text){
@@ -153,7 +174,13 @@ public class FabricPlatform implements Platform {
         ServerCommandSource source=sender==null?server.getCommandSource():sender instanceof ServerCommandSource s?s:requirePlayer(player(sender)).getCommandSource();
         String raw=command.replaceFirst("^/","");
         String[] args=raw.split(" +");if(args.length==4&&args[0].equalsIgnoreCase("dm")&&args[1].equalsIgnoreCase("open")){if(!source.hasPermissionLevel(2))throw new IllegalStateException("Menu administration permission required");ServerPlayerEntity target=server.getPlayerManager().getPlayer(args[3]);if(target==null)throw new IllegalArgumentException("Menu recipient is offline");if(!vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.openMenu(args[2],target))throw new IllegalStateException("Native menu integration missing: "+args[2]);return;}
-        if(context!=null&&args.length==5&&args[0].equalsIgnoreCase("mmocore")&&args[1].equalsIgnoreCase("admin")&&args[2].equalsIgnoreCase("class")){ServerPlayerEntity player=server.getPlayerManager().getPlayer(args[3]);if(player==null)throw new IllegalArgumentException("Class recipient is offline");var data=SVFrameMMO.playerData().get(player);var before=vn.svframe.svframemmo.persistence.PlayerDataSnapshot.capture(data);context.rollbackWith(()->{double health=data.isOnline()?data.getPlayer().getHealth():data.getHealth();data.prepareReload();before.apply(data);data.reloadDefinitions();if(data.isOnline())data.getPlayer().setHealth((float)Math.min(health,data.getPlayer().getMaxHealth()));SVFrameMMO.playerData().savePlayer(data);});}
+        if(args.length==5&&args[0].equalsIgnoreCase("mmocore")&&args[1].equalsIgnoreCase("admin")&&args[2].equalsIgnoreCase("class")){
+            requireExecutionThread();if(!source.hasPermissionLevel(2))throw new IllegalStateException("Class administration permission required");
+            ServerPlayerEntity player=server.getPlayerManager().getPlayer(args[3]);if(player==null)throw new IllegalArgumentException("Class recipient is offline");var data=SVFrameMMO.playerData().get(player);var target=SVFrameMMO.classes().getOrThrow(args[4]);
+            if(context!=null){var before=vn.svframe.svframemmo.persistence.PlayerDataSnapshot.capture(data);double healthBefore=data.isOnline()?data.getPlayer().getHealth():data.getHealth();context.rollbackWith(()->{data.prepareReload();before.apply(data);data.reloadDefinitions();if(data.isOnline())data.getPlayer().setHealth((float)Math.min(healthBefore,data.getPlayer().getMaxHealth()));SVFrameMMO.playerData().savePlayer(data);});}
+            if(!data.changeClass(target,vn.svframe.svframemmo.api.event.PlayerClassChangeEvent.Reason.COMMAND_FORCE))throw new IllegalStateException("Native class command was rejected");
+            SVFrameMMO.playerData().savePlayer(data);return;
+        }
         // Unknown command integrations are explicit failures, preventing scripts reporting fictitious rewards.
         String root=raw.split(" ",2)[0];if(server.getCommandManager().getDispatcher().getRoot().getChild(root)==null)throw new IllegalStateException("Required command integration is missing: "+root);
         java.util.concurrent.atomic.AtomicReference<Boolean> result=new java.util.concurrent.atomic.AtomicReference<>();

@@ -10,6 +10,15 @@ public final class Values {
         @Override public String toString(){return Syntax.formatNumber(milliseconds/1000)+" seconds";}
     }
     public record Date(long milliseconds){}
+    public record GameTime(int ticks){
+        public GameTime{ticks=Math.floorMod(ticks,24000);}
+        public static GameTime parse(String text){
+            String[] parts=text.split(":");int hour=Integer.parseInt(parts[0]),minute=Integer.parseInt(parts[1]);
+            if(hour<0||hour>23||minute<0||minute>59)throw new IllegalArgumentException("Invalid Minecraft clock time: "+text);
+            return new GameTime((int)Math.round(hour*1000d-6000+minute*1000d/60));
+        }
+        @Override public String toString(){int clock=(ticks+6000)%24000,hour=clock/1000,minute=(int)Math.round(clock%1000*60d/1000);if(minute==60){hour=(hour+1)%24;minute=0;}return String.format(Locale.ROOT,"%d:%02d",hour,minute);}
+    }
     /** Stable references resolve the current entity after login, respawn and dimension changes. */
     public record EntityRef(UUID id,boolean player){}
     public record WorldRef(String id){}
@@ -35,6 +44,7 @@ public final class Values {
         return Objects.equals(a,b);
     }
     public static int compare(Object a,Object b){
+        if(a instanceof GameTime x&&b instanceof GameTime y)return Integer.compare(x.ticks(),y.ticks());
         if(a instanceof Date x&&b instanceof Date y)return Long.compare(x.milliseconds,y.milliseconds);
         if((a instanceof Number||a instanceof Span)&&(b instanceof Number||b instanceof Span))return Double.compare(number(a),number(b));
         if(a instanceof String x&&b instanceof String y)return x.compareToIgnoreCase(y);

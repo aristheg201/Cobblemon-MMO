@@ -100,6 +100,7 @@ public final class FantasyHubCore implements ModInitializer {
             com.google.gson.JsonObject json;
             try{json=JsonParser.parseString(observation.json()).getAsJsonObject();}catch(RuntimeException malformed){return;}
             json.addProperty("serverMaxHealth",context.player().getMaxHealth());json.addProperty("serverHealth",context.player().getHealth());
+            json.addProperty("serverVanillaLevel",context.player().experienceLevel);json.addProperty("serverVanillaProgress",context.player().experienceProgress);json.addProperty("serverVanillaTotal",context.player().totalExperience);
             json.addProperty("serverTick",tick);
             json.addProperty("scenario",RpgLifecycleQa.label(id));
             var writer=qaWriter;if(writer!=null&&!writer.isShutdown())writer.execute(()->{
@@ -163,6 +164,7 @@ public final class FantasyHubCore implements ModInitializer {
     private static String state(ServerPlayerEntity player){
         var data=SVFrameMMO.playerData().get(player);Map<String,Object> out=new LinkedHashMap<>();
         out.put("schema",Protocol.VERSION);out.put("classId",data.getClassId());out.put("className",data.getProfess().getName());
+        out.put("experienceDisplay",vn.svframe.svframemmo.experience.vanilla.VanillaProgressionRuntime.instance().experienceDisplayMode());
         if("1".equals(System.getenv("SVFRAME_RUNTIME_QA")))out.put("qaScenario",RpgLifecycleQa.label(player.getUuid()));
         out.put("level",data.getLevel());out.put("experience",data.getExperience());out.put("nextLevel",data.getProfess().getExpCurve().getExperience(data,data.getLevel()));
         out.put("attributePoints",data.getAttributePoints());out.put("skillPoints",data.getSkillPoints());out.put("respecPoints",data.getAttributeReallocationPoints());
@@ -248,6 +250,7 @@ public final class FantasyHubCore implements ModInitializer {
     private static Map<String,Object> hudState(ServerPlayerEntity player){
         var data=SVFrameMMO.playerData().get(player);Map<String,Object> out=new LinkedHashMap<>();
         out.put("schema",Protocol.VERSION);out.put("casting",castingState(player));
+        out.put("experienceDisplay",vn.svframe.svframemmo.experience.vanilla.VanillaProgressionRuntime.instance().experienceDisplayMode());
         out.put("level",data.getLevel());out.put("experience",data.getExperience());out.put("nextLevel",data.getProfess().getExpCurve().getExperience(data,data.getLevel()));
         for(var resource:PlayerResource.values()){
             String name=resource==PlayerResource.STELLIUM?"magic":resource.name().toLowerCase(Locale.ROOT);

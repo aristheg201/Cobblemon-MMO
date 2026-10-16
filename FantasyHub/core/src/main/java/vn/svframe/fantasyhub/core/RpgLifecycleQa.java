@@ -30,6 +30,7 @@ public final class RpgLifecycleQa {
         var data=SVFrameMMO.playerData().get(player);LABELS.put(player.getUuid(),scenario);
         if(scenario.startsWith("dragonborn_"))return DragonbornQa.run(player,scenario.substring("dragonborn_".length()));
         switch(scenario){
+            case "vanilla_xp" -> {return VanillaExperienceQa.run(player);}
             case "catalog" -> {return SkillCatalogQa.run(player);}
             case "prepare" -> {
                 data.changeClass(SVFrameMMO.classes().get("DEATH_KNIGHT"),PlayerClassChangeEvent.Reason.GUI);

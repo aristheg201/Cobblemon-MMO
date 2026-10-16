@@ -12,6 +12,8 @@ public final class Engine {
     private Program program=new Program(Map.of());
     private final PriorityQueue<Task> scheduled=new PriorityQueue<>(Comparator.comparingLong((Task t)->t.at).thenComparingLong(t->t.order));
     private final Map<Trigger,Long> periodic=new LinkedHashMap<>();
+    private List<Trigger> timed=List.of(),periodicOrder=List.of();
+    private final Map<Values.WorldRef,Integer> lastWorldTimes=new HashMap<>();
     private LongSupplier clock=System::currentTimeMillis;
     private long generation,tick,sequence;
     private int tickRemaining=250000,dispatchDepth;
@@ -22,35 +24,77 @@ public final class Engine {
     public long generation(){return generation;}
     public long now(){return clock.getAsLong();}
     public Object evaluate(Platform.Expression expression){return expression.evaluate(new Context(this,Map.of(),new HashMap<>(),50000));}
+    /** Invoke an installed source function from a native server integration with the same transaction semantics as a command. */
+    public Object invokeFunction(String name,List<Object> arguments){
+        platform.requireExecutionThread();
+        Context parent=new Context(this,Map.of(),new HashMap<>(),50000);
+        try{Object value=call(name,arguments,parent);parent.commit();return value;}
+        catch(RuntimeException failure){try{parent.rollback();}catch(RuntimeException rollbackFailure){failure.addSuppressed(rollbackFailure);}throw failure;}
+    }
     public void clock(LongSupplier clock){this.clock=clock;}
     public int pendingTasks(){return scheduled.size();}
     public void install(Program next){
-        dispatch("unload",Map.of());generation++;scheduled.clear();periodic.clear();program=next;
+        platform.requireExecutionThread();
+        dispatch("unload",Map.of());generation++;scheduled.clear();periodic.clear();timed=List.of();periodicOrder=List.of();lastWorldTimes.clear();program=next;
+        List<Trigger> nextTimed=new ArrayList<>();
         Context defaults=new Context(this,Map.of(),new HashMap<>(),10000);
         for(File file:program.files.values())if(file.valid()){
             file.defaults().forEach((name,e)->{if(variables.get(name,defaults.locals)==null)variables.set(name,e.evaluate(defaults),defaults.locals);});
-            for(Trigger trigger:file.triggers())if(trigger.period()>0)periodic.put(trigger,tick+trigger.period());
+            for(Trigger trigger:file.triggers())if(trigger.period()>0)periodic.put(trigger,tick+trigger.period());else if(trigger.atTime()>=0)nextTimed.add(trigger);
         }
+        timed=List.copyOf(nextTimed);periodicOrder=List.copyOf(periodic.keySet());
+        if(!timed.isEmpty())platform.worldTimes().forEach((world,time)->lastWorldTimes.put(world,Math.floorMod(time-1,24000)));
         dispatch("load",Map.of());
     }
-    public void stop(){dispatch("unload",Map.of());generation++;scheduled.clear();periodic.clear();}
+    public void stop(){platform.requireExecutionThread();dispatch("unload",Map.of());generation++;scheduled.clear();periodic.clear();timed=List.of();periodicOrder=List.of();lastWorldTimes.clear();}
     public Map<String,Object> dispatch(String event,Map<String,Object> values){
+        platform.requireExecutionThread();
         if(dispatchDepth>=16)throw new IllegalStateException("Script event recursion exceeds 16");
         dispatchDepth++;
         try {
+            long currentGeneration=generation;
             Map<String,Object> state=new HashMap<>();state.put("cancelled",false);
-            for(File file:program.files.values())if(file.valid())for(Trigger trigger:file.triggers())if(trigger.event().equalsIgnoreCase(event))execute(trigger.body(),new Context(this,values,state,50000),trigger.source());
+            for(File file:program.files.values())if(file.valid())for(Trigger trigger:file.triggers()){
+                if(currentGeneration!=generation)return state;
+                if(trigger.event().equalsIgnoreCase(event))execute(trigger.body(),new Context(this,values,state,50000),trigger.source());
+            }
             return state;
         }finally{dispatchDepth--;}
     }
     public void tick(){
+        platform.requireExecutionThread();
         tick++;tickRemaining=250000;
-        for(var entry:periodic.entrySet())if(entry.getValue()<=tick){Trigger trigger=entry.getKey();entry.setValue(tick+trigger.period());execute(trigger.body(),new Context(this,Map.of(),new HashMap<>(),50000),trigger.source());}
+        long currentGeneration=generation;
+        if(!timed.isEmpty()&&tick%10==0)checkWorldTimes();
+        if(currentGeneration!=generation)return;
+        for(Trigger trigger:periodicOrder){
+            if(currentGeneration!=generation)return;
+            if(periodic.get(trigger)<=tick){periodic.put(trigger,tick+trigger.period());execute(trigger.body(),new Context(this,Map.of(),new HashMap<>(),50000),trigger.source());}
+        }
         int resumed=0;
         while(!scheduled.isEmpty()&&scheduled.peek().at<=tick&&resumed++<512&&tickRemaining>0){Task task=scheduled.poll();if(task.context.generation!=generation)continue;task.detached=true;task.context.remaining=50000;run(task);}
     }
+    /** Match the supplied Skript2.13.2 clock window, including day wrap and explicit time jumps. */
+    private void checkWorldTimes(){
+        long currentGeneration=generation;
+        Map<Values.WorldRef,Integer> current=platform.worldTimes();lastWorldTimes.keySet().retainAll(current.keySet());
+        current.forEach((world,raw)->{
+            if(currentGeneration!=generation)return;
+            int now=Math.floorMod(raw,24000),last=lastWorldTimes.getOrDefault(world,Math.floorMod(now-1,24000));
+            int elapsed=Math.floorMod(now-last,24000);if(elapsed==0)return;
+            if(elapsed>20){last=Math.floorMod(now-10,24000);elapsed=10;}
+            for(Trigger trigger:timed){if(currentGeneration!=generation)return;int delta=Math.floorMod(trigger.atTime()-last,24000);
+                if(delta>0&&delta<=elapsed)execute(trigger.body(),new Context(this,Map.of("world",world,"event-world",world),new HashMap<>(),50000),trigger.source());
+            }
+            if(currentGeneration==generation)lastWorldTimes.put(world,now);
+        });
+    }
     public Object call(String name,List<Object> arguments,Context parent){
-        Function fn=program.functions.get(name.toLowerCase(Locale.ROOT));if(fn==null)throw new IllegalArgumentException("Unavailable function: "+name);
+        return call(name,arguments,parent,"");
+    }
+    public Object call(String name,List<Object> arguments,Context parent,String sourceFile){
+        platform.requireExecutionThread();
+        Function fn=program.function(name,sourceFile);if(fn==null)throw new IllegalArgumentException("Unavailable function: "+name);
         if(arguments.size()!=fn.parameters().size())throw new IllegalArgumentException("Function "+name+" expects "+fn.parameters().size()+" arguments");
         if(parent.depth>=32)throw new IllegalStateException("Function call depth exceeds 32");
         Context context=new Context(this,parent.event,parent.eventState,parent.remaining);context.depth=parent.depth+1;context.delayed=parent.delayed;context.shareTransaction(parent);
@@ -62,8 +106,11 @@ public final class Engine {
     }
     private boolean validType(Object v,String type){return switch(type){case "text","string"->v instanceof String;case "number","integer"->v instanceof Number;case "boolean"->v instanceof Boolean;case "player"->platform.isPlayer(v);case "location"->v instanceof Values.Location;case "object"->true;default->true;};}
     public boolean command(Command command,Object sender,List<Object> arguments){
+        platform.requireExecutionThread();
         if(!command.permission().isBlank()&&!platform.hasPermission(sender,command.permission())){platform.send(sender,command.denied().isBlank()?"Missing permission: "+command.permission():command.denied());return false;}
-        if(command.executableBy().equalsIgnoreCase("players")&&!platform.isPlayer(sender))return false;
+        String executors=command.executableBy().strip().toLowerCase(Locale.ROOT);
+        if((executors.equals("players")||executors.equals("player"))&&!platform.isPlayer(sender))return false;
+        if(executors.equals("console")&&platform.isPlayer(sender))return false;
         if(arguments.size()<command.required()||arguments.size()>command.arguments().size())return false;
         Map<String,Object> event=new HashMap<>();event.put("sender",sender);if(platform.isPlayer(sender))event.put("player",sender);
         for(int i=0;i<arguments.size();i++)event.put("arg-"+(i+1),arguments.get(i));
@@ -74,11 +121,17 @@ public final class Engine {
         Context c=task.context;
         try{
             while(!task.frames.isEmpty()){
+                if(c.generation!=generation){finish(task);return;}
                 if(--tickRemaining<0)throw new IllegalStateException("Global script tick budget exceeded");c.consume();
                 Frame frame=task.frames.peek();Statement statement=frame.next(c);
                 if(statement==null){task.frames.pop();frame.close(c);continue;}
                 task.current=statement.source();platform.trace(task.current,statement.getClass().getSimpleName(),c);
                 if(statement instanceof Effect effect)effect.action().execute(c);
+                else if(statement instanceof Condition condition){
+                    Object value=condition.condition().evaluate(c);
+                    if(value!=null&&!(value instanceof Boolean))throw new IllegalArgumentException("Standalone condition must evaluate to a boolean");
+                    if(!Boolean.TRUE.equals(value))task.frames.pop().close(c);
+                }
                 else if(statement instanceof Branch branch){for(Arm arm:branch.arms())if(arm.condition()==null||Values.truth(arm.condition().evaluate(c))){task.frames.push(new BlockFrame(arm.body()));break;}}
                 else if(statement instanceof Loop loop){Map<String,Object> entries=new LinkedHashMap<>();
                     if(loop.variable()!=null&&loop.kind().equals("value")){String variable=c.text(loop.variable().evaluate(c));entries.putAll(variables.entries(variable,c.locals));}
@@ -126,7 +179,7 @@ public final class Engine {
         public void close(Context c){c.loops.clear();c.loops.putAll(previous);}
     }
     private static final class WhileFrame implements Frame {
-        private final While loop;WhileFrame(While loop){this.loop=loop;}
-        public Statement next(Context c){return Values.truth(loop.condition().evaluate(c))?new Branch(List.of(new Arm(null,loop.body())),loop.source()):null;}
+        private final While loop;private boolean first=true;WhileFrame(While loop){this.loop=loop;}
+        public Statement next(Context c){boolean execute=first&&loop.doFirst()||Values.truth(loop.condition().evaluate(c));first=false;return execute?new Branch(List.of(new Arm(null,loop.body())),loop.source()):null;}
     }
 }

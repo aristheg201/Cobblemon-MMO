@@ -11,6 +11,7 @@ public final class CompactHud {
     private CompactHud(){}
     public static boolean active(){var client=MinecraftClient.getInstance();return FantasyHubClient.hudEnabled&&client.player!=null&&client.interactionManager!=null&&client.interactionManager.hasStatusBars()&&!client.options.hudHidden&&FantasyHubClient.state().has("schema");}
     public static boolean visible(String resource){return active()&&FantasyHubClient.options.visible(resource);}
+    public static boolean rpgExperience(){return active()&&ExperiencePresentation.rpg(FantasyHubClient.state());}
     public static int oxygenY(int vanillaY){
         if(!visible("mana"))return vanillaY;
         // Survival mods may already reserve a row for thirst. Clamp above mana

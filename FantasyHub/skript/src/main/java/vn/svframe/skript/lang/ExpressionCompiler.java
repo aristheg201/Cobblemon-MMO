@@ -12,8 +12,10 @@ public final class ExpressionCompiler {
     private final Set<String> functions;
     private final Map<String,String> options;
     private final Source source;
+    private final java.util.function.BiConsumer<String,Source> dependency;
     private int nesting;
-    public ExpressionCompiler(Platform platform,Set<String> functions,Map<String,String> options,Source source){this.platform=platform;this.functions=functions;this.options=options;this.source=source;}
+    public ExpressionCompiler(Platform platform,Set<String> functions,Map<String,String> options,Source source){this(platform,functions,options,source,(name,location)->{});}
+    public ExpressionCompiler(Platform platform,Set<String> functions,Map<String,String> options,Source source,java.util.function.BiConsumer<String,Source> dependency){this.platform=platform;this.functions=functions;this.options=options;this.source=source;this.dependency=dependency;}
     public Source source(){return source;}
     public String expand(String text){
         Matcher m=Pattern.compile("\\{@([^}]+)}").matcher(text);StringBuffer out=new StringBuffer();
@@ -27,6 +29,10 @@ public final class ExpressionCompiler {
     private Expression parse(String s){
         while(enclosed(s,'(',')'))s=s.substring(1,s.length()-1).strip();
         if(s.isEmpty())throw new Error(source,"Empty expression");
+        if(s.toLowerCase(Locale.ROOT).startsWith("the "))return compile(s.substring(4));
+        for(String[] alias:new String[][]{{" is greater than or equal to "," >= "},{" is less than or equal to "," <= "},{" is greater than "," > "},{" is less than "," < "}}){
+            int p=find(s,alias[0],false);if(p>=0)return compile(s.substring(0,p)+alias[1]+s.substring(p+alias[0].length()));
+        }
         for(String op:(s.toLowerCase(Locale.ROOT).startsWith("difference between ")||s.toLowerCase(Locale.ROOT).startsWith("distance between "))?List.<String>of():List.of(" or "," and ")){
             int p=find(s,op,false);if(p>=0){Expression a=compile(s.substring(0,p)),b=compile(s.substring(p+op.length()));
                 return op.equals(" or ")?c->Values.truth(a.evaluate(c))||Values.truth(b.evaluate(c)):c->Values.truth(a.evaluate(c))&&Values.truth(b.evaluate(c));}
@@ -64,6 +70,9 @@ public final class ExpressionCompiler {
         if(s.startsWith("\"")&&s.endsWith("\""))return template(s.substring(1,s.length()-1).replace("\"\"","\""));
         if(enclosed(s,'{','}'))return variable(s);
         String lower=s.toLowerCase(Locale.ROOT);
+        if(lower.matches("\\d{1,2}:\\d{2}")){Values.GameTime time=Values.GameTime.parse(lower);return c->time;}
+        if(lower.equals("time")&&platform.supportsProperty("time",false))return reference("time",c->c.event("world"));
+        if(lower.equals("event-world")||lower.equals("world"))return c->c.event("world");
         if(lower.equals("true")||lower.equals("false")){boolean value=Boolean.parseBoolean(lower);return c->value;}
         if(lower.equals("none")||lower.equals("nothing"))return c->null;
         if(lower.matches("[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)")){double value=Double.parseDouble(lower);return c->value;}
@@ -77,7 +86,8 @@ public final class ExpressionCompiler {
             String fn=call.group(1).toLowerCase(Locale.ROOT);List<Expression> args=call.group(2).isBlank()?List.of():split(call.group(2),",").stream().map(this::compile).toList();
             if(Set.of("round","floor","ceil","abs","sin","cos","sqrt","min","max").contains(fn))return c->{List<Object> a=args.stream().map(e->e.evaluate(c)).toList();if(a.isEmpty()||a.stream().anyMatch(Objects::isNull))return null;double v=Values.number(a.getFirst());return switch(fn){case "round"->(double)Math.round(v);case "floor"->Math.floor(v);case "ceil"->Math.ceil(v);case "abs"->Math.abs(v);case "sin"->Math.sin(Math.toRadians(v));case "cos"->Math.cos(Math.toRadians(v));case "sqrt"->Math.sqrt(v);case "min"->a.stream().mapToDouble(Values::number).min().orElse(v);default->a.stream().mapToDouble(Values::number).max().orElse(v);};};
             if(!functions.contains(fn)){Expression nativeCall=platform.compileExpression(s,this);if(nativeCall!=null)return nativeCall;throw new Error(source,"Unknown function "+fn);}
-            return c->c.engine.call(fn,args.stream().map(e->e.evaluate(c)).toList(),c);
+            dependency.accept(fn,source);
+            return c->c.engine.call(fn,args.stream().map(e->e.evaluate(c)).toList(),c,source.file());
         }
         int split=find(s," split at ",false);if(split>=0){Expression e=compile(s.substring(0,split)),sep=compile(s.substring(split+10));return c->Arrays.asList(c.text(e.evaluate(c)).split(Pattern.quote(c.text(sep.evaluate(c))),-1));}
         int parsed=find(s," parsed as ",false);if(parsed>=0){Expression e=compile(s.substring(0,parsed));String type=s.substring(parsed+11).toLowerCase(Locale.ROOT);if(!Set.of("number","integer","boolean","text","player","offline player").contains(type))throw new Error(source,"Unsupported parsed type "+type);return c->cast(e.evaluate(c),type,c);}
@@ -96,6 +106,7 @@ public final class ExpressionCompiler {
         if(lower.equals("damage"))return new Reference(){public Object evaluate(Context c){return c.eventState.getOrDefault("damage",c.event("damage"));}public void change(Context c,Object value,String mode){if(c.delayed||!c.event.containsKey("damage"))throw new IllegalStateException("Damage can only change during the damage event");double old=Values.number(evaluate(c)),amount=Values.number(value);double next=switch(mode){case "set"->amount;case "add"->old+amount;case "remove"->old-amount;default->throw new IllegalArgumentException(mode);};if(!Double.isFinite(next)||next<0)throw new IllegalArgumentException("Invalid event damage");c.eventState.put("damage",next);}};
         if(Set.of("player","sender","command sender","victim","attacker","entity","event-entity","event-player","event-item","event-inventory","event-block","block","command","full command","inventory","clicked inventory","clicked slot","damage","death message").contains(lower))return c->c.event(lower.equals("command sender")?"sender":lower);
         if(lower.equals("all players")||lower.equals("players"))return c->platform.property("all players",null,c);
+        if(lower.equals("all worlds")||lower.equals("worlds"))return c->platform.property("all worlds",null,c);
         Expression nativeExpr=platform.compileExpression(s,this);if(nativeExpr!=null)return nativeExpr;
         // Natural properties are explicit and platform-validated during loading.
         int of=find(s," of ",false);

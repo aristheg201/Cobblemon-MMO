@@ -1,0 +1,19 @@
+{
+  "original_skript_damages_wild_pokemon": true,
+  "wildHealthBefore": 25.0,
+  "wildHealthAfter": 20.0,
+  "original_skript_preserves_owned_health": true,
+  "original_skript_preserves_owner": true,
+  "actual_formal_battle_started": true,
+  "original_skript_preserves_battle_health": true,
+  "battle_remains_active_after_script": true,
+  "battleHealthBefore": 10.0,
+  "battleHealthAfter": 10.0,
+  "bystanderHealthBefore": 26.0,
+  "bystanderHealthAfter": 26.0,
+  "battle_trainer_cannot_cast_overworld_damage": true,
+  "battle_trainer_blocks_damage": true,
+  "battle_trainer_blocks_heal": true,
+  "battle_trainer_blocks_status": true,
+  "battle_trainer_blocks_movement": true
+}

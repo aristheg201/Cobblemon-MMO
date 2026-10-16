@@ -2,7 +2,6 @@ package vn.svframe.svframemmo.experience.vanilla;
 
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import vn.svframe.svframelib.config.YamlLite;
@@ -18,7 +17,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** Implements death EXP loss, optional vanilla EXP mirroring and explicit RPG EXP-bar takeover. */
+/** RPG EXP mirroring and death loss. Presentation never owns Minecraft's spendable EXP. */
 public final class VanillaProgressionRuntime {
     private static final Logger LOG = Logger.getLogger("SVFrameMMO-VanillaEXP");
     private static final VanillaProgressionRuntime INSTANCE = new VanillaProgressionRuntime();
@@ -40,17 +39,17 @@ public final class VanillaProgressionRuntime {
         reloadSettings();
         if (settings.redirectEnabled)
             SVFrameMMO.playerData().get(player).giveExperience(amount * settings.redirectRatio, EXPSource.VANILLA);
-        if (settings.displayMode == DisplayMode.MMO) {
-            sync(player);
-            return true;
-        }
+        // addExperience must always complete, including with the MMO HUD selected.
+        // Enchanting, anvils, mending and death drops use the native fields.
         return false;
     }
 
     public boolean suppressDeathVanillaXp() {
-        reloadSettings();
-        return settings.displayMode == DisplayMode.MMO;
+        return false;
     }
+
+    /** Semantic HUD preference; only the presentation client uses this value. */
+    public String experienceDisplayMode() { return settings.displayMode.name(); }
 
     private void onDeath(ServerPlayerEntity player) {
         reloadSettings();
@@ -63,20 +62,6 @@ public final class VanillaProgressionRuntime {
     private void tick(MinecraftServer server) {
         if ((SVFrameMMO.currentTick() & 7L) != 0L) return;
         reloadSettings();
-        if (settings.displayMode != DisplayMode.MMO) return;
-        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) sync(player);
-    }
-
-    private void sync(ServerPlayerEntity player) {
-        var data = SVFrameMMO.playerData().get(player);
-        int level = data.getLevel();
-        long required = Math.max(1L, data.getLevelUpExperience());
-        float progress = (float) Math.max(0d, Math.min(1d, data.getExperience() / required));
-        player.experienceLevel = level;
-        player.experienceProgress = progress;
-        player.totalExperience = Math.max(0, level);
-        if (player.networkHandler != null)
-            player.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(progress, level, player.totalExperience));
     }
 
     private synchronized void reloadSettings() {
@@ -92,7 +77,7 @@ public final class VanillaProgressionRuntime {
             Map<String, Object> display = map(root.get("vanilla-exp-display"));
             Map<String, Object> death = map(root.get("death-exp-loss"));
             if (display.isEmpty() && bool(root.get("override-vanilla-exp"), false)) {
-                LOG.warning("Ignoring legacy override-vanilla-exp=true; use vanilla-exp-display.mode: MMO for an explicit XP-bar takeover.");
+                LOG.warning("Ignoring legacy override-vanilla-exp=true; vanilla-exp-display.mode only selects client HUD presentation.");
             }
             settings = new Settings(
                     bool(redirect.get("enabled"), false),

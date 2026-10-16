@@ -12,22 +12,39 @@ public final class Parser {
     private record Node(Source source,int indent,List<Node> children){}
     private final Platform platform;
     private Set<String> functions=Set.of();
+    private final Map<String,List<Diagnostic>> calls=new HashMap<>();
+    private ExpressionCompiler compiler(Map<String,String> options,Source source){
+        return new ExpressionCompiler(platform,functions,options,source,(name,location)->calls.computeIfAbsent(location.file(),ignored->new ArrayList<>()).add(new Diagnostic(location,name)));
+    }
+    private Expression condition(ExpressionCompiler compiler,String text){
+        if(Set.of("true","false").contains(normalize(text)))throw new Error(compiler.source(),"Literal booleans require a comparison condition, as in true is true");
+        return compiler.compile(text);
+    }
     public Parser(Platform platform){this.platform=platform;}
     public Program compile(Map<String,String> sources){
-        Set<String> names=new HashSet<>();Map<String,List<Node>> trees=new LinkedHashMap<>();Map<String,List<Diagnostic>> diagnostics=new LinkedHashMap<>();
+        calls.clear();Set<String> names=new HashSet<>();Map<String,Set<String>> locals=new HashMap<>();
+        Map<String,List<Source>> globals=new HashMap<>();Map<String,List<Node>> trees=new LinkedHashMap<>();Map<String,List<Diagnostic>> diagnostics=new LinkedHashMap<>();
         sources.forEach((name,text)->{
             List<Diagnostic> errors=new ArrayList<>();List<Node> tree=tree(name,text,errors);trees.put(name,tree);diagnostics.put(name,errors);
-            for(Node n:tree){Matcher m=Pattern.compile("(?i)^(?:local )?function ([\\w]+)\\(.*").matcher(n.source.text());if(m.matches())names.add(m.group(1).toLowerCase(Locale.ROOT));}
-        });functions=Set.copyOf(names);
+            Set<String> declared=new HashSet<>();
+            for(Node n:tree){Matcher m=Pattern.compile("(?i)^(local )?function ([\\w]+)\\(.*").matcher(n.source.text());if(m.matches()){
+                String fn=m.group(2).toLowerCase(Locale.ROOT);
+                if(!declared.add(fn))errors.add(new Diagnostic(n.source,"Duplicate function in source file: "+fn));
+                if(m.group(1)!=null)locals.computeIfAbsent(name,ignored->new HashSet<>()).add(fn);
+                else {names.add(fn);globals.computeIfAbsent(fn,ignored->new ArrayList<>()).add(n.source);}
+            }}
+        });
+        globals.forEach((name,definitions)->{if(definitions.size()>1)for(Source source:definitions)diagnostics.get(source.file()).add(new Diagnostic(source,"Duplicate global function: "+name));});
         Map<String,File> files=new LinkedHashMap<>();
-        trees.forEach((name,nodes)->files.put(name,file(name,nodes,diagnostics.get(name))));
+        trees.forEach((name,nodes)->{Set<String> visible=new HashSet<>(names);visible.addAll(locals.getOrDefault(name,Set.of()));functions=Set.copyOf(visible);files.put(name,file(name,nodes,diagnostics.get(name)));});
         // Reject callers of functions whose entire source file failed, including indirect dependencies.
         boolean changed;
         do {
-            changed=false;Set<String> available=new HashSet<>();files.values().stream().filter(File::valid).forEach(f->f.functions().forEach(fn->available.add(fn.name().toLowerCase(Locale.ROOT))));
+            changed=false;Set<String> available=new HashSet<>();files.values().stream().filter(File::valid).forEach(f->f.functions().stream().filter(fn->!fn.local()).forEach(fn->available.add(fn.name().toLowerCase(Locale.ROOT))));
             for(var entry:new ArrayList<>(files.entrySet())){
                 File f=entry.getValue();if(!f.valid())continue;List<Diagnostic> errors=new ArrayList<>();
-                for(Node n:flatten(trees.get(entry.getKey()))){Matcher m=Pattern.compile("(?<![\\w.])([A-Za-z_][\\w]*)\\(").matcher(n.source.text());while(m.find()){String fn=m.group(1).toLowerCase(Locale.ROOT);if(functions.contains(fn)&&!available.contains(fn))errors.add(new Diagnostic(n.source,"Function unavailable because its source did not compile: "+fn));}}
+                Set<String> visible=new HashSet<>(available);visible.addAll(locals.getOrDefault(entry.getKey(),Set.of()));
+                for(Diagnostic call:calls.getOrDefault(entry.getKey(),List.of()))if(!visible.contains(call.message()))errors.add(new Diagnostic(call.source(),"Function unavailable because its source did not compile: "+call.message()));
                 if(!errors.isEmpty()){files.put(entry.getKey(),new File(f.name(),f.functions(),f.commands(),f.triggers(),errors,f.defaults(),f.options()));changed=true;}
             }
         }while(changed);
@@ -52,15 +69,15 @@ public final class Parser {
         Map<String,String> options=new LinkedHashMap<>();List<Function> fns=new ArrayList<>();List<Command> commands=new ArrayList<>();List<Trigger> triggers=new ArrayList<>();Map<String,Expression> defaults=new LinkedHashMap<>();
         for(Node n:roots)if(n.source.text().equalsIgnoreCase("options:"))for(Node child:n.children){int p=child.source.text().indexOf(':');if(p<1)errors.add(new Diagnostic(child.source,"Option requires name: value"));else options.put(child.source.text().substring(0,p).strip().toLowerCase(Locale.ROOT),child.source.text().substring(p+1).strip());}
         for(Node n:roots){
-            String s=n.source.text();ExpressionCompiler ec=new ExpressionCompiler(platform,functions,options,n.source);
+            String s=n.source.text();ExpressionCompiler ec=compiler(options,n.source);
             try{
                 if(s.equalsIgnoreCase("options:"))continue;
                 if(s.equalsIgnoreCase("import:")){for(Node child:n.children)if(!platform.supportsImport(child.source.text()))errors.add(new Diagnostic(child.source,"No native adapter for import "+child.source.text()));continue;}
-                if(s.equalsIgnoreCase("variables:")){for(Node child:n.children){int p=find(child.source.text()," = ",false);if(p<0)throw new Error(child.source,"Variable default requires =");String key=child.source.text().substring(0,p).strip();if(!enclosed(key,'{','}'))throw new Error(child.source,"Invalid variable default");defaults.put(key.substring(1,key.length()-1),new ExpressionCompiler(platform,functions,options,child.source).compile(child.source.text().substring(p+3)));}continue;}
+                if(s.equalsIgnoreCase("variables:")){for(Node child:n.children){int p=find(child.source.text()," = ",false);if(p<0)throw new Error(child.source,"Variable default requires =");String key=child.source.text().substring(0,p).strip();if(!enclosed(key,'{','}'))throw new Error(child.source,"Invalid variable default");defaults.put(key.substring(1,key.length()-1),compiler(options,child.source).compile(child.source.text().substring(p+3)));}continue;}
                 Matcher fn=Pattern.compile("(?i)^(?:local )?function ([\\w]+)\\((.*)\\)(?: :: ([\\w ]+))?:$").matcher(s);
                 if(fn.matches()){
                     List<Parameter> args=new ArrayList<>();if(!fn.group(2).isBlank())for(String arg:split(fn.group(2),",")){int p=arg.indexOf(':');if(p<1)throw new Error(n.source,"Function parameter requires name: type");args.add(new Parameter(arg.substring(0,p).strip(),arg.substring(p+1).strip().toLowerCase(Locale.ROOT)));}
-                    fns.add(new Function(fn.group(1),args,Objects.toString(fn.group(3),"void"),block(n.children,options,errors),n.source));continue;
+                    fns.add(new Function(fn.group(1),args,Objects.toString(fn.group(3),"void"),block(n.children,options,errors),n.source,s.toLowerCase(Locale.ROOT).startsWith("local ")));continue;
                 }
                 Matcher cmd=Pattern.compile("(?i)^command /([^ \\[<:]+)(.*):$").matcher(s);
                 if(cmd.matches()){
@@ -77,6 +94,10 @@ public final class Parser {
                     if(!(value instanceof Values.Span span)||span.milliseconds()<=0)throw new Error(n.source,"Periodic interval must be a positive fixed duration");
                     triggers.add(new Trigger("periodic",span.ticks(),block(n.children,options,errors),n.source));continue;
                 }
+                Matcher at=Pattern.compile("(?i)^at (\\d{1,2}:\\d{2}):$").matcher(s);
+                if(at.matches()){
+                    triggers.add(new Trigger("world time",0,block(n.children,options,errors),n.source,Values.GameTime.parse(at.group(1)).ticks()));continue;
+                }
                 if(s.toLowerCase(Locale.ROOT).startsWith("on ")&&s.endsWith(":")){
                     String event=normalize(s.substring(3,s.length()-1));if(event.equals("script load"))event="load";if(event.equals("script unload"))event="unload";
                     if(!platform.supportsEvent(event))throw new Error(n.source,"Unsupported event: "+event);triggers.add(new Trigger(event,0,block(n.children,options,errors),n.source));continue;
@@ -89,13 +110,13 @@ public final class Parser {
     private List<Statement> block(List<Node> nodes,Map<String,String> options,List<Diagnostic> errors){
         List<Statement> out=new ArrayList<>();
         for(int i=0;i<nodes.size();i++){
-            Node n=nodes.get(i);ExpressionCompiler ec=new ExpressionCompiler(platform,functions,options,n.source);String s=n.source.text(),lower=normalize(s);
+            Node n=nodes.get(i);ExpressionCompiler ec=compiler(options,n.source);String s=n.source.text(),lower=normalize(s);
             try{
                 if(lower.startsWith("if ")&&s.endsWith(":")){
-                    List<Arm> arms=new ArrayList<>();arms.add(new Arm(ec.compile(s.substring(3,s.length()-1)),block(n.children,options,errors)));
+                    List<Arm> arms=new ArrayList<>();arms.add(new Arm(condition(ec,s.substring(3,s.length()-1)),block(n.children,options,errors)));
                     while(i+1<nodes.size()&&normalize(nodes.get(i+1).source.text()).startsWith("else")){
                         Node branch=nodes.get(++i);String t=branch.source.text();Expression condition;
-                        if(t.equalsIgnoreCase("else:"))condition=null;else if(t.toLowerCase(Locale.ROOT).startsWith("else if ")&&t.endsWith(":"))condition=new ExpressionCompiler(platform,functions,options,branch.source).compile(t.substring(8,t.length()-1));else throw new Error(branch.source,"Invalid else section");
+                        if(t.equalsIgnoreCase("else:"))condition=null;else if(t.toLowerCase(Locale.ROOT).startsWith("else if ")&&t.endsWith(":"))condition=condition(compiler(options,branch.source),t.substring(8,t.length()-1));else throw new Error(branch.source,"Invalid else section");
                         arms.add(new Arm(condition,block(branch.children,options,errors)));if(condition==null)break;
                     }out.add(new Branch(arms,n.source));continue;
                 }
@@ -105,7 +126,8 @@ public final class Parser {
                     else {values=ec.compile(value);if(value.equalsIgnoreCase("all players"))kind="player";if(enclosed(value,'{','}'))count=ec.template(value.substring(1,value.length()-1));}
                     out.add(new Loop(values,count,kind,block(n.children,options,errors),n.source));continue;
                 }
-                if(lower.startsWith("while ")&&s.endsWith(":")){out.add(new While(ec.compile(s.substring(6,s.length()-1)),block(n.children,options,errors),n.source));continue;}
+                if(lower.startsWith("while ")&&s.endsWith(":")){out.add(new While(condition(ec,s.substring(6,s.length()-1)),block(n.children,options,errors),n.source));continue;}
+                if(lower.startsWith("do while ")&&s.endsWith(":")){out.add(new While(condition(ec,s.substring(9,s.length()-1)),block(n.children,options,errors),n.source,true));continue;}
                 if(lower.startsWith("wait ")){out.add(new Wait(ec.compile(s.substring(5)),n.source));continue;}
                 if(lower.equals("stop")||lower.equals("stop trigger")){out.add(new Stop(n.source));continue;}
                 if(lower.equals("exit loop")||lower.equals("stop loop")){out.add(new Exit(n.source));continue;}
@@ -113,7 +135,11 @@ public final class Parser {
                 if(lower.equals("return")){out.add(new Return(c->null,n.source));continue;}
                 if(lower.startsWith("return ")){out.add(new Return(ec.compile(s.substring(7)),n.source));continue;}
                 if(!n.children.isEmpty())throw new Error(n.source,"Unsupported section: "+s);
-                out.add(new Effect(effect(s,ec),n.source));
+                try{out.add(new Effect(effect(s,ec),n.source));}
+                catch(Error effectFailure){
+                    if(Pattern.compile("(?i)^.+ (?:is|is not|has permission|does not have permission|contains|does not contain) .+$").matcher(s).matches())out.add(new Condition(condition(ec,s),n.source));
+                    else throw effectFailure;
+                }
             }catch(Error failure){errors.add(new Diagnostic(failure.source,failure.getMessage()));}
         }
         return List.copyOf(out);

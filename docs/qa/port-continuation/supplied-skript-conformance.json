@@ -1,0 +1,1587 @@
+{
+  "format": 1,
+  "files": [
+    {
+      "file": "-excluded-by-user/config2/sv_ashes_boss_controller.sk",
+      "sha256": "488d56b8a2d838934eaefd771a681bc3c8d80f6c7ff1f97ed029c4fedd63275b",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_ashes_no_vanilla.sk",
+      "sha256": "e6f0e3a166ffac18deddbd6f7b760ac3823c883b4b993971d6f43535d898ce8f",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_ashes_spawner.sk",
+      "sha256": "27395827a7ace9fbc39a707a11e42fc7bb86f790e7754a6c7809ed4afc23c7c7",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_clan_policy.sk",
+      "sha256": "447865c8ead0b8d909143b39d468b75a934882d4f1b88c2af086ec1f56c076cf",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_commandblock_tp_bridge.sk",
+      "sha256": "bf67639aa80495eaab4689fe3570ddfe6d5a06fdcb8b9b98c69ef8d83e699c70",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_daedric_model_cosmetic.sk",
+      "sha256": "ecced83182d75e120c082aa16cf6945cf52d6d0e2db6252b2d2370ece5cbf6dc",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_death_penalty.sk",
+      "sha256": "dfae4a9c0565fa0ac945024e0529e28d8c246faf7725cd369a2986b16296d489",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_dungeon_policy.sk",
+      "sha256": "27ab63d2f3449996576317e582b98994e166439720099047e95360ef8c90f276",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_essence_normalizer.sk",
+      "sha256": "7c26fb105a84d866e32f142894e7cd523f741ef433286cad33cb8250500263a1",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_giftcode.sk",
+      "sha256": "1f0b8d9abb5f7d79fa838fd19f4e50c3e24e3c3bf113cdc792885a0a51ca470f",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_gui_exploit_guard.sk",
+      "sha256": "a13462e68ff7ebc20535b3b50d556aa1c928ee6b58d1fdd3a430d63fa5d1b645",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_hat_equip.sk",
+      "sha256": "5f20d6b98e3a5919455faa9b7bce28d20de640979af31a316f3d16d8de46a90c",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_menu_wrappers.sk",
+      "sha256": "38503764d84a7867dfb9df36d6f45c953cefc10acfdd0e8d6ff925b686c7a69c",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_new_player_spawn_fix.sk",
+      "sha256": "6c49bcbf1f7f046afa5a1a79f932174ea8eda37897fcb1a409180144f0cca02d",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_point_exchange.sk",
+      "sha256": "2d9f60d25f45c8f9c450257d969fce0ff499bf2a4a14014bf700ba3d82cbcebc",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "No native adapter for import org.black_ixx.playerpoints.PlayerPoints",
+          "syntax": "org.black_ixx.playerpoints.PlayerPoints",
+          "line": 15
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_point_exchange.sk:18: Native API method unavailable: getAPI",
+          "syntax": "return PlayerPoints.getInstance().getAPI()",
+          "line": 18
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_point_exchange.sk:24: Native API method unavailable: look",
+          "syntax": "return {_api}.look({_p}.getUniqueId())",
+          "line": 24
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_point_exchange.sk:30: Native API method unavailable: take",
+          "syntax": "return {_api}.take({_p}.getUniqueId(), {_amount}.intValue())",
+          "line": 30
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_point_exchange.sk:36: Native API method unavailable: give",
+          "syntax": "return {_api}.give({_p}.getUniqueId(), {_amount}.intValue())",
+          "line": 36
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "No native adapter for import org.black_ixx.playerpoints.PlayerPoints",
+          "syntax": "org.black_ixx.playerpoints.PlayerPoints",
+          "line": 15
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_point_exchange.sk:18: Native API method unavailable: getAPI",
+          "syntax": "return PlayerPoints.getInstance().getAPI()",
+          "line": 18
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_point_exchange.sk:24: Native API method unavailable: look",
+          "syntax": "return {_api}.look({_p}.getUniqueId())",
+          "line": 24
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_point_exchange.sk:30: Native API method unavailable: take",
+          "syntax": "return {_api}.take({_p}.getUniqueId(), {_amount}.intValue())",
+          "line": 30
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_point_exchange.sk:36: Native API method unavailable: give",
+          "syntax": "return {_api}.give({_p}.getUniqueId(), {_amount}.intValue())",
+          "line": 36
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_rpg_world_lock.sk",
+      "sha256": "0b4d543e80df70616044e3b1d48b742bd7830595634af503f23a95b9a34ee37b",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_security_command_guard.sk",
+      "sha256": "53fe1966be339f731bceb9ec1cc67de3579234e076292b33b4e25b4807759c02",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_shop_sell_limit.sk",
+      "sha256": "55b7f0612bdc130bc1c9331fcff4efbe8227cce82733258a65e3f6806913ad76",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "No native adapter for import net.brcdev.shopgui.event.ShopPreTransactionEvent",
+          "syntax": "net.brcdev.shopgui.event.ShopPreTransactionEvent",
+          "line": 7
+        },
+        {
+          "error": "No native adapter for import net.brcdev.shopgui.event.ShopPostTransactionEvent",
+          "syntax": "net.brcdev.shopgui.event.ShopPostTransactionEvent",
+          "line": 8
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_shop_sell_limit.sk:37: Unsupported event: shoppretransactionevent",
+          "syntax": "on ShopPreTransactionEvent:",
+          "line": 37
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_shop_sell_limit.sk:54: Unsupported event: shopposttransactionevent",
+          "syntax": "on ShopPostTransactionEvent:",
+          "line": 54
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "No native adapter for import net.brcdev.shopgui.event.ShopPreTransactionEvent",
+          "syntax": "net.brcdev.shopgui.event.ShopPreTransactionEvent",
+          "line": 7
+        },
+        {
+          "error": "No native adapter for import net.brcdev.shopgui.event.ShopPostTransactionEvent",
+          "syntax": "net.brcdev.shopgui.event.ShopPostTransactionEvent",
+          "line": 8
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_shop_sell_limit.sk:37: Unsupported event: shoppretransactionevent",
+          "syntax": "on ShopPreTransactionEvent:",
+          "line": 37
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_shop_sell_limit.sk:54: Unsupported event: shopposttransactionevent",
+          "syntax": "on ShopPostTransactionEvent:",
+          "line": 54
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_skyrim_portal.sk",
+      "sha256": "e9edf72419b14acbeaae3b48a1a0f00c6a89a1fd371d048e6a0f4a66a9029213",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_stable_routes.sk",
+      "sha256": "6eaa158ad8683abc93bb651982f4b3a653e3e5015ee4f3d144c13fd64df7aa9a",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_testdungeon_return.sk",
+      "sha256": "7218d0db97f17da85e8e3b2f7b1f745183c791186848276f857ee16a079b980f",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_transactions.sk",
+      "sha256": "1ff329b4472b5cc864c8489fbaeb433f636cfa3e786562816f4484b6ca16dc3c",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "No native adapter for import org.black_ixx.playerpoints.PlayerPoints",
+          "syntax": "org.black_ixx.playerpoints.PlayerPoints",
+          "line": 10
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_transactions.sk:13: Native API method unavailable: getAPI",
+          "syntax": "return PlayerPoints.getInstance().getAPI()",
+          "line": 13
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_transactions.sk:19: Native API method unavailable: look",
+          "syntax": "return {_api}.look({_p}.getUniqueId())",
+          "line": 19
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_transactions.sk:25: Native API method unavailable: take",
+          "syntax": "return {_api}.take({_p}.getUniqueId(), {_amount}.intValue())",
+          "line": 25
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_transactions.sk:31: Native API method unavailable: give",
+          "syntax": "return {_api}.give({_p}.getUniqueId(), {_amount}.intValue())",
+          "line": 31
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "No native adapter for import org.black_ixx.playerpoints.PlayerPoints",
+          "syntax": "org.black_ixx.playerpoints.PlayerPoints",
+          "line": 10
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_transactions.sk:13: Native API method unavailable: getAPI",
+          "syntax": "return PlayerPoints.getInstance().getAPI()",
+          "line": 13
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_transactions.sk:19: Native API method unavailable: look",
+          "syntax": "return {_api}.look({_p}.getUniqueId())",
+          "line": 19
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_transactions.sk:25: Native API method unavailable: take",
+          "syntax": "return {_api}.take({_p}.getUniqueId(), {_amount}.intValue())",
+          "line": 25
+        },
+        {
+          "error": "-excluded-by-user/config2/sv_transactions.sk:31: Native API method unavailable: give",
+          "syntax": "return {_api}.give({_p}.getUniqueId(), {_amount}.intValue())",
+          "line": 31
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_wardrobe_exit.sk",
+      "sha256": "a366a67fff161dd11b23421deca5d71f36e5498c57714947c15810cb8642fefd",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_wolven_set_bonus.sk",
+      "sha256": "074156fcbb1be87d885249130769a7f619f08668e0cc3a5c637b05d965a86024",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "-excluded-by-user/config2/sv_worldboss_season1.sk",
+      "sha256": "0e7c9c80979bf36416acba037e59139c44ba9cccdc772fbcecd3df248c5b598a",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "amk/sv_anti_mage_knight.sk",
+      "sha256": "ad024a1bd5b37b4d3ed8250a6af83ee8fab00f64cc9b4e83ed61528aaad60e97",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/-examples/chest menus.sk",
+      "sha256": "4c34c57ab64f075db07611d35351cb88661da9a8f38e00700c533900b440cfd4",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "config2/-examples/chest menus.sk:10: Unsupported expression: a new chest inventory",
+          "syntax": "set {_chest} to a new chest inventory named \"Simple Chest\"",
+          "line": 10
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:11: Unsupported expression: slot 0 of {_chest}",
+          "syntax": "set slot 0 of {_chest} to apple",
+          "line": 11
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:12: Unsupported effect: open {_chest} to player",
+          "syntax": "open {_chest} to player",
+          "line": 12
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:22: Unsupported expression: a new chest inventory with 1 row",
+          "syntax": "set {_menu} to a new chest inventory with 1 row named \"Simple Menu\"",
+          "line": 22
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:23: Unsupported expression: slot 4 of {_menu}",
+          "syntax": "set slot 4 of {_menu} to stone named \"Button\"",
+          "line": 23
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:24: Unsupported effect: open {_menu} to player",
+          "syntax": "open {_menu} to player",
+          "line": 24
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:29: Unsupported expression: index of event-slot",
+          "syntax": "if index of event-slot is 4:",
+          "line": 29
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:31: Unsupported section: else:",
+          "syntax": "else:",
+          "line": 31
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:39: Unsupported top-level declaration: aliases:",
+          "syntax": "aliases:",
+          "line": 39
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:43: Unsupported expression: a new chest inventory with {_rows} rows with name {_name}",
+          "syntax": "set {_gui} to a new chest inventory with {_rows} rows with name {_name}",
+          "line": 43
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:45: Unsupported expression: slot loop-number",
+          "syntax": "set slot loop-number - 1 of {_gui} to random item out of menu items",
+          "line": 45
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:53: Unsupported effect: open {_menu} to player",
+          "syntax": "open {_menu} to player",
+          "line": 53
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:58: Unsupported expression: index of event-slot",
+          "syntax": "send \"You clicked slot %index of event-slot%!\"",
+          "line": 58
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "config2/-examples/chest menus.sk:10: Unsupported expression: a new chest inventory",
+          "syntax": "set {_chest} to a new chest inventory named \"Simple Chest\"",
+          "line": 10
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:11: Unsupported expression: slot 0 of {_chest}",
+          "syntax": "set slot 0 of {_chest} to apple",
+          "line": 11
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:12: Unsupported effect: open {_chest} to player",
+          "syntax": "open {_chest} to player",
+          "line": 12
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:22: Unsupported expression: a new chest inventory with 1 row",
+          "syntax": "set {_menu} to a new chest inventory with 1 row named \"Simple Menu\"",
+          "line": 22
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:23: Unsupported expression: slot 4 of {_menu}",
+          "syntax": "set slot 4 of {_menu} to stone named \"Button\"",
+          "line": 23
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:24: Unsupported effect: open {_menu} to player",
+          "syntax": "open {_menu} to player",
+          "line": 24
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:29: Unsupported expression: index of event-slot",
+          "syntax": "if index of event-slot is 4:",
+          "line": 29
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:31: Unsupported section: else:",
+          "syntax": "else:",
+          "line": 31
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:39: Unsupported top-level declaration: aliases:",
+          "syntax": "aliases:",
+          "line": 39
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:43: Unsupported expression: a new chest inventory with {_rows} rows with name {_name}",
+          "syntax": "set {_gui} to a new chest inventory with {_rows} rows with name {_name}",
+          "line": 43
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:45: Unsupported expression: slot loop-number",
+          "syntax": "set slot loop-number - 1 of {_gui} to random item out of menu items",
+          "line": 45
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:53: Unsupported effect: open {_menu} to player",
+          "syntax": "open {_menu} to player",
+          "line": 53
+        },
+        {
+          "error": "config2/-examples/chest menus.sk:58: Unsupported expression: index of event-slot",
+          "syntax": "send \"You clicked slot %index of event-slot%!\"",
+          "line": 58
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/-examples/commands.sk",
+      "sha256": "5d2d7006dc4d0593954d63d84a442b79ac45b2176caba2ce609b41acbf0ed4e5",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "config2/-examples/commands.sk:11: Unsupported expression: arg-text",
+          "syntax": "broadcast arg-text",
+          "line": 11
+        },
+        {
+          "error": "config2/-examples/commands.sk:50: Unsupported top-level declaration: aliases:",
+          "syntax": "aliases:",
+          "line": 50
+        },
+        {
+          "error": "config2/-examples/commands.sk:60: Unsupported command property: cooldown",
+          "syntax": "cooldown: 30 seconds",
+          "line": 60
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "config2/-examples/commands.sk:11: Unsupported expression: arg-text",
+          "syntax": "broadcast arg-text",
+          "line": 11
+        },
+        {
+          "error": "config2/-examples/commands.sk:50: Unsupported top-level declaration: aliases:",
+          "syntax": "aliases:",
+          "line": 50
+        },
+        {
+          "error": "config2/-examples/commands.sk:60: Unsupported command property: cooldown",
+          "syntax": "cooldown: 30 seconds",
+          "line": 60
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/-examples/events.sk",
+      "sha256": "dc78db649f823310415f316e27a1abb708f06a475a770f7ca3833121cb60d1b7",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "config2/-examples/events.sk:8: Unsupported expression: join message",
+          "syntax": "set the join message to \"Oh look, %player% joined! :)\"",
+          "line": 8
+        },
+        {
+          "error": "config2/-examples/events.sk:11: Unsupported expression: quit message",
+          "syntax": "set the quit message to \"Oh no, %player% left! :(\"",
+          "line": 11
+        },
+        {
+          "error": "config2/-examples/events.sk:21: Unsupported effect: cancel the event",
+          "syntax": "cancel the event",
+          "line": 21
+        },
+        {
+          "error": "config2/-examples/events.sk:33: Unsupported top-level declaration: aliases:",
+          "syntax": "aliases:",
+          "line": 33
+        },
+        {
+          "error": "config2/-examples/events.sk:37: Unsupported expression: event-slot",
+          "syntax": "event-slot is the helmet slot of player",
+          "line": 37
+        },
+        {
+          "error": "config2/-examples/events.sk:38: Unsupported expression: inventory action",
+          "syntax": "inventory action is place all or nothing",
+          "line": 38
+        },
+        {
+          "error": "config2/-examples/events.sk:40: Unsupported expression: cursor slot of player",
+          "syntax": "cursor slot of player is custom helmets",
+          "line": 40
+        },
+        {
+          "error": "config2/-examples/events.sk:41: Unsupported effect: cancel the event",
+          "syntax": "cancel the event",
+          "line": 41
+        },
+        {
+          "error": "config2/-examples/events.sk:43: Unsupported expression: cursor slot of player",
+          "syntax": "set the helmet of player to the cursor slot of player",
+          "line": 43
+        },
+        {
+          "error": "config2/-examples/events.sk:44: Unsupported expression: cursor slot of player",
+          "syntax": "set the cursor slot of player to {_old helmet}",
+          "line": 44
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "config2/-examples/events.sk:8: Unsupported expression: join message",
+          "syntax": "set the join message to \"Oh look, %player% joined! :)\"",
+          "line": 8
+        },
+        {
+          "error": "config2/-examples/events.sk:11: Unsupported expression: quit message",
+          "syntax": "set the quit message to \"Oh no, %player% left! :(\"",
+          "line": 11
+        },
+        {
+          "error": "config2/-examples/events.sk:21: Unsupported effect: cancel the event",
+          "syntax": "cancel the event",
+          "line": 21
+        },
+        {
+          "error": "config2/-examples/events.sk:33: Unsupported top-level declaration: aliases:",
+          "syntax": "aliases:",
+          "line": 33
+        },
+        {
+          "error": "config2/-examples/events.sk:37: Unsupported expression: event-slot",
+          "syntax": "event-slot is the helmet slot of player",
+          "line": 37
+        },
+        {
+          "error": "config2/-examples/events.sk:38: Unsupported expression: inventory action",
+          "syntax": "inventory action is place all or nothing",
+          "line": 38
+        },
+        {
+          "error": "config2/-examples/events.sk:40: Unsupported expression: cursor slot of player",
+          "syntax": "cursor slot of player is custom helmets",
+          "line": 40
+        },
+        {
+          "error": "config2/-examples/events.sk:41: Unsupported effect: cancel the event",
+          "syntax": "cancel the event",
+          "line": 41
+        },
+        {
+          "error": "config2/-examples/events.sk:43: Unsupported expression: cursor slot of player",
+          "syntax": "set the helmet of player to the cursor slot of player",
+          "line": 43
+        },
+        {
+          "error": "config2/-examples/events.sk:44: Unsupported expression: cursor slot of player",
+          "syntax": "set the cursor slot of player to {_old helmet}",
+          "line": 44
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/-examples/experimental features/for loops.sk",
+      "sha256": "8aaf0542e15fb8fe4ee47c093536bcdf1987bfe35db9a940ee7bb7239e80e621",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "config2/-examples/experimental features/for loops.sk:1: Unsupported top-level declaration: using examples",
+          "syntax": "using examples",
+          "line": 1
+        },
+        {
+          "error": "config2/-examples/experimental features/for loops.sk:4: Unsupported top-level declaration: using for loops",
+          "syntax": "using for loops",
+          "line": 4
+        },
+        {
+          "error": "config2/-examples/experimental features/for loops.sk:7: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 7
+        },
+        {
+          "error": "config2/-examples/experimental features/for loops.sk:18: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 18
+        },
+        {
+          "error": "config2/-examples/experimental features/for loops.sk:31: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 31
+        },
+        {
+          "error": "config2/-examples/experimental features/for loops.sk:42: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 42
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "config2/-examples/experimental features/for loops.sk:1: Unsupported top-level declaration: using examples",
+          "syntax": "using examples",
+          "line": 1
+        },
+        {
+          "error": "config2/-examples/experimental features/for loops.sk:4: Unsupported top-level declaration: using for loops",
+          "syntax": "using for loops",
+          "line": 4
+        },
+        {
+          "error": "config2/-examples/experimental features/for loops.sk:7: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 7
+        },
+        {
+          "error": "config2/-examples/experimental features/for loops.sk:18: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 18
+        },
+        {
+          "error": "config2/-examples/experimental features/for loops.sk:31: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 31
+        },
+        {
+          "error": "config2/-examples/experimental features/for loops.sk:42: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 42
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/-examples/experimental features/queues.sk",
+      "sha256": "9a30e6f057f5b9eee8f3e53c3c1ae0754dc2c86c67b93a650404a96540273907",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "config2/-examples/experimental features/queues.sk:1: Unsupported top-level declaration: using examples",
+          "syntax": "using examples",
+          "line": 1
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:4: Unsupported top-level declaration: using queues",
+          "syntax": "using queues",
+          "line": 4
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:6: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 6
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:25: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 25
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:39: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 39
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:52: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 52
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:68: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 68
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:99: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 99
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:112: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 112
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:132: Unsupported top-level declaration: using for loops",
+          "syntax": "using for loops",
+          "line": 132
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:133: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 133
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:161: Unsupported expression: a queue",
+          "syntax": "set {advert messages} to a queue",
+          "line": 161
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:171: Unsupported expression: first element of {advert messages}",
+          "syntax": "set {_message} to the first element of {advert messages}",
+          "line": 171
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "config2/-examples/experimental features/queues.sk:1: Unsupported top-level declaration: using examples",
+          "syntax": "using examples",
+          "line": 1
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:4: Unsupported top-level declaration: using queues",
+          "syntax": "using queues",
+          "line": 4
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:6: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 6
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:25: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 25
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:39: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 39
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:52: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 52
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:68: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 68
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:99: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 99
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:112: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 112
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:132: Unsupported top-level declaration: using for loops",
+          "syntax": "using for loops",
+          "line": 132
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:133: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 133
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:161: Unsupported expression: a queue",
+          "syntax": "set {advert messages} to a queue",
+          "line": 161
+        },
+        {
+          "error": "config2/-examples/experimental features/queues.sk:171: Unsupported expression: first element of {advert messages}",
+          "syntax": "set {_message} to the first element of {advert messages}",
+          "line": 171
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/-examples/experimental features/script reflection.sk",
+      "sha256": "326df85e44b80c2aa720c1c53dfbf5f305a6137118680388beaff53caba63e9d",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:1: Unsupported top-level declaration: using examples",
+          "syntax": "using examples",
+          "line": 1
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:5: Unsupported top-level declaration: using script reflection",
+          "syntax": "using script reflection",
+          "line": 5
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:9: Unsupported top-level declaration: THE BASICS",
+          "syntax": "THE BASICS",
+          "line": 9
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:10: Unsupported top-level declaration: \u003d\u003d\u003d\u003d\u003d",
+          "syntax": "\u003d\u003d\u003d\u003d\u003d",
+          "line": 10
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:12: Unsupported top-level declaration: \u0027Reflection\u0027 is for something to look at itself (like in a mirror).",
+          "syntax": "\u0027Reflection\u0027 is for something to look at itself (like in a mirror).",
+          "line": 12
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:14: Unsupported top-level declaration: Script reflection is a collection of powerful tools for scripts to inspect themselves.",
+          "syntax": "Script reflection is a collection of powerful tools for scripts to inspect themselves.",
+          "line": 14
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:16: Unsupported top-level declaration: We can start with basic access to scripts.",
+          "syntax": "We can start with basic access to scripts.",
+          "line": 16
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:20: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 20
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:36: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 36
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:47: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 47
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:62: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 62
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:87: Unsupported top-level declaration: CONFIGS",
+          "syntax": "CONFIGS",
+          "line": 87
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:88: Unsupported top-level declaration: \u003d\u003d\u003d\u003d\u003d",
+          "syntax": "\u003d\u003d\u003d\u003d\u003d",
+          "line": 88
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:90: Unsupported top-level declaration: There are also tools provided for reading Skript\u0027s built-in configuration files.",
+          "syntax": "There are also tools provided for reading Skript\u0027s built-in configuration files.",
+          "line": 90
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:91: Unsupported top-level declaration: These allow you to check values from these files.",
+          "syntax": "These allow you to check values from these files.",
+          "line": 91
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:93: Unsupported top-level declaration: Configs are arranged as a tree of \u0027nodes\u0027, which have values:",
+          "syntax": "Configs are arranged as a tree of \u0027nodes\u0027, which have values:",
+          "line": 93
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:95: Unsupported top-level declaration: regular node: value",
+          "syntax": "regular node: value",
+          "line": 95
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:96: Unsupported top-level declaration: regular node: value",
+          "syntax": "regular node: value",
+          "line": 96
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:97: Unsupported top-level declaration: section node:",
+          "syntax": "section node:",
+          "line": 97
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:105: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 105
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:111: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 111
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:127: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 127
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:147: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 147
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:158: Unsupported top-level declaration: MORE CONFIGS",
+          "syntax": "MORE CONFIGS",
+          "line": 158
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:159: Unsupported top-level declaration: \u003d\u003d\u003d\u003d\u003d",
+          "syntax": "\u003d\u003d\u003d\u003d\u003d",
+          "line": 159
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:161: Unsupported top-level declaration: Scripts themselves are stored as configs, where each line is a node.",
+          "syntax": "Scripts themselves are stored as configs, where each line is a node.",
+          "line": 161
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:162: Unsupported top-level declaration: This means that you are able to read the content of a script.",
+          "syntax": "This means that you are able to read the content of a script.",
+          "line": 162
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:164: Unsupported top-level declaration: The examples in this section will use a \u0027my script.sk\u0027 which has the following code:",
+          "syntax": "The examples in this section will use a \u0027my script.sk\u0027 which has the following code:",
+          "line": 164
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:170: Unsupported expression: attacker exists",
+          "syntax": "if the attacker exists:",
+          "line": 170
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:175: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 175
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:199: Unsupported top-level declaration: FUNCTIONS",
+          "syntax": "FUNCTIONS",
+          "line": 199
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:200: Unsupported top-level declaration: \u003d\u003d\u003d\u003d\u003d",
+          "syntax": "\u003d\u003d\u003d\u003d\u003d",
+          "line": 200
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:202: Unsupported top-level declaration: The final part of script reflection is the ability to find and run a function.",
+          "syntax": "The final part of script reflection is the ability to find and run a function.",
+          "line": 202
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:205: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 205
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:218: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 218
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:228: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 228
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:243: Unsupported expression: function arg-text",
+          "syntax": "set {_function} to the function arg-text",
+          "line": 243
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:244: Unsupported effect: run {_function}",
+          "syntax": "run {_function}",
+          "line": 244
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:1: Unsupported top-level declaration: using examples",
+          "syntax": "using examples",
+          "line": 1
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:5: Unsupported top-level declaration: using script reflection",
+          "syntax": "using script reflection",
+          "line": 5
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:9: Unsupported top-level declaration: THE BASICS",
+          "syntax": "THE BASICS",
+          "line": 9
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:10: Unsupported top-level declaration: \u003d\u003d\u003d\u003d\u003d",
+          "syntax": "\u003d\u003d\u003d\u003d\u003d",
+          "line": 10
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:12: Unsupported top-level declaration: \u0027Reflection\u0027 is for something to look at itself (like in a mirror).",
+          "syntax": "\u0027Reflection\u0027 is for something to look at itself (like in a mirror).",
+          "line": 12
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:14: Unsupported top-level declaration: Script reflection is a collection of powerful tools for scripts to inspect themselves.",
+          "syntax": "Script reflection is a collection of powerful tools for scripts to inspect themselves.",
+          "line": 14
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:16: Unsupported top-level declaration: We can start with basic access to scripts.",
+          "syntax": "We can start with basic access to scripts.",
+          "line": 16
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:20: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 20
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:36: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 36
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:47: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 47
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:62: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 62
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:87: Unsupported top-level declaration: CONFIGS",
+          "syntax": "CONFIGS",
+          "line": 87
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:88: Unsupported top-level declaration: \u003d\u003d\u003d\u003d\u003d",
+          "syntax": "\u003d\u003d\u003d\u003d\u003d",
+          "line": 88
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:90: Unsupported top-level declaration: There are also tools provided for reading Skript\u0027s built-in configuration files.",
+          "syntax": "There are also tools provided for reading Skript\u0027s built-in configuration files.",
+          "line": 90
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:91: Unsupported top-level declaration: These allow you to check values from these files.",
+          "syntax": "These allow you to check values from these files.",
+          "line": 91
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:93: Unsupported top-level declaration: Configs are arranged as a tree of \u0027nodes\u0027, which have values:",
+          "syntax": "Configs are arranged as a tree of \u0027nodes\u0027, which have values:",
+          "line": 93
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:95: Unsupported top-level declaration: regular node: value",
+          "syntax": "regular node: value",
+          "line": 95
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:96: Unsupported top-level declaration: regular node: value",
+          "syntax": "regular node: value",
+          "line": 96
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:97: Unsupported top-level declaration: section node:",
+          "syntax": "section node:",
+          "line": 97
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:105: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 105
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:111: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 111
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:127: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 127
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:147: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 147
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:158: Unsupported top-level declaration: MORE CONFIGS",
+          "syntax": "MORE CONFIGS",
+          "line": 158
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:159: Unsupported top-level declaration: \u003d\u003d\u003d\u003d\u003d",
+          "syntax": "\u003d\u003d\u003d\u003d\u003d",
+          "line": 159
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:161: Unsupported top-level declaration: Scripts themselves are stored as configs, where each line is a node.",
+          "syntax": "Scripts themselves are stored as configs, where each line is a node.",
+          "line": 161
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:162: Unsupported top-level declaration: This means that you are able to read the content of a script.",
+          "syntax": "This means that you are able to read the content of a script.",
+          "line": 162
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:164: Unsupported top-level declaration: The examples in this section will use a \u0027my script.sk\u0027 which has the following code:",
+          "syntax": "The examples in this section will use a \u0027my script.sk\u0027 which has the following code:",
+          "line": 164
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:170: Unsupported expression: attacker exists",
+          "syntax": "if the attacker exists:",
+          "line": 170
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:175: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 175
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:199: Unsupported top-level declaration: FUNCTIONS",
+          "syntax": "FUNCTIONS",
+          "line": 199
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:200: Unsupported top-level declaration: \u003d\u003d\u003d\u003d\u003d",
+          "syntax": "\u003d\u003d\u003d\u003d\u003d",
+          "line": 200
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:202: Unsupported top-level declaration: The final part of script reflection is the ability to find and run a function.",
+          "syntax": "The final part of script reflection is the ability to find and run a function.",
+          "line": 202
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:205: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 205
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:218: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 218
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:228: Unsupported top-level declaration: example:",
+          "syntax": "example:",
+          "line": 228
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:243: Unsupported expression: function arg-text",
+          "syntax": "set {_function} to the function arg-text",
+          "line": 243
+        },
+        {
+          "error": "config2/-examples/experimental features/script reflection.sk:244: Unsupported effect: run {_function}",
+          "syntax": "run {_function}",
+          "line": 244
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/-examples/functions.sk",
+      "sha256": "77d6c44e174f2bc8a4fc1781b3cb6a1a566bb8208b74c8ed9739b1a9d04b2bf9",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "config2/-examples/functions.sk:20: Unsupported expression: an apple",
+          "syntax": "set {_item} to an apple",
+          "line": 20
+        },
+        {
+          "error": "config2/-examples/functions.sk:21: Expression cannot be changed: the name of {_item}",
+          "syntax": "set the name of {_item} to {_name}",
+          "line": 21
+        },
+        {
+          "error": "config2/-examples/functions.sk:22: Unsupported expression: item amount of {_item}",
+          "syntax": "set the item amount of {_item} to {_amount}",
+          "line": 22
+        },
+        {
+          "error": "config2/-examples/functions.sk:30: Unsupported effect: give player {_item}",
+          "syntax": "give player {_item}",
+          "line": 30
+        },
+        {
+          "error": "config2/-examples/functions.sk:39: Unsupported effect: break {_source} naturally using an iron pickaxe",
+          "syntax": "break {_source} naturally using an iron pickaxe",
+          "line": 39
+        },
+        {
+          "error": "config2/-examples/functions.sk:40: Unsupported expression: blocks in radius 1 of {_source}",
+          "syntax": "loop blocks in radius 1 of {_source}:",
+          "line": 40
+        },
+        {
+          "error": "config2/-examples/functions.sk:50: Unsupported expression: a gold ore block",
+          "syntax": "if the player\u0027s target block is a gold ore block:",
+          "line": 50
+        },
+        {
+          "error": "config2/-examples/functions.sk:54: Unsupported section: else:",
+          "syntax": "else:",
+          "line": 54
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "config2/-examples/functions.sk:20: Unsupported expression: an apple",
+          "syntax": "set {_item} to an apple",
+          "line": 20
+        },
+        {
+          "error": "config2/-examples/functions.sk:21: Expression cannot be changed: the name of {_item}",
+          "syntax": "set the name of {_item} to {_name}",
+          "line": 21
+        },
+        {
+          "error": "config2/-examples/functions.sk:22: Unsupported expression: item amount of {_item}",
+          "syntax": "set the item amount of {_item} to {_amount}",
+          "line": 22
+        },
+        {
+          "error": "config2/-examples/functions.sk:30: Unsupported effect: give player {_item}",
+          "syntax": "give player {_item}",
+          "line": 30
+        },
+        {
+          "error": "config2/-examples/functions.sk:39: Unsupported effect: break {_source} naturally using an iron pickaxe",
+          "syntax": "break {_source} naturally using an iron pickaxe",
+          "line": 39
+        },
+        {
+          "error": "config2/-examples/functions.sk:40: Unsupported expression: blocks in radius 1 of {_source}",
+          "syntax": "loop blocks in radius 1 of {_source}:",
+          "line": 40
+        },
+        {
+          "error": "config2/-examples/functions.sk:50: Unsupported expression: a gold ore block",
+          "syntax": "if the player\u0027s target block is a gold ore block:",
+          "line": 50
+        },
+        {
+          "error": "config2/-examples/functions.sk:54: Unsupported section: else:",
+          "syntax": "else:",
+          "line": 54
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/-examples/loops.sk",
+      "sha256": "8408155c1c53f3e8055099ddef8d883eae09cb58deb2799017aa6e165cf53e0c",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "config2/-examples/loops.sk:29: Unsupported expression: a random number between 0",
+          "syntax": "remove a random number between 0 and 2 from {_number}",
+          "line": 29
+        },
+        {
+          "error": "config2/-examples/loops.sk:41: Unsupported expression: a random integer between 0",
+          "syntax": "set {_number} to a random integer between 0 and 6",
+          "line": 41
+        },
+        {
+          "error": "config2/-examples/loops.sk:43: Unsupported effect: give the player an apple",
+          "syntax": "give the player an apple",
+          "line": 43
+        },
+        {
+          "error": "config2/-examples/loops.sk:62: Unsupported effect: give loop-player an apple named \"Potato\"",
+          "syntax": "give loop-player an apple named \"Potato\"",
+          "line": 62
+        },
+        {
+          "error": "config2/-examples/loops.sk:64: Unsupported expression: an apple",
+          "syntax": "set {_items::*} to stone, oak planks and an apple",
+          "line": 64
+        },
+        {
+          "error": "config2/-examples/loops.sk:69: Unsupported expression: blocks in radius 2 of player",
+          "syntax": "loop blocks in radius 2 of player:",
+          "line": 69
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "config2/-examples/loops.sk:29: Unsupported expression: a random number between 0",
+          "syntax": "remove a random number between 0 and 2 from {_number}",
+          "line": 29
+        },
+        {
+          "error": "config2/-examples/loops.sk:41: Unsupported expression: a random integer between 0",
+          "syntax": "set {_number} to a random integer between 0 and 6",
+          "line": 41
+        },
+        {
+          "error": "config2/-examples/loops.sk:43: Unsupported effect: give the player an apple",
+          "syntax": "give the player an apple",
+          "line": 43
+        },
+        {
+          "error": "config2/-examples/loops.sk:62: Unsupported effect: give loop-player an apple named \"Potato\"",
+          "syntax": "give loop-player an apple named \"Potato\"",
+          "line": 62
+        },
+        {
+          "error": "config2/-examples/loops.sk:64: Unsupported expression: an apple",
+          "syntax": "set {_items::*} to stone, oak planks and an apple",
+          "line": 64
+        },
+        {
+          "error": "config2/-examples/loops.sk:69: Unsupported expression: blocks in radius 2 of player",
+          "syntax": "loop blocks in radius 2 of player:",
+          "line": 69
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/-examples/options and meta.sk",
+      "sha256": "8cccb6c04710592e8b5a3b8bbbc036273b9495646b73cdd9c6bcb85b1dd5dc73",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "config2/-examples/options and meta.sk:14: Unsupported expression: alive",
+          "syntax": "if {@condition}:",
+          "line": 14
+        },
+        {
+          "error": "config2/-examples/options and meta.sk:22: Unsupported top-level declaration: aliases:",
+          "syntax": "aliases:",
+          "line": 22
+        },
+        {
+          "error": "config2/-examples/options and meta.sk:27: Unsupported effect: give player random item out of pretty items",
+          "syntax": "give player random item out of pretty items",
+          "line": 27
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "config2/-examples/options and meta.sk:14: Unsupported expression: alive",
+          "syntax": "if {@condition}:",
+          "line": 14
+        },
+        {
+          "error": "config2/-examples/options and meta.sk:22: Unsupported top-level declaration: aliases:",
+          "syntax": "aliases:",
+          "line": 22
+        },
+        {
+          "error": "config2/-examples/options and meta.sk:27: Unsupported effect: give player random item out of pretty items",
+          "syntax": "give player random item out of pretty items",
+          "line": 27
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/-examples/text formatting.sk",
+      "sha256": "5174f09f02f62af9977bb4719ef36cd5bd4bd534205a9c694b3a64ac2049dd46",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "config2/-examples/text formatting.sk:32: Unsupported expression: formatted \"\u003cinsertion:%arg-1%\u003e%arg-1%\"",
+          "syntax": "send formatted \"\u003cinsertion:%arg-1%\u003e%arg-1%\"",
+          "line": 32
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "config2/-examples/text formatting.sk:32: Unsupported expression: formatted \"\u003cinsertion:%arg-1%\u003e%arg-1%\"",
+          "syntax": "send formatted \"\u003cinsertion:%arg-1%\u003e%arg-1%\"",
+          "line": 32
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/-examples/timings.sk",
+      "sha256": "3f5f254265dbba535638d8cf77db87abf71bf7205656e94b6f615874d7d30a10",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "config2/-examples/timings.sk:18: Unsupported effect: give loop-player an apple",
+          "syntax": "give loop-player an apple",
+          "line": 18
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "config2/-examples/timings.sk:18: Unsupported effect: give loop-player an apple",
+          "syntax": "give loop-player an apple",
+          "line": 18
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/-examples/variables.sk",
+      "sha256": "c42c707f280b0555b392104c9e6ffcf7ef50031d44aab47a6c1c49a16b116296",
+      "individuallyCompiled": false,
+      "packCompiled": false,
+      "individualDiagnostics": [
+        {
+          "error": "config2/-examples/variables.sk:13: Unsupported expression: time since {timer}",
+          "syntax": "send \"This command was last run %time since {timer}% ago.\"",
+          "line": 13
+        },
+        {
+          "error": "config2/-examples/variables.sk:32: Unsupported effect: give player {items::%uuid of player%::*}",
+          "syntax": "give player {items::%uuid of player%::*}",
+          "line": 32
+        }
+      ],
+      "packDiagnostics": [
+        {
+          "error": "config2/-examples/variables.sk:13: Unsupported expression: time since {timer}",
+          "syntax": "send \"This command was last run %time since {timer}% ago.\"",
+          "line": 13
+        },
+        {
+          "error": "config2/-examples/variables.sk:32: Unsupported effect: give player {items::%uuid of player%::*}",
+          "syntax": "give player {items::%uuid of player%::*}",
+          "line": 32
+        }
+      ],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/sv_class_switch.sk",
+      "sha256": "7a2384a9d8740d6a89fd84884ed0172f47c80deb5b8ebd0b4ed9e65729e1a3a5",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "config2/sv_dash_mmocore.sk",
+      "sha256": "cd46757df2c596d47d9c3e86c96d4811eaa384b64fcac63098cf099fdb52f146",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    },
+    {
+      "file": "qa/native-conformance.sk",
+      "sha256": "3f5a3b65f12dc681eb5b35d501b0679842c99f940a1a79d80c93ad5507875d95",
+      "individuallyCompiled": true,
+      "packCompiled": true,
+      "individualDiagnostics": [],
+      "packDiagnostics": [],
+      "runtimeStatus": "NOT_RUN"
+    }
+  ],
+  "scope": "All installed .sk sources including disabled files; compilation never certifies runtime behavior.",
+  "individuallyCompiled": 26,
+  "packCompiled": 26
+}

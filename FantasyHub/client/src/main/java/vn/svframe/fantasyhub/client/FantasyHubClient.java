@@ -73,6 +73,9 @@ public final class FantasyHubClient implements ClientModInitializer {
                 JsonObject o=new JsonObject();o.addProperty("clientHealth",client.player.getHealth());o.addProperty("clientMaxHealth",client.player.getMaxHealth());
                 o.addProperty("hurtTime",client.player.hurtTime);o.addProperty("maxHurtTime",client.player.maxHurtTime);
                 o.addProperty("stateHealth",number("health"));o.addProperty("stateMaxHealth",number("healthMax"));o.addProperty("clientTick",ticks);
+                o.addProperty("clientVanillaLevel",client.player.experienceLevel);o.addProperty("clientVanillaProgress",client.player.experienceProgress);o.addProperty("clientVanillaTotal",client.player.totalExperience);
+                o.addProperty("rpgExperienceRendered",CompactHud.rpgExperience());
+                if(state.has("experienceDisplay"))o.add("experienceDisplay",state.get("experienceDisplay").deepCopy());
                 com.google.gson.JsonArray players=new com.google.gson.JsonArray();for(var tracked:client.world.getPlayers())players.add(tracked.getName().getString());o.add("trackedPlayers",players);
                 if(state.has("casting"))o.add("clientCasting",state.get("casting").deepCopy());
                 o.add("displayedSkillSlots",SkillBarPresentation.slots(state).deepCopy());
