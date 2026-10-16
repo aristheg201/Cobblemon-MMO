@@ -36,5 +36,7 @@
       "remote_checksum_exposed": false
     }
   },
-  "preliminary_client_superseded": "FantasyHubClient-0.1.8.jar; use the distinct human-fix JAR. Do not install both client JARs."
+  "preliminary_client_superseded": "FantasyHubClient-0.1.8.jar; use the distinct human-fix JAR. Do not install both client JARs.",
+  "code_commit": "1a5ce3e",
+  "broader_native_regression": "FAIL: cast_off:slam_damage_applied at arena0; controlled studio recheck PASS; cause not isolated"
 }

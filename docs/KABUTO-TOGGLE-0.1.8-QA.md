@@ -21,3 +21,5 @@ python FantasyHub/tools/run_kabuto_toggle_qa.py --server SERVER --output QA --di
 ```
 
 No configuration reset is needed. Update Client plus either Core or Bridge to0.1.8; keep existing Lib/MMO/Items/Mobs/Integration/Skript/config. Do not combine Core with Bridge or duplicate its5bundled modules. The source/default asset pack is unchanged; the server sends authoritative form state. Full original plugin parity, all classes, upstreamSkript/Mythic, comprehensive PvP/permission and load-profile acceptance remain incomplete.
+
+Broader regression rerun: native-skills/summary.json is FAIL for cast_off:slam_damage_applied at the older arena0,65,0. All other checked native skill assertions pass. An immediate controlled studio rerun succeeds, with actual slam target HP200→187.4 and player landing at200.988,65,5.617; evidence cast-off-recheck/result.json and commands.json. The reason for the full-scenario miss is not yet isolated. Do not call the full native skill suite passed or silently remove this case; investigate/repeat arena0 next. The focused18toggle checks remain PASS.

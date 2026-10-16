@@ -1,0 +1,261 @@
+{
+  "belt_equipped_via_real_api": true,
+  "initial": {
+    "form": "MASKED",
+    "active": false,
+    "energy": 0,
+    "gauge": 0,
+    "hyper": false,
+    "clock": false,
+    "combo": 0,
+    "gun": true
+  },
+  "equipment_definitions": [
+    "kabuto_helmet",
+    "kabuto_chestplate",
+    "kabuto_leggings",
+    "kabuto_boots",
+    "kabuto_kunai_gun",
+    "kabuto_zecter_belt"
+  ],
+  "belt_skill_damage": 5.0,
+  "weapon_attack": 7.0,
+  "masked_health": 49.8,
+  "masked_speed": 0.10000000149011612,
+  "henshin": {
+    "current_health_before": 49.8,
+    "cast_accepted": true,
+    "state_immediate": {
+      "form": "MASKED",
+      "active": true,
+      "energy": 0,
+      "gauge": 0,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": true
+    },
+    "cooldown": 2.0,
+    "speed": 0.0800000011920929,
+    "attack_speed": 4.0,
+    "state_settled": {
+      "form": "MASKED",
+      "active": true,
+      "energy": 0,
+      "gauge": 0,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": true
+    },
+    "health_max": 65.8,
+    "current_health_after": 49.8
+  },
+  "cast_off": {
+    "current_health_before": 65.8,
+    "cast_accepted": true,
+    "health_after_immediate": 191.6,
+    "state_immediate": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 0,
+      "gauge": 0,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": true
+    },
+    "cooldown": 11.99,
+    "speed": 0.10000000149011612,
+    "attack_speed": 6.4,
+    "state_settled": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 0,
+      "gauge": 0,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": true
+    },
+    "health_max": 49.8,
+    "current_health_after": 49.8,
+    "slam_damage_applied": false,
+    "slam_target_health": 200.0,
+    "damage_applied": true,
+    "health_after": 191.6
+  },
+  "charge": {
+    "state": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 100,
+      "gauge": 100,
+      "hyper": false,
+      "clock": false,
+      "combo": 10,
+      "gun": true
+    },
+    "actual_target_damage": true
+  },
+  "clock_up": {
+    "current_health_before": 49.8,
+    "cast_accepted": true,
+    "health_after_immediate": 200.0,
+    "state_immediate": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 20,
+      "gauge": 0,
+      "hyper": true,
+      "clock": true,
+      "combo": 0,
+      "gun": false
+    },
+    "cooldown": 44.999,
+    "speed": 0.30000000447034836,
+    "attack_speed": 12.0,
+    "slow_rejected": true,
+    "state_settled": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 20,
+      "gauge": 0,
+      "hyper": true,
+      "clock": true,
+      "combo": 0,
+      "gun": false
+    },
+    "health_max": 49.8,
+    "current_health_after": 49.8,
+    "mob_ai_frozen": true,
+    "mob_stayed": true,
+    "no_persistent_NoAI": true,
+    "expired": true,
+    "mob_ai_restored": true,
+    "speed_after": 0.10000000149011612
+  },
+  "rider_kick": {
+    "current_health_before": 49.8,
+    "cast_accepted": true,
+    "health_after_immediate": 0.0,
+    "state_immediate": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 0,
+      "gauge": 0,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": true
+    },
+    "cooldown": 0.0,
+    "speed": 0.10000000149011612,
+    "attack_speed": 6.4,
+    "kill_resets_cooldown": true,
+    "state_settled": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 0,
+      "gauge": 0,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": true
+    },
+    "health_max": 49.8,
+    "current_health_after": 49.8,
+    "damage_applied": true,
+    "health_after": 0.0
+  },
+  "kunai_strike": {
+    "current_health_before": 49.8,
+    "cast_accepted": true,
+    "health_after_immediate": 193.7,
+    "state_immediate": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 20,
+      "gauge": 20,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": false
+    },
+    "cooldown": 0.997,
+    "speed": 0.10000000149011612,
+    "attack_speed": 6.4,
+    "state_settled": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 20,
+      "gauge": 20,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": false
+    },
+    "health_max": 49.8,
+    "current_health_after": 49.8,
+    "damage_applied": true,
+    "health_after": 187.39998
+  },
+  "kunai_mode": {
+    "current_health_before": 49.8,
+    "cast_accepted": true,
+    "state_immediate": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 10,
+      "gauge": 10,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": false
+    },
+    "cooldown": 0.498,
+    "speed": 0.10000000149011612,
+    "attack_speed": 6.4,
+    "state_settled": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 10,
+      "gauge": 10,
+      "hyper": false,
+      "clock": false,
+      "combo": 0,
+      "gun": false
+    },
+    "health_max": 49.8,
+    "current_health_after": 49.8
+  },
+  "hyper_form": {
+    "current_health_before": 49.8,
+    "cast_accepted": true,
+    "state_immediate": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 20,
+      "gauge": 100,
+      "hyper": true,
+      "clock": false,
+      "combo": 0,
+      "gun": false
+    },
+    "cooldown": 60.0,
+    "speed": 0.10000000149011612,
+    "attack_speed": 6.4,
+    "state_settled": {
+      "form": "RIDER",
+      "active": true,
+      "energy": 20,
+      "gauge": 100,
+      "hyper": true,
+      "clock": false,
+      "combo": 0,
+      "gun": false
+    },
+    "health_max": 49.8,
+    "current_health_after": 49.8
+  }
+}

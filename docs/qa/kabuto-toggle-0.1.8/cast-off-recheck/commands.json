@@ -1,0 +1,58 @@
+[
+  {
+    "command": "kill @e[tag=qa_kabuto]",
+    "response": "No entity was found"
+  },
+  {
+    "command": "tp QAPlayer 200.5 65.0 0.5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_henshin",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_henshin",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_cast_off",
+    "response": ""
+  },
+  {
+    "command": "data get entity QAPlayer Pos",
+    "response": "QAPlayer has the following entity data: [200.5d, 65.0d, 0.5d]"
+  },
+  {
+    "command": "data get entity QAPlayer Pos",
+    "response": "QAPlayer has the following entity data: [200.5d, 71.95587370125799d, 3.3503928238788d]"
+  },
+  {
+    "command": "data get entity QAPlayer Pos",
+    "response": "QAPlayer has the following entity data: [200.57770141929285d, 65.0d, 6.141156888644687d]"
+  },
+  {
+    "command": "data get entity QAPlayer Pos",
+    "response": "QAPlayer has the following entity data: [200.80253807994998d, 65.0d, 5.955210555287899d]"
+  },
+  {
+    "command": "data get entity QAPlayer Pos",
+    "response": "QAPlayer has the following entity data: [200.98815429335914d, 65.0d, 5.616812535403867d]"
+  },
+  {
+    "command": "data get entity QAPlayer Pos",
+    "response": "QAPlayer has the following entity data: [200.98815429335914d, 65.0d, 5.616812535403867d]"
+  },
+  {
+    "command": "data get entity QAPlayer Pos",
+    "response": "QAPlayer has the following entity data: [200.98815429335914d, 65.0d, 5.616812535403867d]"
+  },
+  {
+    "command": "data get entity QAPlayer Pos",
+    "response": "QAPlayer has the following entity data: [200.98815429335914d, 65.0d, 5.616812535403867d]"
+  }
+]
