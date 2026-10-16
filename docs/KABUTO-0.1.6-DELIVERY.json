@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "delivered_at_utc": "2026-10-16T11:38:44Z",
+  "artifact": "SVFrame-Kabuto-Wolven-Skyrim-1.21.1-0.1.6.zip",
+  "local_path": "/workspace/artifacts/SVFrame-Kabuto-Wolven-Skyrim-1.21.1-0.1.6.zip",
+  "bytes": 39686896,
+  "sha256": "59ffee5916827d355a72ec4965d68531c8379d80a8cf0be10e1e303dbcb5cf95",
+  "drive_file_id": "1cIfHcoxK2aSz8xzbBxEa6ulzKqhbN5T8",
+  "drive_url": "https://drive.google.com/file/d/1cIfHcoxK2aSz8xzbBxEa6ulzKqhbN5T8/view",
+  "drive_parent_id": "1mwt23RfskwG6KG6TTYBCPfqcVfqKfqWT",
+  "drive_metadata_readback": {
+    "size": "39686896",
+    "parent_matches": true,
+    "remote_checksum_not_exposed_by_connector": true
+  },
+  "code_commits": {
+    "integration": "62841f3f364902de4a396a99a2077f9063c5b194",
+    "mobs": "1e79e92d772c849e265c15e2ef56f402355ce8f4"
+  },
+  "build": "LOCAL_ONLY",
+  "runtime_acceptance": "PASS_FOCUSED_KABUTO_ONLY",
+  "whole_port_release_gate": "FAIL",
+  "source_archive_gate_validation": "PASS_STRUCTURE_WITH_ALL_VERIFIED_EVIDENCE_RETAINED",
+  "note": "This repository documentation receipt follows the archived source-code checkpoint; JARs and archive are immutable after upload."
+}
