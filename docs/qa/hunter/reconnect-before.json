@@ -1,0 +1,76 @@
+{
+  "clientMaxHealth": 125.8,
+  "stateMaxHealth": 125.80000305175781,
+  "clientCasting": {
+    "active": true,
+    "mode": "SKILL_BAR",
+    "slots": [
+      {
+        "inputSlot": 2,
+        "id": "CLS_HUNTER_HUNTER_AARD",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 3,
+        "id": "CLS_HUNTER_HUNTER_IGNI",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 4,
+        "id": "CLS_HUNTER_HUNTER_YRDEN",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 5,
+        "id": "CLS_HUNTER_HUNTER_QUEN",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 6,
+        "id": "CLS_HUNTER_HUNTER_ADRENALINE_RUSH",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 7,
+        "id": "CLS_HUNTER_HUNTER_BLACKHOLE",
+        "cooldownRemaining": 0.0
+      }
+    ]
+  },
+  "displayedSkillSlots": [
+    {
+      "inputSlot": 2,
+      "id": "CLS_HUNTER_HUNTER_AARD",
+      "cooldownRemaining": 0.0
+    },
+    {
+      "inputSlot": 3,
+      "id": "CLS_HUNTER_HUNTER_IGNI",
+      "cooldownRemaining": 0.0
+    },
+    {
+      "inputSlot": 4,
+      "id": "CLS_HUNTER_HUNTER_YRDEN",
+      "cooldownRemaining": 0.0
+    },
+    {
+      "inputSlot": 5,
+      "id": "CLS_HUNTER_HUNTER_QUEN",
+      "cooldownRemaining": 0.0
+    },
+    {
+      "inputSlot": 6,
+      "id": "CLS_HUNTER_HUNTER_ADRENALINE_RUSH",
+      "cooldownRemaining": 0.0
+    },
+    {
+      "inputSlot": 7,
+      "id": "CLS_HUNTER_HUNTER_BLACKHOLE",
+      "cooldownRemaining": 0.0
+    }
+  ],
+  "renderedSkillSlots": 0,
+  "serverMaxHealth": 125.8,
+  "serverTick": 10792,
+  "scenario": "hunter_armor_halfmoon"
+}

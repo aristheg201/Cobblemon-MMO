@@ -18,7 +18,12 @@ final class ClassEquipmentPreviews {
                 var stack=SVFrameItems.generator().generate(id,new ItemGenerator.GenerationContext(1,0));
                 items.add(stack.encode(player.getRegistryManager()).toString());
             }
-            cache=Map.of("DRAGONBORN",List.copyOf(items));revision=SVFrameItems.registry().revision();
+            List<String> hunter=new ArrayList<>();
+            for(String suffix:List.of("HELMET","CHESTPLATE","LEGGINGS","BOOTS")) {
+                String id="SVFRAME_HUNTER_"+suffix;
+                if(SVFrameItems.registry().item(id)!=null)hunter.add(SVFrameItems.generator().generate(id,new ItemGenerator.GenerationContext(1,0)).encode(player.getRegistryManager()).toString());
+            }
+            cache=Map.of("DRAGONBORN",List.copyOf(items),"HUNTER",List.copyOf(hunter));revision=SVFrameItems.registry().revision();
         }
         return cache;
     }

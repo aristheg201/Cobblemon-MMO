@@ -1,0 +1,7 @@
+{
+  "activation": "actual Minecraft F then keyboard 2",
+  "casting_active": true,
+  "health_before_raw": "Cow has the following entity data: 100.0f",
+  "health_after_raw": "Cow has the following entity data: 90.0f",
+  "expected_after": 90
+}

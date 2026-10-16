@@ -1,0 +1,12 @@
+{
+  "owned_spawn": "Actual Cobblemon R send-out of player party Bulbasaur",
+  "trainer_type_raw": "Bulbasaur has the following entity data: \"PLAYER\"",
+  "cast": "Actual keyboard 2 / original Hunter Aard",
+  "casting_active_before": true,
+  "authoritative_cooldown_after": 11.382,
+  "health_before_raw": "Bulbasaur has the following entity data: 11.0f",
+  "health_after_raw": "Bulbasaur has the following entity data: 11.0f",
+  "pokemon_before_raw": "Bulbasaur has the following entity data: 32",
+  "pokemon_after_raw": "Bulbasaur has the following entity data: 32",
+  "owner_damage_rejected": true
+}

@@ -155,7 +155,7 @@ public final class FantasyHubCore implements ModInitializer {
                         ctx.getSource().sendFeedback(()->Text.literal(snapshot.toString()),false);return 1;
                     })))
                 .then(literal("hudstatus").executes(ctx->{
-                    var player=ctx.getSource().getPlayerOrThrow();Map<String,Object> status=new LinkedHashMap<>();status.put("build","0.1.3-economy-pricing");status.put("castingChannel",ServerPlayNetworking.canSend(player,Protocol.Casting.ID));status.put("casting",castingState(player));
+                    var player=ctx.getSource().getPlayerOrThrow();Map<String,Object> status=new LinkedHashMap<>();status.put("build",net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer("fantasyhubcore").orElseThrow().getMetadata().getVersion().getFriendlyString());status.put("castingChannel",ServerPlayNetworking.canSend(player,Protocol.Casting.ID));status.put("casting",castingState(player));
                     ctx.getSource().sendFeedback(()->Text.literal(GSON.toJson(status)),false);return 1;
                 }))
                 .then(literal("resync").requires(s->s.hasPermissionLevel(2)).executes(ctx->{var player=ctx.getSource().getPlayerOrThrow();SVFrameMMO.playerData().get(player).refreshClassStats();snapshots.remove(player.getUuid());return 1;})));

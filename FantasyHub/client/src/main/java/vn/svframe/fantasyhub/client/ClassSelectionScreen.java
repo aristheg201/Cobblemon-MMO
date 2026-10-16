@@ -15,15 +15,16 @@ public final class ClassSelectionScreen extends Screen {
     private boolean confirming,requested;
     private final ClassModelPreview model=new ClassModelPreview();
     private int detailScroll,contentHeight;
-    public ClassSelectionScreen(){super(Text.translatable("fantasyhub.classes.title"));}
+    public ClassSelectionScreen(){super(Text.translatable("fantasyhub.classes.title"));String current=FantasyHubClient.string("classId");if(!current.isBlank())selected=current;}
     public void refresh(){clearAndInit();}
     private List<JsonObject> rows(){var result=new ArrayList<JsonObject>();var list=FantasyHubClient.state().getAsJsonArray("classRoster");if(list!=null)for(var raw:list)result.add(raw.getAsJsonObject());result.sort(Comparator.comparing(r->r.get("name").getAsString().replaceAll("(?i)[&§][0-9A-FK-OR]",""),String.CASE_INSENSITIVE_ORDER));return result;}
     private int visible(){return Math.max(1,(panelHeight-97)/22);}
     private JsonObject selection(){return rows().stream().filter(r->r.get("id").getAsString().equals(selected)).findFirst().orElse(null);}
     @Override protected void init(){
         panelWidth=Math.min(width-16,580);panelHeight=Math.min(height-16,340);left=(width-panelWidth)/2;top=(height-panelHeight)/2;
+        boolean firstOpen=!requested;
         if(!requested){requested=true;FantasyHubClient.send("refresh","",0);}
-        int listWidth=Math.max(90,panelWidth/3);var rows=rows();int count=visible();page=Math.min(page,Math.max(0,(rows.size()-1)/count));
+        int listWidth=Math.max(90,panelWidth/3);var rows=rows();int count=visible();if(firstOpen)for(int index=0;index<rows.size();index++)if(rows.get(index).get("id").getAsString().equals(selected)){page=index/count;break;}page=Math.min(page,Math.max(0,(rows.size()-1)/count));
         for(int i=0;i<count&&page*count+i<rows.size();i++){
             var row=rows.get(page*count+i);String id=row.get("id").getAsString();var name=FantasyHubClient.name(row.get("name").getAsString());
             var button=FantasyButton.builder(name,b->{selected=id;confirming=false;detailScroll=0;clearAndInit();}).dimensions(left+12,top+38+i*22,listWidth-18,20).build();

@@ -1,0 +1,107 @@
+{
+  "source_wrappers": {
+    "CLS_HUNTER_HUNTER_ENDURANCE": true,
+    "CLS_HUNTER_HUNTER_AARD": true,
+    "CLS_HUNTER_HUNTER_IGNI": true,
+    "CLS_HUNTER_HUNTER_YRDEN": true,
+    "CLS_HUNTER_HUNTER_QUEN": true,
+    "CLS_HUNTER_HUNTER_ADRENALINE_RUSH": true,
+    "CLS_HUNTER_HUNTER_BLACKHOLE": true
+  },
+  "class_skill_count": 7,
+  "automatic_endurance": true,
+  "aard": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "target_health": 490.0,
+    "actual_damage": true,
+    "actual_throw": true,
+    "completed": true
+  },
+  "igni": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "target_health": 464.0,
+    "actual_damage": true,
+    "actual_ignite": true,
+    "completed": true
+  },
+  "quen": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "actual_immunity": true,
+    "stun_position_locked": true,
+    "facing_remains_free": true,
+    "completed": true,
+    "immunity_expires": true,
+    "stun_expires": true
+  },
+  "adrenaline_rush": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "self_damage_actual": true,
+    "before": 38.178,
+    "after": 32.59358,
+    "distinct_source_buffs": true,
+    "completed": true
+  },
+  "blackhole": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "pull_towards_fixed_origin": true,
+    "pull_velocity": "(0.0, 0.08698000134361596, 0.06964321401421075)",
+    "target_health": 480.0,
+    "actual_damage": true,
+    "completed": true
+  },
+  "yrden": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "target_health": 500.0,
+    "source_debuffs": true,
+    "source_has_no_damage": true,
+    "completed": true
+  },
+  "armor_halfmoon": {
+    "four_original_base_pieces": true,
+    "source_set_bonus": true,
+    "actual_max_health": 125.8,
+    "idempotent_attributes": true
+  },
+  "armor_feline": {
+    "four_original_base_pieces": true,
+    "source_set_bonus": true,
+    "actual_max_health": 54.3,
+    "idempotent_attributes": true
+  },
+  "armor_griffin": {
+    "four_original_base_pieces": true,
+    "source_set_bonus": true,
+    "actual_max_health": 54.3,
+    "idempotent_attributes": true
+  },
+  "armor_ursine": {
+    "four_original_base_pieces": true,
+    "source_set_bonus": true,
+    "actual_max_health": 54.3,
+    "idempotent_attributes": true
+  },
+  "armor_kaer_morhen": {
+    "four_original_base_pieces": true,
+    "source_set_bonus": true,
+    "actual_max_health": 54.3,
+    "idempotent_attributes": true
+  },
+  "armor_wolven": {
+    "four_original_base_pieces": true,
+    "source_set_bonus": true,
+    "actual_max_health": 54.3,
+    "idempotent_attributes": true
+  }
+}

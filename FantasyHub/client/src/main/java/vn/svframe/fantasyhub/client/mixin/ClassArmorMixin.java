@@ -20,10 +20,10 @@ public abstract class ClassArmorMixin {
     @Inject(method="renderArmor",at=@At("HEAD"),cancellable=true)
     private void svframe$armor(MatrixStack matrices,VertexConsumerProvider vertices,LivingEntity entity,EquipmentSlot slot,int light,BipedEntityModel<?> model,CallbackInfo ci) {
         svframe$texture=null;var stack=entity.getEquippedStack(slot);
-        if(stack.isOf(Protocol.dragonbornHat)){ci.cancel();return;}
+        if(stack.isOf(Protocol.dragonbornHat)||vn.svframe.fantasyhub.client.HunterArmorFeature.hat(stack)||(entity instanceof net.minecraft.entity.player.PlayerEntity&&!vn.svframe.fantasyhub.client.HunterArmorFeature.collection(stack).isEmpty())){ci.cancel();return;}
         var data=stack.get(DataComponentTypes.CUSTOM_DATA);if(data==null)return;
         String name=data.copyNbt().getString("SVFRAME_ARMOR_TEXTURE");Identifier base=Identifier.tryParse(name);
-        if(base!=null&&base.getNamespace().equals("fantasyhub")&&base.getPath().startsWith("dragonborn/"))
+        if(base!=null&&base.getNamespace().equals("fantasyhub")&&(base.getPath().startsWith("dragonborn/")||base.getPath().equals("hunter/halfmoon")))
             svframe$texture=Identifier.of(base.getNamespace(),"textures/armor/"+base.getPath()+"_layer_"+(slot==EquipmentSlot.LEGS?2:1)+".png");
     }
     @ModifyArgs(method="renderArmor",at=@At(value="INVOKE",target="Lnet/minecraft/client/render/entity/feature/ArmorFeatureRenderer;renderArmorParts(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/render/entity/model/BipedEntityModel;ILnet/minecraft/util/Identifier;)V"))

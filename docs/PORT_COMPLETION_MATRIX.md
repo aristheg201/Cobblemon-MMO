@@ -17,7 +17,7 @@ All supplied scripts and the broader upstream compatibility target remain record
 | mythic_skill | 4955 |
 | npc | 6 |
 | quest | 1519 |
-| requirement | 14 |
+| requirement | 15 |
 | script | 40 |
 | skill_wrapper | 796 |
 | sound | 882 |
@@ -28,3 +28,5 @@ All supplied scripts and the broader upstream compatibility target remain record
 The user authorized omitting only the absent `NinjaDamageEvent` call owned by `WardenAttackDummy`. The waiver is recorded in `source_waivers`; it never suppresses a supplied-but-unsupported definition, other missing skills or another mob's reference, and it receives no completed-parity credit. All defined Warden mechanics still require implementation and runtime verification.
 
 Run `python FantasyHub/tools/check_port_completion.py` for the release gate. `--validate-only` validates records without authorizing release. The full release gate currently fails: classes, bosses, assets, GUIs, language compatibility and other requirements still lack complete behavioral runtime verification. Retained JSON assets and the full Cobblemon registry still require reconciliation.
+
+Focused Hunter runtime acceptance is recorded in [HUNTER-IMPLEMENTATION-QA.md](HUNTER-IMPLEMENTATION-QA.md). Its narrow regression entry passes; full class/equipment and ecosystem parity remain unfinished.

@@ -8,6 +8,7 @@ from pathlib import Path
 import zipfile
 import yaml
 from dragonborn_sources import append_source_files
+from hunter_sources import append_source_files as append_hunter
 
 
 def main():
@@ -109,6 +110,7 @@ def main():
     mastery=args.references/"config2/MMOCore/skill-trees/class-mastery.yml"
     files["SVFrameMMO/skill-trees/class-mastery.yml"]=mastery.read_bytes();origins["SVFrameMMO/skill-trees/class-mastery.yml"]=str(mastery.relative_to(args.references))
     append_source_files(inventory,args.references,files,origins)
+    append_hunter(inventory,args.references,files,origins)
     manifest = {"schema": 1, "revision": "source-graphs-1", "files": [
         {"path": name, "sha256": hashlib.sha256(content).hexdigest()} for name, content in files.items()
     ]}

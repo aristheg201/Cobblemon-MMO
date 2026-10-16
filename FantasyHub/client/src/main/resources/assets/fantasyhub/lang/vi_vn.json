@@ -35,7 +35,7 @@
   "fantasyhub.hud.position": "Đổi HUD trái / phải",
   "fantasyhub.hud.compact": "Đổi bố cục thu gọn",
   "fantasyhub.skill.unavailable": "Kỹ năng không khả dụng",
-  "fantasyhub.connection.incompatible": "Fantasy Hub cần FantasyHubClient 0.1.4 cho Minecraft 1.21.1. Cài JAR máy khách tương ứng rồi kết nối lại.",
+  "fantasyhub.connection.incompatible": "Fantasy Hub cần FantasyHubClient 0.1.5 cho Minecraft 1.21.1. Cài JAR máy khách tương ứng rồi kết nối lại.",
   "fantasyhub.skill.details": "Cấp kỹ năng %s\nYêu cầu cấp nhân vật %s\nNăng lượng %s · Thể lực %s\nHồi chiêu %s giây\nCòn %s giây",
   "fantasyhub.shop.title": "Cửa hàng kỹ năng Cobblemon",
   "fantasyhub.shop.all": "Tất cả",
@@ -97,7 +97,7 @@
   "fantasyhub.upgrade.max": "Kỹ năng đã đạt cấp tối đa.",
   "fantasyhub.upgrade.points": "Bạn cần một điểm kỹ năng.",
   "fantasyhub.upgrade.cost": "Nâng một cấp bằng một điểm kỹ năng.",
-  "fantasyhub.connection.channel_missing": "Game của người chơi chưa đăng ký kênh Fantasy Hub [FH_CHANNEL_MISSING]. Cài FantasyHubClient 0.1.4 vào game người chơi. Nếu đã cài, kiểm tra proxy chuyển tiếp packet configuration.",
+  "fantasyhub.connection.channel_missing": "Game của người chơi chưa đăng ký kênh Fantasy Hub [FH_CHANNEL_MISSING]. Cài FantasyHubClient 0.1.5 vào game người chơi. Nếu đã cài, kiểm tra proxy chuyển tiếp packet configuration.",
   "fantasyhub.connection.handshake_failed": "Client Fantasy Hub đã được nhận diện nhưng kiểm tra presentation thất bại [FH_VERIFY_FAILED]: %s",
   "fantasyhub.connection.unexpected": "Phản hồi handshake Fantasy Hub không hợp lệ [FH_UNEXPECTED_REPLY].",
   "fantasyhub.shop.payment": "Thanh toán: %s"

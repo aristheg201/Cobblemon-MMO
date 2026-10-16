@@ -1,0 +1,57 @@
+[
+  {
+    "time": "2026-10-16T02:00:43.395645+00:00",
+    "action": "gamerule keepInventory",
+    "result": "Gamerule keepInventory is currently set to: false"
+  },
+  {
+    "time": "2026-10-16T02:00:43.403960+00:00",
+    "action": "attribute QAPlayer minecraft:generic.max_health get",
+    "result": "Value of attribute Max Health for entity QAPlayer is 125.8"
+  },
+  {
+    "time": "2026-10-16T02:00:43.426309+00:00",
+    "action": "kill QAPlayer",
+    "result": "Killed QAPlayer"
+  },
+  {
+    "time": "2026-10-16T02:01:14.869136+00:00",
+    "action": "gamerule doImmediateRespawn",
+    "result": "Gamerule doImmediateRespawn is currently set to: true"
+  },
+  {
+    "time": "2026-10-16T02:01:14.883426+00:00",
+    "action": "attribute QAPlayer minecraft:generic.max_health get",
+    "result": "Value of attribute Max Health for entity QAPlayer is 125.8"
+  },
+  {
+    "time": "2026-10-16T02:01:14.894289+00:00",
+    "action": "data get entity QAPlayer Health",
+    "result": "QAPlayer has the following entity data: 125.8f"
+  },
+  {
+    "time": "2026-10-16T02:01:14.901909+00:00",
+    "action": "data get entity QAPlayer Inventory[{Slot:100b}].id",
+    "result": "QAPlayer has the following entity data: \"minecraft:leather_boots\""
+  },
+  {
+    "time": "2026-10-16T02:01:14.914366+00:00",
+    "action": "data get entity QAPlayer Inventory[{Slot:101b}].id",
+    "result": "QAPlayer has the following entity data: \"minecraft:leather_leggings\""
+  },
+  {
+    "time": "2026-10-16T02:01:14.918195+00:00",
+    "action": "data get entity QAPlayer Inventory[{Slot:102b}].id",
+    "result": "QAPlayer has the following entity data: \"minecraft:leather_chestplate\""
+  },
+  {
+    "time": "2026-10-16T02:01:14.939781+00:00",
+    "action": "data get entity QAPlayer Inventory[{Slot:103b}].id",
+    "result": "QAPlayer has the following entity data: \"minecraft:leather_helmet\""
+  },
+  {
+    "time": "2026-10-16T02:01:14.947152+00:00",
+    "action": "data get entity QAPlayer XpLevel",
+    "result": "QAPlayer has the following entity data: 0"
+  }
+]

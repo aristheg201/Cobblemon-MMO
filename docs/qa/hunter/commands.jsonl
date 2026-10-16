@@ -1,0 +1,16 @@
+{"command": "list", "response": "There are 1 of a max of 5 players online: QAPlayer"}
+{"command": "execute as QAPlayer run fantasyhubqa hunter_prepare", "response": ""}
+{"command": "list", "response": "There are 1 of a max of 5 players online: QAPlayer"}
+{"command": "execute as QAPlayer run fantasyhubqa hunter_aard", "response": ""}
+{"command": "list", "response": "There are 1 of a max of 5 players online: QAPlayer"}
+{"command": "execute as QAPlayer run fantasyhubqa hunter_igni", "response": ""}
+{"command": "list", "response": "There are 1 of a max of 5 players online: QAPlayer"}
+{"command": "execute as QAPlayer run fantasyhubqa hunter_quen", "response": ""}
+{"command": "list", "response": "There are 1 of a max of 5 players online: QAPlayer"}
+{"command": "execute as QAPlayer run fantasyhubqa hunter_adrenaline_rush", "response": ""}
+{"command": "list", "response": "There are 1 of a max of 5 players online: QAPlayer"}
+{"command": "execute as QAPlayer run fantasyhubqa hunter_blackhole", "response": ""}
+{"command": "list", "response": "There are 1 of a max of 5 players online: QAPlayer"}
+{"command": "execute as QAPlayer run fantasyhubqa hunter_yrden", "response": ""}
+{"command": "list", "response": "There are 1 of a max of 5 players online: QAPlayer"}
+{"command": "execute as QAPlayer run fantasyhubqa hunter_targets", "response": ""}

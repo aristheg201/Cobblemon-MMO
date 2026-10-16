@@ -1,0 +1,14 @@
+{
+  "clientMaxHealth": 125.8,
+  "stateMaxHealth": 125.80000305175781,
+  "clientCasting": {
+    "active": false,
+    "mode": "",
+    "slots": []
+  },
+  "displayedSkillSlots": [],
+  "renderedSkillSlots": 0,
+  "serverMaxHealth": 125.8,
+  "serverTick": 12635,
+  "scenario": "hunter_armor_halfmoon"
+}

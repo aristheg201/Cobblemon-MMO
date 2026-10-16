@@ -1,3 +1,13 @@
+## Latest continuation — Hunter 0.1.5
+
+The latest user prioritizes the existing Hunter and its original gear, then Gunner / Awakened Gunslinger / Awakened Mage / Mage. Stop searching for a second Hunter. Hunter's seven original wrappers now pass focused dedicated-server / real-client scenarios, including source totem/stun/pull, Aard rank30/range/dense exclusions, actual F/2 input, real wild/owned Pokémon,24 original armor pieces with five original Witcher geometries, two continuous-server reconnects at125.8 health, native healing without hurt feedback, and actual death/retained Halfmoon gear. See docs/HUNTER-IMPLEMENTATION-QA.md and docs/qa/hunter. These narrow scenarios do not certify full class/equipment or ecosystem parity.
+
+Development versions are Core/Bridge/Client/Protocol0.1.5, assets reference-hunter-v5, Mobs0.1.1-fabric. Mobs commit d724404; existing Lib/MMO/Items/Integration versions remain1.7.2 /1.13.3 /0.1.1 /0.1.18. Build outputs in the separate module checkouts can be stale: package only the exact verified QA runtime JARs or freshly rebuilt matching sources, and compare hashes. The bundle must match all five verified raw artifacts byte for byte. Never overwrite the already delivered EXP0.1.4 archive.
+
+Vanilla EXP0.1.4 was already delivered at https://drive.google.com/file/d/1BRn6j8ILY4MXGq4nqFCbYaM7ff-omIxC/view . Four real client/server display/mirroring modes passed native orb/Mending/enchant/anvil and non-overwrite tests. Source/push checkpoint main49ee2be, MMO06a1814, Lib77dd638, Items3d79aa7, previous Mobs ef21e77. The user waived only the absent NinjaDamageEvent hook; defined mechanics remain required. Original AMK Skript function/guard/taunt/PvP and formal-battle protections have focused live evidence; full upstream Skript parity still fails.
+
+Next named classes are not finished: Gunner needs conditional-cast semantics, mob bullets/summons, projectile offsets/homing and associated original VFX; Awakened Mage needs its actual orbital/model/aura graphs and source negative-amplifier semantics. Meteor_Of_Doom_CAST exists in the supplied source; its parse failure must not be mislabeled as missing material. Mobs now reports unavailable dependencies before missing references. Keep the global matrix honest and reuse the retained inventory; do not start another audit.
+
 # SVFrame / Fantasy Hub — API continuation handoff, 2026-10-11
 
 ## Delivery decision and constraints

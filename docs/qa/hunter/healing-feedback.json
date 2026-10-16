@@ -1,0 +1,26 @@
+{
+  "before_healing": {
+    "clientHealth": 121.144005,
+    "serverHealth": 121.144005,
+    "clientMaxHealth": 125.8,
+    "serverMaxHealth": 125.8,
+    "hurtTime": 0,
+    "damagePackets": 147,
+    "hurtCameraFrames": 2458,
+    "serverTick": 26905
+  },
+  "after_healing": {
+    "clientHealth": 125.644005,
+    "serverHealth": 125.644005,
+    "clientMaxHealth": 125.8,
+    "serverMaxHealth": 125.8,
+    "hurtTime": 0,
+    "damagePackets": 147,
+    "hurtCameraFrames": 2458,
+    "serverTick": 26915
+  },
+  "actual_health_increased": true,
+  "no_new_damage_packet": true,
+  "no_new_hurt_camera_frame": true,
+  "hurt_timer_remains_zero": true
+}

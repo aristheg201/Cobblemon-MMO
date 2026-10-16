@@ -27,14 +27,16 @@ public final class FantasyHubClient implements ClientModInitializer {
     @Override public void onInitializeClient(){
         Protocol.install();
         net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin.register(context->{
-            try(var input=FantasyHubClient.class.getResourceAsStream("/assets/fantasyhub/dragonborn-models.json")){
-                if(input==null)throw new IllegalStateException("Missing Dragonborn model manifest");
-                var models=JsonParser.parseString(new String(input.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8)).getAsJsonArray();
-                for(var model:models)context.addModels(net.minecraft.util.Identifier.of(model.getAsString()));
-            }catch(java.io.IOException failure){throw new IllegalStateException("Cannot load authored Dragonborn models",failure);}
+            for(String manifest:java.util.List.of("dragonborn-models.json","hunter-models.json")) {
+                try(var input=FantasyHubClient.class.getResourceAsStream("/assets/fantasyhub/"+manifest)){
+                    if(input==null)throw new IllegalStateException("Missing class model manifest "+manifest);
+                    var models=JsonParser.parseString(new String(input.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8)).getAsJsonArray();
+                    for(var model:models)context.addModels(net.minecraft.util.Identifier.of(model.getAsString()));
+                }catch(java.io.IOException failure){throw new IllegalStateException("Cannot load authored class models",failure);}
+            }
         });
         net.fabricmc.fabric.api.client.rendering.v1.LivingEntityFeatureRendererRegistrationCallback.EVENT.register((type,renderer,helper,context)->{
-            if(renderer instanceof net.minecraft.client.render.entity.PlayerEntityRenderer player)helper.register(new DragonbornHatFeature(player));
+            if(renderer instanceof net.minecraft.client.render.entity.PlayerEntityRenderer player){helper.register(new DragonbornHatFeature(player));helper.register(new HunterArmorFeature(player));}
         });
         options=PresentationOptions.load();hudEnabled=options.enabled;hudScale=options.scale;
         net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry.ITEM.register((stack,tint)->net.minecraft.component.type.DyedColorComponent.getColor(stack,0xffffff),Protocol.visualBone);
@@ -77,11 +79,12 @@ public final class FantasyHubClient implements ClientModInitializer {
                 o.addProperty("rpgExperienceRendered",CompactHud.rpgExperience());
                 if(state.has("experienceDisplay"))o.add("experienceDisplay",state.get("experienceDisplay").deepCopy());
                 com.google.gson.JsonArray players=new com.google.gson.JsonArray();for(var tracked:client.world.getPlayers())players.add(tracked.getName().getString());o.add("trackedPlayers",players);
-                if(state.has("casting"))o.add("clientCasting",state.get("casting").deepCopy());
-                o.add("displayedSkillSlots",SkillBarPresentation.slots(state).deepCopy());
+                if(state.has("casting"))o.add("clientCasting",QaPresentationSnapshot.casting(state.getAsJsonObject("casting")));
+                o.add("displayedSkillSlots",QaPresentationSnapshot.slots(SkillBarPresentation.slots(state)));
                 o.addProperty("renderedSkillSlots",AbilityHud.lastRenderedSlots);
                 o.addProperty("damagePackets",ClientFeedbackQa.damagePackets);o.addProperty("hurtCameraFrames",ClientFeedbackQa.hurtCameraFrames);
-                if(ClientPlayNetworking.canSend(Protocol.Observation.ID))ClientPlayNetworking.send(new Protocol.Observation(o.toString()));
+                if(o.toString().length()>4096&&o.has("clientCasting"))o.getAsJsonObject("clientCasting").remove("slots");
+                if(o.toString().length()<=4096&&ClientPlayNetworking.canSend(Protocol.Observation.ID))ClientPlayNetworking.send(new Protocol.Observation(o.toString()));
                 observed=true;
             }
         });

@@ -1,0 +1,5 @@
+{
+  "action": "actual Q key on copied original Hunter hat",
+  "inventory_after_raw": "QAPlayer has the following entity data: \"minecraft:leather_helmet\"",
+  "expected_item": "minecraft:leather_helmet"
+}

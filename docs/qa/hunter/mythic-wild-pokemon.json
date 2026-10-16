@@ -1,0 +1,9 @@
+{
+  "spawn": "Cobblemon spawnpokemonat 0 65 6 pikachu level=50",
+  "cast": "actual F then keyboard 2 / original Hunter Aard meta-skill",
+  "casting_active": true,
+  "health_before_raw": "Pikachu has the following entity data: 27.0f",
+  "health_after_raw": "Pikachu has the following entity data: 17.0f",
+  "pokemon_health_before_raw": "Pikachu has the following entity data: 108",
+  "pokemon_health_after_raw": "Pikachu has the following entity data: 108"
+}

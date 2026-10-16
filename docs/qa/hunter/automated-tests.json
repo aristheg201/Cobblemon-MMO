@@ -1,0 +1,18 @@
+{
+  "Mobs": {
+    "tests": 33,
+    "failures": 0,
+    "errors": 0
+  },
+  "Core": {
+    "tests": 6,
+    "failures": 0,
+    "errors": 0
+  },
+  "Client": {
+    "tests": 13,
+    "failures": 0,
+    "errors": 0
+  },
+  "coverage_note": "These are module test counts, not source parity counts. Live Hunter acceptance is recorded separately."
+}

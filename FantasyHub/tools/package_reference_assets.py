@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Build local presentation assets from the user's audited source folders; no downloads."""
 from dragonborn_sources import package_assets
+from hunter_sources import package_assets as package_hunter
 import argparse, pathlib, json, zipfile, shutil, subprocess, tempfile, sys, hashlib
 p=argparse.ArgumentParser();p.add_argument('--references',type=pathlib.Path,required=True);p.add_argument('--client-output',type=pathlib.Path);p.add_argument('--server-config',type=pathlib.Path)
 a=p.parse_args();hub=pathlib.Path(__file__).resolve().parents[1];out=a.client_output or hub/'client/src/imported/resources';converter=hub.parent/'SVFrameLib/tools/import_blockbench_visuals.py';blueprints=a.references/'config2/ModelEngine/blueprints'
@@ -48,6 +49,7 @@ with tempfile.TemporaryDirectory(prefix='fantasyhub-assets-') as temporary:
   target=a.server_config/'visual-models';target.mkdir(parents=True,exist_ok=True);(target/'reference-models.json').write_text(json.dumps(models,separators=(',',':')));shutil.copy2(built/'reference-anchors.json',a.server_config/'visual-anchors.json')
  (out/'assets/fantasyhub/source-choices.json').parent.mkdir(parents=True,exist_ok=True);(out/'assets/fantasyhub/source-choices.json').write_text(json.dumps(choices,indent=2)+'\n')
  package_assets(a.references,out)
+ package_hunter(a.references,out)
  index={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdigest() for path in (out/'assets').rglob('*') if path.is_file() and path.name!='asset-index.json'}
  (out/'assets/fantasyhub/asset-index.json').write_text(json.dumps(index,sort_keys=True,indent=2)+'\n')
 print('Packaged',len(names),'authored blueprints and',len(models),'model/animation IDs. Source material remains local.')
