@@ -2,7 +2,7 @@
 
 Core/Bridge/Client/Protocol0.1.7, assets kabuto-vfx-v8. First-person gun stays as user confirmed; third-person corrected independently. New server-confirmed GUN_FIRE pose and KabutoFx S2C events. Native Minecraft plus11actual Cobblemon ParticleStorm effects; private fixes for upstream flash/metal sprite references. Config FantasyHub/kabuto-vfx.yml, /kabuto reload, F8Settings density. No damage authority on client.
 
-Focused real QA passes: native F/inventory, skills,60two-client VFX checks,8density/damage-isolation checks, actual first/third gun firing frames.25fresh Hub unit tests;33Mobs baseline unchanged. See docs/KABUTO-VFX-0.1.7-QA.md and docs/CONTINUATION_STATE.md. Source/build/config/private assets included in new0.1.7 ZIP; delivery receipt/link follows upload. Full-port matrix still FAIL.
+Focused real QA passes: native F/inventory, skills,60two-client VFX checks,8density/damage-isolation checks, actual first/third gun firing frames.25fresh Hub unit tests;33Mobs baseline unchanged. See docs/KABUTO-VFX-0.1.7-QA.md and docs/CONTINUATION_STATE.md. Source/build/config/private assets included in new0.1.7 ZIP; delivery confirmed at https://drive.google.com/file/d/1tNoDTXc7qvmE6aVupm4V--N4IeqHZJu2/view. Code checkpoint1bd806b, receipt docs/KABUTO-0.1.7-DELIVERY.json. Full-port matrix still FAIL.
 
 ## Previous deliveries
 

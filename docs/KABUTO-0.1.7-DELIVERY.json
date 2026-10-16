@@ -1,0 +1,23 @@
+{
+  "path": "/workspace/artifacts/SVFrame-Kabuto-VFX-GunFix-1.21.1-0.1.7.zip",
+  "size": 66838766,
+  "sha256": "fb28f3f610a8e6313ed4b2037a7d3ecf4bebcccbb7d7d915c225f517fa044c26",
+  "entries": 202,
+  "source_revisions": {
+    "integration": "1bd806b535c8d58101584d86f4c355ce5b9ff2cd",
+    "items": "3d79aa78ed73121ca3419198c99d87b305ac9ecc",
+    "mobs": "1e79e92d772c849e265c15e2ef56f402355ce8f4",
+    "Lib_and_MMO_source": "integration/SVFrameLib and integration/SVFrameMMO (authoritative build inputs)"
+  },
+  "drive": {
+    "id": "1tNoDTXc7qvmE6aVupm4V--N4IeqHZJu2",
+    "url": "https://drive.google.com/file/d/1tNoDTXc7qvmE6aVupm4V--N4IeqHZJu2/view",
+    "parent_folder": "1mwt23RfskwG6KG6TTYBCPfqcVfqKfqWT",
+    "readback_bytes": 66838766,
+    "metadata_readback_verified": true,
+    "remote_checksum_exposed": false
+  },
+  "focused_acceptance": "PASS",
+  "full_port_release_gate": "FAIL",
+  "asset_revision": "kabuto-vfx-v8"
+}

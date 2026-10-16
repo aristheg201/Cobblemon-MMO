@@ -8,7 +8,7 @@ Final raw/bundled build script /workspace/scratch/build_kabuto_vfx_final.py. Art
 
 Final runtime server32422, primary32423 DISPLAY:99, observer32426 DISPLAY:101, Xvfb99/101. Verify processes before reusing. Velocity25577 -> Fabric25565, RCON25575. QAPlayer UUID199f2445-7f42-3492-b97b-f1a69c57ee90; QAAttacker UUIDe585ad00-e318-3e35-aa1c-115aefd03416. Last64KiB of observation JSONL only; files are large. F needs fresh untransformed session. native skill runner requires Gun Mode; now waits for actual server callback fields, not only wall-clock sleeps. QA evidence /workspace/qa-evidence/kabuto-vfx-0.1.7.
 
-Delivery is being packaged/uploaded; see the latest delivery receipt when present. Never overwrite delivered0.1.6. Next broad work remains the existing Gunner/Awakened Gunslinger/Awakened Mage/Mage gaps and matrix requirements, plus left-hand/full Kabuto progression/protection/Hyper/performance acceptance. Do not repeat the full audit.
+Delivered: code1bd806b pushed[skip ci]. New immutable ZIP SVFrame-Kabuto-VFX-GunFix-1.21.1-0.1.7.zip uploaded to Drive file1tNoDTXc7qvmE6aVupm4V--N4IeqHZJu2;66,838,766bytes, SHA256fb28f3f610a8e6313ed4b2037a7d3ecf4bebcccbb7d7d915c225f517fa044c26. Metadata readback confirms size/name/folder; connector does not expose remote checksum. Receipt docs/KABUTO-0.1.7-DELIVERY.json. ZIP validates every entry hash, exact installed/runtime JARs, config and all source matrix evidence references. Never overwrite delivered0.1.6. Next broad work remains the existing Gunner/Awakened Gunslinger/Awakened Mage/Mage gaps and matrix requirements, plus left-hand/full Kabuto progression/protection/Hyper/performance acceptance. Do not repeat the full audit.
 
 ## Prior checkpoint history
 
