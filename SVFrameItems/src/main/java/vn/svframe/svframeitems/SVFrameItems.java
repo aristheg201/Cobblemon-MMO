@@ -34,6 +34,11 @@ public final class SVFrameItems implements ModInitializer {
     @Override public void onInitialize(){
         try{DefaultFiles.ensure();REGISTRY.reload(DefaultFiles.root());SourceItemRules.reload(DefaultFiles.root());}catch(IOException|RuntimeException exception){throw new IllegalStateException("Could not initialize SVFrameItems definitions",exception);}
         ABILITIES.initialize();
+        try { ThermalTuningRuntime.reload(); } catch(IOException failure) { throw new IllegalStateException("Cannot load equipment compatibility",failure); }
+        GENERATOR.registerMechanic((stack,definition,instance,phase)->ThermalTuningRuntime.apply(stack));
+        ServerPlayConnectionEvents.JOIN.register((handler,sender,value)->{
+            var inventory=handler.player.getInventory();for(int i=0;i<inventory.size();i++)ThermalTuningRuntime.apply(inventory.getStack(i));
+        });
         vn.svframe.svframelib.fabric.runtime.PlayerStatInitialization.registerEquipment(player -> {RetainedInventory.restore(player);EQUIPMENT.refresh(player,true);});
         net.fabricmc.fabric.api.event.player.UseItemCallback.EVENT.register((player,world,hand)->{
             var stack=player.getStackInHand(hand);
@@ -54,7 +59,7 @@ public final class SVFrameItems implements ModInitializer {
     public static synchronized boolean reload(){
         var oldRules=SourceItemRules.snapshot();SVFrameItemsRegistry.Snapshot before=REGISTRY.snapshot(); MinecraftServer current=server;
         try{
-            REGISTRY.reload(DefaultFiles.root()); SourceItemRules.reload(DefaultFiles.root()); RuntimeDefinitionValidator.validate(REGISTRY,UPGRADES,LOOT);
+            REGISTRY.reload(DefaultFiles.root()); SourceItemRules.reload(DefaultFiles.root()); ThermalTuningRuntime.reload(); RuntimeDefinitionValidator.validate(REGISTRY,UPGRADES,LOOT);
             if(current!=null)for(var player:current.getPlayerManager().getPlayerList())EQUIPMENT.refresh(player,true);
             return true;
         }catch(Exception exception){

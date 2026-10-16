@@ -50,7 +50,9 @@ public final class EquipmentRuntime {
     /** Force re-applies the stat snapshot while still only firing ability transitions for real location changes. */
     public void refresh(ServerPlayerEntity player,boolean force){
         Objects.requireNonNull(player,"player");
-        List<EquipmentProvider.EquippedItem> collected=collect(player);String fingerprint=fingerprint(collected,registry.revision())+"profile:"+SourceItemRules.profileKey(player);PlayerState previous=states.get(player.getUuid());if(!force&&previous!=null&&previous.fingerprint.equals(fingerprint))return;
+        List<EquipmentProvider.EquippedItem> collected=collect(player);
+        if(player.age%20==0||force)for(var item:collected)ThermalTuningRuntime.apply(item.stack());
+        String fingerprint=fingerprint(collected,registry.revision())+"profile:"+SourceItemRules.profileKey(player);PlayerState previous=states.get(player.getUuid());if(!force&&previous!=null&&previous.fingerprint.equals(fingerprint))return;
         LinkedHashMap<UUID,ItemStackRef> currentItems=new LinkedHashMap<>();List<EquipmentModifierService.Equipped> equipped=new ArrayList<>();
         for(EquipmentProvider.EquippedItem equippedItem:collected){Optional<ItemInstance> decoded=ItemCodec.read(equippedItem.stack());if(decoded.isEmpty())continue;ItemInstance instance=decoded.get();ItemDefinition definition=registry.item(instance.definitionId());if(definition==null||!SourceItemRules.eligible(player,definition))continue;ItemType type=registry.type(definition.typeId());if(type==null||!type.canEquip(equippedItem.slot()))continue;ItemStackRef ref=new ItemStackRef(equippedItem.stack().copy(),equippedItem.key(),equippedItem.slot());if(currentItems.putIfAbsent(instance.instanceId(),ref)!=null)continue;equipped.add(new EquipmentModifierService.Equipped(instance,equippedItem.slot()));}
         Map<UUID,ItemStackRef> previousItems=previous==null?Map.of():previous.items;

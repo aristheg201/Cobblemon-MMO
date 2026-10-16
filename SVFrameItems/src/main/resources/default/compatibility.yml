@@ -1,0 +1,8 @@
+# Enchants real RPG equipment with Tough As Nails' own Thermal Tuning when TAN is installed.
+# Existing inventory is upgraded on login/equip. Other enchantments are preserved.
+tough-as-nails:
+  automatic-thermal-tuning: true
+# Allows already-issued equipment whose old YAML/NBT disabled enchanting.
+# Set false to restore individual disable-enchanting rules.
+enchanting:
+  override-imported-disable-flags: true

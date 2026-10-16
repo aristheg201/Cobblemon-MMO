@@ -9,7 +9,13 @@
     "PlayerItemRetentionMixin",
     "ServerItemRetentionMixin",
     "ScreenItemRulesMixin",
-    "AnvilItemRulesMixin"
+    "AnvilItemRulesMixin",
+    "EnchantmentCategoryMixin",
+    "EnchantmentPowerMixin",
+    "ThermalTuningMixin",
+    "ThermalGrindstoneMixin",
+    "ThermalGrindstoneXpMixin",
+    "GrindstoneExperienceAccess"
   ],
   "injectors": {
     "defaultRequire": 1

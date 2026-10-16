@@ -31,7 +31,10 @@ public final class SourceItemRules {
     }
     public static Map<String,Object> rule(String id){return rules.getOrDefault(ItemType.normalize(id),Map.of());}
     public static Map<String,Object> rule(ItemStack stack){return ItemCodec.read(stack).map(i->rule(i.definitionId())).orElse(Map.of());}
-    public static boolean flag(ItemStack stack,String key){var rules=rule(stack);if(rules.containsKey(key))return Boolean.TRUE.equals(rules.get(key));var nbt=stack.get(DataComponentTypes.CUSTOM_DATA);return nbt!=null&&nbt.copyNbt().getCompound("SVFRAME_ITEM_FLAGS").getBoolean(key);}
+    public static boolean flag(ItemStack stack,String key){
+        if(key.equals("disable-enchanting")&&EnchantmentPolicy.overridesLegacyDisable(stack))return false;
+        var rules=rule(stack);if(rules.containsKey(key))return Boolean.TRUE.equals(rules.get(key));var nbt=stack.get(DataComponentTypes.CUSTOM_DATA);return nbt!=null&&nbt.copyNbt().getCompound("SVFRAME_ITEM_FLAGS").getBoolean(key);
+    }
     public static String profileKey(ServerPlayerEntity player){return RpgProfileRegistry.resolve(player.getUuid()).map(p->p.playerClass()+":"+p.level()).orElse("");}
     public static boolean eligible(ServerPlayerEntity player,ItemDefinition item){
         var raw=rule(item.id()).get("required-class");if(!(raw instanceof List<?> required)||required.isEmpty())return true;

@@ -8,5 +8,10 @@ import net.minecraft.item.ItemStack;
 @Mixin(AnvilScreenHandler.class)
 public abstract class AnvilItemRulesMixin {
     @Inject(method="updateResult",at=@At("RETURN"))
-    private void svframe$anvil(CallbackInfo ci){var self=(AnvilScreenHandler)(Object)this;if(SourceItemRules.flag(self.getSlot(0).getStack(),"disable-repairing")||SourceItemRules.flag(self.getSlot(0).getStack(),"disable-enchanting"))self.getSlot(2).setStack(ItemStack.EMPTY);}
+    private void svframe$anvil(CallbackInfo ci){
+        var self=(AnvilScreenHandler)(Object)this;var left=self.getSlot(0).getStack();var right=self.getSlot(1).getStack();var result=self.getSlot(2).getStack();
+        boolean repair=!result.isEmpty()&&result.getDamage()<left.getDamage();
+        boolean enchant=!net.minecraft.enchantment.EnchantmentHelper.getEnchantments(right).isEmpty();
+        if((repair&&SourceItemRules.flag(left,"disable-repairing"))||(enchant&&SourceItemRules.flag(left,"disable-enchanting")))self.getSlot(2).setStack(ItemStack.EMPTY);
+    }
 }
