@@ -62,13 +62,13 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
     private final Map<UUID,Long> globalCooldown=new HashMap<>(),combat=new HashMap<>();
     private record DamageWard(long until, boolean all, Set<String> causes) {}
     private final Map<AuraKey,DamageWard> damageWards=new HashMap<>();
-    private record Stun(Point anchor,float yaw,float pitch,long until,boolean facing,boolean cancelDamage,boolean cancelDeath) {}
+    private record Stun(UUID actor,Point anchor,float yaw,float pitch,long until,boolean facing,boolean cancelDamage,boolean cancelDeath) {}
     private final Map<UUID,Stun> stuns=new HashMap<>();
     private void stun(MythicLine line,Context context,Target target) {
         Entity actor=entity(context.caster()),victim=entity(target.entity());
-        if(!(victim instanceof LivingEntity living)||!RpgEntityAdapters.allows(actor,living,RpgEntityAdapters.Effect.STATUS))return;
+        if(!(victim instanceof LivingEntity living)||!RpgEntityAdapters.allows(actor,living,RpgEntityAdapters.Effect.STATUS)||!RpgEntityAdapters.allows(actor,living,RpgEntityAdapters.Effect.MOVEMENT))return;
         int duration=MythicEngine.ticks(n(line,"duration","d",100,context,target),1,72000);
-        stuns.put(victim.getUuid(),new Stun(point(victim),victim.getYaw(),victim.getPitch(),tick+duration,
+        stuns.put(victim.getUuid(),new Stun(context.caster(),point(victim),victim.getYaw(),victim.getPitch(),tick+duration,
             bool(line,"facing",bool(line,"face",bool(line,"f",false))),bool(line,"cancelontakedamage",false),bool(line,"cancelondeath",true)));
     }
     public void damaged(LivingEntity victim) {Stun stun=stuns.get(victim.getUuid());if(stun!=null&&stun.cancelDamage())stuns.remove(victim.getUuid());}
@@ -77,6 +77,7 @@ public final class FabricMythicPlatform implements MythicEngine.Platform {
         while(iterator.hasNext()) {
             var entry=iterator.next();Stun stun=entry.getValue();Entity victim=entity(entry.getKey());
             if(victim==null||victim.isRemoved()||tick>=stun.until()||(!victim.isAlive()&&stun.cancelDeath())||!point(victim).world().equals(stun.anchor().world())){iterator.remove();continue;}
+            if(victim instanceof LivingEntity living&&living.isAlive()&&!RpgEntityAdapters.allows(entity(stun.actor()),living,RpgEntityAdapters.Effect.MOVEMENT)){iterator.remove();continue;}
             float yaw=stun.facing()?stun.yaw():victim.getYaw(),pitch=stun.facing()?stun.pitch():victim.getPitch();
             if(victim.squaredDistanceTo(vector(stun.anchor()))>.000001||(stun.facing()&&(victim.getYaw()!=yaw||victim.getPitch()!=pitch))) {
                 if(victim instanceof ServerPlayerEntity player)player.networkHandler.requestTeleport(stun.anchor().x(),stun.anchor().y(),stun.anchor().z(),yaw,pitch);

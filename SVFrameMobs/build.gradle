@@ -1,6 +1,6 @@
 plugins { id 'fabric-loom' version "${loom_version}" }
 group = 'vn.svframe'
-version = '0.1.1-fabric'
+version = '0.1.2-fabric'
 base { archivesName = 'SVFrameMobs' }
 repositories { mavenCentral(); maven { url = 'https://maven.fabricmc.net/' } }
 dependencies {
