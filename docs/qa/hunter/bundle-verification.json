@@ -1,0 +1,31 @@
+{
+  "svframemobs": {
+    "version": "0.1.1-fabric",
+    "sha256": "0bbb1f1c283c3def7c60df8943b239558195e6bbcf4e9604236082d9f7fe9d6d",
+    "matches_verified_raw_runtime": true
+  },
+  "fantasyhubprotocol": {
+    "version": "0.1.5",
+    "sha256": "ede0be29efb5ce61cf4939d4ff38f58140f6f1d44edfae71f8ac9e625d44accb"
+  },
+  "svframelib": {
+    "version": "1.7.2-fabric",
+    "sha256": "fbdab39ac6ff4f5f8df557608514116413ff03a5645719d7cbcbbc84a34b0141",
+    "matches_verified_raw_runtime": true
+  },
+  "svframemmo_cobblemon": {
+    "version": "0.1.18",
+    "sha256": "eb3c35b1b84005644a2d3accd966608e85932454c59762bab24cdba78c5735d1",
+    "matches_verified_raw_runtime": true
+  },
+  "svframeitems": {
+    "version": "0.1.1-fabric",
+    "sha256": "f1b243ad83ffa36e01ed8719641fbb42eea79adf555731ff9b932181cd02ea5c",
+    "matches_verified_raw_runtime": true
+  },
+  "svframemmo": {
+    "version": "1.13.3-fabric",
+    "sha256": "b2b4bfe46378354413d29ee5606a6ec6bff9b53f4304c05215229c2bd79de9de",
+    "matches_verified_raw_runtime": true
+  }
+}

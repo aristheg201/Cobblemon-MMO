@@ -1,0 +1,84 @@
+{
+  "source_wrappers": {
+    "CLS_HUNTER_HUNTER_ENDURANCE": true,
+    "CLS_HUNTER_HUNTER_AARD": true,
+    "CLS_HUNTER_HUNTER_IGNI": true,
+    "CLS_HUNTER_HUNTER_YRDEN": true,
+    "CLS_HUNTER_HUNTER_QUEN": true,
+    "CLS_HUNTER_HUNTER_ADRENALINE_RUSH": true,
+    "CLS_HUNTER_HUNTER_BLACKHOLE": true
+  },
+  "class_skill_count": 7,
+  "automatic_endurance": true,
+  "aard": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "target_health": 490.0,
+    "actual_damage": true,
+    "actual_throw": true,
+    "completed": true
+  },
+  "igni": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "target_health": 464.0,
+    "actual_damage": true,
+    "actual_ignite": true,
+    "completed": true
+  },
+  "quen": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "actual_immunity": true,
+    "stun_position_locked": true,
+    "facing_remains_free": true,
+    "completed": true,
+    "immunity_expires": true,
+    "stun_expires": true
+  },
+  "adrenaline_rush": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "self_damage_actual": true,
+    "before": 37.8,
+    "after": 32.215576,
+    "distinct_source_buffs": true,
+    "completed": true
+  },
+  "blackhole": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "pull_towards_fixed_origin": true,
+    "pull_velocity": "(0.0, 0.08698000134361596, 0.06964321401421075)",
+    "target_health": 480.0,
+    "actual_damage": true,
+    "completed": true
+  },
+  "yrden": {
+    "cast_accepted": true,
+    "zero_source_resource_cost": true,
+    "cooldown_applied": true,
+    "target_health": 500.0,
+    "source_debuffs": true,
+    "source_has_no_damage": true,
+    "completed": true
+  },
+  "targeting_and_upgrade": {
+    "cast_accepted": true,
+    "excluded_entities_do_not_consume_limit": true,
+    "armor_stands_excluded": true,
+    "level_one_damage": 10.0,
+    "catalog_upgrade_29_levels": true,
+    "points_spent_once": true,
+    "skill_reaches_original_max_level": true,
+    "upgraded_cast_accepted": true,
+    "original_level_scaling": true,
+    "level_thirty_damage": 28.850006,
+    "range_boundary": true
+  }
+}

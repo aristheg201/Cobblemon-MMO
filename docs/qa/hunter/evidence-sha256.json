@@ -13,6 +13,7 @@
   "post-death-respawn.png": "271ff3eaf99ef18417abd6ed80e54d443b18fcfaeb5ae8eebaded0acb5e44e37",
   "hotkey-2-result.json": "f571e1f26ba305ebd096c5c0d70ec1727263f8ce7643e10e0db270e1d5b3710b",
   "adrenaline_rush-final.png": "7bdedb1fabbbb22ba46cc2aefbd751a23d80f71161b9dccc90a82759788590a1",
+  "bundle-verification.json": "f2852b4821526f1b49e2181f24ec2a1344f786133b746e0f20c4b0ed799a70ec",
   "yrden-final.png": "ba8dd6e6e06f93bd5fb94700ac20cb058257f500ac86ded74c36936536eab9e4",
   "reconnect-after-2.json": "c7eb1566a8b8e66639ba5c88fc87d980e9540c6130593275d982c0c53c625d3c",
   "hunter-runtime-final.json": "d1e5912e3dfbc6e0203b53a24be5bb17bf9957cbb2c7a68cd840b5a69668c323",
@@ -24,6 +25,7 @@
   "f-hotbar-key2.png": "d2996924e5563c95ed08a378a4695cf41363bb4f5fe3c33d6e000197f53d938f",
   "reconnect-before.json": "0a922f62205671c67268710e0401ebc016de8d73fb11e99030ae97844e0599b4",
   "igni-final.png": "5323dcfb80e691cb308cd6da2e4cab6d5efb3f0104e5d5eb23599409ee03e52b",
+  "bundled-build.log": "71a74463a62e75495fa3766817297a1f6fc0f2691eb0dbb70241f64b91896e3d",
   "mythic-wild-pokemon.png": "98ce4d5591e5db59d423bf05ea7620722f8540bf461d2f057bdf436f37a616fe",
   "commands.jsonl": "5719940e10867f4276b65e0594440b3bd51a2dd4390325ba0f987409e7b56b0c",
   "armor-griffin-full.png": "d2861f2dad7118a936c66689034c72ce88baaf8fff9e07c9954b8d86f7ed67f7",
@@ -34,5 +36,14 @@
   "aard-final.png": "11d6ee3234ac5a117d8e8367a249f6abd2c5a548ed0b264efc3591221b00c230",
   "armor-runtime.mp4": "cf6f0100ce62a7fe009fcbced3ca5f75092f3be9c55f2fdad29d910252d8c905",
   "armor-halfmoon-full.png": "ff80d5da134851110a5afbd4b7dce44088deb64afa4f9b6f0ffcff486222938c",
-  "armor-feline-full.png": "f9638357ea5abf3c6e8b0497d9d8c4b20c38a14d9b6a2a27ac2e4e1ecad91acc"
+  "armor-feline-full.png": "f9638357ea5abf3c6e8b0497d9d8c4b20c38a14d9b6a2a27ac2e4e1ecad91acc",
+  "bundled/quen-final.png": "0ff3a609ed466ab2264f6d974c4a35c273218ff71e3f20557280da9100c462f7",
+  "bundled/targets-final.png": "864bfcad1bd070bf38c131de6c1a5322cb4210e8462a6c1aee7e330eedd75b6d",
+  "bundled/blackhole-final.png": "fe2b56a63b893a7246c41f14d21253a4e170fea343ed8128a67559503841c62b",
+  "bundled/adrenaline_rush-final.png": "527222970727182e51168760b48dfdd528cd2259ee700fcb1affcd293befae71",
+  "bundled/yrden-final.png": "1f0ca26799b0028bdae25fd849b102fe05a3c4444b7c09573ea989de45368659",
+  "bundled/hunter-runtime-final.json": "7fd41a9da976802a229ed9cb3701f3b02b3271aecc2edf56923913affd51fefc",
+  "bundled/igni-final.png": "30b26dc7eebc5f5eb0a6389f90cb88d1634307f20957147e06d138a838b9aff8",
+  "bundled/commands.jsonl": "5719940e10867f4276b65e0594440b3bd51a2dd4390325ba0f987409e7b56b0c",
+  "bundled/aard-final.png": "516fd9d76181979946f36fb40a755882623bd57f1415ee9e2c5daea26f6245c8"
 }
