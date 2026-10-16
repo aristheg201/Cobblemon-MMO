@@ -25,7 +25,9 @@ public final class KabutoVisuals {
       net.minecraft.entity.LivingEntity entity,
       float age) {
     if (STATES.containsKey(entity.getId())) {
-      model.hat.visible =
+      // The helmet feature replaces the whole head, including the vanilla face.
+      // PlayerEntityRenderer resets model visibility before rendering each player.
+      model.head.visible = model.hat.visible =
           model.jacket.visible =
               model.leftSleeve.visible =
                   model.rightSleeve.visible =
