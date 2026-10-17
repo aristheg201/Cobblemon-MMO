@@ -1,0 +1,9 @@
+{
+  "native_right_click_accepted": true,
+  "air_shot_consumes_stamina": true,
+  "air_shot_starts_cooldown": true,
+  "rejected_repeat_does_not_spend_stamina": true,
+  "miss_does_not_build_zecter_energy": true,
+  "miss_does_not_build_clock_gauge": true,
+  "verdict": "PASS"
+}

@@ -1,0 +1,14 @@
+{
+  "artifact": "FantasyHubBridge-0.1.10.jar",
+  "version": "0.1.10",
+  "sha256": "4a50afc29bcd6c488b7d709412c08a1255dea1fe5965c79c6b5a207c82aa198a",
+  "size": 1140712,
+  "core_tests": 15,
+  "failures": 0,
+  "compatible_client": "FantasyHubClient 0.1.9, including helmetfix1",
+  "protocol_version_unchanged": true,
+  "five_separate_modules_unchanged": true,
+  "runtime_qa": "PASS: native callback and actual right mouse input, two connected clients",
+  "url": "https://drive.google.com/file/d/1XqdPP2L_4GJljGzkuCB7nRZeYxBcQpfp/view",
+  "qa": "docs/qa/bridge-gun-fix/verification.json"
+}

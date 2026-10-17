@@ -108,6 +108,41 @@ final class KabutoQa {
     p.setHealth(p.getMaxHealth());
     data.giveMana(1000, vn.svframe.svframelib.player.resource.ResourceUpdateReason.OTHER);
     data.giveStamina(1000, vn.svframe.svframelib.player.resource.ResourceUpdateReason.OTHER);
+    if (scenario.equals("gun_air")) {
+      var cooldown = MMOPlayerData.setup(p).getCooldownMap();
+      if (!Boolean.TRUE.equals(KabutoRuntime.inspect(p).get("gun"))) {
+        var mode = data.getProfess().getSkill("KABUTO_KUNAI_MODE");
+        cooldown.resetCooldown(mode.getCooldownPath());
+        cooldown.resetCooldown("svframemmo_global_skill");
+        if (!SVFrameMMO.skillRuntime().cast(data, "KABUTO_KUNAI_MODE").isSuccessful())
+          throw new IllegalStateException("Cannot prepare real Gun Mode");
+      }
+      var skill = data.getProfess().getSkill("KABUTO_KUNAI_STRIKE");
+      cooldown.resetCooldown(skill.getCooldownPath());
+      cooldown.resetCooldown("svframemmo_global_skill");
+      p.setSneaking(false);
+      p.setYaw(0);p.setPitch(-60);
+      p.networkHandler.requestTeleport(p.getX(),p.getY(),p.getZ(),0,-60);
+      double stamina = data.getStamina();
+      Map<String,Object> before = KabutoRuntime.inspect(p);
+      var result = net.fabricmc.fabric.api.event.player.UseItemCallback.EVENT.invoker()
+          .interact(p,p.getWorld(),net.minecraft.util.Hand.MAIN_HAND);
+      r.put("native_right_click_accepted",result.getResult().isAccepted());
+      r.put("air_shot_consumes_stamina",data.getStamina()<stamina);
+      r.put("air_shot_starts_cooldown",cooldown.getCooldown(skill.getCooldownPath())>0);
+      double after = data.getStamina();
+      net.fabricmc.fabric.api.event.player.UseItemCallback.EVENT.invoker()
+          .interact(p,p.getWorld(),net.minecraft.util.Hand.MAIN_HAND);
+      r.put("rejected_repeat_does_not_spend_stamina",data.getStamina()==after);
+      later(12,()->{
+        var settled=KabutoRuntime.inspect(p);
+        r.put("miss_does_not_build_zecter_energy",((Number)settled.get("energy")).intValue()<=((Number)before.get("energy")).intValue());
+        r.put("miss_does_not_build_clock_gauge",settled.get("gauge").equals(before.get("gauge")));
+        r.put("verdict",r.values().stream().allMatch(Boolean.TRUE::equals)?"PASS":"FAIL");
+        save();
+      });
+      save();return 1;
+    }
     if (scenario.equals("charge")) {
       // Twenty successful normal native player attacks exercise the real
       // AFTER_DAMAGE listener. No direct meter assignment in this fixture.

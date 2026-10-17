@@ -332,10 +332,11 @@ public final class KabutoRuntime {
           }
           if (player instanceof ServerPlayerEntity serverPlayer)
             try {
-              SVFrameMMO.skillRuntime()
+              var result = SVFrameMMO.skillRuntime()
                   .cast(
                       SVFrameMMO.playerData().get(serverPlayer),
                       serverPlayer.isSneaking() ? "KABUTO_KUNAI_MODE" : "KABUTO_KUNAI_STRIKE");
+              if (!result.isSuccessful()) return TypedActionResult.fail(stack);
             } catch (IllegalArgumentException | IllegalStateException rejected) {
               return TypedActionResult.fail(stack);
             }
@@ -453,7 +454,8 @@ public final class KabutoRuntime {
             };
       LivingEntity target = null;
       Vec3d point = null;
-      if (valid && (ability.equals("RIDER_KICK") || ability.equals("KUNAI_STRIKE"))) {
+      // A projectile can miss; only melee strikes and the lock-on finisher need a target.
+      if (valid && (ability.equals("RIDER_KICK") || (ability.equals("KUNAI_STRIKE") && !s.state.gun))) {
         target = aim(p, ability.equals("RIDER_KICK") ? 12 : s.state.gun ? 32 : 3.4);
         valid = target != null;
       }
@@ -541,7 +543,7 @@ public final class KabutoRuntime {
           case "KUNAI_STRIKE" -> {
             s.player.swingHand(Hand.MAIN_HAND);
             if (s.state.gun) {
-              shoot(s, result.target, number("gun-damage") * scale);
+              shoot(s, number("gun-damage") * scale);
               sound(s, "gun_fire", 1);
             }
             else {
@@ -550,8 +552,8 @@ public final class KabutoRuntime {
               bleed(s, result.target);
               if (damaged)
                 fx(s, "SLASH", s.player.getEyePos(), surface(s.player, result.target), 10, 1);
+              if (damaged) s.state.gain(integer("energy-per-hit"), integer("gauge-per-hit"));
             }
-            s.state.gain(integer("energy-per-hit"), integer("gauge-per-hit"));
           }
           case "HYPER_FORM" -> {
             s.state.hyper = true;
@@ -714,7 +716,7 @@ public final class KabutoRuntime {
             target, tick + integer("bleed-duration-ticks"), old == null ? tick + 20 : old.next));
   }
 
-  private static void shoot(Session s, LivingEntity target, double damage) {
+  private static void shoot(Session s, double damage) {
     var p = s.player;
     var world = p.getServerWorld();
     Vec3d
@@ -726,7 +728,7 @@ public final class KabutoRuntime {
                         .crossProduct(new Vec3d(0, 1, 0))
                         .multiply(p.getMainArm() == net.minecraft.util.Arm.LEFT ? -.25 : .25))
                 .add(0, -.25, 0),
-        direction = target.getBoundingBox().getCenter().subtract(start).normalize();
+        direction = p.getRotationVec(1).normalize();
     // A fast projectile advances over real ticks and stops on the first
     // eligible entity or block, including a bystander crossing its path.
     fx(s, "GUN_MUZZLE", start, start.add(direction), 5, .3);
@@ -765,6 +767,7 @@ public final class KabutoRuntime {
     fx(s, "GUN", position, hitPoint == null ? next : hitPoint, 3, .2);
     if (hit != null) {
       boolean damaged = hit(s, hit, damage, false);
+      if (damaged) s.state.gain(integer("energy-per-hit"), integer("gauge-per-hit"));
       fx(s, damaged ? "GUN_HIT" : "GUN_BLOCK", hitPoint, hitPoint.add(direction), 8, .7);
       return;
     }

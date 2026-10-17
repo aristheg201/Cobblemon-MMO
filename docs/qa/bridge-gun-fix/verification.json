@@ -1,0 +1,21 @@
+{
+  "result": "PASS",
+  "checks": {
+    "native_air_callback": true,
+    "actor_air_right_click_sound": true,
+    "observer_air_right_click_sound": true,
+    "air_does_not_build_energy": true,
+    "wall_blocks_damage": true,
+    "native_mouse_hits_mob": true
+  },
+  "source": "Actual dedicated Fabric server, two connected clients, native UseItemCallback and xdotool right mouse input",
+  "native_air": {
+    "native_right_click_accepted": true,
+    "air_shot_consumes_stamina": true,
+    "air_shot_starts_cooldown": true,
+    "rejected_repeat_does_not_spend_stamina": true,
+    "miss_does_not_build_zecter_energy": true,
+    "miss_does_not_build_clock_gauge": true,
+    "verdict": "PASS"
+  }
+}
