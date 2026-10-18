@@ -1,0 +1,66 @@
+[
+  {
+    "scenario": "ryuki-survive-strike_vent",
+    "accepted": true,
+    "damage": true,
+    "elevated": true,
+    "inventoryPreserved": true,
+    "projectilesCleaned": true
+  },
+  {
+    "scenario": "ryuki-survive-sword_vent",
+    "accepted": true,
+    "damage": true,
+    "elevated": true,
+    "inventoryPreserved": true,
+    "projectilesCleaned": true
+  },
+  {
+    "scenario": "ryuki-survive-final_vent",
+    "accepted": true,
+    "damage": true,
+    "elevated": true,
+    "inventoryPreserved": true,
+    "projectilesCleaned": true
+  },
+  {
+    "scenario": "knight-survive-sword_vent",
+    "accepted": true,
+    "damage": true,
+    "elevated": true,
+    "inventoryPreserved": true,
+    "projectilesCleaned": true
+  },
+  {
+    "scenario": "knight-survive-final_vent",
+    "accepted": true,
+    "damage": true,
+    "elevated": true,
+    "inventoryPreserved": true,
+    "projectilesCleaned": true
+  },
+  {
+    "scenario": "decade-single-use-recast",
+    "firstAccepted": true,
+    "recastAccepted": true,
+    "thirdRejected": true,
+    "secondFree": true,
+    "cooldownNotReset": true,
+    "recastConsumed": true
+  },
+  {
+    "scenario": "decade-three-spirit-selection",
+    "allAccepted": true,
+    "allDistinct": true,
+    "selectionWindowShrinks": true,
+    "selectionFree": true,
+    "decadeModelPreserved": true
+  },
+  {
+    "scenario": "no-resources-rejected",
+    "rejected": true,
+    "noHits": true,
+    "noCooldown": true,
+    "inventoryPreserved": true
+  }
+]

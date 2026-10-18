@@ -41,7 +41,11 @@ final class RiderEffects {
           "SPIRIT_3",
           "KNIGHT_PHANTOM",
           "DECADE_PHANTOM",
-          "ULTIMATE_PHANTOM",
+          "ULTIMATE_KUUGA",
+          "ULTIMATE_BLADE",
+          "ULTIMATE_KIVA",
+          "ROYAL_FLUSH",
+          "EMPEROR_KICK",
           "DIMENSION",
           "BOOKER_GUN");
   private static final List<Job> JOBS = new ArrayList<>();
@@ -49,6 +53,7 @@ final class RiderEffects {
   private static ClientWorld world;
   private static long requests, nativeRequests;
   private static int budget;
+  private static int dimensionCards;
 
   private static final class Job {
     final Protocol.RiderFx packet;
@@ -67,31 +72,40 @@ final class RiderEffects {
         context -> {
           var client = MinecraftClient.getInstance();
           if (client.world == null || context.matrixStack() == null) return;
+          RiderProjectiles.render(context);
           for (var job : JOBS) {
+            renderObjects(job, context, client);
             String form =
                 switch (job.packet.phase()) {
                   case "KNIGHT_PHANTOM" -> "knight";
                   case "DECADE_PHANTOM" -> "decade";
-                  case "ULTIMATE_PHANTOM" -> "ryuki";
+                  case "ULTIMATE_KUUGA" -> "kuuga_ultimate";
+                  case "ULTIMATE_BLADE" -> "blade_king";
+                  case "ULTIMATE_KIVA" -> "kiva_emperor";
                   default -> "";
                 };
             if (form.isEmpty()) continue;
             var matrices = context.matrixStack();
             var camera = context.camera().getPos();
             matrices.push();
-            matrices.translate(
-                job.start.x - camera.x, job.start.y - camera.y, job.start.z - camera.z);
+            double age = job.age + context.tickCounter().getTickDelta(false);
+            Vec3d position =
+                job.packet.phase().equals("ULTIMATE_KIVA")
+                    ? job.start.lerp(job.end, Math.clamp((age - 8) / 18, 0, 1))
+                    : job.start;
+            matrices.translate(position.x - camera.x, position.y - camera.y, position.z - camera.z);
             var direction = job.end.subtract(job.start);
             matrices.multiply(
                 RotationAxis.POSITIVE_Y.rotation((float) -Math.atan2(direction.x, direction.z)));
             int alpha = (int) (145 * Math.min(1, (job.packet.duration() - job.age) / 6d));
-            RiderModels.displayTint(
+            RiderModels.displayPose(
                 form,
                 matrices,
                 client.getBufferBuilders().getEntityVertexConsumers(),
                 0xf000f0,
                 false,
-                (alpha << 24) | 0x59e7ff);
+                (alpha << 24) | (job.packet.phase().startsWith("ULTIMATE_") ? 0xffffff : 0x59e7ff),
+                (float) Math.sin(Math.PI * Math.clamp(age / job.packet.duration(), 0, 1)));
             matrices.pop();
           }
         });
@@ -99,6 +113,7 @@ final class RiderEffects {
 
   static void accept(Protocol.RiderFx p) {
     var client = MinecraftClient.getInstance();
+    if (RiderAnimator.accept(p)) return;
     if (client.world == null
         || !PHASES.contains(p.phase())
         || !Set.of("RYUKI", "KNIGHT", "DECADE", "AGITO", "ZOLDA").contains(p.rider())
@@ -116,8 +131,17 @@ final class RiderEffects {
     }
     if (client.gameRenderer.getCamera().getPos().squaredDistanceTo(new Vec3d(p.x(), p.y(), p.z()))
         > 4096) return;
+    if (Set.of("CARDS", "COMPLETE", "AURA", "SPIRIT_1", "SPIRIT_2", "SPIRIT_3").contains(p.phase()))
+      JOBS.removeIf(
+          j ->
+              j.packet.entityId() == p.entityId()
+                  && (j.packet.phase().equals(p.phase())
+                      || p.phase().startsWith("SPIRIT_")
+                          && j.packet.phase().startsWith("SPIRIT_")));
     if (JOBS.size() >= 64) return;
     JOBS.add(new Job(p));
+    if (p.phase().equals("DIMENSION")) dimensionCards = Math.clamp(p.count(), 5, 7);
+    RiderCamera.impact(p);
     OBSERVED.merge(p.rider() + ":" + p.phase(), 1L, Long::sum);
   }
 
@@ -128,6 +152,9 @@ final class RiderEffects {
 
   static void clear() {
     JOBS.clear();
+    RiderAnimator.clear();
+    RiderProjectiles.clear();
+    RiderCamera.clear();
     world = null;
   }
 
@@ -139,11 +166,18 @@ final class RiderEffects {
     }
     if (world == null) return;
     float density = FantasyHubClient.options == null ? 1 : FantasyHubClient.options.effectsDensity;
-    budget = (int) (384 * density);
+    budget =
+        (int)
+            ((FantasyHubClient.options == null
+                    ? 192
+                    : FantasyHubClient.options.riderParticleBudget())
+                * density);
     if (client.options.getParticles().getValue().name().equals("MINIMAL"))
       budget = Math.min(budget, 80);
     else if (client.options.getParticles().getValue().name().equals("DECREASED"))
       budget = Math.min(budget, 160);
+    RiderAnimator.tick();
+    RiderProjectiles.tick();
     int nativeBudget = 2;
     JOBS.sort(Comparator.comparingInt(j -> j.packet.phase().equals("DIMENSION") ? 0 : 1));
     for (var iterator = JOBS.iterator(); iterator.hasNext(); ) {
@@ -154,7 +188,11 @@ final class RiderEffects {
         continue;
       }
       var actor = world.getEntityById(p.entityId());
-      if (actor == null || !actor.isAlive()) {
+      var form = RiderVisuals.state(p.entityId());
+      if (actor == null
+          || !actor.isAlive()
+          || form == null
+          || Set.of("CARDS", "COMPLETE", "AURA").contains(p.phase()) && form.force() != 1) {
         iterator.remove();
         continue;
       }
@@ -187,30 +225,8 @@ final class RiderEffects {
                   : p.rider().equals("KNIGHT") ? 0x609aff : 0xf137ae,
               .65f);
       switch (p.phase()) {
-        case "DIMENSION" -> {
-          Vec3d dir = j.end.subtract(j.start).normalize(), side = new Vec3d(dir.z, 0, -dir.x);
-          for (int i = 1; i <= 7; i++)
-            card(j.start.lerp(j.end, i / 8d).add(0, 1.1, 0), side, color, 1);
-        }
-        case "CARDS", "COMPLETE" -> {
-          for (int i = 0; i < 6; i++) {
-            double a = j.age * .04 + i * Math.PI / 3;
-            card(
-                pos.add(Math.cos(a) * .85, 1, Math.sin(a) * .85),
-                new Vec3d(-Math.sin(a), 0, Math.cos(a)),
-                color,
-                .23);
-          }
-        }
-        case "SCALES" -> {
-          for (int i = 0; i < 2; i++) {
-            double a = j.age * .1 + i * Math.PI;
-            card(
-                pos.add(Math.cos(a) * .8, 1, Math.sin(a) * .8),
-                new Vec3d(-Math.sin(a), 0, Math.cos(a)),
-                dust(0xdacaba, .8f),
-                .45);
-          }
+        case "DIMENSION", "CARDS", "COMPLETE", "SCALES" -> {
+          /* rendered as actual 3D geometry */
         }
         case "CLOAK" -> {
           for (int i = 0; i < 38; i++) {
@@ -230,7 +246,20 @@ final class RiderEffects {
                     .add(side.multiply(Math.sin(a) * range)));
           }
         }
-        case "HENSHIN", "TORNADO", "AURA", "SURVIVE", "RESONANCE" -> {
+        case "AURA" -> {
+          // Persistent stance remains legible; reserve dense bursts for the transformation.
+          if (j.age % 2 == 0)
+            for (int i = 0; i < 8; i++) {
+              double angle = i * Math.PI / 4 + world.getTime() * .08;
+              point(
+                  color,
+                  pos.add(
+                      Math.cos(angle) * .85,
+                      .25 + (i + j.age / 2) % 6 * .22,
+                      Math.sin(angle) * .85));
+            }
+        }
+        case "HENSHIN", "TORNADO", "SURVIVE", "RESONANCE" -> {
           for (int i = 0; i < 32; i++) {
             double a = i * Math.PI / 16 + j.age * .2;
             point(
@@ -284,6 +313,7 @@ final class RiderEffects {
             }
           }
         }
+        case "ROYAL_FLUSH", "EMPEROR_KICK" -> line(dust(0xffdc63, .8f), j.start, j.end, 30);
         case "SPIRIT_1", "SPIRIT_2", "SPIRIT_3" -> {
           int n = Integer.parseInt(p.phase().substring(7));
           var c = dust(n == 1 ? 0xdaa92d : n == 2 ? 0xff3150 : 0xf56d14, .6f);
@@ -293,7 +323,11 @@ final class RiderEffects {
           }
           line(c, pos.add(-.2, 2.2, 0), pos.add(.2, 2.8, 0), 8);
         }
-        case "ULTIMATE_PHANTOM", "KNIGHT_PHANTOM", "DECADE_PHANTOM" -> {
+        case "ULTIMATE_KUUGA",
+            "ULTIMATE_BLADE",
+            "ULTIMATE_KIVA",
+            "KNIGHT_PHANTOM",
+            "DECADE_PHANTOM" -> {
           if (j.age % 3 == 0) line(color, j.start, j.start.add(0, 2, 0), 14);
         }
       }
@@ -301,13 +335,123 @@ final class RiderEffects {
     }
   }
 
+  private static void renderObjects(
+      Job job,
+      net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext context,
+      MinecraftClient client) {
+    var p = job.packet;
+    var actor = client.world.getEntityById(p.entityId());
+    if (actor == null || !actor.isAlive() || RiderVisuals.state(p.entityId()) == null) return;
+    var form = RiderVisuals.state(p.entityId());
+    var camera = context.camera().getPos();
+    var vertices = client.getBufferBuilders().getEntityVertexConsumers();
+    double age = job.age + context.tickCounter().getTickDelta(false);
+    double fade = Math.min(1, Math.min(age / 3, (p.duration() - age) / 4));
+    if (fade <= 0) return;
+    switch (p.phase()) {
+      case "DIMENSION" -> {
+        var direction = job.end.subtract(job.start);
+        float yaw = (float) -Math.atan2(direction.x, direction.z);
+        int count = Math.clamp(p.count(), 5, 7);
+        for (int i = 0; i < count; i++) {
+          if (age < i * 2) continue;
+          var at = job.start.lerp(job.end, (i + 1d) / (count + 1)).add(0, 1.25, 0);
+          drawObject(
+              "rider_card",
+              at,
+              yaw,
+              2.15f,
+              (int) (200 * fade) << 24 | 0xffbce9,
+              context.matrixStack(),
+              vertices,
+              camera);
+        }
+      }
+      case "CARDS", "COMPLETE" -> {
+        if (form.force() != 1) return;
+        for (int i = 0; i < 6; i++) {
+          double angle =
+              (client.world.getTime() + context.tickCounter().getTickDelta(false)) * .04
+                  + i * Math.PI / 3;
+          var at =
+              actor
+                  .getLerpedPos(context.tickCounter().getTickDelta(false))
+                  .add(
+                      Math.cos(angle) * .85,
+                      1.15 + Math.sin(angle * 2) * .08,
+                      Math.sin(angle) * .85);
+          drawObject(
+              "rider_card",
+              at,
+              (float) (-angle + Math.PI / 2),
+              .4f,
+              0xcfffe2f8,
+              context.matrixStack(),
+              vertices,
+              camera);
+        }
+      }
+      case "SCALES" -> {
+        for (int i = 0; i < 2; i++) {
+          double angle = age * .1 + i * Math.PI;
+          var at =
+              actor
+                  .getLerpedPos(context.tickCounter().getTickDelta(false))
+                  .add(Math.cos(angle) * .82, 1.02, Math.sin(angle) * .82);
+          drawObject(
+              "drag_shield",
+              at,
+              (float) (-angle + Math.PI / 2),
+              .78f,
+              0xffffffff,
+              context.matrixStack(),
+              vertices,
+              camera);
+        }
+      }
+      case "CLOAK" -> {
+        drawObject(
+            "knight_cloak",
+            actor.getLerpedPos(context.tickCounter().getTickDelta(false)).add(0, 1.1, 0),
+            (float) Math.toRadians(-actor.getYaw()),
+            1.4f,
+            (int) (230 * fade) << 24 | 0xc8daff,
+            context.matrixStack(),
+            vertices,
+            camera);
+      }
+    }
+  }
+
+  private static void drawObject(
+      String name,
+      Vec3d at,
+      float yaw,
+      float scale,
+      int tint,
+      net.minecraft.client.util.math.MatrixStack matrices,
+      net.minecraft.client.render.VertexConsumerProvider provider,
+      Vec3d camera) {
+    matrices.push();
+    matrices.translate(at.x - camera.x, at.y - camera.y, at.z - camera.z);
+    matrices.multiply(RotationAxis.POSITIVE_Y.rotation(yaw));
+    matrices.scale(scale, scale, scale);
+    RiderModels.object(name, matrices, provider, 0xf000f0, tint);
+    matrices.pop();
+  }
+
   private static DustParticleEffect dust(int rgb, float size) {
     return new DustParticleEffect(
         new Vector3f((rgb >> 16 & 255) / 255f, (rgb >> 8 & 255) / 255f, (rgb & 255) / 255f), size);
   }
 
-  private static void point(ParticleEffect effect, Vec3d at) {
+  static void point(ParticleEffect effect, Vec3d at) {
     if (budget-- <= 0) return;
+    var camera = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
+    double distance = camera.squaredDistanceTo(at);
+    if (distance > 4096
+        || distance > 1024 && (budget & 3) != 0
+        || distance > 256 && (budget & 1) != 0) return;
     world.addParticle(effect, at.x, at.y, at.z, 0, 0, 0);
     requests++;
   }
@@ -334,6 +478,8 @@ final class RiderEffects {
     out.addProperty("minecraftParticleRequests", requests);
     out.addProperty("nativeCobblemonRequests", nativeRequests);
     out.addProperty("activeJobs", JOBS.size());
+    out.addProperty("dimensionCards", dimensionCards);
+    out.add("projectiles", RiderProjectiles.observation());
     return out;
   }
 }

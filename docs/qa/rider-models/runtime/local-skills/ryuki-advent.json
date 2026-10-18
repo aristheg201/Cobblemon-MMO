@@ -1,0 +1,428 @@
+{
+  "scenario": "cast_ryuki_advent",
+  "targetsBefore": [
+    {
+      "position": [
+        200.5,
+        65.0,
+        3.2
+      ],
+      "armor": 20,
+      "stunned": false,
+      "effects": [],
+      "uuid": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "health": 1000.0
+    },
+    {
+      "position": [
+        202.5,
+        65.0,
+        4.8
+      ],
+      "armor": 20,
+      "stunned": false,
+      "effects": [],
+      "uuid": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "health": 1000.0
+    },
+    {
+      "position": [
+        199.3,
+        65.0,
+        5.3
+      ],
+      "armor": 20,
+      "stunned": false,
+      "effects": [],
+      "uuid": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "health": 1000.0
+    }
+  ],
+  "manaBefore": 89.7,
+  "staminaBefore": 64.8,
+  "inventoryBefore": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"}]",
+  "before": {
+    "active": true,
+    "class": "RYUKI",
+    "form": "ryuki",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "spiritSelected": 1,
+    "projection": 1,
+    "recastRemaining": 0,
+    "spiritSelectionRemaining": 0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 3135,
+    "summon": ""
+  },
+  "castResult": true,
+  "manaAfter": 80.7,
+  "staminaAfter": 64.8,
+  "inventoryAfter": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"}]",
+  "cooldownAfter": 17.969,
+  "immediate": {
+    "active": true,
+    "class": "RYUKI",
+    "form": "ryuki",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "spiritSelected": 1,
+    "projection": 1,
+    "recastRemaining": 0,
+    "spiritSelectionRemaining": 0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 3135,
+    "summon": "e6cab806-1c98-4b58-9862-74b277d9fe3c"
+  },
+  "targetsImmediate": [
+    {
+      "position": [
+        200.5,
+        65.0,
+        3.2
+      ],
+      "armor": 20,
+      "stunned": false,
+      "effects": [],
+      "uuid": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "health": 1000.0
+    },
+    {
+      "position": [
+        202.5,
+        65.0,
+        4.8
+      ],
+      "armor": 20,
+      "stunned": false,
+      "effects": [],
+      "uuid": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "health": 1000.0
+    },
+    {
+      "position": [
+        199.3,
+        65.0,
+        5.3
+      ],
+      "armor": 20,
+      "stunned": false,
+      "effects": [],
+      "uuid": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "health": 1000.0
+    }
+  ],
+  "hitsImmediate": [],
+  "settled": {
+    "active": true,
+    "class": "RYUKI",
+    "form": "ryuki",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "spiritSelected": 1,
+    "projection": 1,
+    "recastRemaining": 0,
+    "spiritSelectionRemaining": 0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 1,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 3205,
+    "summon": ""
+  },
+  "targetsSettled": [
+    {
+      "position": [
+        200.5,
+        65.0,
+        3.2
+      ],
+      "armor": 20,
+      "stunned": false,
+      "effects": [],
+      "uuid": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "health": 970.19995
+    },
+    {
+      "position": [
+        202.5,
+        65.0,
+        4.8
+      ],
+      "armor": 20,
+      "stunned": false,
+      "effects": [],
+      "uuid": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "health": 970.19995
+    },
+    {
+      "position": [
+        199.3,
+        65.0,
+        5.3
+      ],
+      "armor": 20,
+      "stunned": false,
+      "effects": [],
+      "uuid": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "health": 970.19995
+    }
+  ],
+  "hits": [
+    {
+      "tick": 3136,
+      "target": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 997.62
+    },
+    {
+      "tick": 3136,
+      "target": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 997.62
+    },
+    {
+      "tick": 3136,
+      "target": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 997.62
+    },
+    {
+      "tick": 3140,
+      "target": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 994.24
+    },
+    {
+      "tick": 3140,
+      "target": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 994.24
+    },
+    {
+      "tick": 3140,
+      "target": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 994.24
+    },
+    {
+      "tick": 3145,
+      "target": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 991.86
+    },
+    {
+      "tick": 3145,
+      "target": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 991.86
+    },
+    {
+      "tick": 3145,
+      "target": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 991.86
+    },
+    {
+      "tick": 3150,
+      "target": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 989.48
+    },
+    {
+      "tick": 3150,
+      "target": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 989.48
+    },
+    {
+      "tick": 3150,
+      "target": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 989.48
+    },
+    {
+      "tick": 3155,
+      "target": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 986.1
+    },
+    {
+      "tick": 3155,
+      "target": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 986.1
+    },
+    {
+      "tick": 3155,
+      "target": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 986.1
+    },
+    {
+      "tick": 3160,
+      "target": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 983.72
+    },
+    {
+      "tick": 3160,
+      "target": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 983.72
+    },
+    {
+      "tick": 3160,
+      "target": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 983.72
+    },
+    {
+      "tick": 3165,
+      "target": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 980.33997
+    },
+    {
+      "tick": 3165,
+      "target": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 980.33997
+    },
+    {
+      "tick": 3165,
+      "target": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 980.33997
+    },
+    {
+      "tick": 3170,
+      "target": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 977.95996
+    },
+    {
+      "tick": 3170,
+      "target": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 977.95996
+    },
+    {
+      "tick": 3170,
+      "target": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 977.95996
+    },
+    {
+      "tick": 3175,
+      "target": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 974.57996
+    },
+    {
+      "tick": 3175,
+      "target": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 974.57996
+    },
+    {
+      "tick": 3175,
+      "target": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 974.57996
+    },
+    {
+      "tick": 3180,
+      "target": "95451ec0-65d5-43de-b88e-b735344a9b5e",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 972.19995
+    },
+    {
+      "tick": 3180,
+      "target": "d3090c9f-decf-4b91-a696-8d4f031df597",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 972.19995
+    },
+    {
+      "tick": 3180,
+      "target": "578f30cd-7191-4043-81bf-bbbe04cf6d65",
+      "fire": true,
+      "amount": 2.3800048828125,
+      "health": 972.19995
+    }
+  ],
+  "savedPreferences": {
+    "fantasyhub.rider.spirit": "1",
+    "fantasyhub.rider.class": "RYUKI",
+    "fantasyhub.rider.cooldown.knight_trick_vent": "1792323409216",
+    "fantasyhub.rider.cooldown.ryuki_advent": "1792324921536",
+    "fantasyhub.rider.cooldown.ryuki_sword_vent": "1792324886166",
+    "fantasyhub.rider.cooldown.knight_final_vent": "1792323482350",
+    "fantasyhub.rider.cooldown.decade_complete": "1792324821687",
+    "fantasyhub.rider.cooldown.knight_blast_vent": "1792323443621",
+    "fantasyhub.rider.cooldown.ryuki_strike_vent": "1792324872560",
+    "fantasyhub.rider.cooldown.ryuki_guard_vent": "1792324904727",
+    "fantasyhub.rider.last-stance": "normal",
+    "fantasyhub.rider.cooldown.knight_sword_vent": "1792323374593",
+    "fantasyhub.rider.cooldown.knight_guard_vent": "1792323417369",
+    "fantasyhub.rider.cooldown.knight_survive": "1792323417584",
+    "fantasyhub.rider.projection": "1",
+    "fantasyhub.rider.cooldown.decade_dimension_kick": "1792324868418",
+    "fantasyhub.rider.cooldown.knight_nasty_vent": "1792323391260"
+  },
+  "maxHealth": 49.8,
+  "health": 49.8,
+  "settledReport": true,
+  "checks": {
+    "accepted": true,
+    "inventoryPreserved": true,
+    "cooldownApplied": true,
+    "actualDamageEvents": 30,
+    "damageObserved": true,
+    "resourceConsumed": true
+  }
+}

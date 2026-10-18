@@ -15,10 +15,77 @@ import vn.svframe.svframemmo.skill.PlayerSkillCatalog;
 
 /** Native, opt-in integration probes. No assertion here labels the whole class complete. */
 final class RiderQa {
+  private static final boolean ENABLED = "1".equals(System.getenv("SVFRAME_RUNTIME_QA"));
+  private static final Map<UUID, List<Map<String, Object>>> HITS = new HashMap<>();
+
+  static void hit(
+      ServerPlayerEntity player,
+      LivingEntity target,
+      double applied,
+      boolean fire,
+      int armorBefore,
+      int armorDuring,
+      boolean critical) {
+    if (!ENABLED) return;
+    var hits = HITS.computeIfAbsent(player.getUuid(), id -> new ArrayList<>());
+    if (hits.size() < 256)
+      hits.add(
+          Map.of(
+              "target",
+              target.getUuidAsString(),
+              "amount",
+              applied,
+              "fire",
+              fire,
+              "health",
+              target.getHealth(),
+              "tick",
+              RiderRuntime.tick,
+              "armorBefore",
+              armorBefore,
+              "armorDuring",
+              armorDuring,
+              "armorAfter",
+              target.getArmor(),
+              "critical",
+              critical));
+  }
+
+  private static List<Map<String, Object>> targets(ServerPlayerEntity p) {
+    var result = new ArrayList<Map<String, Object>>();
+    for (var t :
+        p.getServerWorld()
+            .getEntitiesByClass(
+                LivingEntity.class,
+                p.getBoundingBox().expand(40),
+                e -> e.getCommandTags().contains("rider_qa_target"))) {
+      result.add(
+          Map.of(
+              "uuid",
+              t.getUuidAsString(),
+              "health",
+              t.getHealth(),
+              "position",
+              List.of(t.getX(), t.getY(), t.getZ()),
+              "armor",
+              t.getArmor(),
+              "effects",
+              t.getStatusEffects().stream()
+                  .map(e -> e.getEffectType().getIdAsString() + ":" + e.getDuration())
+                  .toList(),
+              "stunned",
+              CardRiderControl.stunned(t)));
+      if (result.size() >= 32) break;
+    }
+    return result;
+  }
+
   static int run(ServerPlayerEntity p, String scenario) {
     var data = SVFrameMMO.playerData().get(p);
     var report = new LinkedHashMap<String, Object>();
     report.put("scenario", scenario);
+    report.put("targetsBefore", targets(p));
+    HITS.put(p.getUuid(), new ArrayList<>());
     if (scenario.startsWith("prepare_")) {
       String type = scenario.substring(8).toUpperCase(Locale.ROOT);
       if (!RiderRuntime.SKILLS.containsKey(type)) return 0;
@@ -79,11 +146,16 @@ final class RiderQa {
           data.getMMOPlayerData().getCooldownMap().getCooldown(id.toLowerCase(Locale.ROOT)));
     } else if (!scenario.equals("status")) return 0;
     report.put("immediate", RiderRuntime.inspect(p));
+    report.put("targetsImmediate", targets(p));
+    report.put("hitsImmediate", List.copyOf(HITS.getOrDefault(p.getUuid(), List.of())));
     save(p, report, false);
     vn.svframe.svframelib.fabric.SVFrameLibFabricMod.schedule(
         70,
         () -> {
           report.put("settled", RiderRuntime.inspect(p));
+          report.put("targetsSettled", targets(p));
+          report.put("hits", List.copyOf(HITS.getOrDefault(p.getUuid(), List.of())));
+          report.put("savedPreferences", data.getPreferences());
           report.put("maxHealth", p.getMaxHealth());
           report.put("health", p.getHealth());
           save(p, report, true);

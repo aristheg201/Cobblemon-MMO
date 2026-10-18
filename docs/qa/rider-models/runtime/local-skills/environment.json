@@ -1,0 +1,19 @@
+{
+  "execution": "LOCAL native dedicated server and two real clients",
+  "timestamp": "2026-10-18T12:04:10.765069+00:00",
+  "githubActionsUsed": false,
+  "artifacts": {
+    "/workspace/runtime-server": {
+      "file": "FantasyHubBridge-0.1.12.jar",
+      "sha256": "9237c4f357252eb44ded906f6687d8436ec2e4e7510a72005e4408b9739d9e7d"
+    },
+    "/workspace/runtime-client": {
+      "file": "FantasyHubClient-0.1.12.jar",
+      "sha256": "f782c6c2e83d289f49e20230ea211f59d33cdb312615462721fd5436f512354b"
+    },
+    "/workspace/runtime-client-two": {
+      "file": "FantasyHubClient-0.1.12.jar",
+      "sha256": "f782c6c2e83d289f49e20230ea211f59d33cdb312615462721fd5436f512354b"
+    }
+  }
+}

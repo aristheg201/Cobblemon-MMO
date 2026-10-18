@@ -1,0 +1,151 @@
+{
+  "beforeMana": 0.0,
+  "afterMana": 26.436999999999998,
+  "trace": [
+    {
+      "attackResponse": "Applied 1.0 damage to Zombie",
+      "flame": 1
+    },
+    {
+      "attackResponse": "Applied 1.0 damage to Zombie",
+      "flame": 2
+    },
+    {
+      "attackResponse": "Applied 1.0 damage to Zombie",
+      "flame": 3
+    },
+    {
+      "attackResponse": "Applied 1.0 damage to Zombie",
+      "flame": 4
+    },
+    {
+      "attackResponse": "Applied 1.0 damage to Zombie",
+      "flame": 5
+    },
+    {
+      "attackResponse": "Applied 1.0 damage to Zombie",
+      "flame": 6
+    },
+    {
+      "attackResponse": "Applied 1.0 damage to Zombie",
+      "flame": 7
+    },
+    {
+      "attackResponse": "Applied 1.0 damage to Zombie",
+      "flame": 8
+    },
+    {
+      "attackResponse": "Applied 1.0 damage to Zombie",
+      "flame": 9
+    },
+    {
+      "attackResponse": "Applied 1.0 damage to Zombie",
+      "flame": 0
+    }
+  ],
+  "final": {
+    "scenario": "status",
+    "targetsBefore": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "186ef26e-531f-4a7b-bed2-e736303d479e",
+        "health": 996.3003
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "783913ea-bbd2-4f50-9c70-e75c3783ccde",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "1cff5c05-bb06-47e0-8a57-5897bef11647",
+        "health": 1000.0
+      }
+    ],
+    "immediate": {
+      "active": true,
+      "class": "RYUKI",
+      "form": "ryuki",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 2,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 12102,
+      "summon": ""
+    },
+    "targetsImmediate": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "186ef26e-531f-4a7b-bed2-e736303d479e",
+        "health": 996.3003
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "783913ea-bbd2-4f50-9c70-e75c3783ccde",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "1cff5c05-bb06-47e0-8a57-5897bef11647",
+        "health": 1000.0
+      }
+    ],
+    "hitsImmediate": [],
+    "settledReport": false
+  },
+  "checks": {
+    "eachActualHitCounted": true,
+    "manaRestored": true
+  }
+}

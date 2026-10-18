@@ -1,0 +1,81 @@
+[
+  {
+    "scenario": "five-configured-3d-cards",
+    "actorReceivedFive": true,
+    "observerReceivedFive": true,
+    "noLeakedProjectiles": true
+  },
+  {
+    "scenario": "ultimate-projection-0",
+    "accepted": true,
+    "realDamage": true,
+    "decadeUnchanged": true,
+    "temporarySummonRetired": true
+  },
+  {
+    "scenario": "ultimate-projection-1",
+    "accepted": true,
+    "realDamage": true,
+    "decadeUnchanged": true,
+    "temporarySummonRetired": true
+  },
+  {
+    "scenario": "ultimate-projection-2",
+    "accepted": true,
+    "realDamage": true,
+    "decadeUnchanged": true,
+    "temporarySummonRetired": true
+  },
+  {
+    "scenario": "ryuki-real-hotkey",
+    "damagedThroughRealInput": true,
+    "cooldownApplied": true,
+    "costCharged": true,
+    "inventoryPreserved": true
+  },
+  {
+    "scenario": "knight-real-hotkey",
+    "damagedThroughRealInput": true,
+    "cooldownApplied": true,
+    "costCharged": true,
+    "inventoryPreserved": true
+  },
+  {
+    "scenario": "decade-real-hotkey",
+    "damagedThroughRealInput": true,
+    "cooldownApplied": true,
+    "costCharged": true,
+    "inventoryPreserved": true
+  },
+  {
+    "scenario": "complete-control-immunity",
+    "slowBlocked": true,
+    "blindBlocked": true
+  },
+  {
+    "scenario": "dimension-wall-collision",
+    "accepted": true,
+    "noHitsThroughWall": true,
+    "targetsUnaffected": true
+  },
+  {
+    "scenario": "passive-three-real-projectiles",
+    "threeActorSpawns": true,
+    "threeObserverSpawns": true,
+    "threeServerHits": true,
+    "singleUseConsumed": true
+  },
+  {
+    "scenario": "two-players-concurrent",
+    "bothAccepted": true,
+    "bothDamagedRealTargets": true,
+    "bothCleanedProjectiles": true
+  },
+  {
+    "scenario": "before-persistence-restart",
+    "accepted": true,
+    "cooldownAtLeast590": true,
+    "completeActive": true,
+    "classDecade": true
+  }
+]

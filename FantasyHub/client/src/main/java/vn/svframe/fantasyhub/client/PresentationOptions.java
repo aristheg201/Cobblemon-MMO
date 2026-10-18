@@ -1,40 +1,97 @@
 package vn.svframe.fantasyhub.client;
 
 import com.google.gson.GsonBuilder;
-import net.fabricmc.loader.api.FabricLoader;
-import java.nio.file.*;
 import java.io.IOException;
+import java.nio.file.*;
 import java.util.logging.*;
+import net.fabricmc.loader.api.FabricLoader;
 
 /** Local presentation settings. None of these options change gameplay resources. */
 final class PresentationOptions {
-    boolean enabled=true;
-    float scale=.8f;
-    float effectsDensity=1f;
-    boolean cobblemonEffects=true;
-    boolean right=false;
-    boolean compact=true;
-    boolean health=true,mana=true,stamina=true,magic=true;
-    private static Path path(){return FabricLoader.getInstance().getConfigDir().resolve("fantasyhub-client.json");}
-    static PresentationOptions load(){
-        try{
-            if(!Files.exists(path()))return new PresentationOptions();
-            var options=new com.google.gson.Gson().fromJson(Files.readString(path()),PresentationOptions.class);
-            if(options==null)return new PresentationOptions();
-            options.scale=Float.isFinite(options.scale)?Math.max(.5f,Math.min(1,options.scale)):.8f;
-            options.effectsDensity=Float.isFinite(options.effectsDensity)?Math.clamp(options.effectsDensity,0f,1.5f):1f;
-            return options;
-        }catch(IOException|RuntimeException failure){Logger.getLogger("FantasyHub-Client").log(Level.WARNING,"Could not load presentation options",failure);return new PresentationOptions();}
+  boolean enabled = true;
+  float scale = .8f;
+  float effectsDensity = 1f;
+  boolean cobblemonEffects = true;
+  String visualQuality = "medium";
+  float cameraShakeStrength = .4f;
+  boolean right = false;
+  boolean compact = true;
+  boolean health = true, mana = true, stamina = true, magic = true;
+
+  private static Path path() {
+    return FabricLoader.getInstance().getConfigDir().resolve("fantasyhub-client.json");
+  }
+
+  static PresentationOptions load() {
+    try {
+      if (!Files.exists(path())) return new PresentationOptions();
+      var options =
+          new com.google.gson.Gson().fromJson(Files.readString(path()), PresentationOptions.class);
+      if (options == null) return new PresentationOptions();
+      options.scale =
+          Float.isFinite(options.scale) ? Math.max(.5f, Math.min(1, options.scale)) : .8f;
+      options.effectsDensity =
+          Float.isFinite(options.effectsDensity)
+              ? Math.clamp(options.effectsDensity, 0f, 1.5f)
+              : 1f;
+      if (!java.util.Set.of("low", "medium", "high")
+          .contains(options.visualQuality == null ? "" : options.visualQuality))
+        options.visualQuality = "medium";
+      options.cameraShakeStrength =
+          Float.isFinite(options.cameraShakeStrength)
+              ? Math.clamp(options.cameraShakeStrength, 0, 1)
+              : .4f;
+      return options;
+    } catch (IOException | RuntimeException failure) {
+      Logger.getLogger("FantasyHub-Client")
+          .log(Level.WARNING, "Could not load presentation options", failure);
+      return new PresentationOptions();
     }
-    void save(){
-        try{
-            Files.createDirectories(path().getParent());
-            Path temporary=path().resolveSibling(path().getFileName()+".tmp");
-            Files.writeString(temporary,new GsonBuilder().setPrettyPrinting().create().toJson(this));
-            try{Files.move(temporary,path(),StandardCopyOption.REPLACE_EXISTING,StandardCopyOption.ATOMIC_MOVE);}
-            catch(AtomicMoveNotSupportedException unavailable){Files.move(temporary,path(),StandardCopyOption.REPLACE_EXISTING);}
-        }catch(IOException failure){Logger.getLogger("FantasyHub-Client").log(Level.WARNING,"Could not save presentation options",failure);}
+  }
+
+  void save() {
+    try {
+      Files.createDirectories(path().getParent());
+      Path temporary = path().resolveSibling(path().getFileName() + ".tmp");
+      Files.writeString(temporary, new GsonBuilder().setPrettyPrinting().create().toJson(this));
+      try {
+        Files.move(
+            temporary, path(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+      } catch (AtomicMoveNotSupportedException unavailable) {
+        Files.move(temporary, path(), StandardCopyOption.REPLACE_EXISTING);
+      }
+    } catch (IOException failure) {
+      Logger.getLogger("FantasyHub-Client")
+          .log(Level.WARNING, "Could not save presentation options", failure);
     }
-    boolean visible(String resource){return switch(resource){case "health"->health;case "mana"->mana;case "stamina"->stamina;case "magic"->magic;default->false;};}
-    void toggle(String resource){switch(resource){case "health"->health=!health;case "mana"->mana=!mana;case "stamina"->stamina=!stamina;case "magic"->magic=!magic;default->throw new IllegalArgumentException("Unknown HUD resource");}save();}
+  }
+
+  int riderParticleBudget() {
+    return switch (visualQuality) {
+      case "low" -> 96;
+      case "high" -> 384;
+      default -> 192;
+    };
+  }
+
+  boolean visible(String resource) {
+    return switch (resource) {
+      case "health" -> health;
+      case "mana" -> mana;
+      case "stamina" -> stamina;
+      case "magic" -> magic;
+      default -> false;
+    };
+  }
+
+  void toggle(String resource) {
+    switch (resource) {
+      case "health" -> health = !health;
+      case "mana" -> mana = !mana;
+      case "stamina" -> stamina = !stamina;
+      case "magic" -> magic = !magic;
+      default -> throw new IllegalArgumentException("Unknown HUD resource");
+    }
+    save();
+  }
 }

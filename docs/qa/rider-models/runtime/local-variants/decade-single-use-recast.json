@@ -1,0 +1,397 @@
+{
+  "first": {
+    "scenario": "cast_decade_slash_blast",
+    "targetsBefore": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "3809f1d2-8ccc-4a8f-818b-8018cc10611e",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "1ef4b717-40c3-4d75-be31-cc682137c8a0",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "c2161035-0672-4ff6-9dfd-d6c28d812f0c",
+        "health": 1000.0
+      }
+    ],
+    "manaBefore": 89.7,
+    "staminaBefore": 64.8,
+    "inventoryBefore": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"}]",
+    "before": {
+      "active": true,
+      "class": "DECADE",
+      "form": "decade",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 1,
+      "projection": 2,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 9956,
+      "summon": ""
+    },
+    "castResult": true,
+    "manaAfter": 85.7,
+    "staminaAfter": 61.8,
+    "inventoryAfter": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"}]",
+    "cooldownAfter": 8.996,
+    "immediate": {
+      "active": true,
+      "class": "DECADE",
+      "form": "decade",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 1,
+      "projection": 2,
+      "recastRemaining": 50,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": true,
+      "spirit": 0,
+      "tick": 9956,
+      "summon": ""
+    },
+    "targetsImmediate": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "3809f1d2-8ccc-4a8f-818b-8018cc10611e",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "1ef4b717-40c3-4d75-be31-cc682137c8a0",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "c2161035-0672-4ff6-9dfd-d6c28d812f0c",
+        "health": 1000.0
+      }
+    ],
+    "hitsImmediate": [],
+    "settledReport": false
+  },
+  "recast": {
+    "scenario": "cast_decade_slash_blast",
+    "targetsBefore": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "3809f1d2-8ccc-4a8f-818b-8018cc10611e",
+        "health": 988.0
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "1ef4b717-40c3-4d75-be31-cc682137c8a0",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "c2161035-0672-4ff6-9dfd-d6c28d812f0c",
+        "health": 1000.0
+      }
+    ],
+    "manaBefore": 88.836,
+    "staminaBefore": 64.8,
+    "inventoryBefore": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"}]",
+    "before": {
+      "active": true,
+      "class": "DECADE",
+      "form": "decade",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 1,
+      "projection": 2,
+      "recastRemaining": 36,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": true,
+      "spirit": 0,
+      "tick": 9970,
+      "summon": ""
+    },
+    "castResult": true,
+    "manaAfter": 88.836,
+    "staminaAfter": 64.8,
+    "inventoryAfter": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"}]",
+    "cooldownAfter": 8.292,
+    "immediate": {
+      "active": true,
+      "class": "DECADE",
+      "form": "decade",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 1,
+      "projection": 2,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": true,
+      "spirit": 0,
+      "tick": 9970,
+      "summon": ""
+    },
+    "targetsImmediate": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "3809f1d2-8ccc-4a8f-818b-8018cc10611e",
+        "health": 988.0
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "1ef4b717-40c3-4d75-be31-cc682137c8a0",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "c2161035-0672-4ff6-9dfd-d6c28d812f0c",
+        "health": 1000.0
+      }
+    ],
+    "hitsImmediate": [],
+    "settledReport": false
+  },
+  "third": {
+    "scenario": "cast_decade_slash_blast",
+    "targetsBefore": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "3809f1d2-8ccc-4a8f-818b-8018cc10611e",
+        "health": 980.32007
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "1ef4b717-40c3-4d75-be31-cc682137c8a0",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "c2161035-0672-4ff6-9dfd-d6c28d812f0c",
+        "health": 1000.0
+      }
+    ],
+    "manaBefore": 89.7,
+    "staminaBefore": 64.8,
+    "inventoryBefore": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"}]",
+    "before": {
+      "active": true,
+      "class": "DECADE",
+      "form": "decade",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 1,
+      "projection": 2,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": true,
+      "spirit": 0,
+      "tick": 9984,
+      "summon": ""
+    },
+    "castResult": false,
+    "manaAfter": 89.7,
+    "staminaAfter": 64.8,
+    "inventoryAfter": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"}]",
+    "cooldownAfter": 7.617,
+    "immediate": {
+      "active": true,
+      "class": "DECADE",
+      "form": "decade",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 1,
+      "projection": 2,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": true,
+      "spirit": 0,
+      "tick": 9984,
+      "summon": ""
+    },
+    "targetsImmediate": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "3809f1d2-8ccc-4a8f-818b-8018cc10611e",
+        "health": 980.32007
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "1ef4b717-40c3-4d75-be31-cc682137c8a0",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "c2161035-0672-4ff6-9dfd-d6c28d812f0c",
+        "health": 1000.0
+      }
+    ],
+    "hitsImmediate": [],
+    "settledReport": false
+  },
+  "checks": {
+    "firstAccepted": true,
+    "recastAccepted": true,
+    "thirdRejected": true,
+    "secondFree": true,
+    "cooldownNotReset": true,
+    "recastConsumed": true
+  }
+}

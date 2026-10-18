@@ -9,11 +9,24 @@
     "agito_shining",
     "magnugiga",
     "ryuki",
+    "ryuki_helmet",
     "knight",
+    "knight_helmet",
     "decade",
+    "decade_helmet",
     "dragreder",
     "dragranzer",
     "darkwing",
+    "rider_card",
+    "drag_shield",
+    "drag_visor",
+    "drag_claw",
+    "drag_visor_z",
+    "ktouch",
+    "knight_cloak",
+    "kuuga_ultimate",
+    "blade_king",
+    "kiva_emperor",
     "zolda_belt",
     "agito_belt",
     "magna_visor",
@@ -69,7 +82,9 @@
     "dragon_scale",
     "bat_membrane",
     "crest_ryuki",
-    "crest_knight"
+    "crest_knight",
+    "card_decade",
+    "ktouch_screen"
   ],
   "textureSize": 512,
   "references": {
@@ -101,6 +116,19 @@
       "https://www.kamen-rider-official.com/zukan/forms/267"
     ],
     "card_rider_revision": "Geometry revision2 after explicit user rejection: faceted sealed helmets, corrected silver Ryuki chest, wrapped Knight cage/jaw, integral Decade barcode, S-curve articulated dragons, scalloped Darkwing wings. Pending native and user visual review.",
+    "additional_equipment_sources": [
+      "https://www.kamen-rider-official.com/zukan/items/1086",
+      "https://www.kamen-rider-official.com/zukan/items/1087",
+      "https://www.kamen-rider-official.com/zukan/items/1186",
+      "https://www.kamen-rider-official.com/zukan/items/1187",
+      "https://www.kamen-rider-official.com/zukan/items/272",
+      "https://www.kamen-rider-official.com/zukan/items/273"
+    ],
+    "ultimate_projection_sources": [
+      "https://www.kamen-rider-official.com/zukan/forms/585",
+      "https://www.kamen-rider-official.com/zukan/forms/562",
+      "https://www.kamen-rider-official.com/zukan/forms/291"
+    ],
     "card_riders": {
       "archives": [
         "Download.zip",

@@ -30,10 +30,20 @@ final class CardRiderSkills {
 
   private record Control(Session owner, LivingEntity target, long until) {}
 
+  private static int reflectionDepth;
   private static final Map<UUID, Control> STUNS = new HashMap<>(), WOUNDS = new HashMap<>();
 
   static boolean supports(Session s) {
     return Set.of("RYUKI", "KNIGHT", "DECADE").contains(s.type);
+  }
+
+  static boolean legal(Session s, LivingEntity t) {
+    if (!ReferenceClassSkillRuntime.canTarget(s.player, t)) return false;
+    return !supports(s) || !s.player.isTeammate(t) || flag(s, "friendly-fire");
+  }
+
+  private static boolean flag(Session s, String key) {
+    return RiderRuntime.flag(s, key);
   }
 
   static void install() {
@@ -70,7 +80,7 @@ final class CardRiderSkills {
     return c != null
             && !expired(c)
             && RpgEntityAdapters.allows(c.owner.player, e, RpgEntityAdapters.Effect.STATUS)
-        ? amount * .5f
+        ? amount * (float) (1 - n(c.owner, "healing-reduction-fraction"))
         : amount;
   }
 
@@ -92,8 +102,23 @@ final class CardRiderSkills {
     if (s.cards.guardUntil <= tick) s.cards.barrier = 0;
     if (tick % 10 == 0 && s.cards.elevated)
       cue(s, s.type.equals("DECADE") ? "CARDS" : "AURA", s.player.getPos(), s.player.getPos(), 12);
+    if (s.cards.elevated && tick % 20 == 0) {
+      var data = vn.svframe.svframemmo.SVFrameMMO.playerData().get(s.player);
+      double mana = n(s, "upkeep-mana-per-second"), stamina = n(s, "upkeep-stamina-per-second");
+      if (data.getMana() < mana || data.getStamina() < stamina) {
+        s.cards.toggle();
+        applyForm(s);
+        publish(s);
+        s.player.sendMessage(
+            net.minecraft.text.Text.translatable("fantasyhub.rider.upkeep_failed"), true);
+        return;
+      }
+      if (mana > 0) data.giveMana(-mana, ResourceUpdateReason.SKILL);
+      if (stamina > 0) data.giveStamina(-stamina, ResourceUpdateReason.SKILL);
+    }
     if (s.type.equals("RYUKI") && s.cards.elevated && tick % 20 == 0)
-      for (var t : near(s, s.player.getPos(), 2.5)) burn(s, t, 40);
+      for (var t : near(s, s.player.getPos(), n(s, "survive-burn-radius")))
+        burn(s, t, (int) n(s, "survive-burn-ticks"));
   }
 
   static void applyForm(Session s) {
@@ -104,13 +129,18 @@ final class CardRiderSkills {
         !s.active()
             ? 0
             : s.type.equals("DECADE") && s.cards.spirit(tick) == 2
-                ? 1
+                ? n(s, "spirit-speed-multiplier") - 1
                 : s.cards.elevated ? n(s, "survive-speed-multiplier") - 1 : 0);
     attribute(
         s.player,
         EntityAttributes.GENERIC_ATTACK_SPEED,
         ATTACK_SPEED,
-        s.active() && s.cards.elevated ? n(s, "survive-attack-speed-multiplier") - 1 : 0);
+        s.active() && s.cards.elevated
+            ? Math.min(
+                    n(s, "survive-attack-speed-multiplier"),
+                    s.type.equals("KNIGHT") ? n(s, "attack-speed-cap-multiplier") : 4)
+                - 1
+            : 0);
   }
 
   static void clear(Session s) {
@@ -120,13 +150,29 @@ final class CardRiderSkills {
     attribute(s.player, EntityAttributes.GENERIC_ATTACK_SPEED, ATTACK_SPEED, 0);
   }
 
+  private static boolean passiveReady(Session s) {
+    var cooldowns = MMOPlayerData.setup(s.player).getCooldownMap();
+    String key = s.type.toLowerCase(Locale.ROOT) + "_passive_internal";
+    if (cooldowns.isOnCooldown(key) || !s.cards.passive(tick, (int) n(s, "passive-cooldown-ticks")))
+      return false;
+    cooldowns.applyCooldown(key, n(s, "passive-cooldown-ticks") / 20d);
+    return true;
+  }
+
   static void attack(Session s, LivingEntity target, DamageMetadata damage) {
     if (!supports(s)) return;
-    if (s.type.equals("DECADE") && s.cards.elevated) damage.multiplicativeModifier(1.3);
+    if (s.type.equals("DECADE") && s.cards.elevated)
+      damage.multiplicativeModifier(n(s, "complete-damage-multiplier"));
     else if (s.cards.elevated) damage.multiplicativeModifier(n(s, "survive-damage-multiplier"));
-    if (s.type.equals("KNIGHT") && vulnerable(s, target)) {
+    if (s.type.equals("KNIGHT") && vulnerable(s, target)
+        || s.action != null && s.action.guaranteedCritical) {
       if (!damage.isWeaponCriticalStrike() && !damage.isSkillCriticalStrike()) {
-        damage.multiplicativeModifier(1.5);
+        String power =
+            damage.hasType(vn.svframe.svframelib.damage.DamageType.SKILL)
+                ? "SKILL_CRITICAL_STRIKE_POWER"
+                : "CRITICAL_STRIKE_POWER";
+        damage.multiplicativeModifier(
+            Math.max(1, MMOPlayerData.setup(s.player).getStatMap().getStat(power) / 100d));
         if (damage.hasType(vn.svframe.svframelib.damage.DamageType.SKILL))
           damage.registerSkillCriticalStrike();
         else damage.registerWeaponCriticalStrike();
@@ -151,35 +197,37 @@ final class CardRiderSkills {
       skillHit(s, target, amount);
       switch (s.type) {
         case "RYUKI" -> {
-          if (s.cards.elevated)
+          if (s.cards.elevated && passiveReady(s))
             bolt(
                 s,
                 s.player.getEyePos(),
                 target.getEyePos().subtract(s.player.getEyePos()).normalize(),
-                5,
+                n(s, "survive-passive-damage"),
                 1.7,
                 true);
         }
         case "DECADE" -> {
           if (s.cards.consumeCards()) {
             s.action.trueDamage = true;
-            for (int i = 0; i < 3; i++) {
-              int index = i;
+            s.action.rapid = true;
+            for (int i = 0; i < 3; i++)
               later(
                   s,
                   i * 2,
                   () -> {
-                    hit(s, target, 3, false);
-                    cue(
+                    if (!target.isAlive() || !legal(s, target)) return;
+                    Vec3d from = s.player.getEyePos();
+                    bolt(
                         s,
-                        "CARD_HIT",
-                        s.player.getEyePos().add(index * .1, 0, 0),
-                        target.getEyePos(),
-                        8);
+                        from,
+                        target.getEyePos().subtract(from).normalize(),
+                        n(s, "passive-card-damage"),
+                        0,
+                        false);
                   });
-            }
           }
-          if (s.cards.spirit(tick) == 3) area(s, target.getPos(), 2, 4, .1, true);
+          if (s.cards.spirit(tick) == 3)
+            area(s, target.getPos(), 2, n(s, "spirit-fire-damage"), .1, true);
         }
       }
     } finally {
@@ -189,44 +237,50 @@ final class CardRiderSkills {
 
   static void skillHit(Session s, LivingEntity target, double amount) {
     if (s.action != null && s.action.suppressive) {
-      slow(s, target, 60, .5);
+      slow(s, target, (int) n(s, "slow-duration-ticks"), n(s, "slow-fraction"));
       if (RpgEntityAdapters.allows(s.player, target, RpgEntityAdapters.Effect.STATUS))
-        WOUNDS.put(target.getUuid(), new Control(s, target, tick + 60));
+        WOUNDS.put(
+            target.getUuid(), new Control(s, target, tick + (int) n(s, "wound-duration-ticks")));
     }
     if (s.type.equals("KNIGHT") && s.cards.elevated && amount > 0)
       s.player.heal((float) (amount * n(s, "lifesteal-fraction")));
-    if (s.action != null && s.action.awarded) return;
-    if (s.action != null) s.action.awarded = true;
+    if (s.type.equals("RYUKI") && s.action != null && s.action.awarded) return;
+    if (s.type.equals("RYUKI") && s.action != null) s.action.awarded = true;
     var data = vn.svframe.svframemmo.SVFrameMMO.playerData().get(s.player);
-    if (s.type.equals("RYUKI") && s.cards.resonance()) {
+    if (s.type.equals("RYUKI") && s.cards.resonance((int) n(s, "flame-stack-threshold"))) {
       data.giveMana(
           data.getMaxResource(vn.svframe.svframemmo.api.player.profess.resource.PlayerResource.MANA)
-              * .05,
+              * n(s, "resonance-mana-fraction"),
           ResourceUpdateReason.OTHER);
-      area(s, s.player.getPos(), 3, 6, .1, true);
+      area(s, s.player.getPos(), n(s, "resonance-radius"), n(s, "resonance-damage"), .1, true);
       cue(s, "RESONANCE", s.player.getPos(), s.player.getPos(), 20);
     }
     if (s.type.equals("KNIGHT")) {
-      if (vulnerable(s, target)) data.giveStamina(4, ResourceUpdateReason.OTHER);
+      if (vulnerable(s, target) && passiveReady(s))
+        data.giveStamina(n(s, "passive-stamina"), ResourceUpdateReason.OTHER);
     }
   }
 
   static float incoming(Session s, DamageSource source, float amount) {
     if (s.cards.guardUntil > tick) {
-      if (s.type.equals("KNIGHT")) return amount * .2f;
+      if (s.type.equals("KNIGHT")) return amount * (float) (1 - n(s, "cloak-reduction"));
       if (s.type.equals("RYUKI")
+          && (source.isOf(DamageTypes.PLAYER_ATTACK) || source.isOf(DamageTypes.MOB_ATTACK))
           && source.getAttacker() instanceof LivingEntity attacker
           && attacker != s.player
           && attacker.squaredDistanceTo(s.player) <= 16
           && !s.executing
+          && reflectionDepth == 0
           && ReferenceClassSkillRuntime.canTarget(s.player, attacker)) {
         var previous = s.action;
         s.action = new CombatAction();
         s.action.awarded = true;
         try {
-          hit(s, attacker, amount * .25, true);
-          burn(s, attacker, 40);
+          reflectionDepth++;
+          if (hit(s, attacker, amount * n(s, "guard-reflection-fraction"), true))
+            burn(s, attacker, 40);
         } finally {
+          reflectionDepth--;
           s.action = previous;
         }
       }
@@ -236,6 +290,27 @@ final class CardRiderSkills {
   }
 
   static void execute(Session s, String ability, LivingEntity target, Vec3d point) {
+    String pose =
+        switch (ability) {
+          case "SURVIVE", "COMPLETE" -> "SHIFT";
+          case "GUARD_VENT" -> "BLOCK";
+          case "FINAL_VENT", "DIMENSION_KICK" -> "KICK";
+          case "SWORD_VENT", "SLASH_BLAST" -> s.cards.recastUntil > tick ? "GUN" : "SWORD";
+          case "STRIKE_VENT" -> "PUNCH";
+          case "SHOOT_VENT", "ULTIMATE_SUMMON", "ILLUSION" -> "GUN";
+          case "BLAST_VENT" -> "SPIN";
+          default -> "CAST";
+        };
+    cue(
+        s,
+        "POSE_" + pose,
+        s.player.getPos(),
+        point,
+        pose.equals("KICK")
+            ? 34
+            : pose.equals("BLOCK")
+                ? (s.type.equals("KNIGHT") ? 40 : (int) n(s, "guard-duration-ticks"))
+                : 20);
     if (s.type.equals("DECADE")) decade(s, ability, target, point);
     else if (s.type.equals("RYUKI")) ryuki(s, ability, target, point);
     else knight(s, ability, target, point);
@@ -247,7 +322,7 @@ final class CardRiderSkills {
           MMOPlayerData.setup(s.player)
               .getCooldownMap()
               .getInfo("knight_" + ability.toLowerCase(Locale.ROOT));
-      if (cd != null) cd.reduceRemainingCooldown(.2);
+      if (cd != null) cd.reduceRemainingCooldown(n(s, "survive-cooldown-reduction"));
     }
     cue(s, "VENT", s.player.getPos(), point, 12);
   }
@@ -262,7 +337,7 @@ final class CardRiderSkills {
       }
       case "STRIKE_VENT" -> {
         s.action.rapid = true;
-        for (int i = 0; i < (survive ? 3 : 1); i++)
+        for (int i = 0; i < (survive ? (int) n(s, "survive-projectiles") : 1); i++)
           later(
               s,
               i * 5,
@@ -270,7 +345,7 @@ final class CardRiderSkills {
       }
       case "SWORD_VENT" -> {
         s.action.rapid = true;
-        s.action.armorPierce = survive ? .5 : 0;
+        s.action.armorPierce = survive ? n(s, "sword-armor-penetration-fraction") : 0;
         Vec3d start = p.getPos();
         if (survive) dash(s, 6);
         for (int i = 0; i < (survive ? 1 : 2); i++)
@@ -298,7 +373,7 @@ final class CardRiderSkills {
       case "ADVENT" -> {
         s.action.rapid = true;
         var dragon = summon(s, "dragreder", p.getPos().add(0, 3, 0), 1);
-        for (int i = 0; i < 50; i += 5) {
+        for (int i = 0; i < (int) n(s, "advent-duration-ticks"); i += 5) {
           int phase = i;
           later(
               s,
@@ -311,16 +386,16 @@ final class CardRiderSkills {
                               Math.cos(phase * .16) * 3,
                               2 + phase * .02,
                               Math.sin(phase * .16) * 3));
-                area(s, point, 3, n(s, "advent-damage"), .5, true);
+                area(s, point, n(s, "advent-radius"), n(s, "advent-damage"), .5, true);
                 cue(s, "FIRE_RAIN", point.add(0, 3, 0), point, 8);
               });
         }
-        later(s, 55, () -> retire(s, dragon));
+        later(s, (int) n(s, "advent-duration-ticks") + 5, () -> retire(s, dragon));
       }
       case "SHOOT_VENT" -> {
         s.action.suppressive = true;
         s.action.rapid = true;
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < (int) n(s, "firestorm-projectiles"); i++) {
           int index = i;
           later(
               s,
@@ -340,7 +415,7 @@ final class CardRiderSkills {
       case "FINAL_VENT" -> {
         if (survive) {
           var dragon = summon(s, "dragranzer", p.getPos().add(0, .6, 0), 1.25);
-          rush(s, 14, 2.5, n(s, "final-damage"), true, dragon);
+          rush(s, n(s, "final-range"), 2.5, n(s, "final-damage"), true, dragon);
         } else airborneKick(s, target, "dragreder", true);
       }
       default -> throw new IllegalArgumentException("Unknown Ryuki card " + ability);
@@ -355,12 +430,13 @@ final class CardRiderSkills {
         cue(s, "SURVIVE", p.getPos(), p.getPos(), 35);
       }
       case "SWORD_VENT" -> {
-        s.action.armorPierce = .5;
+        s.action.armorPierce = n(s, "sword-armor-penetration-fraction");
         s.action.rapid = true;
         Vec3d origin = p.getPos();
         dash(s, 5);
-        line(s, origin, p.getPos(), 1, n(s, "sword-damage"), false);
-        for (var t : near(s, p.getPos(), 2)) slow(s, t, 40, .35);
+        var struck = line(s, origin, p.getPos(), 1, n(s, "sword-damage"), false);
+        for (var t : struck)
+          slow(s, t, (int) n(s, "slow-duration-ticks"), n(s, "sword-slow-fraction"));
         if (s.cards.elevated)
           later(
               s,
@@ -375,13 +451,13 @@ final class CardRiderSkills {
       case "NASTY_VENT" -> {
         var bat = summon(s, "darkwing", p.getPos().add(0, 2, 0), .8);
         later(s, 35, () -> retire(s, bat));
-        for (var t : cone(s, p.getPos(), 7, 55))
+        for (var t : cone(s, p.getPos(), n(s, "sonic-range"), 55))
           if (hit(s, t, n(s, "strike-damage"), false)) {
             if (RpgEntityAdapters.allows(p, t, RpgEntityAdapters.Effect.MOVEMENT)) {
-              STUNS.put(t.getUuid(), new Control(s, t, tick + 30));
-              slow(s, t, 30, 1);
+              STUNS.put(t.getUuid(), new Control(s, t, tick + (int) n(s, "stun-duration-ticks")));
+              slow(s, t, (int) n(s, "stun-duration-ticks"), 1);
             }
-            status(s, t, StatusEffects.BLINDNESS, 60);
+            status(s, t, StatusEffects.BLINDNESS, (int) n(s, "blindness-duration-ticks"));
           }
         cue(s, "SONIC", p.getEyePos(), p.getEyePos().add(forward(p).multiply(7)), 30);
       }
@@ -397,24 +473,24 @@ final class CardRiderSkills {
                 Vec3d at =
                     p.getPos()
                         .add(forward(p).rotateY((float) (index * 2 * Math.PI / 3)).multiply(1.4));
-                cue(s, "KNIGHT_PHANTOM", at, point, 22);
+                cue(s, "KNIGHT_PHANTOM", at, point, (int) n(s, "clone-duration-ticks"));
                 for (var t : cone(s, at, 5, 70)) hit(s, t, n(s, "sword-damage"), false);
               });
         }
       }
       case "GUARD_VENT" -> {
-        s.cards.guardUntil = tick + 40;
+        s.cards.guardUntil = tick + (int) n(s, "cloak-duration-ticks");
         area(s, p.getPos(), 3, 2, .25, false);
-        cue(s, "CLOAK", p.getPos(), p.getPos(), 40);
+        cue(s, "CLOAK", p.getPos(), p.getPos(), (int) n(s, "cloak-duration-ticks"));
       }
       case "BLAST_VENT" -> {
         s.action.rapid = true;
-        for (int i = 0; i < 30; i += 3)
+        for (int i = 0; i < (int) n(s, "tornado-duration-ticks"); i += 3)
           later(
               s,
               i,
               () -> {
-                for (var t : near(s, p.getPos(), 3.5))
+                for (var t : near(s, p.getPos(), n(s, "tornado-radius")))
                   if (hit(s, t, 3, false)
                       && RpgEntityAdapters.allows(p, t, RpgEntityAdapters.Effect.MOVEMENT))
                     velocity(
@@ -438,7 +514,10 @@ final class CardRiderSkills {
     switch (ability) {
       case "COMPLETE" -> {
         s.cards.toggle();
-        if (s.cards.elevated) p.removeStatusEffect(StatusEffects.SLOWNESS);
+        if (s.cards.elevated) {
+          if (flag(s, "cc-immunity-slow")) p.removeStatusEffect(StatusEffects.SLOWNESS);
+          if (flag(s, "cc-immunity-blindness")) p.removeStatusEffect(StatusEffects.BLINDNESS);
+        }
         cue(s, "COMPLETE", p.getPos(), p.getPos(), 40);
       }
       case "SLASH_BLAST" -> {
@@ -450,7 +529,7 @@ final class CardRiderSkills {
           for (int i = 0; i < 4; i++)
             later(s, i * 2, () -> bolt(s, p.getEyePos(), p.getRotationVec(1), 6, 0, false));
         } else {
-          s.cards.recastUntil = tick + 50;
+          s.cards.recastUntil = tick + (int) n(s, "recast-window-ticks");
           for (int i = 0; i < 3; i++)
             later(
                 s,
@@ -478,63 +557,119 @@ final class CardRiderSkills {
         }
       }
       case "CLOCK_UP" -> {
-        status(s, p, StatusEffects.INVISIBILITY, 30);
-        cue(s, "CLOCK", p.getPos(), target.getPos(), 30);
+        int duration = (int) n(s, "clock-duration-ticks");
+        status(s, p, StatusEffects.INVISIBILITY, duration);
+        cue(s, "CLOCK", p.getPos(), target.getPos(), duration);
         later(
             s,
-            30,
+            duration,
             () -> {
               if (!ReferenceClassSkillRuntime.canTarget(p, target)
                   || !p.canSee(target)
                   || target.squaredDistanceTo(p) > 576) return;
-              Vec3d behind =
-                  target.getPos().subtract(target.getRotationVec(1).multiply(1, 0, 1).normalize());
-              dashToward(s, behind, 24);
+              if (!safeBehind(s, target, n(s, "clock-range"))) return;
               if (p.squaredDistanceTo(target) > 9) return;
-              hit(s, target, n(s, "sword-damage") * 1.5, false);
+              s.action.guaranteedCritical = true;
+              hit(s, target, n(s, "sword-damage"), false);
               cue(s, "MATRIX_SLASH", p.getPos(), target.getEyePos(), 12);
             });
       }
       case "HEISEI_SPIRIT" -> {
-        int spirit = s.cards.cycleSpirit(tick, 100);
+        int spirit =
+            s.cards.selectSpirit(
+                tick,
+                (int) n(s, "spirit-duration-ticks"),
+                (int) n(s, "spirit-selection-window-ticks"));
+        // Recasting selects a different spirit in the same paid window; old Kuuga protection ends.
+        s.cards.barrier = 0;
+        s.cards.guardUntil = 0;
+        s.player.sendMessage(
+            net.minecraft.text.Text.translatable(
+                "fantasyhub.rider.spirit_selected",
+                net.minecraft.text.Text.translatable("fantasyhub.rider.spirit." + spirit)),
+            true);
         if (spirit == 1) {
-          s.cards.barrier = p.getMaxHealth() * .35;
-          s.cards.guardUntil = tick + 100;
+          s.cards.barrier = p.getMaxHealth() * n(s, "spirit-shield-fraction");
+          s.cards.guardUntil = tick + (int) n(s, "spirit-duration-ticks");
         }
-        cue(s, "SPIRIT_" + spirit, p.getPos(), p.getPos(), 100);
+        cue(s, "SPIRIT_" + spirit, p.getPos(), p.getPos(), (int) n(s, "spirit-duration-ticks"));
       }
       case "ULTIMATE_SUMMON" -> {
-        // Complete summons the ultimate power; the player's form string never changes.
+        // The phantom owns its attack origin. Decade's wearable form is untouched.
         s.action.artillery = true;
         s.action.rapid = true;
-        cue(s, "ULTIMATE_PHANTOM", p.getPos().subtract(forward(p).multiply(1.5)), point, 40);
-        for (int i = 0; i < 6; i++)
+        int projection = s.cards.ultimateProjection;
+        s.cards.ultimateProjection = (projection + 1) % 3;
+        String phase =
+            switch (projection) {
+              case 0 -> "ULTIMATE_KUUGA";
+              case 1 -> "ULTIMATE_BLADE";
+              default -> "ULTIMATE_KIVA";
+            };
+        Vec3d origin = p.getPos().subtract(forward(p).multiply(1.5));
+        Vec3d end = p.raycast(n(s, "final-range"), 1, false).getPos();
+        cue(s, phase, origin, end, (int) n(s, "phantom-duration-ticks"));
+        if (projection == 0) {
+          // Ultimate Kuuga: three expanding pyrokinesis bursts from the projection's fist.
+          for (int i = 0; i < 3; i++) {
+            int pulse = i;
+            later(
+                s,
+                12 + i * 6,
+                () -> {
+                  Vec3d at = origin.add(forward(p).multiply(3 + pulse * 2.3));
+                  area(s, at, 2.5, n(s, "phantom-damage"), .25, true);
+                  cue(s, "KICK_IMPACT", at, at, 10);
+                });
+          }
+        } else if (projection == 1) {
+          // Blade King: Royal Straight Flush, one validated golden sword corridor.
           later(
               s,
-              10 + i * 4,
-              () ->
-                  bolt(
-                      s,
-                      p.getEyePos().add(0, .4, 0),
-                      point.add(0, 1, 0).subtract(p.getEyePos()).normalize(),
-                      8,
-                      1.8,
-                      false));
+              16,
+              () -> {
+                line(s, origin, end, 1.75, n(s, "phantom-damage") * 3, false);
+                cue(s, "ROYAL_FLUSH", origin.add(0, 1, 0), end, 18);
+              });
+        } else {
+          // Emperor Kiva: the golden bat crest drives a straight flight kick.
+          later(
+              s,
+              20,
+              () -> {
+                line(s, origin, end, 2, n(s, "phantom-damage") * 3, false);
+                cue(s, "EMPEROR_KICK", origin, end, 18);
+                cue(s, "KICK_IMPACT", end, end, 12);
+              });
+        }
       }
       case "DIMENSION_KICK" -> {
         s.action.trueDamage = true;
         Vec3d origin = p.getPos();
         Vec3d end =
-            origin.add(forward(p).multiply(Math.min(18, Math.max(6, origin.distanceTo(point)))));
-        cue(s, "DIMENSION", origin, end, 40);
-        s.ultimateUntil = tick + 34;
+            safeDashEnd(
+                s,
+                origin.add(
+                    forward(p)
+                        .multiply(
+                            Math.min(n(s, "final-range"), Math.max(6, origin.distanceTo(point))))),
+                n(s, "final-range"));
+        int charge = (int) n(s, "dimension-charge-ticks");
+        cue(
+            s,
+            "DIMENSION",
+            origin,
+            end,
+            Math.min(1200, charge + 20),
+            (int) n(s, "dimension-cards"));
+        s.ultimateUntil = tick + charge + 14;
         later(
             s,
-            20,
+            charge,
             () ->
                 rush(
                     s,
-                    Math.min(18, origin.distanceTo(end)),
+                    Math.min(n(s, "final-range"), origin.distanceTo(end)),
                     1.5,
                     n(s, "final-damage") * 1.5,
                     false,
@@ -559,8 +694,9 @@ final class CardRiderSkills {
   }
 
   private static void bleed(Session s, LivingEntity target) {
-    burn(s, target, 60);
-    for (int i = 20; i <= 60; i += 20) later(s, i, () -> hit(s, target, 2, true));
+    burn(s, target, (int) n(s, "bleed-duration-ticks"));
+    for (int i = 20; i <= (int) n(s, "bleed-duration-ticks"); i += 20)
+      later(s, i, () -> hit(s, target, n(s, "bleed-damage"), true));
   }
 
   private static List<LivingEntity> cone(Session s, Vec3d origin, double range, double halfAngle) {
@@ -574,10 +710,28 @@ final class CardRiderSkills {
         .toList();
   }
 
-  private static void line(Session s, Vec3d a, Vec3d b, double width, double damage, boolean fire) {
-    for (var t : near(s, a, Math.min(32, a.distanceTo(b) + width)))
-      if (t.getBoundingBox().expand(width).raycast(a.add(0, 1, 0), b.add(0, 1, 0)).isPresent()
-          && s.player.canSee(t)) hit(s, t, damage, fire);
+  private static List<LivingEntity> line(
+      Session s, Vec3d a, Vec3d b, double width, double damage, boolean fire) {
+    var struck = new ArrayList<LivingEntity>();
+    for (var t : pathTargets(s, a, b, width))
+      if (s.player.canSee(t) && hit(s, t, damage, fire)) struck.add(t);
+    return struck;
+  }
+
+  private static List<LivingEntity> pathTargets(Session s, Vec3d from, Vec3d to, double width) {
+    Vec3d a = from.add(0, 1, 0), b = to.add(0, 1, 0);
+    return s
+        .world
+        .getEntitiesByClass(
+            LivingEntity.class,
+            new Box(a, b).expand(width),
+            t ->
+                legal(s, t)
+                    && RiderCollision.contact(t.getBoundingBox().expand(width), a, b).isPresent())
+        .stream()
+        .sorted(Comparator.comparingDouble(t -> t.squaredDistanceTo(from)))
+        .limit((int) n(s, "target-limit"))
+        .toList();
   }
 
   private static void rush(
@@ -601,11 +755,10 @@ final class CardRiderSkills {
             dashToward(s, origin.lerp(destination, step / 6d), range / 6 + .25);
             Vec3d to = s.player.getPos();
             if (summon != null) summon.setPosition(to.add(0, .6, 0));
-            for (var t : near(s, from, width + range / 6))
+            for (var t : pathTargets(s, from, to, width))
               if (!struck.contains(t.getUuid())
-                  && t.getBoundingBox()
-                      .expand(width)
-                      .raycast(from.add(0, 1, 0), to.add(0, 1, 0))
+                  && RiderCollision.contact(
+                          t.getBoundingBox().expand(width), from.add(0, 1, 0), to.add(0, 1, 0))
                       .isPresent()
                   && s.player.canSee(t)) {
                 if (hit(s, t, damage, fire)) {
@@ -663,9 +816,11 @@ final class CardRiderSkills {
 
   private static void bolt(
       Session s, Vec3d origin, Vec3d direction, double damage, double radius, boolean fire) {
-    if (s.activeProjectiles >= 32) return;
+    if (s.activeProjectiles >= (int) n(s, "projectile-limit")) return;
     s.activeProjectiles++;
-    advance(s, origin, direction.normalize(), damage, radius, fire, 0);
+    int token = ++s.projectileSequence;
+    projectileEvent(s, token, true, fire, origin, direction.normalize().multiply(1.5));
+    advance(s, origin, direction.normalize(), damage, radius, fire, 0, token);
   }
 
   private static void advance(
@@ -675,8 +830,15 @@ final class CardRiderSkills {
       double damage,
       double radius,
       boolean fire,
-      int age) {
+      int age,
+      int token) {
     Vec3d end = start.add(direction.multiply(1.5));
+    if (!s.world.isChunkLoaded(BlockPos.ofFloored(end))
+        || !s.world.getWorldBorder().contains(BlockPos.ofFloored(end))) {
+      projectileEvent(s, token, false, fire, start, Vec3d.ZERO);
+      s.activeProjectiles--;
+      return;
+    }
     var block =
         s.world.raycast(
             new RaycastContext(
@@ -691,34 +853,61 @@ final class CardRiderSkills {
     double closest = start.squaredDistanceTo(end) + 1e-8;
     for (var t :
         s.world.getEntitiesByClass(
-            LivingEntity.class,
-            new Box(start, end).expand(.3),
-            e -> ReferenceClassSkillRuntime.canTarget(s.player, e))) {
-      var contact = t.getBoundingBox().expand(.1).raycast(start, end);
+            LivingEntity.class, new Box(start, end).expand(.3), e -> legal(s, e))) {
+      var contact =
+          RiderCollision.contact(
+              t.getBoundingBox().expand(n(s, "collision-tolerance")), start, end);
       if (contact.isPresent() && start.squaredDistanceTo(contact.get()) < closest) {
         chosen = t;
         impact = contact.get();
         closest = start.squaredDistanceTo(impact);
       }
     }
-    cue(s, fire ? "FIRE_BOLT" : "MATRIX_BOLT", start, end, 3);
+
     if (chosen != null || block.getType() != HitResult.Type.MISS) {
+      projectileEvent(s, token, false, fire, impact, Vec3d.ZERO);
       if (radius > 0) area(s, impact, radius, damage, .2, fire);
       else if (chosen != null) hit(s, chosen, damage, fire);
-      if (fire) for (var t : near(s, impact, Math.max(.5, radius))) burn(s, t, 60);
+
       cue(s, fire ? "KICK_IMPACT" : "CARD_HIT", impact, impact, 10);
       s.activeProjectiles--;
       return;
     }
-    if (age >= 23) {
+    if ((age + 1) * 1.5 >= n(s, "projectile-range")) {
+      projectileEvent(s, token, false, fire, end, Vec3d.ZERO);
       s.activeProjectiles--;
       return;
     }
     Vec3d next = end;
-    later(s, 1, () -> advance(s, next, direction, damage, radius, fire, age + 1));
+    later(s, 1, () -> advance(s, next, direction, damage, radius, fire, age + 1, token));
+  }
+
+  private static void projectileEvent(
+      Session s, int token, boolean active, boolean fire, Vec3d at, Vec3d velocity) {
+    var packet =
+        new Protocol.RiderProjectile(
+            s.player.getId(),
+            token,
+            active,
+            fire,
+            at.x,
+            at.y,
+            at.z,
+            (float) velocity.x,
+            (float) velocity.y,
+            (float) velocity.z,
+            (int) Math.ceil(n(s, "projectile-range") / 1.5));
+    for (var observer : PlayerLookup.around(s.world, s.player.getPos(), 80))
+      if (ServerPlayNetworking.canSend(observer, Protocol.RiderProjectile.ID))
+        ServerPlayNetworking.send(observer, packet);
+    if (active) sound(s, net.minecraft.sound.SoundEvents.ENTITY_BLAZE_SHOOT, .45f);
   }
 
   static void cue(Session s, String phase, Vec3d start, Vec3d end, int duration) {
+    cue(s, phase, start, end, duration, 0);
+  }
+
+  static void cue(Session s, String phase, Vec3d start, Vec3d end, int duration, int count) {
     var packet =
         new Protocol.RiderFx(
             s.player.getId(),
@@ -730,7 +919,8 @@ final class CardRiderSkills {
             end.x,
             end.y,
             end.z,
-            duration);
+            duration,
+            count);
     for (var observer : PlayerLookup.around(s.world, start, 64))
       if (ServerPlayNetworking.canSend(observer, Protocol.RiderFx.ID))
         ServerPlayNetworking.send(observer, packet);

@@ -1,0 +1,20 @@
+[
+  {
+    "rider": "ryuki",
+    "stillElevatedAfter60Seconds": true,
+    "sameWearableModel": true,
+    "noProjectilesOrSummon": true
+  },
+  {
+    "rider": "knight",
+    "stillElevatedAfter60Seconds": true,
+    "sameWearableModel": true,
+    "noProjectilesOrSummon": true
+  },
+  {
+    "rider": "decade",
+    "stillElevatedAfter60Seconds": true,
+    "sameWearableModel": true,
+    "noProjectilesOrSummon": true
+  }
+]

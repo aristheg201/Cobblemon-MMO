@@ -1,0 +1,312 @@
+{
+  "armed": {
+    "scenario": "status",
+    "targetsBefore": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "fef73561-523d-4558-9466-df05df430627",
+        "health": 988.0
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "7c8c11e1-cdab-45b2-987d-edf5ac94c266",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "7329f056-b642-4b57-918f-bce97f69cb7e",
+        "health": 1000.0
+      }
+    ],
+    "immediate": {
+      "active": true,
+      "class": "DECADE",
+      "form": "decade",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 2,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": true,
+      "spirit": 0,
+      "tick": 12671,
+      "summon": ""
+    },
+    "targetsImmediate": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "fef73561-523d-4558-9466-df05df430627",
+        "health": 988.0
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "7c8c11e1-cdab-45b2-987d-edf5ac94c266",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "7329f056-b642-4b57-918f-bce97f69cb7e",
+        "health": 1000.0
+      }
+    ],
+    "hitsImmediate": [],
+    "settledReport": false
+  },
+  "afterFirstNormalAttack": {
+    "scenario": "status",
+    "targetsBefore": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "fef73561-523d-4558-9466-df05df430627",
+        "health": 978.78
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "7c8c11e1-cdab-45b2-987d-edf5ac94c266",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "7329f056-b642-4b57-918f-bce97f69cb7e",
+        "health": 1000.0
+      }
+    ],
+    "immediate": {
+      "active": true,
+      "class": "DECADE",
+      "form": "decade",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 2,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 12693,
+      "summon": ""
+    },
+    "targetsImmediate": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "fef73561-523d-4558-9466-df05df430627",
+        "health": 978.78
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "7c8c11e1-cdab-45b2-987d-edf5ac94c266",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "7329f056-b642-4b57-918f-bce97f69cb7e",
+        "health": 1000.0
+      }
+    ],
+    "hitsImmediate": [],
+    "settledReport": false
+  },
+  "afterSecondNormalAttack": {
+    "scenario": "status",
+    "targetsBefore": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "fef73561-523d-4558-9466-df05df430627",
+        "health": 978.56006
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "7c8c11e1-cdab-45b2-987d-edf5ac94c266",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "7329f056-b642-4b57-918f-bce97f69cb7e",
+        "health": 1000.0
+      }
+    ],
+    "immediate": {
+      "active": true,
+      "class": "DECADE",
+      "form": "decade",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 2,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 12725,
+      "summon": ""
+    },
+    "targetsImmediate": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "fef73561-523d-4558-9466-df05df430627",
+        "health": 978.56006
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "7c8c11e1-cdab-45b2-987d-edf5ac94c266",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "7329f056-b642-4b57-918f-bce97f69cb7e",
+        "health": 1000.0
+      }
+    ],
+    "hitsImmediate": [],
+    "settledReport": false
+  },
+  "checks": {
+    "armedByAttackRide": true,
+    "consumedOnNormalHit": true,
+    "remainsConsumed": true,
+    "decadeModelUnchanged": true,
+    "projectilesCleaned": true
+  }
+}

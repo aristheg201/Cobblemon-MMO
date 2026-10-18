@@ -7,6 +7,9 @@ import net.minecraft.util.Hand;
 
 /** Form projections do not replace or mutate the player's real inventory stacks. */
 public final class RiderWeapons {
+  private static final java.util.Map<String, ItemStack> PRESENTATION_STACKS =
+      new java.util.HashMap<>();
+
   private RiderWeapons() {}
 
   public static boolean overrides(int entity) {
@@ -30,7 +33,8 @@ public final class RiderWeapons {
     if (state == null) return ItemStack.EMPTY;
     String model =
         switch (state.form()) {
-          case "ryuki" -> hand == Hand.MAIN_HAND ? "drag_saber" : "";
+          case "ryuki" ->
+              hand == Hand.MAIN_HAND && !RiderAnimator.posing(entity, "PUNCH") ? "drag_saber" : "";
           case "knight" ->
               hand == Hand.MAIN_HAND
                   ? (state.force() == 1 ? "dark_blade" : "dark_visor")
@@ -46,11 +50,20 @@ public final class RiderWeapons {
           default -> "";
         };
     if (model.isEmpty()) return ItemStack.EMPTY;
-    var stack = new ItemStack(Items.IRON_SWORD);
-    NbtComponent.set(
-        DataComponentTypes.CUSTOM_DATA,
-        stack,
-        n -> n.putString("SVFRAME_ITEM_MODEL", "fantasyhub:item/riders/" + model));
-    return stack;
+    return modelStack(model);
+  }
+
+  /** Render-only stacks, owned here and never inserted into an inventory. */
+  static ItemStack modelStack(String model) {
+    return PRESENTATION_STACKS.computeIfAbsent(
+        model,
+        key -> {
+          var stack = new ItemStack(Items.IRON_SWORD);
+          NbtComponent.set(
+              DataComponentTypes.CUSTOM_DATA,
+              stack,
+              n -> n.putString("SVFRAME_ITEM_MODEL", "fantasyhub:item/riders/" + key));
+          return stack;
+        });
   }
 }

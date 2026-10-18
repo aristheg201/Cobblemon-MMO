@@ -1,0 +1,1 @@
+Retained failed fixture: first zombie center z=3.2 with width0.6 overlapped wall z=2..3 by0.1 blocks. It already had999HP before the skill and lost suffocation health while blocked in the wall. No Rider damage events occurred. Corrected fixture moves all targets one block farther from the wall, preserving the real collision scenario.

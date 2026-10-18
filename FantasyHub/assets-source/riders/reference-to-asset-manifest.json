@@ -274,5 +274,208 @@
     }
   ],
   "no_ai_concept_reference": true,
-  "native_candidate_evidence": "docs/qa/rider-models/runtime/card-riders-v5"
+  "native_candidate_evidence": "docs/qa/rider-models/runtime/card-riders-v5",
+  "supplemental_official_references": [
+    {
+      "name": "ドラグバイザー",
+      "url": "https://www.kamen-rider-official.com/zukan/items/1086",
+      "asset": "drag_visor.bbmodel",
+      "images": [
+        {
+          "file": "items-1086-0.png",
+          "sha256": "76f20862d09e975e51e0f801698ffb77825056aad50c9db3809be3ad3500a9ea",
+          "dimensions": [
+            540,
+            540
+          ]
+        },
+        {
+          "file": "items-1086-1.png",
+          "sha256": "ce9962d0dab3a60e787ed01e519f7885c9ad9bb71f5226ca8d5f9ded733c556f",
+          "dimensions": [
+            60,
+            60
+          ]
+        }
+      ],
+      "inspection": "Opened individually; used for equipment geometry and color placement.",
+      "comparison_status": "CANDIDATE; native visual acceptance remains open."
+    },
+    {
+      "name": "ドラグバイザーツバイ",
+      "url": "https://www.kamen-rider-official.com/zukan/items/1087",
+      "asset": "drag_visor_z.bbmodel",
+      "images": [
+        {
+          "file": "items-1087-0.png",
+          "sha256": "9660ce23c076c9a8715183b5e8904c717c27e0f2fe0c966f2e256910fe02d709",
+          "dimensions": [
+            540,
+            540
+          ]
+        },
+        {
+          "file": "items-1087-1.png",
+          "sha256": "ce9962d0dab3a60e787ed01e519f7885c9ad9bb71f5226ca8d5f9ded733c556f",
+          "dimensions": [
+            60,
+            60
+          ]
+        }
+      ],
+      "inspection": "Opened individually; used for equipment geometry and color placement.",
+      "comparison_status": "CANDIDATE; native visual acceptance remains open."
+    },
+    {
+      "name": "ドラグクロー",
+      "url": "https://www.kamen-rider-official.com/zukan/items/1186",
+      "asset": "drag_claw.bbmodel",
+      "images": [
+        {
+          "file": "items-1186-0.png",
+          "sha256": "9deffda4872d06ea6738ccfd6cc4ab39bb7d976caedf8d248fed716ba4e6ca35",
+          "dimensions": [
+            540,
+            540
+          ]
+        },
+        {
+          "file": "items-1186-1.png",
+          "sha256": "ce9962d0dab3a60e787ed01e519f7885c9ad9bb71f5226ca8d5f9ded733c556f",
+          "dimensions": [
+            60,
+            60
+          ]
+        }
+      ],
+      "inspection": "Opened individually; used for equipment geometry and color placement.",
+      "comparison_status": "CANDIDATE; native visual acceptance remains open."
+    },
+    {
+      "name": "ドラグシールド",
+      "url": "https://www.kamen-rider-official.com/zukan/items/1187",
+      "asset": "drag_shield.bbmodel",
+      "images": [
+        {
+          "file": "items-1187-0.png",
+          "sha256": "0ece658be66344b430ca5dd50d152effcf971544e6c19ce8a42ffd1bc5c070aa",
+          "dimensions": [
+            540,
+            540
+          ]
+        },
+        {
+          "file": "items-1187-1.png",
+          "sha256": "ce9962d0dab3a60e787ed01e519f7885c9ad9bb71f5226ca8d5f9ded733c556f",
+          "dimensions": [
+            60,
+            60
+          ]
+        }
+      ],
+      "inspection": "Opened individually; used for equipment geometry and color placement.",
+      "comparison_status": "CANDIDATE; native visual acceptance remains open."
+    },
+    {
+      "name": "ディケイドライバー",
+      "url": "https://www.kamen-rider-official.com/zukan/items/272",
+      "asset": "decade_belt.bbmodel",
+      "images": [
+        {
+          "file": "items-272-0.png",
+          "sha256": "f81e80c368e57f1fd21077bfdaa9a205ed2e6bebcd7f1d88e6ef33e30669c072",
+          "dimensions": [
+            540,
+            540
+          ]
+        },
+        {
+          "file": "items-272-1.png",
+          "sha256": "79dc1881e83dcc7133e3032e38809353a3137105f5002fac25b86256c0ee373d",
+          "dimensions": [
+            60,
+            60
+          ]
+        }
+      ],
+      "inspection": "Opened individually; used for equipment geometry and color placement.",
+      "comparison_status": "CANDIDATE; native visual acceptance remains open."
+    },
+    {
+      "name": "ケータッチ(ディケイド)",
+      "url": "https://www.kamen-rider-official.com/zukan/items/273",
+      "asset": "ktouch.bbmodel",
+      "images": [
+        {
+          "file": "items-273-0.png",
+          "sha256": "c34ab38fb160c0fe40043fa5d466cf2a9f575d2c0380f1afb8d66acc9f624d2f",
+          "dimensions": [
+            540,
+            540
+          ]
+        },
+        {
+          "file": "items-273-1.png",
+          "sha256": "9e10b770ffe1f3a7ccd7e71f96087de47e4b30719959ffd296f6ba63c7f7bcfd",
+          "dimensions": [
+            60,
+            60
+          ]
+        }
+      ],
+      "inspection": "Opened individually; used for equipment geometry and color placement.",
+      "comparison_status": "CANDIDATE; native visual acceptance remains open."
+    },
+    {
+      "name": "仮面ライダークウガ アルティメットフォーム",
+      "url": "https://www.kamen-rider-official.com/zukan/forms/585",
+      "asset": "kuuga_ultimate.bbmodel",
+      "images": [
+        {
+          "file": "kuuga_ultimate.png",
+          "sha256": "7955bf8d40cf124da7aa8e0d330b7d7ef8b8e1c879ad6d32654ff1f2ac129c1e",
+          "dimensions": [
+            1470,
+            1000
+          ]
+        }
+      ],
+      "inspection": "Opened individually; original projection silhouette authored from official reference.",
+      "comparison_status": "CANDIDATE; no wearable transformation for Decade."
+    },
+    {
+      "name": "仮面ライダーブレイド キングフォーム",
+      "url": "https://www.kamen-rider-official.com/zukan/forms/562",
+      "asset": "blade_king.bbmodel",
+      "images": [
+        {
+          "file": "blade_king.png",
+          "sha256": "50d201602574f5096e3dd8ce4aad88ada3f55e57bad991a7da31a4b976486221",
+          "dimensions": [
+            750,
+            1000
+          ]
+        }
+      ],
+      "inspection": "Opened individually; original projection silhouette authored from official reference.",
+      "comparison_status": "CANDIDATE; no wearable transformation for Decade."
+    },
+    {
+      "name": "仮面ライダーキバ エンペラーフォーム",
+      "url": "https://www.kamen-rider-official.com/zukan/forms/291",
+      "asset": "kiva_emperor.bbmodel",
+      "images": [
+        {
+          "file": "kiva_emperor.png",
+          "sha256": "c92bab9333611f98a23099f40dca7e5e6adf707b8314875089d1b4b4106e2bda",
+          "dimensions": [
+            847,
+            1129
+          ]
+        }
+      ],
+      "inspection": "Opened individually; original projection silhouette authored from official reference.",
+      "comparison_status": "CANDIDATE; no wearable transformation for Decade."
+    }
+  ]
 }

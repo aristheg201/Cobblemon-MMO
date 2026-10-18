@@ -139,6 +139,37 @@ ryuki:
       cooldown: 40
       mana: 18
       stamina: 10
+  upkeep-mana-per-second: 0
+  upkeep-stamina-per-second: 0
+  target-limit: 32
+  projectile-limit: 32
+  summon-limit: 1
+  pvp-damage-multiplier: 1.0
+  friendly-fire: false
+  projectile-range: 36
+  collision-tolerance: 0.1
+  final-range: 18
+  damage-multiplier: 1.0
+  flame-stack-threshold: 10
+  resonance-mana-fraction: 0.05
+  resonance-damage: 6
+  resonance-radius: 3
+  passive-cooldown-ticks: 10
+  survive-passive-damage: 5
+  survive-burn-radius: 2.5
+  survive-burn-ticks: 40
+  survive-projectiles: 3
+  sword-armor-penetration-fraction: 0.5
+  guard-reflection-fraction: 0.25
+  advent-duration-ticks: 50
+  advent-radius: 3
+  firestorm-projectiles: 8
+  slow-fraction: 0.5
+  slow-duration-ticks: 60
+  healing-reduction-fraction: 0.5
+  wound-duration-ticks: 60
+  bleed-damage: 2
+  bleed-duration-ticks: 60
 knight:
   strike-damage: 12
   sword-damage: 10
@@ -184,6 +215,32 @@ knight:
       cooldown: 40
       mana: 18
       stamina: 10
+  upkeep-mana-per-second: 0
+  upkeep-stamina-per-second: 0
+  target-limit: 32
+  projectile-limit: 32
+  summon-limit: 1
+  pvp-damage-multiplier: 1.0
+  friendly-fire: false
+  projectile-range: 36
+  collision-tolerance: 0.1
+  final-range: 18
+  damage-multiplier: 1.0
+  passive-cooldown-ticks: 10
+  passive-stamina: 4
+  attack-speed-cap-multiplier: 3.0
+  survive-cooldown-reduction: 0.2
+  sword-armor-penetration-fraction: 0.5
+  sword-slow-fraction: 0.35
+  slow-duration-ticks: 40
+  sonic-range: 7
+  stun-duration-ticks: 30
+  blindness-duration-ticks: 60
+  clone-duration-ticks: 50
+  cloak-duration-ticks: 40
+  cloak-reduction: 0.8
+  tornado-duration-ticks: 30
+  tornado-radius: 4
 decade:
   strike-damage: 12
   sword-damage: 10
@@ -229,3 +286,32 @@ decade:
       cooldown: 45
       mana: 20
       stamina: 10
+  upkeep-mana-per-second: 0
+  upkeep-stamina-per-second: 0
+  target-limit: 32
+  projectile-limit: 32
+  summon-limit: 1
+  pvp-damage-multiplier: 1.0
+  friendly-fire: false
+  projectile-range: 36
+  collision-tolerance: 0.1
+  final-range: 18
+  damage-multiplier: 1.0
+  complete-damage-multiplier: 1.3
+  cc-immunity-stun: true
+  cc-immunity-knockback: true
+  cc-immunity-slow: true
+  cc-immunity-blindness: true
+  passive-card-damage: 3
+  recast-window-ticks: 50
+  spirit-selection-window-ticks: 40
+  spirit-duration-ticks: 100
+  spirit-shield-fraction: 0.35
+  spirit-speed-multiplier: 2
+  spirit-fire-damage: 4
+  clock-duration-ticks: 30
+  clock-range: 24
+  phantom-duration-ticks: 40
+  phantom-damage: 8
+  dimension-cards: 7
+  dimension-charge-ticks: 20

@@ -47,7 +47,7 @@ def main():
  policy_path='FantasyHub/class-switch.yml'
  policy=yaml.safe_load(files[policy_path]);policy['additional-native-classes']=list(dict.fromkeys(policy.get('additional-native-classes',[])+['AGITO','ZOLDA','RYUKI','KNIGHT','DECADE']))
  files[policy_path]=yaml.safe_dump(policy,sort_keys=False,allow_unicode=True).encode()
- manifest=json.loads(files['manifest.json']);manifest['revision']='rider-equipment-0.1.11'
+ manifest=json.loads(files['manifest.json']);manifest['revision']='rider-equipment-0.1.12'
  manifest['files']=[{'path':n,'sha256':hashlib.sha256(b).hexdigest()} for n,b in files.items() if n not in ('manifest.json','source-choices.json')]
  files['manifest.json']=json.dumps(manifest,ensure_ascii=False).encode()
  with zipfile.ZipFile(pack,'w',zipfile.ZIP_DEFLATED) as z:

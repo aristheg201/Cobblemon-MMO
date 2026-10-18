@@ -15,7 +15,7 @@ public final class RiderVisuals {
   }
 
   static void accept(Protocol.Rider packet) {
-    if (!RiderModels.FORMS.contains(packet.form()) || java.util.Set.of("magnugiga","dragreder","dragranzer","darkwing").contains(packet.form())) {
+    if (!RiderModels.WEARABLE.contains(packet.form())) {
       STATES.remove(packet.entityId());
       return;
     }

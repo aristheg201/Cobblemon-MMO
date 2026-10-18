@@ -6,6 +6,23 @@ import java.util.*;
 public final class RiderSettings {
   private RiderSettings() {}
 
+  /** New nested options inherit defaults while every explicit administrator value wins. */
+  public static Map<String, Object> withDefaults(Map<?, ?> defaults, Map<?, ?> configured) {
+    var merged = new LinkedHashMap<String, Object>();
+    defaults.forEach((key, value) -> merged.put(String.valueOf(key), value));
+    configured.forEach(
+        (key, value) -> {
+          String name = String.valueOf(key);
+          Object baseline = merged.get(name);
+          merged.put(
+              name,
+              baseline instanceof Map<?, ?> base && value instanceof Map<?, ?> override
+                  ? withDefaults(base, override)
+                  : value);
+        });
+    return merged;
+  }
+
   public static Map<String, Object> validate(Map<String, Object> input) {
     if (!(input.get("schema") instanceof Number schema) || schema.doubleValue() != 1)
       throw new IllegalArgumentException("Unsupported Rider settings schema");
@@ -18,12 +35,17 @@ public final class RiderSettings {
       for (var entry : raw.entrySet()) {
         String key = String.valueOf(entry.getKey());
         if (key.equals("skills")) continue;
+        if (key.equals("friendly-fire") || key.startsWith("cc-immunity-")) {
+          if (!(entry.getValue() instanceof Boolean)) invalid(type + "." + key);
+          values.put(key, entry.getValue());
+          continue;
+        }
         double value = number(entry.getValue(), type + "." + key), min = 0, max = 1000;
         if (key.contains("reduction")
             || key.contains("fraction")
             || key.equals("mark-damage-per-stack")) max = 1;
         if (key.endsWith("multiplier")) {
-          min = .05;
+          min = 0;
           max = 4;
         }
         if (key.endsWith("radius")) {
@@ -35,6 +57,10 @@ public final class RiderSettings {
           max = 1200;
           if (value != Math.rint(value)) invalid(type + "." + key);
         }
+        if (key.equals("dimension-charge-ticks")) {
+          min = 14;
+          max = 600;
+        }
         if (key.equals("final-projectiles")) {
           min = 1;
           max = 30;
@@ -44,6 +70,24 @@ public final class RiderSettings {
           min = 1;
           max = 64;
         }
+        if (key.endsWith("range")) {
+          min = 1;
+          max = 64;
+        }
+        if (key.equals("collision-tolerance")) max = .5;
+        if (key.endsWith("limit")
+            || key.endsWith("projectiles")
+            || key.equals("flame-stack-threshold")
+            || key.equals("dimension-cards")) {
+          min = 1;
+          max = 32;
+          if (value != Math.rint(value)) invalid(type + "." + key);
+        }
+        if (key.equals("dimension-cards")) {
+          min = 5;
+          max = 7;
+        }
+        if (key.equals("summon-limit")) max = 1;
         if (key.endsWith("chance")) max = 100;
         if (value < min || value > max) invalid(type + "." + key);
         values.put(key, entry.getValue());

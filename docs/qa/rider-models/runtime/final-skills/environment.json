@@ -1,0 +1,25 @@
+{
+  "execution": "Local dedicated server + two real Minecraft 1.21.1 clients; Fabric/Java 21",
+  "protocol": 3,
+  "githubActionsUsed": false,
+  "qaBalanceOverrides": {
+    "purpose": "Test real configurable card count/charge and cooldown retention over process restart",
+    "decade.skills.ULTIMATE_SUMMON.cooldown": 600,
+    "decade.dimension-cards": 5,
+    "decade.dimension-charge-ticks": 24,
+    "productionDefaultsUnchanged": true
+  },
+  "artifacts": {
+    "/workspace/runtime-server": {
+      "FantasyHubBridge-0.1.12.jar": "7d5813fb9d30867a6073a0aab1a46983d4771a0f6ebdb46016b051fce71c2cc4",
+      "SVFrameLib-1.7.2-fabric.jar": "91f7a8f0af740cd91d5a7a507d0e62f065c2388bb259ffa19be26aa8bd587202",
+      "SVFrameMMO-1.13.4-fabric.jar": "808b420d10b50b5ef877e2c02bb58c30943ee4143e36602eec3bcde38edb4a35"
+    },
+    "/workspace/runtime-client": {
+      "FantasyHubClient-0.1.12.jar": "6f52ce392cb9e1058cd2cbb83df6d72d8543c3ce51b7430d9f53dd9a9a06fc9b"
+    },
+    "/workspace/runtime-client-two": {
+      "FantasyHubClient-0.1.12.jar": "6f52ce392cb9e1058cd2cbb83df6d72d8543c3ce51b7430d9f53dd9a9a06fc9b"
+    }
+  }
+}

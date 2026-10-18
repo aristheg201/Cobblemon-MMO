@@ -1,0 +1,19 @@
+[
+  {
+    "scenario": "ryuki-drag-resonance",
+    "eachActualHitCounted": true,
+    "manaRestored": true
+  },
+  {
+    "scenario": "knight-echolocation-stamina",
+    "behindTargetStaminaRestored": true
+  },
+  {
+    "scenario": "decade-passing-by-cards",
+    "armedByAttackRide": true,
+    "consumedOnNormalHit": true,
+    "remainsConsumed": true,
+    "decadeModelUnchanged": true,
+    "projectilesCleaned": true
+  }
+]

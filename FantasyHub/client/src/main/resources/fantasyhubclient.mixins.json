@@ -12,7 +12,8 @@
     "KabutoHeadMixin",
     "KunaiSoundQaMixin",
     "RiderHeldItemMixin",
-    "RiderFirstPersonMixin"
+    "RiderFirstPersonMixin",
+    "RiderFirstPersonArmorMixin"
   ],
   "injectors": {
     "defaultRequire": 1

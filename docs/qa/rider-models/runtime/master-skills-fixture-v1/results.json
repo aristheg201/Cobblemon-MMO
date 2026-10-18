@@ -1,0 +1,15 @@
+[
+  {
+    "class": "ryuki",
+    "ability": "STRIKE_VENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 1,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  }
+]

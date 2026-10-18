@@ -32,6 +32,35 @@
    else poly([[11,19],[21,25],[29,21],[32,15],[32,29],[26,34],[21,27],[15,31]],'#eed581',x,y);
    ctx.fillStyle='#a5b0b5';ctx.fillRect(x+3,y+3,58,2);ctx.fillRect(x+3,y+59,58,2);
  }
+ // Pixel-painted card portrait and K-Touch screen. The armor itself remains full geometry.
+ for(const name of ['card_decade','ktouch_screen']){
+   const i=names.indexOf(name),x=i%8*64,y=Math.floor(i/8)*64;
+   ctx.fillStyle='#151017';ctx.fillRect(x,y,64,64);
+   if(name==='card_decade'){
+     ctx.fillStyle='#c61979';ctx.fillRect(x+3,y+3,58,3);ctx.fillRect(x+3,y+58,58,3);
+     ctx.fillStyle='#ced5d8';ctx.fillRect(x+8,y+9,48,2);ctx.fillRect(x+8,y+52,48,2);
+     poly([[16,19],[24,14],[40,14],[48,19],[47,40],[39,46],[25,46],[17,40]],'#b61a6c',x,y);
+     poly([[18,25],[29,22],[29,35],[20,37]],'#7ec34a',x,y);poly([[35,22],[46,25],[44,37],[35,35]],'#7ec34a',x,y);
+     for(let b=0;b<7;b++){ctx.fillStyle='#08080b';ctx.fillRect(x+19+b*4,y+12+Math.abs(b-3),2,30-Math.abs(b-3));}
+     ctx.fillStyle='#c1c9cc';ctx.fillRect(x+26,y+39,12,2);
+     for(let b=0;b<20;b++){ctx.fillStyle=b%3===0?'#c5cbd2':'#17121b';ctx.fillRect(x+12+b*2,y+56,1,3);}
+   }else{
+     ctx.fillStyle='#822027';ctx.fillRect(x+7,y+9,50,1);ctx.fillRect(x+7,y+50,50,1);
+     const glyphs=[
+       [[0,0],[2,3],[4,2],[5,0],[6,2],[8,3],[10,0],[9,5],[6,6],[6,10],[4,10],[4,6],[1,5]],
+       [[0,4],[5,0],[10,4],[7,6],[5,10],[3,6]],
+       [[0,2],[8,0],[10,3],[6,4],[6,6],[9,7],[8,9],[5,9],[4,11],[2,10],[3,7],[1,6],[3,4]],
+       [[1,1],[9,1],[9,3],[5,3],[5,5],[8,5],[8,7],[5,7],[5,10],[3,10],[3,3],[1,3]],
+       [[5,0],[10,5],[9,8],[6,8],[7,10],[3,10],[4,8],[1,8],[0,5]],
+       [[0,0],[3,3],[5,1],[7,3],[10,0],[8,5],[10,7],[7,8],[7,10],[3,10],[3,8],[0,7],[2,5]],
+       [[1,0],[4,4],[5,0],[6,4],[9,0],[8,5],[6,7],[6,10],[4,10],[4,7],[2,5]],
+       [[0,2],[3,0],[5,2],[7,0],[10,2],[9,6],[5,10],[1,6]],
+       [[0,1],[4,4],[5,0],[6,4],[10,1],[9,7],[7,5],[5,10],[3,5],[1,7]]
+     ];
+     for(let i=0;i<glyphs.length;i++)poly(glyphs[i],'#b33440',x+10+(i%3)*17,y+12+Math.floor(i/3)*12);
+     ctx.fillStyle='#c8c8d1';ctx.fillRect(x+11,y+54,42,1);ctx.fillRect(x+13,y+5,5,2);ctx.fillRect(x+43,y+5,8,2);
+   }
+ }
  const png=canvas.toDataURL('image/png');Blockbench.writeFile(source+'/rider_metals.png',{content:png,savetype:'image'});Blockbench.writeFile(assets+'/textures/author/rider_metals.png',{content:png,savetype:'image'});
  const tile=name=>{const i=names.indexOf(name);if(i<0)throw Error('Unknown material '+name);return [i%8*64,Math.floor(i/8)*64,i%8*64+64,Math.floor(i/8)*64+64];};
  const projects=[];
@@ -39,14 +68,23 @@
  function save(name){Canvas.updateAll();const text=Codecs.project.compile({compressed:false});write(source+'/'+name+'.bbmodel',text);projects.push(name);}
  const offsets={head:[0,24,0],body:[0,24,0],left_arm:[5,22,0],right_arm:[-5,22,0],left_leg:[2,12,0],right_leg:[-2,12,0]};
  for(const [name,bones]of Object.entries(data.forms)){
-   const texture=project(name,Formats.free);
+   const texture=project(name,Formats.free),rig=new Map(),baseBones=new Map();
    for(const [bone,parts]of Object.entries(bones)){
-     const o=offsets[bone],group=new Group({name:bone,origin:o}).init();
+     const o=offsets[bone],group=new Group({name:bone,origin:o}).init();baseBones.set(bone,group);
      for(const part of parts){
+       let destination=group;
+       if(part.animation){
+         const a=part.animation,key=bone+':'+a.bone;
+         if(!rig.has(key)){
+           const pivot=[a.pivot[0]+o[0],-a.pivot[1]+o[1],-a.pivot[2]+o[2]];
+           rig.set(key,{group:new Group({name:a.bone,origin:pivot}).addTo(group).init(),spec:a});
+         }
+         destination=rig.get(key).group;
+       }
        part.uv=tile(part.material);part.material='fantasyhub:author/rider_metals';
        if(part.vertices){
          const vertices=Object.fromEntries(part.vertices.map((v,i)=>['v'+i,[v[0]+o[0],-v[1]+o[1],-v[2]+o[2]]]));
-         const mesh=new Mesh({name:part.name,vertices,faces:{},visibility:!part.requires_force}).addTo(group).init(),faces=[];
+         const mesh=new Mesh({name:part.name,vertices,faces:{},visibility:!part.requires_force}).addTo(destination).init(),faces=[];
          for(const polygon of part.faces){
            if(polygon.length>4){
              // Project onto the polygon's own plane. Side temple mechanisms
@@ -73,13 +111,37 @@
            mesh.addFaces(new MeshFace(mesh,{vertices:polygon.map(i=>'v'+i),uv,texture:texture.uuid}));
          }
        }else{
-         const from=[part.from[0]+o[0],-part.from[1]-part.size[1]+o[1],-part.from[2]-part.size[2]+o[2]],cube=new Cube({name:part.name,from,to:from.map((v,i)=>v+part.size[i]),autouv:0}).addTo(group).init();
+         const from=[part.from[0]+o[0],-part.from[1]-part.size[1]+o[1],-part.from[2]-part.size[2]+o[2]],cube=new Cube({name:part.name,from,to:from.map((v,i)=>v+part.size[i]),autouv:0}).addTo(destination).init();
          if(part.rotation){cube.rotation=[-part.rotation[0],part.rotation[1],-part.rotation[2]];cube.origin=[part.pivot[0]+o[0],-part.pivot[1]+o[1],-part.pivot[2]+o[2]];}
          for(const face of Object.values(cube.faces)){face.texture=texture.uuid;face.uv=part.uv.slice();}
        }
      }
    }
+   if(rig.size){
+     const length=Math.max(...[...rig.values()].map(r=>r.spec.period))*2,clip=new Animation({name:'flight',length,loop:'loop'}).add();clip.select();
+     for(const {group,spec:a} of rig.values()){
+       const animator=clip.getBoneAnimator(group);
+       for(let t=0;t<=length+.001;t+=.1){
+         const angle=Math.sin((t/a.period+a.phase)*Math.PI*2)*a.amplitude;
+         animator.addKeyframe({channel:'rotation',time:Math.min(t,length),interpolation:'linear',data_points:[{x:'0',y:'0',z:'0',[a.axis]:String(a.axis==='y'?angle:-angle)}]});
+       }
+     }
+   } else if(['ryuki','knight','decade'].includes(name)) {
+     const poses={idle:{},walk:{left_leg:[30,0,0],right_leg:[-30,0,0],left_arm:[-20,0,0],right_arm:[20,0,0]},sprint:{left_leg:[45,0,0],right_leg:[-45,0,0],left_arm:[-40,0,0],right_arm:[40,0,0]},jump:{left_leg:[25,0,0],right_leg:[-35,0,0]},sword:{right_arm:[-90,0,-30],body:[0,25,0]},punch:{right_arm:[-90,0,0]},casting:{left_arm:[-65,25,0],right_arm:[-50,-25,0]},block:{left_arm:[-70,40,0],right_arm:[-70,-40,0]},hit:{body:[-12,0,0]},rider_kick:{right_leg:[-77,0,0],left_leg:[35,0,0],body:[12,0,0]},henshin:{left_arm:[-65,25,0],right_arm:[-60,-25,0]},recovery:{}};
+     for(const [pose,bones]of Object.entries(poses)){
+       const loop=['idle','walk','sprint'].includes(pose),clip=new Animation({name:pose,length:1,loop:loop?'loop':'once'}).add();clip.select();
+       for(const [bone,rotation]of Object.entries(bones)){
+         const animator=clip.getBoneAnimator(baseBones.get(bone));
+         for(const [t,weight]of [[0,0],[.25,1],[.65,loop?-1:1],[1,0]])animator.addKeyframe({channel:'rotation',time:t,interpolation:'linear',data_points:[{x:String(rotation[0]*weight),y:String(rotation[1]*weight),z:String(rotation[2]*weight)}]});
+       }
+     }
+   }
    save(name);
+   if(['ryuki','knight','decade'].includes(name)){
+     const helmet=JSON.parse(Codecs.project.compile({compressed:false})),head=baseBones.get('head'),ids=new Set(head.children.map(e=>e.uuid));
+     helmet.name=name+'_helmet';helmet.elements=helmet.elements.filter(e=>ids.has(e.uuid));helmet.groups=helmet.groups.filter(g=>g.uuid===head.uuid);helmet.outliner=helmet.outliner.filter(g=>g.uuid===head.uuid);helmet.animations=[];
+     write(source+'/'+name+'_helmet.bbmodel',helmet);projects.push(name+'_helmet');
+   }
  }
  const itemModels=[];
  for(const [name,elements]of Object.entries(data.items)){

@@ -26,7 +26,28 @@ final class RiderModels {
           "decade",
           "dragreder",
           "dragranzer",
-          "darkwing");
+          "darkwing",
+          "rider_card",
+          "drag_shield",
+          "drag_visor",
+          "drag_claw",
+          "drag_visor_z",
+          "ktouch",
+          "knight_cloak",
+          "kuuga_ultimate",
+          "blade_king",
+          "kiva_emperor");
+  static final Set<String> WEARABLE =
+      Set.of(
+          "zolda",
+          "agito_ground",
+          "agito_storm",
+          "agito_flame",
+          "agito_trinity",
+          "agito_shining",
+          "ryuki",
+          "knight",
+          "decade");
   private static final Identifier TEXTURE =
       Identifier.of("fantasyhub", "textures/author/rider_metals.png");
 
@@ -87,6 +108,33 @@ final class RiderModels {
           || !filter.test(part)) continue;
       matrices.push();
       if (animated != null) animated.rotate(matrices);
+      if (part.has("animation")) {
+        var a = part.getAsJsonObject("animation");
+        var p = a.getAsJsonArray("pivot");
+        double x = p.get(0).getAsDouble() / 16,
+            y = p.get(1).getAsDouble() / 16,
+            z = p.get(2).getAsDouble() / 16;
+        var client = net.minecraft.client.MinecraftClient.getInstance();
+        double time =
+            client.world == null
+                ? 0
+                : (client.world.getTime() + client.getRenderTickCounter().getTickDelta(false))
+                    / 20d;
+        float angle =
+            (float)
+                (Math.sin(
+                        (time / a.get("period").getAsDouble() + a.get("phase").getAsDouble())
+                            * Math.PI
+                            * 2)
+                    * a.get("amplitude").getAsDouble());
+        matrices.translate(x, y, z);
+        matrices.multiply(
+            (a.get("axis").getAsString().equals("y")
+                    ? RotationAxis.POSITIVE_Y
+                    : RotationAxis.POSITIVE_Z)
+                .rotationDegrees(angle));
+        matrices.translate(-x, -y, -z);
+      }
       if (part.has("rotation")) {
         var pivot = xyz(part, "pivot");
         var rotation = xyz(part, "rotation");
@@ -124,6 +172,17 @@ final class RiderModels {
       int light,
       boolean expanded,
       int tint) {
+    displayPose(form, matrices, provider, light, expanded, tint, 0);
+  }
+
+  static void displayPose(
+      String form,
+      MatrixStack matrices,
+      VertexConsumerProvider provider,
+      int light,
+      boolean expanded,
+      int tint,
+      float attack) {
     for (String bone : List.of("head", "body", "left_arm", "right_arm", "left_leg", "right_leg")) {
       matrices.push();
       switch (bone) {
@@ -133,10 +192,56 @@ final class RiderModels {
         case "left_leg" -> matrices.translate(.125, .75, 0);
         case "right_leg" -> matrices.translate(-.125, .75, 0);
       }
+      if (attack > 0) {
+        if (bone.equals("right_arm"))
+          matrices.multiply(
+              RotationAxis.POSITIVE_X.rotationDegrees(
+                  (form.equals("kiva_emperor") ? -30 : 90) * attack));
+        if (bone.equals("left_arm"))
+          matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(35 * attack));
+        if (bone.equals("right_leg") && form.equals("kiva_emperor"))
+          matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(80 * attack));
+        if (bone.equals("body"))
+          matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-12 * attack));
+      }
       matrices.scale(1, -1, -1);
       renderTint(form, bone, null, matrices, provider, light, expanded, p -> true, tint);
+      if ((tint >>> 24) < 255
+          && bone.equals("right_arm")
+          && (form.equals("knight") || form.equals("decade"))) {
+        // Same arm-local transform as the real player's held-item feature and grip tests.
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180));
+        matrices.translate(1 / 16d, .125, -.625);
+        var client = net.minecraft.client.MinecraftClient.getInstance();
+        client
+            .getItemRenderer()
+            .renderItem(
+                RiderWeapons.modelStack(form.equals("knight") ? "dark_visor" : "ride_booker_sword"),
+                net.minecraft.client.render.model.json.ModelTransformationMode
+                    .THIRD_PERSON_RIGHT_HAND,
+                light,
+                OverlayTexture.DEFAULT_UV,
+                matrices,
+                provider,
+                client.world,
+                0);
+      }
       matrices.pop();
     }
+  }
+
+  static void object(
+      String name, MatrixStack matrices, VertexConsumerProvider provider, int light, int tint) {
+    matrices.push();
+    matrices.scale(1, -1, -1);
+    localObject(name, matrices, provider, light, tint);
+    matrices.pop();
+  }
+
+  static void localObject(
+      String name, MatrixStack matrices, VertexConsumerProvider provider, int light, int tint) {
+    renderTint(name, "body", null, matrices, provider, light, false, p -> true, tint);
   }
 
   private static List<Vertex> compileGeometry(JsonObject part) {

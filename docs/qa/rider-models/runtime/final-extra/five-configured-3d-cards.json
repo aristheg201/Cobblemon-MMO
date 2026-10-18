@@ -1,0 +1,301 @@
+{
+  "actor": {
+    "clientHealth": 49.8,
+    "kabutoEffects": {
+      "phases": {},
+      "minecraftParticleRequests": 0,
+      "activeTimelines": 0,
+      "budgetDrops": 0,
+      "density": 1.0,
+      "cobblemon": {
+        "emitters": {
+          "swordsdance_sparkle": 27,
+          "explosion_burst_flash": 11,
+          "scratch_targetsparks": 7,
+          "quickattack_dashlines": 8
+        },
+        "backend": "Cobblemon 1.8 ParticleStorm",
+        "available": true,
+        "textureRepairs": {
+          "explosion_burst_flash": "cobblemon:vanilla/flash"
+        },
+        "nativeParticlesPeak": 120
+      }
+    },
+    "riderEffects": {
+      "phases": {
+        "DECADE:CARDS": 276,
+        "DECADE:CARD_HIT": 3,
+        "DECADE:CLOCK": 1,
+        "DECADE:COMPLETE": 3,
+        "DECADE:DARK_RUSH": 6,
+        "DECADE:DECADE_PHANTOM": 2,
+        "DECADE:DIMENSION": 1,
+        "DECADE:EMPEROR_KICK": 1,
+        "DECADE:HENSHIN": 7,
+        "DECADE:KICK_IMPACT": 1,
+        "DECADE:MATRIX_SLASH": 4,
+        "DECADE:SPIRIT_3": 1,
+        "DECADE:ULTIMATE_KIVA": 1,
+        "DECADE:VENT": 9,
+        "KNIGHT:AURA": 8,
+        "KNIGHT:CLOAK": 1,
+        "KNIGHT:DARK_RUSH": 1,
+        "KNIGHT:DARK_SLASH": 1,
+        "KNIGHT:HENSHIN": 7,
+        "KNIGHT:KNIGHT_PHANTOM": 3,
+        "KNIGHT:SONIC": 1,
+        "KNIGHT:SURVIVE": 1,
+        "KNIGHT:TORNADO": 11,
+        "KNIGHT:VENT": 7,
+        "RYUKI:AURA": 9,
+        "RYUKI:DRAGON_CREST": 1,
+        "RYUKI:FIRE_RAIN": 10,
+        "RYUKI:FIRE_SLASH": 2,
+        "RYUKI:HENSHIN": 7,
+        "RYUKI:KICK_IMPACT": 10,
+        "RYUKI:SCALES": 1,
+        "RYUKI:SURVIVE": 1,
+        "RYUKI:VENT": 7
+      },
+      "minecraftParticleRequests": 49853,
+      "nativeCobblemonRequests": 53,
+      "activeJobs": 1,
+      "dimensionCards": 5,
+      "projectiles": {
+        "received": 12,
+        "active": 0
+      }
+    },
+    "rider": {
+      "form": "decade",
+      "force": 1,
+      "remaining": 0
+    },
+    "equippedModels": {
+      "HEAD": "",
+      "CHEST": "",
+      "LEGS": "",
+      "FEET": ""
+    },
+    "clientMaxHealth": 49.8,
+    "hurtTime": 0,
+    "maxHurtTime": 0,
+    "stateHealth": 49.79999923706055,
+    "stateMaxHealth": 49.79999923706055,
+    "clientTick": 13330,
+    "clientVanillaLevel": 4,
+    "clientVanillaProgress": 0.4000001,
+    "clientVanillaTotal": 46,
+    "rpgExperienceRendered": false,
+    "experienceDisplay": "VANILLA",
+    "trackedPlayers": [
+      "QAPlayer"
+    ],
+    "clientCasting": {
+      "active": true,
+      "mode": "SKILL_BAR",
+      "slots": [
+        {
+          "inputSlot": 2,
+          "id": "DECADE_SLASH_BLAST",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 3,
+          "id": "DECADE_ILLUSION",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 4,
+          "id": "DECADE_CLOCK_UP",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 5,
+          "id": "DECADE_HEISEI_SPIRIT",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 6,
+          "id": "DECADE_COMPLETE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 7,
+          "id": "DECADE_ULTIMATE_SUMMON",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 8,
+          "id": "DECADE_DIMENSION_KICK",
+          "cooldownRemaining": 0.0
+        }
+      ]
+    },
+    "displayedSkillSlots": [
+      {
+        "inputSlot": 2,
+        "id": "DECADE_SLASH_BLAST",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 3,
+        "id": "DECADE_ILLUSION",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 4,
+        "id": "DECADE_CLOCK_UP",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 5,
+        "id": "DECADE_HEISEI_SPIRIT",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 6,
+        "id": "DECADE_COMPLETE",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 7,
+        "id": "DECADE_ULTIMATE_SUMMON",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 8,
+        "id": "DECADE_DIMENSION_KICK",
+        "cooldownRemaining": 0.0
+      }
+    ],
+    "renderedSkillSlots": 7,
+    "damagePackets": 0,
+    "hurtCameraFrames": 0,
+    "riderSounds": 59,
+    "gunSounds": 0,
+    "kunaiSounds": 0,
+    "serverMaxHealth": 49.8,
+    "serverHealth": 49.8,
+    "serverVanillaLevel": 4,
+    "serverVanillaProgress": 0.4000001,
+    "serverVanillaTotal": 46,
+    "serverTick": 11690,
+    "scenario": "rider_game_cast_decade_dimension_kick"
+  },
+  "observer": {
+    "clientHealth": 20.0,
+    "kabutoEffects": {
+      "phases": {},
+      "minecraftParticleRequests": 0,
+      "activeTimelines": 0,
+      "budgetDrops": 0,
+      "density": 1.0,
+      "cobblemon": {
+        "emitters": {
+          "swordsdance_sparkle": 27,
+          "explosion_burst_flash": 11,
+          "scratch_targetsparks": 7,
+          "quickattack_dashlines": 8
+        },
+        "backend": "Cobblemon 1.8 ParticleStorm",
+        "available": true,
+        "textureRepairs": {
+          "explosion_burst_flash": "cobblemon:vanilla/flash"
+        },
+        "nativeParticlesPeak": 115
+      }
+    },
+    "riderEffects": {
+      "phases": {
+        "DECADE:CARDS": 275,
+        "DECADE:CARD_HIT": 3,
+        "DECADE:CLOCK": 1,
+        "DECADE:COMPLETE": 3,
+        "DECADE:DARK_RUSH": 6,
+        "DECADE:DECADE_PHANTOM": 2,
+        "DECADE:DIMENSION": 1,
+        "DECADE:EMPEROR_KICK": 1,
+        "DECADE:HENSHIN": 7,
+        "DECADE:KICK_IMPACT": 1,
+        "DECADE:MATRIX_SLASH": 4,
+        "DECADE:SPIRIT_3": 1,
+        "DECADE:ULTIMATE_KIVA": 1,
+        "DECADE:VENT": 9,
+        "KNIGHT:AURA": 8,
+        "KNIGHT:CLOAK": 1,
+        "KNIGHT:DARK_RUSH": 1,
+        "KNIGHT:DARK_SLASH": 1,
+        "KNIGHT:HENSHIN": 7,
+        "KNIGHT:KNIGHT_PHANTOM": 3,
+        "KNIGHT:SONIC": 1,
+        "KNIGHT:SURVIVE": 1,
+        "KNIGHT:TORNADO": 11,
+        "KNIGHT:VENT": 7,
+        "RYUKI:AURA": 9,
+        "RYUKI:DRAGON_CREST": 1,
+        "RYUKI:FIRE_RAIN": 10,
+        "RYUKI:FIRE_SLASH": 2,
+        "RYUKI:HENSHIN": 7,
+        "RYUKI:KICK_IMPACT": 10,
+        "RYUKI:SCALES": 1,
+        "RYUKI:SURVIVE": 1,
+        "RYUKI:VENT": 7
+      },
+      "minecraftParticleRequests": 49881,
+      "nativeCobblemonRequests": 53,
+      "activeJobs": 1,
+      "dimensionCards": 5,
+      "projectiles": {
+        "received": 12,
+        "active": 0
+      }
+    },
+    "equippedModels": {
+      "HEAD": "",
+      "CHEST": "",
+      "LEGS": "",
+      "FEET": ""
+    },
+    "clientMaxHealth": 20.0,
+    "hurtTime": 0,
+    "maxHurtTime": 0,
+    "stateHealth": 20.0,
+    "stateMaxHealth": 20.0,
+    "clientTick": 13460,
+    "clientVanillaLevel": 0,
+    "clientVanillaProgress": 0.0,
+    "clientVanillaTotal": 0,
+    "rpgExperienceRendered": false,
+    "experienceDisplay": "VANILLA",
+    "trackedPlayers": [
+      "QAAttacker",
+      "QAPlayer"
+    ],
+    "clientCasting": {
+      "active": false,
+      "mode": "",
+      "slots": []
+    },
+    "displayedSkillSlots": [],
+    "renderedSkillSlots": 0,
+    "damagePackets": 0,
+    "hurtCameraFrames": 0,
+    "riderSounds": 59,
+    "gunSounds": 0,
+    "kunaiSounds": 0,
+    "serverMaxHealth": 20.0,
+    "serverHealth": 20.0,
+    "serverVanillaLevel": 0,
+    "serverVanillaProgress": 0.0,
+    "serverVanillaTotal": 0,
+    "serverTick": 11689,
+    "scenario": "snapshot"
+  },
+  "checks": {
+    "actorReceivedFive": true,
+    "observerReceivedFive": true,
+    "noLeakedProjectiles": true
+  }
+}

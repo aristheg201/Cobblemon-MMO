@@ -34,6 +34,29 @@ class CardRiderStateTest {
   }
 
   @Test
+  void selectionRecastsDoNotExtendThePaidWindowAndRestorePreferredSpirit() {
+    var state = new CardRiderState();
+    state.selectedSpirit = 2;
+    state.henshin();
+    assertEquals(2, state.selectSpirit(100, 100, 40));
+    assertEquals(3, state.selectSpirit(110, 100, 40));
+    assertEquals(1, state.selectSpirit(139, 100, 40));
+    assertEquals(140, state.spiritSelectUntil);
+    assertEquals(1, state.selectSpirit(140, 100, 40));
+    assertEquals(180, state.spiritSelectUntil);
+  }
+
+  @Test
+  void passiveInternalCooldownIsIndependentOfStanceAndDamageEvents() {
+    var state = new CardRiderState();
+    state.henshin();
+    assertTrue(state.passive(10, 10));
+    assertFalse(state.passive(11, 10));
+    assertFalse(state.passive(19, 10));
+    assertTrue(state.passive(20, 10));
+  }
+
+  @Test
   void cardsAndRecastCannotBeReusedAndSpiritHasAnIndependentExpiry() {
     var state = new CardRiderState();
     state.henshin();

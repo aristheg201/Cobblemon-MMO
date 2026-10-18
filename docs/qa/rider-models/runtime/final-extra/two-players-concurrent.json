@@ -1,0 +1,501 @@
+{
+  "ryuki": {
+    "scenario": "cast_ryuki_strike_vent",
+    "targetsBefore": [
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          200.5,
+          65.0,
+          9.2
+        ],
+        "health": 999.22,
+        "uuid": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "effects": []
+      },
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          202.5,
+          65.0,
+          10.8
+        ],
+        "health": 1000.0,
+        "uuid": "90b69c85-9c0e-47fc-944e-d8d2a4f0e133",
+        "effects": []
+      },
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          199.3,
+          65.0,
+          11.3
+        ],
+        "health": 1000.0,
+        "uuid": "d7b6e631-47a3-4765-91a2-36123cd85bd2",
+        "effects": []
+      }
+    ],
+    "manaBefore": 89.7,
+    "staminaBefore": 64.8,
+    "inventoryBefore": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"},{Slot:2b,count:1,id:\"minecraft:bone\"},{Slot:3b,count:1,id:\"minecraft:rotten_flesh\"}]",
+    "before": {
+      "active": true,
+      "class": "RYUKI",
+      "form": "ryuki",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 0,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": true,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 23557,
+      "summon": ""
+    },
+    "castResult": true,
+    "manaAfter": 86.7,
+    "staminaAfter": 62.8,
+    "inventoryAfter": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"},{Slot:2b,count:1,id:\"minecraft:bone\"},{Slot:3b,count:1,id:\"minecraft:rotten_flesh\"}]",
+    "cooldownAfter": 6.997,
+    "immediate": {
+      "active": true,
+      "class": "RYUKI",
+      "form": "ryuki",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 0,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": true,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 23557,
+      "summon": ""
+    },
+    "targetsImmediate": [
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          200.5,
+          65.0,
+          9.2
+        ],
+        "health": 999.22,
+        "uuid": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "effects": []
+      },
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          202.5,
+          65.0,
+          10.8
+        ],
+        "health": 1000.0,
+        "uuid": "90b69c85-9c0e-47fc-944e-d8d2a4f0e133",
+        "effects": []
+      },
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          199.3,
+          65.0,
+          11.3
+        ],
+        "health": 1000.0,
+        "uuid": "d7b6e631-47a3-4765-91a2-36123cd85bd2",
+        "effects": []
+      }
+    ],
+    "hitsImmediate": [],
+    "settled": {
+      "active": true,
+      "class": "RYUKI",
+      "form": "ryuki",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 0,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": true,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 23627,
+      "summon": ""
+    },
+    "targetsSettled": [
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          200.5,
+          65.0,
+          9.2
+        ],
+        "health": 973.3596,
+        "uuid": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "effects": []
+      },
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          202.5,
+          65.0,
+          10.8
+        ],
+        "health": 1000.0,
+        "uuid": "90b69c85-9c0e-47fc-944e-d8d2a4f0e133",
+        "effects": []
+      },
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          199.3,
+          65.0,
+          11.3
+        ],
+        "health": 1000.0,
+        "uuid": "d7b6e631-47a3-4765-91a2-36123cd85bd2",
+        "effects": []
+      }
+    ],
+    "hits": [
+      {
+        "amount": 5.280029296875,
+        "fire": true,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23559,
+        "health": 993.1599
+      },
+      {
+        "amount": 5.280029296875,
+        "fire": true,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23563,
+        "health": 986.09985
+      },
+      {
+        "amount": 5.280029296875,
+        "fire": true,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23568,
+        "health": 979.25977
+      }
+    ],
+    "savedPreferences": {
+      "fantasyhub.rider.cooldown.knight_nasty_vent": "1792339690100",
+      "fantasyhub.rider.cooldown.decade_complete": "1792339821563",
+      "fantasyhub.rider.cooldown.decade_dimension_kick": "1792339868166",
+      "fantasyhub.rider.class": "RYUKI",
+      "fantasyhub.rider.cooldown.ryuki_strike_vent": "1792339866246",
+      "fantasyhub.rider.cooldown.ryuki_survive": "1792339857002",
+      "fantasyhub.rider.cooldown.decade_ultimate_summon": "1792339905089",
+      "fantasyhub.rider.cooldown.decade_slash_blast": "1792339844202",
+      "fantasyhub.rider.spirit": "3",
+      "fantasyhub.rider.last-stance": "elevated",
+      "fantasyhub.rider.projection": "0",
+      "fantasyhub.rider.cooldown.decade_illusion": "1792339707782"
+    },
+    "maxHealth": 49.8,
+    "health": 38.899975,
+    "settledReport": true
+  },
+  "knight": {
+    "scenario": "cast_knight_blast_vent",
+    "targetsBefore": [
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          200.5,
+          65.0,
+          9.2
+        ],
+        "health": 1000.0,
+        "uuid": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "effects": []
+      },
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          202.5,
+          65.0,
+          10.8
+        ],
+        "health": 1000.0,
+        "uuid": "90b69c85-9c0e-47fc-944e-d8d2a4f0e133",
+        "effects": []
+      },
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          199.3,
+          65.0,
+          11.3
+        ],
+        "health": 1000.0,
+        "uuid": "d7b6e631-47a3-4765-91a2-36123cd85bd2",
+        "effects": []
+      }
+    ],
+    "manaBefore": 89.7,
+    "staminaBefore": 64.8,
+    "inventoryBefore": "[]",
+    "before": {
+      "active": true,
+      "class": "KNIGHT",
+      "form": "knight",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 1,
+      "projection": 0,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 23555,
+      "summon": ""
+    },
+    "castResult": true,
+    "manaAfter": 81.7,
+    "staminaAfter": 60.8,
+    "inventoryAfter": "[]",
+    "cooldownAfter": 15.996,
+    "immediate": {
+      "active": true,
+      "class": "KNIGHT",
+      "form": "knight",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 1,
+      "projection": 0,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 23555,
+      "summon": ""
+    },
+    "targetsImmediate": [
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          200.5,
+          65.0,
+          9.2
+        ],
+        "health": 1000.0,
+        "uuid": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "effects": []
+      },
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          202.5,
+          65.0,
+          10.8
+        ],
+        "health": 1000.0,
+        "uuid": "90b69c85-9c0e-47fc-944e-d8d2a4f0e133",
+        "effects": []
+      },
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          199.3,
+          65.0,
+          11.3
+        ],
+        "health": 1000.0,
+        "uuid": "d7b6e631-47a3-4765-91a2-36123cd85bd2",
+        "effects": []
+      }
+    ],
+    "hitsImmediate": [],
+    "settled": {
+      "active": true,
+      "class": "KNIGHT",
+      "form": "knight",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 1,
+      "projection": 0,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 23625,
+      "summon": ""
+    },
+    "targetsSettled": [
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          200.5,
+          65.0,
+          9.2
+        ],
+        "health": 973.3596,
+        "uuid": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "effects": []
+      },
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          202.5,
+          65.0,
+          10.8
+        ],
+        "health": 1000.0,
+        "uuid": "90b69c85-9c0e-47fc-944e-d8d2a4f0e133",
+        "effects": []
+      },
+      {
+        "stunned": false,
+        "armor": 20,
+        "position": [
+          199.3,
+          65.0,
+          11.3
+        ],
+        "health": 1000.0,
+        "uuid": "d7b6e631-47a3-4765-91a2-36123cd85bd2",
+        "effects": []
+      }
+    ],
+    "hits": [
+      {
+        "amount": 0.780029296875,
+        "fire": false,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23556,
+        "health": 999.22
+      },
+      {
+        "amount": 0.780029296875,
+        "fire": false,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23558,
+        "health": 998.43994
+      },
+      {
+        "amount": 0.780029296875,
+        "fire": false,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23561,
+        "health": 991.3799
+      },
+      {
+        "amount": 0.780029296875,
+        "fire": false,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23564,
+        "health": 985.3198
+      },
+      {
+        "amount": 0.780029296875,
+        "fire": false,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23567,
+        "health": 984.5398
+      },
+      {
+        "amount": 0.780029296875,
+        "fire": false,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23570,
+        "health": 978.47974
+      },
+      {
+        "amount": 0.780029296875,
+        "fire": false,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23573,
+        "health": 977.6997
+      },
+      {
+        "amount": 0.780029296875,
+        "fire": false,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23576,
+        "health": 976.9197
+      },
+      {
+        "amount": 0.780029296875,
+        "fire": false,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23579,
+        "health": 976.13965
+      },
+      {
+        "amount": 0.780029296875,
+        "fire": false,
+        "target": "46f1ee97-ede2-41f1-adb7-617458f55e4a",
+        "tick": 23582,
+        "health": 975.3596
+      }
+    ],
+    "savedPreferences": {
+      "fantasyhub.rider.projection": "0",
+      "fantasyhub.rider.spirit": "1",
+      "fantasyhub.rider.class": "KNIGHT",
+      "fantasyhub.rider.cooldown.knight_blast_vent": "1792339875173",
+      "fantasyhub.rider.last-stance": "normal"
+    },
+    "maxHealth": 49.8,
+    "health": 49.8,
+    "settledReport": true
+  },
+  "checks": {
+    "bothAccepted": true,
+    "bothDamagedRealTargets": true,
+    "bothCleanedProjectiles": true
+  }
+}

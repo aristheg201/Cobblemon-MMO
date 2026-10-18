@@ -1,0 +1,269 @@
+[
+  {
+    "class": "ryuki",
+    "ability": "STRIKE_VENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 1,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "ryuki",
+    "ability": "SWORD_VENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 8,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "ryuki",
+    "ability": "GUARD_VENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 0,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "ryuki",
+    "ability": "ADVENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 32,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "ryuki",
+    "ability": "SURVIVE",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 0,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "ryuki",
+    "ability": "SHOOT_VENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 8,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "ryuki",
+    "ability": "FINAL_VENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 3,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "knight",
+    "ability": "SWORD_VENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 2,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "knight",
+    "ability": "NASTY_VENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 3,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "knight",
+    "ability": "TRICK_VENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 5,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "knight",
+    "ability": "GUARD_VENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 1,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "knight",
+    "ability": "SURVIVE",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 0,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "knight",
+    "ability": "BLAST_VENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 10,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "knight",
+    "ability": "FINAL_VENT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 3,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "decade",
+    "ability": "SLASH_BLAST",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 3,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "decade",
+    "ability": "ILLUSION",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 3,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "decade",
+    "ability": "CLOCK_UP",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 1,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "decade",
+    "ability": "HEISEI_SPIRIT",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 0,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "decade",
+    "ability": "COMPLETE",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 0,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "decade",
+    "ability": "ULTIMATE_SUMMON",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 5,
+      "damageObserved": true,
+      "resourceConsumed": true
+    },
+    "status": "PASS"
+  },
+  {
+    "class": "decade",
+    "ability": "DIMENSION_KICK",
+    "checks": {
+      "accepted": true,
+      "inventoryPreserved": true,
+      "cooldownApplied": true,
+      "actualDamageEvents": 0,
+      "damageObserved": false,
+      "resourceConsumed": true
+    },
+    "status": "FAIL"
+  }
+]

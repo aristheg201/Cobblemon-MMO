@@ -1,0 +1,98 @@
+[
+  {
+    "command": "list",
+    "response": "There are 2 of a max of 5 players online: QAPlayer, QAAttacker"
+  },
+  {
+    "command": "list",
+    "response": "There are 2 of a max of 5 players online: QAPlayer, QAAttacker"
+  },
+  {
+    "command": "fill 185 64 -15 225 64 40 minecraft:stone",
+    "response": "Successfully filled 2296 block(s)"
+  },
+  {
+    "command": "time set midnight",
+    "response": "Set the time to 18000"
+  },
+  {
+    "command": "gamerule doDaylightCycle false",
+    "response": "Gamerule doDaylightCycle is now set to: false"
+  },
+  {
+    "command": "weather clear",
+    "response": "Set the weather to clear"
+  },
+  {
+    "command": "tp QAAttacker 203.5 66 5.5 149 18",
+    "response": "Teleported QAAttacker to 203.500000, 66.000000, 5.500000"
+  },
+  {
+    "command": "effect give QAPlayer minecraft:night_vision 3600 0 true",
+    "response": "Applied effect Night Vision to QAPlayer"
+  },
+  {
+    "command": "effect give QAAttacker minecraft:night_vision 3600 0 true",
+    "response": "Applied effect Night Vision to QAAttacker"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_ryuki",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "No entity was found"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_ryuki_henshin",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_ryuki_strike_vent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_ryuki",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_ryuki_henshin",
+    "response": ""
+  }
+]

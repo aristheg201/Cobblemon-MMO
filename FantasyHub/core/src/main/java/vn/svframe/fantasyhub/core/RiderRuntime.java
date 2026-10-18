@@ -119,12 +119,13 @@ public final class RiderRuntime {
     CombatAction action;
     net.minecraft.entity.decoration.DisplayEntity.ItemDisplayEntity summon;
     long groundUntil, ultimateUntil;
-    int activeProjectiles;
+    int activeProjectiles, projectileSequence;
 
     Session(ServerPlayerEntity p, String type) {
       player = p;
       world = p.getServerWorld();
       this.type = type;
+      RiderPreferences.restore(this);
     }
 
     boolean active() {
@@ -147,7 +148,7 @@ public final class RiderRuntime {
   static final class CombatAction {
     boolean awarded, empowered;
     double power = 1;
-    boolean artillery, rapid, trueDamage, suppressive;
+    boolean artillery, rapid, trueDamage, suppressive, guaranteedCritical;
     double armorPierce;
   }
 
@@ -165,7 +166,24 @@ public final class RiderRuntime {
         && s.active()
         && (s.zolda.guardUntil > tick
             || s.type.equals("AGITO") && s.agito.form(tick) == AgitoState.Form.SHINING
-            || s.type.equals("DECADE") && s.cards.elevated);
+            || s.type.equals("DECADE") && s.cards.elevated && flag(s, "cc-immunity-stun"));
+  }
+
+  public static boolean knockbackImmune(LivingEntity e) {
+    var s = SESSIONS.get(e.getUuid());
+    if (s != null && s.type.equals("DECADE"))
+      return valid(s) && s.active() && s.cards.elevated && flag(s, "cc-immunity-knockback");
+    return controlImmune(e);
+  }
+
+  public static boolean statusImmune(
+      LivingEntity e, net.minecraft.registry.entry.RegistryEntry<StatusEffect> effect) {
+    var s = SESSIONS.get(e.getUuid());
+    if (s != null && valid(s) && s.active() && s.type.equals("DECADE") && s.cards.elevated) {
+      if (effect.equals(StatusEffects.SLOWNESS)) return flag(s, "cc-immunity-slow");
+      if (effect.equals(StatusEffects.BLINDNESS)) return flag(s, "cc-immunity-blindness");
+    }
+    return effect.equals(StatusEffects.SLOWNESS) && controlImmune(e);
   }
 
   static void install() {
@@ -197,7 +215,9 @@ public final class RiderRuntime {
             (data, skill) -> {
               var s = SESSIONS.get(data.getUniqueId());
               if (s == null || !valid(s) || !s.active()) return false;
-              return skill.getSkill().getId().equals("DECADE_SLASH_BLAST")
+              return skill.getSkill().getId().equals("DECADE_HEISEI_SPIRIT")
+                      && tick < s.cards.spiritSelectUntil
+                  || skill.getSkill().getId().equals("DECADE_SLASH_BLAST")
                       && tick < s.cards.recastUntil
                   || skill.getSkill().getId().equals("ZOLDA_STRIKE_VENT")
                       && s.zolda.strikeUntil > tick
@@ -348,7 +368,7 @@ public final class RiderRuntime {
               || s.executing
               || !valid(s)
               || !s.active()
-              || !ReferenceClassSkillRuntime.canTarget(p, victim)) return;
+              || !CardRiderSkills.legal(s, victim)) return;
           if (CardRiderSkills.supports(s)) {
             CardRiderSkills.normalHit(s, victim, amount, source);
           } else if (s.type.equals("ZOLDA")) {
@@ -414,6 +434,23 @@ public final class RiderRuntime {
             configured.put(key, bundled.get(key));
             additions.put(key, bundled.get(key));
           }
+        }
+      }
+      // Newly introduced options inherit bundled defaults in memory; existing server values win.
+      try (var defaults =
+          RiderRuntime.class.getResourceAsStream("/default/riders/FantasyHub/riders.yml")) {
+        var bundled =
+            YamlLite.map(
+                YamlLite.parse(
+                    new String(
+                        Objects.requireNonNull(defaults).readAllBytes(),
+                        java.nio.charset.StandardCharsets.UTF_8)));
+        for (String id : SKILLS.keySet()) {
+          String key = id.toLowerCase(Locale.ROOT);
+          var merged =
+              RiderSettings.withDefaults(
+                  YamlLite.map(bundled.get(key)), YamlLite.map(configured.get(key)));
+          configured.put(key, merged);
         }
       }
       var parsed = RiderSettings.validate(configured);
@@ -542,6 +579,7 @@ public final class RiderRuntime {
         execute(s, ability, prepared);
         applyForm(s);
         publish(s);
+        RiderPreferences.accepted(s, ability);
       } finally {
         s.action = previous;
       }
@@ -753,7 +791,7 @@ public final class RiderRuntime {
             LivingEntity.class,
             new Box(start, end).expand(.4),
             t -> ReferenceClassSkillRuntime.canTarget(s.player, t))) {
-      var contact = t.getBoundingBox().expand(.1).raycast(start, end);
+      var contact = RiderCollision.contact(t.getBoundingBox().expand(.1), start, end);
       if (contact.isPresent() && contact.get().squaredDistanceTo(start) < nearest) {
         chosen = t;
         impact = contact.get();
@@ -790,14 +828,21 @@ public final class RiderRuntime {
   }
 
   static boolean hit(Session s, LivingEntity target, double damage, boolean fire) {
-    if (!valid(s) || !s.active() || !ReferenceClassSkillRuntime.canTarget(s.player, target))
-      return false;
+    if (!valid(s) || !s.active() || !CardRiderSkills.legal(s, target)) return false;
     if (s.action != null && !s.action.awarded) s.action.empowered = s.agito.force() == 6;
+    boolean previousExecuting = s.executing;
     s.executing = true;
     try {
       var packet =
           new DamageMetadata(
-              damage * (s.action == null ? 1 : s.action.power),
+              damage
+                  * (s.action == null ? 1 : s.action.power)
+                  * (CardRiderSkills.supports(s)
+                      ? n(s, "damage-multiplier")
+                          * (target instanceof ServerPlayerEntity
+                              ? n(s, "pvp-damage-multiplier")
+                              : 1)
+                      : 1),
               fire ? SVFrameLib.inst().getElements().getOrNull("FIRE") : null,
               List.of(DamageType.PHYSICAL, DamageType.SKILL));
       if (s.type.equals("AGITO") && s.agito.form(tick) == AgitoState.Form.TRINITY)
@@ -825,6 +870,7 @@ public final class RiderRuntime {
                 s.player);
       }
       var armor = target.getAttributeInstance(EntityAttributes.GENERIC_ARMOR);
+      int armorBefore = target.getArmor();
       var pierceId = Identifier.of("fantasyhub", "card_pierce");
       if (armor != null && s.action != null && s.action.armorPierce > 0)
         armor.addTemporaryModifier(
@@ -833,6 +879,7 @@ public final class RiderRuntime {
                 -s.action.armorPierce,
                 EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
       boolean applied;
+      int armorDuring = target.getArmor();
       try {
         applied =
             SVFrameLib.inst()
@@ -842,13 +889,21 @@ public final class RiderRuntime {
         if (armor != null) armor.removeModifier(pierceId);
       }
       if (applied) {
+        RiderQa.hit(
+            s.player,
+            target,
+            attack.getAppliedDamage(),
+            fire,
+            armorBefore,
+            armorDuring,
+            packet.isWeaponCriticalStrike() || packet.isSkillCriticalStrike());
         if (s.type.equals("AGITO")) gain(s, s.action);
         else if (s.type.equals("ZOLDA")) mark(s, target);
         else CardRiderSkills.skillHit(s, target, attack.getAppliedDamage());
       }
       return applied;
     } finally {
-      s.executing = false;
+      s.executing = previousExecuting;
     }
   }
 
@@ -924,11 +979,13 @@ public final class RiderRuntime {
   }
 
   static void area(Session s, Vec3d center, double radius, double damage, double up, boolean fire) {
-    for (var target : near(s, center, radius))
-      if (s.player.canSee(target)
-          && hit(s, target, damage, fire)
-          && RpgEntityAdapters.allows(s.player, target, RpgEntityAdapters.Effect.MOVEMENT))
+    for (var target : near(s, center, radius)) {
+      if (!s.player.canSee(target) || !hit(s, target, damage, fire)) continue;
+      if (fire && RpgEntityAdapters.allows(s.player, target, RpgEntityAdapters.Effect.STATUS))
+        target.setOnFireFor(3);
+      if (RpgEntityAdapters.allows(s.player, target, RpgEntityAdapters.Effect.MOVEMENT))
         velocity(target, target.getPos().subtract(center).normalize().multiply(.4).add(0, up, 0));
+    }
   }
 
   static List<LivingEntity> near(Session s, Vec3d point, double radius) {
@@ -937,12 +994,10 @@ public final class RiderRuntime {
         .getEntitiesByClass(
             LivingEntity.class,
             new Box(point, point).expand(radius),
-            t ->
-                ReferenceClassSkillRuntime.canTarget(s.player, t)
-                    && t.squaredDistanceTo(point) <= radius * radius)
+            t -> CardRiderSkills.legal(s, t) && t.squaredDistanceTo(point) <= radius * radius)
         .stream()
         .sorted(Comparator.comparingDouble(t -> t.squaredDistanceTo(point)))
-        .limit(32)
+        .limit(CardRiderSkills.supports(s) ? (int) n(s, "target-limit") : 32)
         .toList();
   }
 
@@ -955,7 +1010,8 @@ public final class RiderRuntime {
             new Box(start, end).expand(.4),
             t ->
                 ReferenceClassSkillRuntime.canTarget(p, t)
-                    && t.getBoundingBox().expand(.2).raycast(start, end).isPresent())
+                    && RiderCollision.contact(t.getBoundingBox().expand(.2), start, end)
+                        .isPresent())
         .stream()
         .min(Comparator.comparingDouble(t -> t.squaredDistanceTo(p)))
         .orElse(null);
@@ -972,28 +1028,53 @@ public final class RiderRuntime {
   }
 
   static void dashToward(Session s, Vec3d point, double distance) {
-    Vec3d start = s.player.getPos(),
-        delta =
-            point.subtract(start).normalize().multiply(Math.min(distance, point.distanceTo(start)));
-    for (double fraction = 1; fraction > .05; fraction -= .05) {
-      Vec3d end = start.add(delta.multiply(fraction));
-      var wall =
-          s.world.raycast(
-              new RaycastContext(
-                  s.player.getEyePos(),
-                  end.add(0, s.player.getStandingEyeHeight(), 0),
-                  RaycastContext.ShapeType.COLLIDER,
-                  RaycastContext.FluidHandling.NONE,
-                  s.player));
-      if (wall.getType() == HitResult.Type.MISS
-          && s.world.isSpaceEmpty(
-              s.player, s.player.getBoundingBox().offset(end.subtract(start)))) {
-        s.player.networkHandler.requestTeleport(
-            end.x, end.y, end.z, s.player.getYaw(), s.player.getPitch());
-        s.player.fallDistance = 0;
-        break;
-      }
+    Vec3d end = safeDashEnd(s, point, distance);
+    if (end.squaredDistanceTo(s.player.getPos()) < .0001) return;
+    s.player.networkHandler.requestTeleport(
+        end.x, end.y, end.z, s.player.getYaw(), s.player.getPitch());
+    s.player.fallDistance = 0;
+  }
+
+  static Vec3d safeDashEnd(Session s, Vec3d point, double distance) {
+    Vec3d start = s.player.getPos();
+    if (!Double.isFinite(point.x) || !Double.isFinite(point.y) || !Double.isFinite(point.z))
+      return start;
+    Vec3d delta = point.subtract(start);
+    double length = Math.min(64, Math.min(Math.max(0, distance), delta.length()));
+    delta = delta.normalize().multiply(length);
+    final Vec3d movement = delta;
+    double fraction =
+        vn.svframe.fantasyhub.core.rider.SweptPath.clearFraction(
+            length, t -> safeBody(s, s.player.getBoundingBox().offset(movement.multiply(t))));
+    return start.add(delta.multiply(fraction));
+  }
+
+  private static boolean safeBody(Session s, Box box) {
+    if (box.minY < s.world.getBottomY()
+        || box.maxY > s.world.getTopY()
+        || !s.world.getWorldBorder().contains(box)) return false;
+    for (int x = MathHelper.floor(box.minX) >> 4; x <= MathHelper.floor(box.maxX) >> 4; x++)
+      for (int z = MathHelper.floor(box.minZ) >> 4; z <= MathHelper.floor(box.maxZ) >> 4; z++)
+        if (!s.world.isChunkLoaded(x, z)) return false;
+    return s.world.isSpaceEmpty(s.player, box);
+  }
+
+  static boolean safeBehind(Session s, LivingEntity target, double range) {
+    Vec3d behind =
+        target
+            .getPos()
+            .subtract(target.getRotationVec(1).multiply(1, 0, 1).normalize().multiply(1.2));
+    if (behind.distanceTo(s.player.getPos()) > range) return false;
+    for (double y : new double[] {0, .5, 1, -.5, -1}) {
+      Vec3d candidate = behind.add(0, y, 0);
+      Box body = s.player.getBoundingBox().offset(candidate.subtract(s.player.getPos()));
+      if (!safeBody(s, body) || s.world.isSpaceEmpty(s.player, body.offset(0, -.15, 0))) continue;
+      Vec3d reachable = safeDashEnd(s, candidate, range);
+      if (reachable.squaredDistanceTo(candidate) > .0001) continue;
+      dashToward(s, candidate, range);
+      return true;
     }
+    return false;
   }
 
   static void velocity(LivingEntity target, Vec3d velocity) {
@@ -1068,6 +1149,8 @@ public final class RiderRuntime {
     } else if (s.type.equals("ZOLDA")) s.zolda.transformed = true;
     else s.cards.henshin();
     FilamentCosmetics.hide(s.player);
+    if (CardRiderSkills.supports(s))
+      CardRiderSkills.cue(s, "POSE_SHIFT", s.player.getPos(), s.player.getPos(), 25);
     CardRiderSkills.cue(s, "HENSHIN", s.player.getPos(), s.player.getPos(), 35);
     applyForm(s);
     ring(s, s.player.getPos().add(0, 1, 0), 1, ParticleTypes.ELECTRIC_SPARK);
@@ -1075,7 +1158,7 @@ public final class RiderRuntime {
     publish(s);
   }
 
-  private static void detransform(Session s) {
+  static void detransform(Session s) {
     RiderSummons.remove(s.summon);
     s.summon = null;
     s.generation++;
@@ -1112,6 +1195,20 @@ public final class RiderRuntime {
     return SVFrameMMO.playerData().get(p).getClassId();
   }
 
+  static Map<String, Object> uiState(ServerPlayerEntity p) {
+    var s = SESSIONS.get(p.getUuid());
+    if (s == null || !s.active() || !CardRiderSkills.supports(s)) return Map.of();
+    return Map.of(
+        "flame",
+        s.cards.flame(),
+        "threshold",
+        s.type.equals("RYUKI") ? (int) n(s, "flame-stack-threshold") : 0,
+        "cardsReady",
+        s.cards.nextCards,
+        "spirit",
+        s.cards.spirit(tick));
+  }
+
   static boolean valid(Session s) {
     return SESSIONS.get(s.player.getUuid()) == s
         && s.player.isAlive()
@@ -1122,6 +1219,11 @@ public final class RiderRuntime {
         && !BeltEquipment.equipped(s.player, belt(s.type)).isEmpty();
   }
 
+  static boolean flag(Session s, String key) {
+    return Boolean.TRUE.equals(
+        YamlLite.map(settings.get(s.type.toLowerCase(Locale.ROOT))).get(key));
+  }
+
   static double n(Session s, String key) {
     Object value = YamlLite.map(settings.get(s.type.toLowerCase(Locale.ROOT))).get(key);
     if (!(value instanceof Number number))
@@ -1129,15 +1231,15 @@ public final class RiderRuntime {
     return number.doubleValue();
   }
 
-  private static Protocol.Rider packet(Session s) {
+  static Protocol.Rider packet(Session s) {
     return new Protocol.Rider(
         s.player.getId(),
         s.form(),
         s.type.equals("AGITO") ? s.agito.force() : s.cards.elevated ? 1 : 0,
-        s.type.equals("AGITO") ? s.agito.remaining(tick) : 0);
+        s.type.equals("AGITO") ? ((s.agito.remaining(tick) + 4) / 5) * 5 : 0);
   }
 
-  private static void publish(Session s) {
+  static void publish(Session s) {
     var packet = packet(s);
     if (packet.equals(s.sent)) return;
     s.sent = packet;
@@ -1207,18 +1309,30 @@ public final class RiderRuntime {
     s.world.playSound(null, point.x, point.y, point.z, sound, SoundCategory.PLAYERS, volume, 1);
   }
 
-  static Map<String,Object> inspect(ServerPlayerEntity p) {
-    var s=SESSIONS.get(p.getUuid());
-    if(s==null)return Map.of("active",false);
-    var out=new LinkedHashMap<String,Object>();
-    out.put("active",s.active());out.put("class",s.type);out.put("form",s.form());
-    out.put("force",s.agito.force());out.put("formRemaining",s.agito.remaining(tick));
-    out.put("shield",CardRiderSkills.supports(s)?s.cards.barrier:s.zolda.shield(tick));
-    out.put("guard",CardRiderSkills.supports(s)?s.cards.guardUntil>tick:s.zolda.guardUntil>tick);
-    out.put("projectiles",s.activeProjectiles);out.put("elevated",s.cards.elevated);
-    out.put("dragonFlame",s.cards.flame());out.put("nextCards",s.cards.nextCards);
-    out.put("spirit",s.cards.spirit(tick));out.put("tick",tick);
-    out.put("summon",s.summon==null?"":s.summon.getUuidAsString());
+  static Map<String, Object> inspect(ServerPlayerEntity p) {
+    var s = SESSIONS.get(p.getUuid());
+    if (s == null) return Map.of("active", false);
+    var out = new LinkedHashMap<String, Object>();
+    out.put("active", s.active());
+    out.put("class", s.type);
+    out.put("form", s.form());
+    out.put("force", s.agito.force());
+    out.put("formRemaining", s.agito.remaining(tick));
+    out.put("shield", CardRiderSkills.supports(s) ? s.cards.barrier : s.zolda.shield(tick));
+    out.put("spiritSelected", s.cards.selectedSpirit);
+    out.put("projection", s.cards.ultimateProjection);
+    out.put("recastRemaining", Math.max(0, s.cards.recastUntil - tick));
+    out.put("spiritSelectionRemaining", Math.max(0, s.cards.spiritSelectUntil - tick));
+    out.put(
+        "guard",
+        CardRiderSkills.supports(s) ? s.cards.guardUntil > tick : s.zolda.guardUntil > tick);
+    out.put("projectiles", s.activeProjectiles);
+    out.put("elevated", s.cards.elevated);
+    out.put("dragonFlame", s.cards.flame());
+    out.put("nextCards", s.cards.nextCards);
+    out.put("spirit", s.cards.spirit(tick));
+    out.put("tick", tick);
+    out.put("summon", s.summon == null ? "" : s.summon.getUuidAsString());
     return out;
   }
 }

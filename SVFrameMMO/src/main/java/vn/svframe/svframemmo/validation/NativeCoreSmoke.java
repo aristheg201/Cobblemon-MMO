@@ -1,5 +1,8 @@
 package vn.svframe.svframemmo.validation;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import vn.svframe.svframelib.player.modifier.ModifierType;
 import vn.svframe.svframemmo.api.player.attribute.PlayerAttribute;
 import vn.svframe.svframemmo.api.player.profess.ClassOption;
@@ -8,59 +11,86 @@ import vn.svframe.svframemmo.api.player.profess.resource.PlayerResource;
 import vn.svframe.svframemmo.experience.curve.FormulaExperienceCurve;
 import vn.svframe.svframemmo.experience.curve.ListExperienceCurve;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
- * Pure-Java validation for data/model code which does not require an initialized
- * Fabric Loader or Minecraft server. Runtime registry invariants are validated
- * by the dedicated Fabric server boot step instead.
+ * Pure-Java validation for data/model code which does not require an initialized Fabric Loader or
+ * Minecraft server. Runtime registry invariants are validated by the dedicated Fabric server boot
+ * step instead.
  */
 public final class NativeCoreSmoke {
-    public static void main(String[] args) {
-        if (PlayerResource.values().length != 4) throw new AssertionError("resource count");
-        if (!PlayerResource.MANA.getMaxStat().equals("MAX_MANA")) throw new AssertionError("mana stat");
-        if (PlayerResource.MANA.getOffCombatRegen() != ClassOption.OFF_COMBAT_MANA_REGEN) throw new AssertionError("mana class option");
+  public static void main(String[] args) {
+    if (PlayerResource.values().length != 4) throw new AssertionError("resource count");
+    if (!PlayerResource.MANA.getMaxStat().equals("MAX_MANA")) throw new AssertionError("mana stat");
+    if (PlayerResource.MANA.getOffCombatRegen() != ClassOption.OFF_COMBAT_MANA_REGEN)
+      throw new AssertionError("mana class option");
 
-        Map<String, Object> buffs = new LinkedHashMap<>();
-        buffs.put("weapon_damage", 2);
-        buffs.put("max_health", "1%");
-        Map<String, Object> attributeConfig = new LinkedHashMap<>();
-        attributeConfig.put("name", "Strength");
-        attributeConfig.put("max-points", 40);
-        attributeConfig.put("buff", buffs);
-        PlayerAttribute strength = new PlayerAttribute("STRENGTH", attributeConfig);
-        if (!strength.getId().equals("strength")) throw new AssertionError("attribute id normalization");
-        if (strength.getMax() != 40 || strength.getBuffs().size() != 2) throw new AssertionError("attribute parsing");
-        if (strength.getBuffs().get(0).type() != ModifierType.FLAT) throw new AssertionError("flat buff");
-        if (strength.getBuffs().get(1).type() != ModifierType.RELATIVE) throw new AssertionError("relative buff");
+    Map<String, Object> buffs = new LinkedHashMap<>();
+    buffs.put("weapon_damage", 2);
+    buffs.put("max_health", "1%");
+    Map<String, Object> attributeConfig = new LinkedHashMap<>();
+    attributeConfig.put("name", "Strength");
+    attributeConfig.put("max-points", 40);
+    attributeConfig.put("buff", buffs);
+    PlayerAttribute strength = new PlayerAttribute("STRENGTH", attributeConfig);
+    if (!strength.getId().equals("strength"))
+      throw new AssertionError("attribute id normalization");
+    if (strength.getMax() != 40 || strength.getBuffs().size() != 2)
+      throw new AssertionError("attribute parsing");
+    if (strength.getBuffs().get(0).type() != ModifierType.FLAT)
+      throw new AssertionError("flat buff");
+    if (strength.getBuffs().get(1).type() != ModifierType.RELATIVE)
+      throw new AssertionError("relative buff");
 
-        ListExperienceCurve table = new ListExperienceCurve(List.of(100L, 250L, 500L));
-        if (table.getExperience(null, 1) != 100L) throw new AssertionError("list curve level 1");
-        if (table.getExperience(null, 3) != 500L) throw new AssertionError("list curve level 3");
-        if (table.getExperience(null, 99) != 500L) throw new AssertionError("list curve max clamp");
+    ListExperienceCurve table = new ListExperienceCurve(List.of(100L, 250L, 500L));
+    if (table.getExperience(null, 1) != 100L) throw new AssertionError("list curve level 1");
+    if (table.getExperience(null, 3) != 500L) throw new AssertionError("list curve level 3");
+    if (table.getExperience(null, 99) != 500L) throw new AssertionError("list curve max clamp");
 
-        FormulaExperienceCurve formula = new FormulaExperienceCurve("{level} * 100");
-        if (formula.getExperience(null, 4) != 400L) throw new AssertionError("formula curve");
+    FormulaExperienceCurve formula = new FormulaExperienceCurve("{level} * 100");
+    if (formula.getExperience(null, 4) != 400L) throw new AssertionError("formula curve");
 
-        SavedClassState state = new SavedClassState(7, 42d, 3, 2, 1, 1, 1, 20d, 80d, 70d, 60d,
-                Map.of("strength", 4, "dexterity", 2), Map.of("dash", 3, "guard", 1), Map.of(),
-                java.util.Set.of("starter"), Map.of("combat", 2), Map.of("combat:root", 1), Map.of("class_level", 7));
-        if (state.spentSkillPoints() != 2) throw new AssertionError("saved class spent skill points");
-        if (state.spentAttributePoints() != 6) throw new AssertionError("saved class spent attribute points");
-        try { state.attributes().put("illegal", 1); throw new AssertionError("saved class maps must be immutable"); }
-        catch (UnsupportedOperationException expected) { }
-
-        for (int held = 0; held < 9; held++) {
-            java.util.Set<Integer> displayed = new java.util.HashSet<>();
-            for (int castSlot = 1; castSlot <= 8; castSlot++) {
-                int input = vn.svframe.svframemmo.skill.runtime.SkillBarSlotMapping.displayedSlot(castSlot, held);
-                if (input < 1 || input > 9 || input == held + 1 || !displayed.add(input))
-                    throw new AssertionError("Native skill bar must skip the held slot and retain unique vanilla inputs");
-            }
-        }
-        System.out.println("SVFRAMEMMO_SKILL_BAR_MAPPING=PASS cases=72");
-        System.out.println("SVFRAMEMMO_NATIVE_CORE=PASS");
+    SavedClassState state =
+        new SavedClassState(
+            7,
+            42d,
+            3,
+            2,
+            1,
+            1,
+            1,
+            20d,
+            80d,
+            70d,
+            60d,
+            Map.of("strength", 4, "dexterity", 2),
+            Map.of("dash", 3, "guard", 1),
+            Map.of(),
+            java.util.Set.of("starter"),
+            Map.of("combat", 2),
+            Map.of("combat:root", 1),
+            Map.of("class_level", 7));
+    if (state.spentSkillPoints() != 2) throw new AssertionError("saved class spent skill points");
+    if (state.spentAttributePoints() != 6)
+      throw new AssertionError("saved class spent attribute points");
+    try {
+      state.attributes().put("illegal", 1);
+      throw new AssertionError("saved class maps must be immutable");
+    } catch (UnsupportedOperationException expected) {
     }
+
+    for (int held = 0; held < 9; held++) {
+      java.util.Set<Integer> displayed = new java.util.HashSet<>();
+      for (int castSlot = 1; castSlot <= 8; castSlot++) {
+        int input =
+            vn.svframe.svframemmo.skill.runtime.SkillBarSlotMapping.displayedSlot(castSlot, held);
+        if (input < 1 || input > 9 || input == held + 1 || !displayed.add(input))
+          throw new AssertionError(
+              "Native skill bar must skip the held slot and retain unique vanilla inputs");
+      }
+    }
+    System.out.println("SVFRAMEMMO_SKILL_BAR_MAPPING=PASS cases=72");
+    vn.svframe.svframemmo.persistence.PersistenceBootstrap.verifyYamlCodec();
+    System.out.println(
+        "SVFRAMEMMO_PREFERENCE_CODEC=PASS legacy-defaults,immutable-snapshot,yaml-roundtrip");
+    System.out.println("SVFRAMEMMO_NATIVE_CORE=PASS");
+  }
 }

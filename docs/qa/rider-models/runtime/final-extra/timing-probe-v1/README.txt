@@ -1,0 +1,1 @@
+Retained first probe: real key caused damage and cooldown and preserved inventory. Mana was equal to its prior maximum when queried after 0.35 seconds. This comparison cannot distinguish the cast cost from intervening native regeneration. The resumed probe samples earlier and retains any inconclusive attempts; direct SkillRuntime cost deltas were already recorded separately.

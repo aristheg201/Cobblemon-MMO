@@ -1,0 +1,4 @@
+{
+  "stage": "QA fixture",
+  "reason": "Second prepare kept an already active Rider while the skill bar was off; calling Henshin toggled it back to human. Legacy entity Attributes NBT was ignored by Minecraft1.21.1, so targets only had20HP. Fix: use actual F entry and native attribute commands. Not a full gameplay acceptance result."
+}

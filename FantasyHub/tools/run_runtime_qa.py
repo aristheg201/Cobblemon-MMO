@@ -67,7 +67,9 @@ def command(host, port, password, text):
         # A nonempty unknown command has its own unambiguous response ID.
         send(connection, 3, 2, "__fantasyhub_rcon_response_boundary__")
         responses = [first]
-        for _ in range(64):
+        # Expanded class/equipment catalogs can exceed 64 vanilla 4 KiB replies.
+        # Keep a bounded 2 MiB response budget and the ordered boundary packet.
+        for _ in range(512):
             request, _, response = receive(connection)
             if request == 3:
                 return "".join(responses)

@@ -1,0 +1,36 @@
+[
+  {
+    "scenario": "five-configured-3d-cards",
+    "actorReceivedFive": true,
+    "observerReceivedFive": true,
+    "noLeakedProjectiles": true
+  },
+  {
+    "scenario": "ultimate-projection-0",
+    "accepted": true,
+    "realDamage": true,
+    "decadeUnchanged": true,
+    "temporarySummonRetired": true
+  },
+  {
+    "scenario": "ultimate-projection-1",
+    "accepted": true,
+    "realDamage": true,
+    "decadeUnchanged": true,
+    "temporarySummonRetired": true
+  },
+  {
+    "scenario": "ultimate-projection-2",
+    "accepted": true,
+    "realDamage": true,
+    "decadeUnchanged": true,
+    "temporarySummonRetired": true
+  },
+  {
+    "scenario": "ryuki-real-hotkey",
+    "damagedThroughRealInput": true,
+    "cooldownApplied": true,
+    "costCharged": false,
+    "inventoryPreserved": true
+  }
+]

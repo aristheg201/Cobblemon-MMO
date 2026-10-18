@@ -10,9 +10,11 @@ import vn.svframe.fantasyhub.client.ClientFeedbackQa;
 
 @Mixin(GameRenderer.class)
 public abstract class HurtCameraQaMixin {
-    @Inject(method="tiltViewWhenHurt",at=@At("HEAD"))
-    private void fantasyhub$observeCamera(MatrixStack matrices,float delta,CallbackInfo ci){
-        var player=MinecraftClient.getInstance().player;
-        if(ClientFeedbackQa.ENABLED&&player!=null&&player.hurtTime>0)ClientFeedbackQa.hurtCameraFrames++;
-    }
+  @Inject(method = "tiltViewWhenHurt", at = @At("TAIL"))
+  private void fantasyhub$observeCamera(MatrixStack matrices, float delta, CallbackInfo ci) {
+    vn.svframe.fantasyhub.client.RiderCamera.render(matrices, delta);
+    var player = MinecraftClient.getInstance().player;
+    if (ClientFeedbackQa.ENABLED && player != null && player.hurtTime > 0)
+      ClientFeedbackQa.hurtCameraFrames++;
+  }
 }

@@ -1,18 +1,5 @@
 package vn.svframe.svframemmo.manager;
 
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.WorldSavePath;
-import vn.svframe.svframelib.api.player.MMOPlayerData;
-import vn.svframe.svframemmo.api.player.PlayerData;
-import vn.svframe.svframemmo.config.DefaultFiles;
-import vn.svframe.svframemmo.persistence.JsonPlayerDataStore;
-import vn.svframe.svframemmo.persistence.MysqlPlayerDataStore;
-import vn.svframe.svframemmo.persistence.PersistenceConfig;
-import vn.svframe.svframemmo.persistence.PlayerDataSnapshot;
-import vn.svframe.svframemmo.persistence.PlayerDataStore;
-import vn.svframe.svframemmo.persistence.YamlPlayerDataStore;
-
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,284 +14,392 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.WorldSavePath;
+import vn.svframe.svframelib.api.player.MMOPlayerData;
+import vn.svframe.svframemmo.api.player.PlayerData;
+import vn.svframe.svframemmo.config.DefaultFiles;
+import vn.svframe.svframemmo.persistence.JsonPlayerDataStore;
+import vn.svframe.svframemmo.persistence.MysqlPlayerDataStore;
+import vn.svframe.svframemmo.persistence.PersistenceConfig;
+import vn.svframe.svframemmo.persistence.PlayerDataSnapshot;
+import vn.svframe.svframemmo.persistence.PlayerDataStore;
+import vn.svframe.svframemmo.persistence.YamlPlayerDataStore;
 
 /** Backend-independent native userdata manager with asynchronous persistence writes. */
 public final class PlayerDataManager {
-    private static final Logger LOG = Logger.getLogger("SVFrameMMO-PlayerData");
-    private static final long WRITER_SHUTDOWN_SECONDS = 30L;
+  private static final Logger LOG = Logger.getLogger("SVFrameMMO-PlayerData");
+  private static final long WRITER_SHUTDOWN_SECONDS = 30L;
 
-    private final Map<UUID, PlayerData> data = new ConcurrentHashMap<>();
-    private final Map<UUID, PlayerData> online = new ConcurrentHashMap<>();
-    private final Collection<PlayerData> allView = Collections.unmodifiableCollection(data.values());
-    private final Collection<PlayerData> onlineView = Collections.unmodifiableCollection(online.values());
-    private final AtomicReference<Throwable> asyncFailure = new AtomicReference<>();
+  private final Map<UUID, PlayerData> data = new ConcurrentHashMap<>();
+  private final Map<UUID, PlayerData> online = new ConcurrentHashMap<>();
+  private final java.util.Set<UUID> dirty = ConcurrentHashMap.newKeySet();
+  private final Collection<PlayerData> allView = Collections.unmodifiableCollection(data.values());
+  private final Collection<PlayerData> onlineView =
+      Collections.unmodifiableCollection(online.values());
+  private final AtomicReference<Throwable> asyncFailure = new AtomicReference<>();
 
-    private Path worldRoot;
-    private PersistenceConfig persistenceConfig;
-    private volatile PlayerDataStore store;
-    private volatile ExecutorService writer;
-    private volatile boolean closing;
+  private Path worldRoot;
+  private PersistenceConfig persistenceConfig;
+  private volatile PlayerDataStore store;
+  private volatile ExecutorService writer;
+  private volatile boolean closing;
 
-    public synchronized void start(MinecraftServer server) {
-        closeStore();
-        worldRoot = server.getSavePath(WorldSavePath.ROOT);
+  public synchronized void start(MinecraftServer server) {
+    closeStore();
+    worldRoot = server.getSavePath(WorldSavePath.ROOT);
+    try {
+      persistenceConfig = PersistenceConfig.load(DefaultFiles.ROOT.resolve("config.yml"));
+      store = createStore(persistenceConfig.backend());
+      Map<UUID, PlayerDataSnapshot> loaded = store.loadAll();
+      JsonPlayerDataStore legacy =
+          new JsonPlayerDataStore(worldRoot.resolve("svframemmo-playerdata.json"));
+      if (persistenceConfig.backend() != PersistenceConfig.Backend.JSON
+          && persistenceConfig.autoMigrateJson()
+          && loaded.isEmpty()
+          && legacy.exists()) {
+        Map<UUID, PlayerDataSnapshot> migrated = legacy.loadAll();
+        if (!migrated.isEmpty()) {
+          store.saveAll(migrated);
+          loaded = migrated;
+          LOG.info(
+              "Migrated "
+                  + migrated.size()
+                  + " native JSON userdata records to "
+                  + store.id()
+                  + ".");
+        }
+      }
+      restoreAll(loaded);
+      startWriter();
+      LOG.info("SVFrameMMO userdata backend: " + store.id() + ", records=" + data.size());
+    } catch (Exception exception) {
+      stopWriterNow();
+      closeStore();
+      throw new IllegalStateException(
+          "Could not initialize SVFrameMMO userdata backend", exception);
+    }
+    for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) join(player);
+  }
+
+  public PlayerData join(ServerPlayerEntity player) {
+    PlayerData value = data.computeIfAbsent(player.getUuid(), PlayerData::blank);
+
+    // Respawn/clone and fast reconnect replace ServerPlayerEntity while keeping the UUID.
+    // Snapshot the authoritative old entity before rebinding; never attach over a live reference.
+    ServerPlayerEntity previous = value.getPlayer();
+    if (previous != null && previous != player) value.detach();
+
+    MMOPlayerData mmo = MMOPlayerData.getOrNull(player.getUuid());
+    if (mmo != null && mmo.isOnline() && mmo.getPlayer() != player) mmo.updatePlayer(null);
+    if (!value.isOnline()) value.attach(player);
+    online.put(player.getUuid(), value);
+    return value;
+  }
+
+  public void quit(ServerPlayerEntity player) {
+    PlayerData value = data.get(player.getUuid());
+    if (value == null) return;
+
+    // A stale disconnect from an old connection must never detach a newer reconnect/respawn
+    // which already owns the same UUID.
+    if (!value.isOnline() || value.getPlayer() != player) return;
+
+    value.detach();
+    online.remove(player.getUuid(), value);
+    MMOPlayerData mmo = MMOPlayerData.getOrNull(player.getUuid());
+    if (mmo != null && mmo.isOnline() && mmo.getPlayer() == player) mmo.updatePlayer(null);
+    savePlayer(value);
+  }
+
+  public PlayerData get(UUID id) {
+    return data.computeIfAbsent(id, PlayerData::blank);
+  }
+
+  public PlayerData find(UUID id) {
+    return data.get(id);
+  }
+
+  public PlayerData get(ServerPlayerEntity player) {
+    PlayerData value = online.get(player.getUuid());
+    return value != null && value.isOnline() && value.getPlayer() == player ? value : join(player);
+  }
+
+  /** All loaded records. This is a stable live view and does not allocate on iteration. */
+  public Collection<PlayerData> all() {
+    return allView;
+  }
+
+  /**
+   * Online records only. Tick runtimes must use this view instead of scanning the complete userdata
+   * cache.
+   */
+  public Collection<PlayerData> online() {
+    return onlineView;
+  }
+
+  public synchronized String backendName() {
+    return store == null ? "UNINITIALIZED" : store.id();
+  }
+
+  /** Queues a complete snapshot write. Used by reload and explicit save paths. */
+  public void save() {
+    PlayerDataStore current = store;
+    if (current == null || closing) return;
+    Map<UUID, PlayerDataSnapshot> captured = snapshots(data.values());
+    dirty.removeAll(captured.keySet());
+    submit("full userdata save", target -> target.saveAll(captured));
+  }
+
+  /** Queues only currently online records. This is the normal autosave path. */
+  public void saveOnline() {
+    PlayerDataStore current = store;
+    if (current == null || closing || online.isEmpty()) return;
+    Map<UUID, PlayerDataSnapshot> captured = snapshots(online.values());
+    dirty.removeAll(captured.keySet());
+    if (!captured.isEmpty()) submit("online userdata save", target -> target.saveSome(captured));
+  }
+
+  /**
+   * Coalesces preference/progression updates without copying profiles or touching the filesystem.
+   */
+  public void markDirty(PlayerData value) {
+    if (value != null && data.get(value.getUniqueId()) == value) dirty.add(value.getUniqueId());
+  }
+
+  /** Called on the server thread. Only immutable snapshots reach the single IO writer. */
+  public void flushDirty() {
+    if (store == null || writer == null || closing || dirty.isEmpty()) return;
+    Map<UUID, PlayerDataSnapshot> batch = new LinkedHashMap<>();
+    for (UUID id : java.util.Set.copyOf(dirty)) {
+      if (!dirty.remove(id)) continue;
+      PlayerData value = data.get(id);
+      if (value != null) batch.put(id, PlayerDataSnapshot.capture(value));
+    }
+    if (batch.isEmpty()) return;
+    Map<UUID, PlayerDataSnapshot> captured = Map.copyOf(batch);
+    submit(
+        "dirty userdata batch",
+        target -> {
+          try {
+            target.saveSome(captured);
+          } catch (Exception failure) {
+            // Retry a fresh main-thread snapshot, never replay an older value over newer state.
+            dirty.addAll(captured.keySet());
+            throw failure;
+          }
+        });
+  }
+
+  /** Exports current in-memory state without changing the live backend. */
+  public synchronized int exportTo(PersistenceConfig.Backend target) {
+    if (store == null) throw new IllegalStateException("Player data backend is not initialized");
+    PlayerDataStore destination = null;
+    try {
+      destination = createStore(target);
+      Map<UUID, PlayerDataSnapshot> captured = snapshots(data.values());
+      destination.saveAll(captured);
+      return captured.size();
+    } catch (Exception exception) {
+      throw new IllegalStateException("Could not export userdata to " + target, exception);
+    } finally {
+      if (destination != null && destination != store)
         try {
-            persistenceConfig = PersistenceConfig.load(DefaultFiles.ROOT.resolve("config.yml"));
-            store = createStore(persistenceConfig.backend());
-            Map<UUID, PlayerDataSnapshot> loaded = store.loadAll();
-            JsonPlayerDataStore legacy = new JsonPlayerDataStore(worldRoot.resolve("svframemmo-playerdata.json"));
-            if (persistenceConfig.backend() != PersistenceConfig.Backend.JSON && persistenceConfig.autoMigrateJson()
-                    && loaded.isEmpty() && legacy.exists()) {
-                Map<UUID, PlayerDataSnapshot> migrated = legacy.loadAll();
-                if (!migrated.isEmpty()) {
-                    store.saveAll(migrated);
-                    loaded = migrated;
-                    LOG.info("Migrated " + migrated.size() + " native JSON userdata records to " + store.id() + ".");
-                }
-            }
-            restoreAll(loaded);
-            startWriter();
-            LOG.info("SVFrameMMO userdata backend: " + store.id() + ", records=" + data.size());
-        } catch (Exception exception) {
-            stopWriterNow();
-            closeStore();
-            throw new IllegalStateException("Could not initialize SVFrameMMO userdata backend", exception);
-        }
-        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) join(player);
-    }
-
-    public PlayerData join(ServerPlayerEntity player) {
-        PlayerData value = data.computeIfAbsent(player.getUuid(), PlayerData::blank);
-
-        // Respawn/clone and fast reconnect replace ServerPlayerEntity while keeping the UUID.
-        // Snapshot the authoritative old entity before rebinding; never attach over a live reference.
-        ServerPlayerEntity previous = value.getPlayer();
-        if (previous != null && previous != player) value.detach();
-
-        MMOPlayerData mmo = MMOPlayerData.getOrNull(player.getUuid());
-        if (mmo != null && mmo.isOnline() && mmo.getPlayer() != player) mmo.updatePlayer(null);
-        if (!value.isOnline()) value.attach(player);
-        online.put(player.getUuid(), value);
-        return value;
-    }
-
-    public void quit(ServerPlayerEntity player) {
-        PlayerData value = data.get(player.getUuid());
-        if (value == null) return;
-
-        // A stale disconnect from an old connection must never detach a newer reconnect/respawn
-        // which already owns the same UUID.
-        if (!value.isOnline() || value.getPlayer() != player) return;
-
-        value.detach();
-        online.remove(player.getUuid(), value);
-        MMOPlayerData mmo = MMOPlayerData.getOrNull(player.getUuid());
-        if (mmo != null && mmo.isOnline() && mmo.getPlayer() == player) mmo.updatePlayer(null);
-        savePlayer(value);
-    }
-
-    public PlayerData get(UUID id) { return data.computeIfAbsent(id, PlayerData::blank); }
-    public PlayerData find(UUID id) { return data.get(id); }
-    public PlayerData get(ServerPlayerEntity player) {
-        PlayerData value = online.get(player.getUuid());
-        return value != null && value.isOnline() && value.getPlayer() == player ? value : join(player);
-    }
-
-    /** All loaded records. This is a stable live view and does not allocate on iteration. */
-    public Collection<PlayerData> all() { return allView; }
-
-    /** Online records only. Tick runtimes must use this view instead of scanning the complete userdata cache. */
-    public Collection<PlayerData> online() { return onlineView; }
-
-    public synchronized String backendName() { return store == null ? "UNINITIALIZED" : store.id(); }
-
-    /** Queues a complete snapshot write. Used by reload and explicit save paths. */
-    public void save() {
-        PlayerDataStore current = store;
-        if (current == null || closing) return;
-        Map<UUID, PlayerDataSnapshot> captured = snapshots(data.values());
-        submit("full userdata save", target -> target.saveAll(captured));
-    }
-
-    /** Queues only currently online records. This is the normal autosave path. */
-    public void saveOnline() {
-        PlayerDataStore current = store;
-        if (current == null || closing || online.isEmpty()) return;
-        Map<UUID, PlayerDataSnapshot> captured = snapshots(online.values());
-        if (!captured.isEmpty()) submit("online userdata save", target -> target.saveSome(captured));
-    }
-
-    /** Exports current in-memory state without changing the live backend. */
-    public synchronized int exportTo(PersistenceConfig.Backend target) {
-        if (store == null) throw new IllegalStateException("Player data backend is not initialized");
-        PlayerDataStore destination = null;
-        try {
-            destination = createStore(target);
-            Map<UUID, PlayerDataSnapshot> captured = snapshots(data.values());
-            destination.saveAll(captured);
-            return captured.size();
-        } catch (Exception exception) {
-            throw new IllegalStateException("Could not export userdata to " + target, exception);
-        } finally {
-            if (destination != null && destination != store) try { destination.close(); } catch (Exception ignored) { }
+          destination.close();
+        } catch (Exception ignored) {
         }
     }
+  }
 
-    /** Drains asynchronous writes and performs one final complete, synchronous shutdown flush. */
-    public void close() {
-        final PlayerDataStore currentStore;
-        final ExecutorService currentWriter;
-        final Map<UUID, PlayerDataSnapshot> finalSnapshot;
-        synchronized (this) {
-            if (store == null) return;
-            closing = true;
-            currentStore = store;
-            currentWriter = writer;
-            writer = null;
-            finalSnapshot = snapshots(data.values());
-        }
-
-        if (currentWriter != null) {
-            currentWriter.shutdown();
-            try {
-                if (!currentWriter.awaitTermination(WRITER_SHUTDOWN_SECONDS, TimeUnit.SECONDS)) {
-                    LOG.warning("Timed out draining SVFrameMMO userdata writer; interrupting pending writes before final flush.");
-                    currentWriter.shutdownNow();
-                    currentWriter.awaitTermination(5L, TimeUnit.SECONDS);
-                }
-            } catch (InterruptedException interrupted) {
-                Thread.currentThread().interrupt();
-                currentWriter.shutdownNow();
-            }
-        }
-
-        RuntimeException failure = null;
-        try {
-            currentStore.saveAll(finalSnapshot);
-        } catch (Exception exception) {
-            failure = new IllegalStateException("Could not perform final SVFrameMMO userdata save to " + currentStore.id(), exception);
-        } finally {
-            try { currentStore.close(); }
-            catch (Exception exception) {
-                if (failure == null) failure = new IllegalStateException("Could not close SVFrameMMO userdata backend " + currentStore.id(), exception);
-                else failure.addSuppressed(exception);
-            }
-            synchronized (this) {
-                if (store == currentStore) store = null;
-                closing = false;
-            }
-        }
-
-        Throwable background = asyncFailure.getAndSet(null);
-        if (background != null) LOG.log(Level.SEVERE, "At least one asynchronous SVFrameMMO userdata write failed before shutdown", background);
-        if (failure != null) throw failure;
+  /** Drains asynchronous writes and performs one final complete, synchronous shutdown flush. */
+  public void close() {
+    final PlayerDataStore currentStore;
+    final ExecutorService currentWriter;
+    final Map<UUID, PlayerDataSnapshot> finalSnapshot;
+    synchronized (this) {
+      if (store == null) return;
+      closing = true;
+      currentStore = store;
+      currentWriter = writer;
+      writer = null;
+      finalSnapshot = snapshots(data.values());
     }
 
-    /** Capture the canonical player state on the server thread; queue its persistence write. */
-    public void savePlayer(PlayerData value) {
-        if (value == null || store == null || closing) return;
-        UUID id = value.getUniqueId();
-        PlayerDataSnapshot captured = PlayerDataSnapshot.capture(value);
-        submit("userdata save for " + id, target -> target.saveOne(id, captured));
-    }
-
-    /** Completes only after the canonical snapshot was saved by the configured backend. */
-    public java.util.concurrent.CompletableFuture<Void> savePlayerDurably(PlayerData value) {
-        var result = new java.util.concurrent.CompletableFuture<Void>();
-        ExecutorService currentWriter = writer;
-        PlayerDataStore currentStore = store;
-        if (value == null || currentWriter == null || currentStore == null || closing) {
-            result.completeExceptionally(new IllegalStateException("Player data writer is unavailable"));
-            return result;
+    if (currentWriter != null) {
+      currentWriter.shutdown();
+      try {
+        if (!currentWriter.awaitTermination(WRITER_SHUTDOWN_SECONDS, TimeUnit.SECONDS)) {
+          LOG.warning(
+              "Timed out draining SVFrameMMO userdata writer; interrupting pending writes before"
+                  + " final flush.");
+          currentWriter.shutdownNow();
+          currentWriter.awaitTermination(5L, TimeUnit.SECONDS);
         }
-        UUID id = value.getUniqueId();
-        PlayerDataSnapshot captured = PlayerDataSnapshot.capture(value);
-        try {
-            currentWriter.execute(() -> {
-                try { currentStore.saveOne(id, captured); result.complete(null); }
-                catch (Throwable failure) {
-                    asyncFailure.compareAndSet(null, failure);
-                    LOG.log(Level.SEVERE, "Durable userdata save failed for " + id, failure);
-                    result.completeExceptionally(failure);
-                }
-            });
-        } catch (RejectedExecutionException failure) { result.completeExceptionally(failure); }
-        return result;
+      } catch (InterruptedException interrupted) {
+        Thread.currentThread().interrupt();
+        currentWriter.shutdownNow();
+      }
     }
 
-    private void submit(String description, StoreWrite write) {
-        ExecutorService currentWriter = writer;
-        PlayerDataStore currentStore = store;
-        if (currentWriter == null || currentStore == null || closing) return;
-        try {
-            currentWriter.execute(() -> {
-                try {
-                    write.run(currentStore);
-                } catch (Throwable failure) {
-                    asyncFailure.compareAndSet(null, failure);
-                    LOG.log(Level.SEVERE, "Asynchronous SVFrameMMO " + description + " failed", failure);
-                }
-            });
-        } catch (RejectedExecutionException rejected) {
-            if (!closing) {
-                asyncFailure.compareAndSet(null, rejected);
-                LOG.log(Level.SEVERE, "SVFrameMMO userdata writer rejected " + description, rejected);
-            }
-        }
-    }
-
-    private synchronized void startWriter() {
-        stopWriterNow();
+    RuntimeException failure = null;
+    try {
+      currentStore.saveAll(finalSnapshot);
+    } catch (Exception exception) {
+      failure =
+          new IllegalStateException(
+              "Could not perform final SVFrameMMO userdata save to " + currentStore.id(),
+              exception);
+    } finally {
+      try {
+        currentStore.close();
+      } catch (Exception exception) {
+        if (failure == null)
+          failure =
+              new IllegalStateException(
+                  "Could not close SVFrameMMO userdata backend " + currentStore.id(), exception);
+        else failure.addSuppressed(exception);
+      }
+      synchronized (this) {
+        if (store == currentStore) store = null;
         closing = false;
-        asyncFailure.set(null);
-        writer = Executors.newSingleThreadExecutor(task -> {
-            Thread thread = new Thread(task, "SVFrameMMO-Userdata-IO");
-            thread.setDaemon(true);
-            thread.setUncaughtExceptionHandler((ignored, failure) -> LOG.log(Level.SEVERE, "Uncaught SVFrameMMO userdata writer failure", failure));
-            return thread;
+      }
+    }
+
+    Throwable background = asyncFailure.getAndSet(null);
+    if (background != null)
+      LOG.log(
+          Level.SEVERE,
+          "At least one asynchronous SVFrameMMO userdata write failed before shutdown",
+          background);
+    if (failure != null) throw failure;
+  }
+
+  /** Capture the canonical player state on the server thread; queue its persistence write. */
+  public void savePlayer(PlayerData value) {
+    if (value == null || store == null || closing) return;
+    UUID id = value.getUniqueId();
+    PlayerDataSnapshot captured = PlayerDataSnapshot.capture(value);
+    dirty.remove(id);
+    submit("userdata save for " + id, target -> target.saveOne(id, captured));
+  }
+
+  /** Completes only after the canonical snapshot was saved by the configured backend. */
+  public java.util.concurrent.CompletableFuture<Void> savePlayerDurably(PlayerData value) {
+    var result = new java.util.concurrent.CompletableFuture<Void>();
+    ExecutorService currentWriter = writer;
+    PlayerDataStore currentStore = store;
+    if (value == null || currentWriter == null || currentStore == null || closing) {
+      result.completeExceptionally(new IllegalStateException("Player data writer is unavailable"));
+      return result;
+    }
+    UUID id = value.getUniqueId();
+    PlayerDataSnapshot captured = PlayerDataSnapshot.capture(value);
+    dirty.remove(id);
+    try {
+      currentWriter.execute(
+          () -> {
+            try {
+              currentStore.saveOne(id, captured);
+              result.complete(null);
+            } catch (Throwable failure) {
+              asyncFailure.compareAndSet(null, failure);
+              LOG.log(Level.SEVERE, "Durable userdata save failed for " + id, failure);
+              result.completeExceptionally(failure);
+            }
+          });
+    } catch (RejectedExecutionException failure) {
+      result.completeExceptionally(failure);
+    }
+    return result;
+  }
+
+  private void submit(String description, StoreWrite write) {
+    ExecutorService currentWriter = writer;
+    PlayerDataStore currentStore = store;
+    if (currentWriter == null || currentStore == null || closing) return;
+    try {
+      currentWriter.execute(
+          () -> {
+            try {
+              write.run(currentStore);
+            } catch (Throwable failure) {
+              asyncFailure.compareAndSet(null, failure);
+              LOG.log(Level.SEVERE, "Asynchronous SVFrameMMO " + description + " failed", failure);
+            }
+          });
+    } catch (RejectedExecutionException rejected) {
+      if (!closing) {
+        asyncFailure.compareAndSet(null, rejected);
+        LOG.log(Level.SEVERE, "SVFrameMMO userdata writer rejected " + description, rejected);
+      }
+    }
+  }
+
+  private synchronized void startWriter() {
+    stopWriterNow();
+    closing = false;
+    asyncFailure.set(null);
+    writer =
+        Executors.newSingleThreadExecutor(
+            task -> {
+              Thread thread = new Thread(task, "SVFrameMMO-Userdata-IO");
+              thread.setDaemon(true);
+              thread.setUncaughtExceptionHandler(
+                  (ignored, failure) ->
+                      LOG.log(
+                          Level.SEVERE, "Uncaught SVFrameMMO userdata writer failure", failure));
+              return thread;
+            });
+  }
+
+  private synchronized void stopWriterNow() {
+    ExecutorService current = writer;
+    writer = null;
+    if (current != null) current.shutdownNow();
+  }
+
+  private void restoreAll(Map<UUID, PlayerDataSnapshot> loaded) {
+    online.clear();
+    dirty.clear();
+    data.clear();
+    loaded.forEach(
+        (id, snapshot) -> {
+          PlayerData value = PlayerData.blank(id);
+          snapshot.apply(value);
+          data.put(id, value);
         });
-    }
+  }
 
-    private synchronized void stopWriterNow() {
-        ExecutorService current = writer;
-        writer = null;
-        if (current != null) current.shutdownNow();
-    }
+  private static Map<UUID, PlayerDataSnapshot> snapshots(Collection<PlayerData> source) {
+    LinkedHashMap<UUID, PlayerDataSnapshot> out = new LinkedHashMap<>();
+    source.stream()
+        .sorted((a, b) -> a.getUniqueId().compareTo(b.getUniqueId()))
+        .forEach(value -> out.put(value.getUniqueId(), PlayerDataSnapshot.capture(value)));
+    return Map.copyOf(out);
+  }
 
-    private void restoreAll(Map<UUID, PlayerDataSnapshot> loaded) {
-        online.clear();
-        data.clear();
-        loaded.forEach((id, snapshot) -> {
-            PlayerData value = PlayerData.blank(id);
-            snapshot.apply(value);
-            data.put(id, value);
-        });
-    }
+  private PlayerDataStore createStore(PersistenceConfig.Backend backend) throws Exception {
+    if (worldRoot == null) throw new IllegalStateException("World root is not initialized");
+    return switch (backend) {
+      case JSON -> new JsonPlayerDataStore(worldRoot.resolve("svframemmo-playerdata.json"));
+      case YAML -> new YamlPlayerDataStore(worldRoot.resolve(persistenceConfig.yamlDirectory()));
+      case MYSQL -> new MysqlPlayerDataStore(persistenceConfig);
+    };
+  }
 
-    private static Map<UUID, PlayerDataSnapshot> snapshots(Collection<PlayerData> source) {
-        LinkedHashMap<UUID, PlayerDataSnapshot> out = new LinkedHashMap<>();
-        source.stream().sorted((a, b) -> a.getUniqueId().compareTo(b.getUniqueId()))
-                .forEach(value -> out.put(value.getUniqueId(), PlayerDataSnapshot.capture(value)));
-        return Map.copyOf(out);
+  private synchronized void closeStore() {
+    if (store == null) return;
+    try {
+      store.close();
+    } catch (Exception exception) {
+      LOG.warning("Could not close userdata backend: " + exception.getMessage());
     }
+    store = null;
+  }
 
-    private PlayerDataStore createStore(PersistenceConfig.Backend backend) throws Exception {
-        if (worldRoot == null) throw new IllegalStateException("World root is not initialized");
-        return switch (backend) {
-            case JSON -> new JsonPlayerDataStore(worldRoot.resolve("svframemmo-playerdata.json"));
-            case YAML -> new YamlPlayerDataStore(worldRoot.resolve(persistenceConfig.yamlDirectory()));
-            case MYSQL -> new MysqlPlayerDataStore(persistenceConfig);
-        };
-    }
-
-    private synchronized void closeStore() {
-        if (store == null) return;
-        try { store.close(); } catch (Exception exception) { LOG.warning("Could not close userdata backend: " + exception.getMessage()); }
-        store = null;
-    }
-
-    @FunctionalInterface
-    private interface StoreWrite {
-        void run(PlayerDataStore store) throws Exception;
-    }
+  @FunctionalInterface
+  private interface StoreWrite {
+    void run(PlayerDataStore store) throws Exception;
+  }
 }

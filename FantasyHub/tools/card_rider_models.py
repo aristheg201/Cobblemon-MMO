@@ -14,7 +14,12 @@ MATERIALS={'magenta':[178,22,113],'magenta_edge':[230,54,155],'navy':[18,40,68],
 def append_belt(p,name,items):
     for part in items[name]:
         a,c=part['from'],part['to'];s=.57
-        p['body'].append(box('belt_'+part['name'],[(a[0]-8)*s,10.3-(c[1]-8)*s,-2.9+(a[2]-8)*s],[(c[i]-a[i])*s for i in range(3)],part['material']))
+        native=box('belt_'+part['name'],[(a[0]-8)*s,10.3-(c[1]-8)*s,-2.9+(a[2]-8)*s],[(c[i]-a[i])*s for i in range(3)],part['material'])
+        if part.get('rotation'):
+            rotation=part['rotation'];o=rotation['origin'];angles=[0,0,0]
+            axis={'x':0,'y':1,'z':2}[rotation['axis']];angles[axis]=rotation['angle']*(1 if axis==1 else -1)
+            native.update(rotation=angles,pivot=[(o[0]-8)*s,10.3-(o[1]-8)*s,-2.9+(o[2]-8)*s])
+        p['body'].append(native)
     p['body'] += [box('waist_rear_strap',[-4.3,9.6,2.1],[8.6,1.6,.35],'carbon'),box('waist_rear_clasp',[-1.25,9.4,2.4],[2.5,1.9,.4],'steel')]
     for sign in [-1,1]:p['body'].append(box('waist_side_strap_'+str(sign),[sign*4.15-.17,9.6,-2.2],[.34,1.6,4.6],'steel'))
 
@@ -143,4 +148,8 @@ def extend(data):
     data['forms'].update({'ryuki':ryuki(items),'knight':knight(items),'decade':decade(items),'dragreder':dragon('dragreder'),'dragranzer':dragon('dragranzer',True),'darkwing':darkwing()})
     from refine_card_riders import refine
     refine(data)
+    from card_rider_attachments import extend as attachments
+    attachments(data)
+    from rider_ultimate_projections import extend as ultimates
+    ultimates(data)
     data['references']['card_riders']={'archives':['Download.zip','Download2.zip'],'notes':'18 source photographs/game screenshots; no original model files. Base armor remains unchanged in Survive/Complete by user request.','ryuki':['oardefault.jpg','1792297107510.png','1792297128561.png'],'knight':['KR-Knight%26WingKnight.webp','Knight_Profile.webp','images (2).jpeg'],'decade':['1792296897858.png','1792297097386.png'],'monsters':['2015102194749.jpg','41mcTQZ+i1L.jpg','KRRy-Dragranzer.webp','images (1).jpeg','item_0000001578_07.jpg']}

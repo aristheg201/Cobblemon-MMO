@@ -48,6 +48,36 @@ class RiderSettingsTest {
   }
 
   @Test
+  void completeControlImmunityAndCardChargeHaveValidatedConfiguration() throws Exception {
+    var config = new HashMap<>(defaults());
+    var decade = new HashMap<>(YamlLite.map(config.get("decade")));
+    decade.put("cc-immunity-blindness", false);
+    config.put("decade", decade);
+    var valid = RiderSettings.validate(config);
+    assertEquals(false, ((Map<?, ?>) valid.get("decade")).get("cc-immunity-blindness"));
+    decade.put("cc-immunity-blindness", "true");
+    assertThrows(IllegalArgumentException.class, () -> RiderSettings.validate(config));
+    decade.put("cc-immunity-blindness", true);
+    decade.put("dimension-charge-ticks", 1);
+    assertThrows(IllegalArgumentException.class, () -> RiderSettings.validate(config));
+  }
+
+  @Test
+  void partialLegacySkillCostsInheritNewFieldsWithoutResettingCustomBalance() throws Exception {
+    var bundled = defaults();
+    var custom =
+        Map.of("decade", Map.of("skills", Map.of("ULTIMATE_SUMMON", Map.of("cooldown", 123))));
+    var merged = RiderSettings.validate(RiderSettings.withDefaults(bundled, custom));
+    var decade = (Map<?, ?>) merged.get("decade");
+    var skills = (Map<?, ?>) decade.get("skills");
+    var ultimate = (Map<?, ?>) skills.get("ULTIMATE_SUMMON");
+    assertEquals(123, ((Number) ultimate.get("cooldown")).intValue());
+    assertEquals(16, ((Number) ultimate.get("mana")).intValue());
+    assertTrue(skills.containsKey("DIMENSION_KICK"));
+    assertEquals(true, decade.get("cc-immunity-stun"));
+  }
+
+  @Test
   void negativeAndInfiniteCostsCannotGenerateFreeResources() throws Exception {
     for (double value : new double[] {-1, Double.POSITIVE_INFINITY}) {
       var config = new HashMap<>(defaults());

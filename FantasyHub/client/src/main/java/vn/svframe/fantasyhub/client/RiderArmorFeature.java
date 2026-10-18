@@ -27,7 +27,7 @@ public final class RiderArmorFeature
     var texture = data.copyNbt().getString("SVFRAME_ARMOR_TEXTURE");
     if (!texture.startsWith("fantasyhub:riders/")) return "";
     String form = texture.substring("fantasyhub:riders/".length());
-    return RiderModels.FORMS.contains(form) && !Set.of("magnugiga","dragreder","dragranzer","darkwing").contains(form) ? form : "";
+    return RiderModels.WEARABLE.contains(form) ? form : "";
   }
 
   static boolean boot(com.google.gson.JsonObject part) {
@@ -65,16 +65,22 @@ public final class RiderArmorFeature
         RiderModels.render(
             active.form(), bone, part, matrices, vertices, light, active.force() == 6, p -> true);
       }
+      RiderAttachments.render(player, model, matrices, vertices, light);
       return;
     }
     var physicalBelt = vn.svframe.fantasyhub.protocol.BeltEquipment.equippedAny(player);
     String beltForm =
         physicalBelt.isOf(vn.svframe.fantasyhub.protocol.Protocol.agitoBelt)
             ? "agito_ground"
-            : physicalBelt.isOf(vn.svframe.fantasyhub.protocol.Protocol.zoldaBelt) ? "zolda"
-            : physicalBelt.isOf(vn.svframe.fantasyhub.protocol.Protocol.ryukiBelt) ? "ryuki"
-            : physicalBelt.isOf(vn.svframe.fantasyhub.protocol.Protocol.knightBelt) ? "knight"
-            : physicalBelt.isOf(vn.svframe.fantasyhub.protocol.Protocol.decadeBelt) ? "decade" : "";
+            : physicalBelt.isOf(vn.svframe.fantasyhub.protocol.Protocol.zoldaBelt)
+                ? "zolda"
+                : physicalBelt.isOf(vn.svframe.fantasyhub.protocol.Protocol.ryukiBelt)
+                    ? "ryuki"
+                    : physicalBelt.isOf(vn.svframe.fantasyhub.protocol.Protocol.knightBelt)
+                        ? "knight"
+                        : physicalBelt.isOf(vn.svframe.fantasyhub.protocol.Protocol.decadeBelt)
+                            ? "decade"
+                            : "";
     if (!beltForm.isEmpty() && form(player.getEquippedStack(EquipmentSlot.CHEST)).isEmpty())
       RiderModels.render(
           beltForm,

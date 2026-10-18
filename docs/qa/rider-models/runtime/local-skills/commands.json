@@ -1,0 +1,1230 @@
+[
+  {
+    "command": "list",
+    "response": "There are 2 of a max of 5 players online: QAPlayer, QAAttacker"
+  },
+  {
+    "command": "list",
+    "response": "There are 2 of a max of 5 players online: QAPlayer, QAAttacker"
+  },
+  {
+    "command": "gamerule doMobLoot false",
+    "response": "Gamerule doMobLoot is now set to: false"
+  },
+  {
+    "command": "kill @e[type=minecraft:item,x=185,y=64,z=-15,dx=40,dy=20,dz=55]",
+    "response": "No entity was found"
+  },
+  {
+    "command": "fill 185 64 -15 225 64 40 minecraft:stone",
+    "response": "No blocks were filled"
+  },
+  {
+    "command": "time set midnight",
+    "response": "Set the time to 18000"
+  },
+  {
+    "command": "gamerule doDaylightCycle false",
+    "response": "Gamerule doDaylightCycle is now set to: false"
+  },
+  {
+    "command": "weather clear",
+    "response": "Set the weather to clear"
+  },
+  {
+    "command": "tp QAAttacker 207.5 66 3.5 109 -10",
+    "response": "Teleported QAAttacker to 207.500000, 66.000000, 3.500000"
+  },
+  {
+    "command": "effect give QAPlayer minecraft:night_vision 3600 0 true",
+    "response": "Unable to apply this effect (target is either immune to effects, or has something stronger)"
+  },
+  {
+    "command": "effect give QAAttacker minecraft:night_vision 3600 0 true",
+    "response": "Applied effect Night Vision to QAAttacker"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_ryuki",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_ryuki_strike_vent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_ryuki",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_ryuki_sword_vent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_ryuki",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_ryuki_guard_vent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_ryuki",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_ryuki_advent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_ryuki",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_ryuki_survive",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_ryuki",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_ryuki_shoot_vent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_ryuki",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_ryuki_final_vent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_knight",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_knight_sword_vent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_knight",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_knight_nasty_vent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_knight",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_knight_trick_vent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_knight",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_knight_guard_vent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_knight",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_knight_survive",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_knight",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_knight_blast_vent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_knight",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_knight_final_vent",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_decade",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_decade_slash_blast",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_decade",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_decade_illusion",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_decade",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_decade_clock_up",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_decade",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_decade_heisei_spirit",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_decade",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_decade_complete",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_decade",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_decade_complete",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_decade_ultimate_summon",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_decade",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_qa_target]",
+    "response": "Killed 3 entities"
+  },
+  {
+    "command": "summon minecraft:zombie 200.5 65 3.2 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 202 65 4.8 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "summon minecraft:zombie 199.3 65 5.3 {Tags:[\"rider_qa_target\"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Rotation:[0f,0f],Health:1000f,Attributes:[{Name:\"minecraft:generic.max_health\",Base:1000d},{Name:\"minecraft:generic.armor\",Base:20d}]}",
+    "response": "Summoned new Zombie"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.max_health base set 1000",
+    "response": "Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0Base value for attribute Max Health for entity Zombie set to 1000.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run attribute @s minecraft:generic.armor base set 20",
+    "response": "Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0Base value for attribute Armor for entity Zombie set to 20.0"
+  },
+  {
+    "command": "execute as @e[tag=rider_qa_target] run data merge entity @s {Health:1000f}",
+    "response": "Modified entity data of ZombieModified entity data of ZombieModified entity data of Zombie"
+  },
+  {
+    "command": "clear QAPlayer",
+    "response": "Removed 7 item(s) from player QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:diamond_sword",
+    "response": "Gave 1 [Diamond Sword] to QAPlayer"
+  },
+  {
+    "command": "give QAPlayer minecraft:stone 7",
+    "response": "Gave 7 [Stone] to QAPlayer"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_decade_complete",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_cast_decade_dimension_kick",
+    "response": ""
+  }
+]

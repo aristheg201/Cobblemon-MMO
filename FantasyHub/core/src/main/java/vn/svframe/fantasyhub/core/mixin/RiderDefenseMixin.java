@@ -20,6 +20,6 @@ abstract class RiderDefenseMixin {
 
   @Inject(method = "takeKnockback", at = @At("HEAD"), cancellable = true)
   private void fantasyhub$knockback(double strength, double x, double z, CallbackInfo ci) {
-    if (RiderRuntime.controlImmune((LivingEntity) (Object) this)) ci.cancel();
+    if (RiderRuntime.knockbackImmune((LivingEntity) (Object) this)) ci.cancel();
   }
 }

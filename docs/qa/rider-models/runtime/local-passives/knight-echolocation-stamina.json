@@ -1,0 +1,108 @@
+{
+  "beforeStamina": 0.0,
+  "afterStamina": 4.0,
+  "state": {
+    "scenario": "status",
+    "targetsBefore": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "60a17dfa-e48c-463e-aa1d-9bdd1040721a",
+        "health": 999.78
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "9a24945c-f7f2-4cdf-91c5-da27b1248b58",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "29452104-154f-4715-9206-30df4e50c42c",
+        "health": 1000.0
+      }
+    ],
+    "immediate": {
+      "active": true,
+      "class": "KNIGHT",
+      "form": "knight",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 2,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 12361,
+      "summon": ""
+    },
+    "targetsImmediate": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "60a17dfa-e48c-463e-aa1d-9bdd1040721a",
+        "health": 999.78
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "9a24945c-f7f2-4cdf-91c5-da27b1248b58",
+        "health": 1000.0
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "armor": 20,
+        "stunned": false,
+        "effects": [],
+        "uuid": "29452104-154f-4715-9206-30df4e50c42c",
+        "health": 1000.0
+      }
+    ],
+    "hitsImmediate": [],
+    "settledReport": false
+  },
+  "checks": {
+    "behindTargetStaminaRestored": true
+  }
+}
