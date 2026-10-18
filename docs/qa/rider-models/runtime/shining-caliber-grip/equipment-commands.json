@@ -1,0 +1,30 @@
+[
+  {
+    "command": "execute as QAPlayer run trinkets clear",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_shining",
+    "response": ""
+  },
+  {
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "response": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "command": "tp QAAttacker 202.6 65.2 .8 98 12",
+    "response": "Teleported QAAttacker to 202.600000, 65.200000, 0.800000"
+  },
+  {
+    "command": "tp QAAttacker 198.4 65.2 .5 -90 12",
+    "response": "Teleported QAAttacker to 198.400000, 65.200000, 0.500000"
+  },
+  {
+    "command": "tp QAAttacker 200.5 64.6 1.6 180 27",
+    "response": "Teleported QAAttacker to 200.500000, 64.600000, 1.600000"
+  }
+]

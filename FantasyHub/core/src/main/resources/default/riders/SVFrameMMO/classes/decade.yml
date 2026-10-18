@@ -1,0 +1,76 @@
+display:
+  name: '&d&lKamen Rider Decade'
+  lore:
+  - '&7Attack Ride • K-Touch • Dimension Kick'
+  item:
+    material: fantasyhub:decade_belt
+exp-curve: levels
+max-level: 100
+exp-table: class_exp_table
+attributes:
+  max-health:
+    base: 30
+    per-level: 0.2
+  max-mana:
+    base: 60
+    per-level: 0.3
+  max-stamina:
+    base: 45
+    per-level: 0.2
+  armor:
+    base: 3
+    per-level: 0.02
+skills:
+  DECADE_HENSHIN:
+    level: 1
+    max-level: 1
+  DECADE_SLASH_BLAST:
+    level: 1
+    max-level: 30
+  DECADE_ILLUSION:
+    level: 1
+    max-level: 30
+  DECADE_CLOCK_UP:
+    level: 1
+    max-level: 30
+  DECADE_HEISEI_SPIRIT:
+    level: 1
+    max-level: 30
+  DECADE_COMPLETE:
+    level: 20
+    max-level: 1
+  DECADE_ULTIMATE_SUMMON:
+    level: 50
+    max-level: 30
+  DECADE_DIMENSION_KICK:
+    level: 50
+    max-level: 30
+skill-slots:
+  1:
+    name: Slash Blast
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  2:
+    name: Illusion
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  3:
+    name: Clock Up
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  4:
+    name: Heisei Spirit
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  5:
+    name: Complete
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  6:
+    name: Ultimate Summon
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  7:
+    name: Dimension Kick
+    formula: <ACTIVE>
+    unlocked-by-default: true

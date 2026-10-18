@@ -1,0 +1,38 @@
+{
+  "scenario": "status",
+  "immediate": {
+    "active": false,
+    "class": "RYUKI",
+    "form": "",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 1527,
+    "summon": ""
+  },
+  "settled": {
+    "active": false,
+    "class": "RYUKI",
+    "form": "",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 1597,
+    "summon": ""
+  },
+  "maxHealth": 49.8,
+  "health": 49.8,
+  "settledReport": true
+}

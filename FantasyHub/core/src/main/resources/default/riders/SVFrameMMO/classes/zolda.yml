@@ -1,0 +1,73 @@
+display:
+  name: '&2&lKamen Rider Zolda'
+  lore:
+  - '&7Card Vent • Heavy Artillery • Magnugiga'
+  item:
+    material: fantasyhub:zolda_belt
+exp-curve: levels
+max-level: 100
+exp-table: class_exp_table
+attributes:
+  max-health:
+    base: 30
+    per-level: 0.2
+  max-mana:
+    base: 60
+    per-level: 0.3
+  max-stamina:
+    base: 45
+    per-level: 0.2
+  armor:
+    base: 3
+    per-level: 0.02
+skills:
+  ZOLDA_HENSHIN:
+    level: 1
+    max-level: 1
+  ZOLDA_MAGNA_SHOT:
+    level: 1
+    max-level: 30
+  ZOLDA_STRIKE_VENT:
+    level: 1
+    max-level: 30
+  ZOLDA_SHOOT_VENT:
+    level: 1
+    max-level: 30
+  ZOLDA_GIGA_CANNONS:
+    level: 10
+    max-level: 30
+  ZOLDA_GUARD_VENT:
+    level: 5
+    max-level: 30
+  ZOLDA_FINAL_VENT:
+    level: 50
+    max-level: 30
+skill-slots:
+  1:
+    name: Henshin
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  2:
+    name: Magna Shot
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  3:
+    name: Strike Vent
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  4:
+    name: Shoot Vent
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  5:
+    name: Giga Cannons
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  6:
+    name: Guard Vent
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  7:
+    name: Final Vent
+    formula: <ACTIVE>
+    unlocked-by-default: true

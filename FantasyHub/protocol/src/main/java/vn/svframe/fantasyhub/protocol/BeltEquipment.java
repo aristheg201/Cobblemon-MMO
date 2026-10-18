@@ -14,10 +14,22 @@ public final class BeltEquipment {
 
   private static final List<Backend> BACKENDS = new ArrayList<>();
   public static Predicate<LivingEntity> classAllowed = entity -> true;
+  private static final Map<Item, Predicate<LivingEntity>> BELTS = new LinkedHashMap<>();
+
+  public static void allow(Item belt, Predicate<LivingEntity> predicate) {
+    if (!BELTS.containsKey(belt)) throw new IllegalArgumentException("Not a Rider belt");
+    BELTS.put(belt, Objects.requireNonNull(predicate));
+  }
 
   private BeltEquipment() {}
 
   public static void install() {
+    BELTS.put(Protocol.zecterBelt, entity -> classAllowed.test(entity));
+    BELTS.put(Protocol.agitoBelt, entity -> true);
+    BELTS.put(Protocol.zoldaBelt, entity -> true);
+    BELTS.put(Protocol.ryukiBelt, entity -> true);
+    BELTS.put(Protocol.knightBelt, entity -> true);
+    BELTS.put(Protocol.decadeBelt, entity -> true);
     register(
         "accessories",
         "io.wispforest.accessories.api.AccessoriesAPI",
@@ -41,7 +53,7 @@ public final class BeltEquipment {
               (self, m, args) -> {
                 if (m.getDeclaringClass() == Object.class)
                   return switch (m.getName()) {
-                    case "toString" -> "FantasyHub Kabuto belt (" + mod + ")";
+                    case "toString" -> "FantasyHub Rider belts (" + mod + ")";
                     case "hashCode" -> System.identityHashCode(self);
                     case "equals" -> self == args[0];
                     default -> null;
@@ -64,9 +76,10 @@ public final class BeltEquipment {
                   }
                   // Existing equipped stack is allowed when an API revalidates
                   // it. A second physical belt never contributes twice.
-                  ItemStack existing = equipped(entity);
+                  ItemStack existing = equippedAny(entity);
                   return (slot.equals("belt") || slot.startsWith("legs/belt/"))
-                      && classAllowed.test(entity)
+                      && args[0] instanceof ItemStack candidate
+                      && BELTS.getOrDefault(candidate.getItem(), ignored -> false).test(entity)
                       && (existing.isEmpty() || existing == args[0]);
                 }
                 if (m.isDefault())
@@ -75,7 +88,7 @@ public final class BeltEquipment {
                 throw new UnsupportedOperationException(
                     "Unrecognized " + mod + " API method: " + m);
               });
-      api.getMethod(method, Item.class, contract).invoke(null, Protocol.zecterBelt, adapter);
+      for (Item belt : BELTS.keySet()) api.getMethod(method, Item.class, contract).invoke(null, belt, adapter);
       BACKENDS.add(new Backend(api, contract, adapter));
     } catch (ReflectiveOperationException failure) {
       throw new IllegalStateException("Cannot initialize installed " + mod + " belt API", failure);
@@ -84,6 +97,19 @@ public final class BeltEquipment {
 
   /** At most one belt, even if Accessories' Trinkets compatibility exposes it twice. */
   public static ItemStack equipped(LivingEntity entity) {
+    return equipped(entity, Protocol.zecterBelt);
+  }
+
+  public static ItemStack equippedAny(LivingEntity entity) {
+    for (Item belt : BELTS.keySet()) {
+      ItemStack stack = equipped(entity, belt);
+      if (!stack.isEmpty()) return stack;
+    }
+    return ItemStack.EMPTY;
+  }
+
+  public static ItemStack equipped(LivingEntity entity, Item belt) {
+    if (!BELTS.containsKey(belt)) return ItemStack.EMPTY;
     try {
       for (Backend backend : BACKENDS) {
         if (backend.api().getName().contains("accessories")) {
@@ -95,7 +121,7 @@ public final class BeltEquipment {
               (List<?>)
                   capability
                       .getMethod("getEquipped", Item.class)
-                      .invoke(cap, Protocol.zecterBelt)) {
+                      .invoke(cap, belt)) {
             Class<?> entry = Class.forName("io.wispforest.accessories.api.slot.SlotEntryReference");
             Object ref = entry.getMethod("reference").invoke(row);
             String slot =
@@ -117,7 +143,7 @@ public final class BeltEquipment {
           for (Object row :
               (List<?>)
                   type.getMethod("getEquipped", Item.class)
-                      .invoke(component.get(), Protocol.zecterBelt)) {
+                      .invoke(component.get(), belt)) {
             Pair<?, ?> pair = (Pair<?, ?>) row;
             String slot =
                 (String)

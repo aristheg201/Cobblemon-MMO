@@ -111,7 +111,7 @@ public final class SVFrameLibCombatRuntime {
             syncFromContext(damage, attackContext);
         }
 
-        if (target instanceof ServerPlayerEntity) {
+        if (target instanceof ServerPlayerEntity && !source.isIn(net.minecraft.registry.tag.TagKey.of(net.minecraft.registry.RegistryKeys.DAMAGE_TYPE, net.minecraft.util.Identifier.of("svframelib", "bypasses_rpg_defense")))) {
             applyDamageReduction(target, attacker, source, damage, settings);
         }
 

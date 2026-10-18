@@ -30,6 +30,8 @@ public final class RpgLifecycleQa {
         var data=SVFrameMMO.playerData().get(player);LABELS.put(player.getUuid(),scenario);
         if(scenario.startsWith("compat_"))return EquipmentCompatibilityQa.run(player,scenario.substring("compat_".length()));
         if(scenario.startsWith("kabuto_"))return KabutoQa.run(player,scenario.substring("kabuto_".length()));
+        if(scenario.startsWith("rider_game_"))return RiderQa.run(player,scenario.substring("rider_game_".length()));
+        if(scenario.startsWith("rider_gear_"))return RiderEquipmentQa.run(player,scenario.substring("rider_gear_".length()));
         if(scenario.startsWith("hunter_"))return HunterQa.run(player,scenario.substring("hunter_".length()));
         if(scenario.startsWith("dragonborn_"))return DragonbornQa.run(player,scenario.substring("dragonborn_".length()));
         switch(scenario){

@@ -2,8 +2,8 @@ plugins { id 'fabric-loom' version '1.7.4' apply false }
 subprojects {
     apply plugin: 'fabric-loom'
     group='vn.svframe.fantasyhub'
-    // Server-only weapon fix; presentation and packet schema stay compatible with Client 0.1.9.
-    version=project.name == 'core' ? '0.1.10' : project.name in ['client','protocol'] ? '0.1.9' : '0.1.0'
+    // Original Rider equipment and matching client presentation.
+    version=project.name in ['core','client','protocol'] ? '0.1.11' : '0.1.0'
     repositories { mavenCentral(); maven { url='https://maven.fabricmc.net/' } }
     dependencies {
         minecraft "com.mojang:minecraft:${minecraft_version}"
@@ -17,7 +17,7 @@ subprojects {
 }
 project(':core') {
     base.archivesName='FantasyHubCore'
-    dependencies { testRuntimeOnly 'org.yaml:snakeyaml:2.3' }
+    dependencies { compileOnly 'org.yaml:snakeyaml:2.3'; testRuntimeOnly 'org.yaml:snakeyaml:2.3' }
     dependencies { testImplementation platform('org.junit:junit-bom:5.11.4'); testImplementation 'org.junit.jupiter:junit-jupiter'; testRuntimeOnly 'org.junit.platform:junit-platform-launcher' }
     tasks.withType(Test).configureEach { useJUnitPlatform() }
     if(rootProject.hasProperty('frameworkBundle'))repositories { flatDir { dirs rootProject.property('frameworkBundle') } }

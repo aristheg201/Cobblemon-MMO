@@ -1,0 +1,444 @@
+ZOLDA_HELMET:
+  type: armor
+  material: minecraft:leather_helmet
+  name: Zolda Helmet
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+ZOLDA_CHESTPLATE:
+  type: armor
+  material: minecraft:leather_chestplate
+  name: Zolda Chestplate
+  rarity: common
+  stats:
+    armor:
+      value: 6
+      decimals: 0
+ZOLDA_LEGGINGS:
+  type: armor
+  material: minecraft:leather_leggings
+  name: Zolda Leggings
+  rarity: common
+  stats:
+    armor:
+      value: 4
+      decimals: 0
+ZOLDA_BOOTS:
+  type: armor
+  material: minecraft:leather_boots
+  name: Zolda Boots
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+AGITO_GROUND_HELMET:
+  type: armor
+  material: minecraft:leather_helmet
+  name: Agito Ground Helmet
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+AGITO_GROUND_CHESTPLATE:
+  type: armor
+  material: minecraft:leather_chestplate
+  name: Agito Ground Chestplate
+  rarity: common
+  stats:
+    armor:
+      value: 6
+      decimals: 0
+AGITO_GROUND_LEGGINGS:
+  type: armor
+  material: minecraft:leather_leggings
+  name: Agito Ground Leggings
+  rarity: common
+  stats:
+    armor:
+      value: 4
+      decimals: 0
+AGITO_GROUND_BOOTS:
+  type: armor
+  material: minecraft:leather_boots
+  name: Agito Ground Boots
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+AGITO_STORM_HELMET:
+  type: armor
+  material: minecraft:leather_helmet
+  name: Agito Storm Helmet
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+AGITO_STORM_CHESTPLATE:
+  type: armor
+  material: minecraft:leather_chestplate
+  name: Agito Storm Chestplate
+  rarity: common
+  stats:
+    armor:
+      value: 6
+      decimals: 0
+AGITO_STORM_LEGGINGS:
+  type: armor
+  material: minecraft:leather_leggings
+  name: Agito Storm Leggings
+  rarity: common
+  stats:
+    armor:
+      value: 4
+      decimals: 0
+AGITO_STORM_BOOTS:
+  type: armor
+  material: minecraft:leather_boots
+  name: Agito Storm Boots
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+AGITO_FLAME_HELMET:
+  type: armor
+  material: minecraft:leather_helmet
+  name: Agito Flame Helmet
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+AGITO_FLAME_CHESTPLATE:
+  type: armor
+  material: minecraft:leather_chestplate
+  name: Agito Flame Chestplate
+  rarity: common
+  stats:
+    armor:
+      value: 6
+      decimals: 0
+AGITO_FLAME_LEGGINGS:
+  type: armor
+  material: minecraft:leather_leggings
+  name: Agito Flame Leggings
+  rarity: common
+  stats:
+    armor:
+      value: 4
+      decimals: 0
+AGITO_FLAME_BOOTS:
+  type: armor
+  material: minecraft:leather_boots
+  name: Agito Flame Boots
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+AGITO_TRINITY_HELMET:
+  type: armor
+  material: minecraft:leather_helmet
+  name: Agito Trinity Helmet
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+AGITO_TRINITY_CHESTPLATE:
+  type: armor
+  material: minecraft:leather_chestplate
+  name: Agito Trinity Chestplate
+  rarity: common
+  stats:
+    armor:
+      value: 6
+      decimals: 0
+AGITO_TRINITY_LEGGINGS:
+  type: armor
+  material: minecraft:leather_leggings
+  name: Agito Trinity Leggings
+  rarity: common
+  stats:
+    armor:
+      value: 4
+      decimals: 0
+AGITO_TRINITY_BOOTS:
+  type: armor
+  material: minecraft:leather_boots
+  name: Agito Trinity Boots
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+AGITO_SHINING_HELMET:
+  type: armor
+  material: minecraft:leather_helmet
+  name: Agito Shining Helmet
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+AGITO_SHINING_CHESTPLATE:
+  type: armor
+  material: minecraft:leather_chestplate
+  name: Agito Shining Chestplate
+  rarity: common
+  stats:
+    armor:
+      value: 6
+      decimals: 0
+AGITO_SHINING_LEGGINGS:
+  type: armor
+  material: minecraft:leather_leggings
+  name: Agito Shining Leggings
+  rarity: common
+  stats:
+    armor:
+      value: 4
+      decimals: 0
+AGITO_SHINING_BOOTS:
+  type: armor
+  material: minecraft:leather_boots
+  name: Agito Shining Boots
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+RYUKI_HELMET:
+  type: armor
+  material: minecraft:leather_helmet
+  name: Ryuki Helmet
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+RYUKI_CHESTPLATE:
+  type: armor
+  material: minecraft:leather_chestplate
+  name: Ryuki Chestplate
+  rarity: common
+  stats:
+    armor:
+      value: 6
+      decimals: 0
+RYUKI_LEGGINGS:
+  type: armor
+  material: minecraft:leather_leggings
+  name: Ryuki Leggings
+  rarity: common
+  stats:
+    armor:
+      value: 4
+      decimals: 0
+RYUKI_BOOTS:
+  type: armor
+  material: minecraft:leather_boots
+  name: Ryuki Boots
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+KNIGHT_HELMET:
+  type: armor
+  material: minecraft:leather_helmet
+  name: Knight Helmet
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+KNIGHT_CHESTPLATE:
+  type: armor
+  material: minecraft:leather_chestplate
+  name: Knight Chestplate
+  rarity: common
+  stats:
+    armor:
+      value: 6
+      decimals: 0
+KNIGHT_LEGGINGS:
+  type: armor
+  material: minecraft:leather_leggings
+  name: Knight Leggings
+  rarity: common
+  stats:
+    armor:
+      value: 4
+      decimals: 0
+KNIGHT_BOOTS:
+  type: armor
+  material: minecraft:leather_boots
+  name: Knight Boots
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+DECADE_HELMET:
+  type: armor
+  material: minecraft:leather_helmet
+  name: Decade Helmet
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+DECADE_CHESTPLATE:
+  type: armor
+  material: minecraft:leather_chestplate
+  name: Decade Chestplate
+  rarity: common
+  stats:
+    armor:
+      value: 6
+      decimals: 0
+DECADE_LEGGINGS:
+  type: armor
+  material: minecraft:leather_leggings
+  name: Decade Leggings
+  rarity: common
+  stats:
+    armor:
+      value: 4
+      decimals: 0
+DECADE_BOOTS:
+  type: armor
+  material: minecraft:leather_boots
+  name: Decade Boots
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+ZOLDA_MAGNA_VISOR:
+  type: bow
+  material: minecraft:crossbow
+  name: Magna Visor
+  rarity: common
+  stats:
+    attack-damage:
+      value: 6
+      decimals: 0
+ZOLDA_GIGA_LAUNCHER:
+  type: bow
+  material: minecraft:crossbow
+  name: Giga Launcher
+  rarity: common
+  stats:
+    attack-damage:
+      value: 6
+      decimals: 0
+AGITO_FLAME_SABER:
+  type: sword
+  material: minecraft:iron_sword
+  name: Flame Saber
+  rarity: common
+  stats:
+    attack-damage:
+      value: 6
+      decimals: 0
+AGITO_STORM_HALBERD:
+  type: sword
+  material: minecraft:iron_sword
+  name: Storm Halberd
+  rarity: common
+  stats:
+    attack-damage:
+      value: 6
+      decimals: 0
+AGITO_SHINING_CALIBER:
+  type: sword
+  material: minecraft:iron_sword
+  name: Shining Caliber
+  rarity: common
+  stats:
+    attack-damage:
+      value: 6
+      decimals: 0
+RYUKI_DRAG_SABER:
+  type: sword
+  material: minecraft:iron_sword
+  name: Drag Saber
+  rarity: common
+  stats:
+    attack-damage:
+      value: 6
+      decimals: 0
+KNIGHT_DARK_VISOR:
+  type: sword
+  material: minecraft:iron_sword
+  name: Dark Visor
+  rarity: common
+  stats:
+    attack-damage:
+      value: 6
+      decimals: 0
+KNIGHT_DARK_BLADE:
+  type: sword
+  material: minecraft:iron_sword
+  name: Dark Blade
+  rarity: common
+  stats:
+    attack-damage:
+      value: 6
+      decimals: 0
+DECADE_RIDE_BOOKER_SWORD:
+  type: sword
+  material: minecraft:iron_sword
+  name: Ride Booker Sword
+  rarity: common
+  stats:
+    attack-damage:
+      value: 6
+      decimals: 0
+DECADE_RIDE_BOOKER_GUN:
+  type: bow
+  material: minecraft:crossbow
+  name: Ride Booker Gun
+  rarity: common
+  stats:
+    attack-damage:
+      value: 6
+      decimals: 0
+AGITO_BELT:
+  type: accessory
+  material: fantasyhub:agito_belt
+  name: Alter Ring
+  rarity: common
+  stats: {}
+ZOLDA_BELT:
+  type: accessory
+  material: fantasyhub:zolda_belt
+  name: Zolda V-Buckle / Card Deck
+  rarity: common
+  stats: {}
+RYUKI_BELT:
+  type: accessory
+  material: fantasyhub:ryuki_belt
+  name: Ryuki V-Buckle / Card Deck
+  rarity: common
+  stats: {}
+KNIGHT_BELT:
+  type: accessory
+  material: fantasyhub:knight_belt
+  name: Knight V-Buckle / Card Deck
+  rarity: common
+  stats: {}
+DECADE_BELT:
+  type: accessory
+  material: fantasyhub:decade_belt
+  name: Decadriver
+  rarity: common
+  stats: {}

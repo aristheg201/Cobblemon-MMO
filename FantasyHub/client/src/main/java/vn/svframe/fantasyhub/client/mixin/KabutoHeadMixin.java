@@ -33,7 +33,9 @@ abstract class KabutoHeadMixin {
       float pitch,
       CallbackInfo ci) {
     if (entity instanceof PlayerEntity
-        && (vn.svframe.fantasyhub.client.KabutoVisuals.state(entity.getId()) != null
+        && (vn.svframe.fantasyhub.client.RiderVisuals.state(entity.getId()) != null
+            || vn.svframe.fantasyhub.client.KabutoVisuals.state(entity.getId()) != null
+            || !vn.svframe.fantasyhub.client.RiderArmorFeature.form(entity.getEquippedStack(EquipmentSlot.HEAD)).isEmpty()
             || entity.getEquippedStack(EquipmentSlot.HEAD).isOf(Protocol.kabutoHat))) ci.cancel();
   }
 }

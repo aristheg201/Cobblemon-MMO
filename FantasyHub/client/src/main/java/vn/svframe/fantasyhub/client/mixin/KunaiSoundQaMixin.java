@@ -14,6 +14,7 @@ abstract class KunaiSoundQaMixin {
   private void fantasyhub$sound(SoundInstance sound, CallbackInfo ci) {
     if (!ClientFeedbackQa.ENABLED) return;
     String id = sound.getId().toString();
+    if (id.startsWith("fantasyhub:riders.")) ClientFeedbackQa.riderSounds++;
     if (id.equals("fantasyhub:kabuto.gun_fire")) ClientFeedbackQa.gunSounds++;
     if (id.equals("fantasyhub:kabuto.kunai_slash")) ClientFeedbackQa.kunaiSounds++;
   }

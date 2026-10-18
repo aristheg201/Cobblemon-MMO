@@ -1,0 +1,12 @@
+{
+  "scenario": "native_equipment_render",
+  "form": "agito_shining",
+  "classGameplayVerified": false,
+  "HEAD": "agito_shining_helmet",
+  "FEET": "agito_shining_boots",
+  "LEGS": "agito_shining_leggings",
+  "CHEST": "agito_shining_chestplate",
+  "weapon": "agito_shining_caliber",
+  "serverHealth": 20.0,
+  "serverMaxHealth": 20.0
+}

@@ -1,0 +1,134 @@
+{
+  "tool": "Blockbench 5.2.2",
+  "projects": [
+    "zolda",
+    "agito_ground",
+    "agito_storm",
+    "agito_flame",
+    "agito_trinity",
+    "agito_shining",
+    "magnugiga",
+    "ryuki",
+    "knight",
+    "decade",
+    "dragreder",
+    "dragranzer",
+    "darkwing",
+    "zolda_belt",
+    "agito_belt",
+    "magna_visor",
+    "giga_launcher",
+    "flame_saber",
+    "storm_halberd",
+    "shining_caliber",
+    "ryuki_belt",
+    "knight_belt",
+    "decade_belt",
+    "drag_saber",
+    "dark_visor",
+    "dark_blade",
+    "ride_booker_sword",
+    "ride_booker_gun"
+  ],
+  "materials": [
+    "gold",
+    "gold_edge",
+    "gold_dark",
+    "steel",
+    "chrome",
+    "steel_dark",
+    "green",
+    "green_dark",
+    "green_light",
+    "red",
+    "red_edge",
+    "blue",
+    "blue_edge",
+    "carbon",
+    "fabric",
+    "black",
+    "white",
+    "lens_red",
+    "lens_green",
+    "lens_amber",
+    "amber",
+    "gem",
+    "silver_white",
+    "magenta",
+    "magenta_edge",
+    "navy",
+    "navy_edge",
+    "dragon_red",
+    "dragon_edge",
+    "ryuki_metal",
+    "ryuki_red",
+    "knight_metal",
+    "knight_navy",
+    "decade_magenta",
+    "optic_green",
+    "dragon_scale",
+    "bat_membrane",
+    "crest_ryuki",
+    "crest_knight"
+  ],
+  "textureSize": 512,
+  "references": {
+    "zolda": [
+      "images (3).jpg",
+      "images (4).jpg",
+      "AW_Zolda.jpg",
+      "images (5).jpg",
+      "sddefault.jpg"
+    ],
+    "agito": [
+      "1000391777.webp",
+      "1000391776.jpg",
+      "1000391775.jpg",
+      "1000391774.webp",
+      "1000391773.jpg"
+    ],
+    "mask_detail_references": [
+      "1000391788.png (Agito expanded)",
+      "1000391787.jpg (Agito front/back/side)",
+      "1000391791.jpg (Zolda back)",
+      "1000391790.jpg (Zolda side)",
+      "1000391789.jpg (Zolda front)"
+    ],
+    "primary_sources": [
+      "https://www.kamen-rider-official.com/zukan/forms/598",
+      "https://www.kamen-rider-official.com/zukan/phantoms/867",
+      "https://www.kamen-rider-official.com/zukan/forms/266",
+      "https://www.kamen-rider-official.com/zukan/forms/267"
+    ],
+    "card_rider_revision": "Geometry revision2 after explicit user rejection: faceted sealed helmets, corrected silver Ryuki chest, wrapped Knight cage/jaw, integral Decade barcode, S-curve articulated dragons, scalloped Darkwing wings. Pending native and user visual review.",
+    "card_riders": {
+      "archives": [
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "notes": "18 source photographs/game screenshots; no original model files. Base armor remains unchanged in Survive/Complete by user request.",
+      "ryuki": [
+        "oardefault.jpg",
+        "1792297107510.png",
+        "1792297128561.png"
+      ],
+      "knight": [
+        "KR-Knight%26WingKnight.webp",
+        "Knight_Profile.webp",
+        "images (2).jpeg"
+      ],
+      "decade": [
+        "1792296897858.png",
+        "1792297097386.png"
+      ],
+      "monsters": [
+        "2015102194749.jpg",
+        "41mcTQZ+i1L.jpg",
+        "KRRy-Dragranzer.webp",
+        "images (1).jpeg",
+        "item_0000001578_07.jpg"
+      ]
+    }
+  },
+  "notes": "Original painted metallic bevels, compound lenses, cloth weave, square shoulders. Native geometry and editable projects; not a screenshot texture."
+}

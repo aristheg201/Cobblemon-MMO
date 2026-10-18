@@ -1,0 +1,231 @@
+schema: 1
+agito:
+  ground-damage: 10
+  ground-radius: 3
+  ground-reduction: 0.2
+  ground-reduction-ticks: 40
+  flame-damage: 16
+  burn-ticks: 80
+  storm-damage: 5
+  storm-radius: 3.5
+  storm-duration-ticks: 30
+  storm-speed-multiplier: 1.25
+  storm-attack-speed-multiplier: 1.3
+  flame-critical-chance: 15
+  trinity-duration-ticks: 200
+  trinity-bonus-damage: 3
+  shining-duration-ticks: 240
+  shining-damage-multiplier: 1.5
+  force-damage-multiplier: 1.5
+  kick-damage: 32
+  skills:
+    HENSHIN:
+      cooldown: 2
+      mana: 0
+      stamina: 0
+    GROUND_SMASH:
+      cooldown: 8
+      mana: 3
+      stamina: 4
+    FLAME_SABER:
+      cooldown: 10
+      mana: 4
+      stamina: 5
+    STORM_HALBERD:
+      cooldown: 10
+      mana: 5
+      stamina: 5
+    TRINITY:
+      cooldown: 40
+      mana: 12
+      stamina: 0
+    RIDER_KICK:
+      cooldown: 25
+      mana: 6
+      stamina: 10
+    SHINING:
+      cooldown: 60
+      mana: 20
+      stamina: 0
+zolda:
+  shot-damage: 7
+  mark-duration-ticks: 100
+  mark-damage-per-stack: 0.05
+  mark-armor-reduction: 0.1
+  strike-shield-fraction: 0.15
+  strike-duration-ticks: 80
+  strike-damage: 10
+  rocket-damage: 18
+  rocket-radius: 1.5
+  cannon-damage: 8
+  cannon-radius: 3
+  guard-duration-ticks: 60
+  guard-reduction: 0.8
+  final-damage: 7
+  final-range: 28
+  final-projectiles: 24
+  final-duration-ticks: 40
+  skills:
+    HENSHIN:
+      cooldown: 2
+      mana: 0
+      stamina: 0
+    MAGNA_SHOT:
+      cooldown: 0.35
+      mana: 1
+      stamina: 0
+    STRIKE_VENT:
+      cooldown: 12
+      mana: 6
+      stamina: 0
+    SHOOT_VENT:
+      cooldown: 10
+      mana: 8
+      stamina: 0
+    GIGA_CANNONS:
+      cooldown: 18
+      mana: 12
+      stamina: 0
+    GUARD_VENT:
+      cooldown: 16
+      mana: 8
+      stamina: 0
+    FINAL_VENT:
+      cooldown: 65
+      mana: 30
+      stamina: 0
+ryuki:
+  strike-damage: 12
+  sword-damage: 10
+  advent-damage: 7
+  shoot-damage: 7
+  final-damage: 32
+  guard-fraction: 0.25
+  guard-duration-ticks: 100
+  survive-damage-multiplier: 1.2
+  survive-speed-multiplier: 1.2
+  survive-attack-speed-multiplier: 1.0
+  lifesteal-fraction: 0
+  skills:
+    HENSHIN:
+      cooldown: 2
+      mana: 0
+      stamina: 0
+    STRIKE_VENT:
+      cooldown: 7
+      mana: 3
+      stamina: 2
+    SWORD_VENT:
+      cooldown: 8
+      mana: 3
+      stamina: 4
+    GUARD_VENT:
+      cooldown: 14
+      mana: 6
+      stamina: 0
+    ADVENT:
+      cooldown: 18
+      mana: 9
+      stamina: 0
+    SURVIVE:
+      cooldown: 2
+      mana: 0
+      stamina: 0
+    SHOOT_VENT:
+      cooldown: 16
+      mana: 9
+      stamina: 0
+    FINAL_VENT:
+      cooldown: 40
+      mana: 18
+      stamina: 10
+knight:
+  strike-damage: 12
+  sword-damage: 10
+  advent-damage: 7
+  shoot-damage: 7
+  final-damage: 32
+  guard-fraction: 0.25
+  guard-duration-ticks: 100
+  survive-damage-multiplier: 1.0
+  survive-speed-multiplier: 1.0
+  survive-attack-speed-multiplier: 2.0
+  lifesteal-fraction: 0.12
+  skills:
+    HENSHIN:
+      cooldown: 2
+      mana: 0
+      stamina: 0
+    SWORD_VENT:
+      cooldown: 7
+      mana: 2
+      stamina: 4
+    NASTY_VENT:
+      cooldown: 12
+      mana: 6
+      stamina: 0
+    TRICK_VENT:
+      cooldown: 18
+      mana: 8
+      stamina: 0
+    GUARD_VENT:
+      cooldown: 14
+      mana: 6
+      stamina: 0
+    SURVIVE:
+      cooldown: 2
+      mana: 0
+      stamina: 0
+    BLAST_VENT:
+      cooldown: 16
+      mana: 8
+      stamina: 4
+    FINAL_VENT:
+      cooldown: 40
+      mana: 18
+      stamina: 10
+decade:
+  strike-damage: 12
+  sword-damage: 10
+  advent-damage: 7
+  shoot-damage: 7
+  final-damage: 32
+  guard-fraction: 0.25
+  guard-duration-ticks: 100
+  survive-damage-multiplier: 1.0
+  survive-speed-multiplier: 1.0
+  survive-attack-speed-multiplier: 1.0
+  lifesteal-fraction: 0
+  skills:
+    HENSHIN:
+      cooldown: 2
+      mana: 0
+      stamina: 0
+    SLASH_BLAST:
+      cooldown: 9
+      mana: 4
+      stamina: 3
+    ILLUSION:
+      cooldown: 18
+      mana: 8
+      stamina: 0
+    CLOCK_UP:
+      cooldown: 16
+      mana: 7
+      stamina: 0
+    HEISEI_SPIRIT:
+      cooldown: 15
+      mana: 8
+      stamina: 0
+    COMPLETE:
+      cooldown: 2
+      mana: 0
+      stamina: 0
+    ULTIMATE_SUMMON:
+      cooldown: 30
+      mana: 16
+      stamina: 0
+    DIMENSION_KICK:
+      cooldown: 45
+      mana: 20
+      stamina: 10

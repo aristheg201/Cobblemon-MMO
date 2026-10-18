@@ -1,0 +1,25 @@
+{
+  "runtime": "native Minecraft1.21.1/Fabric0.18.4/Cobblemon1.8.1,2realclients",
+  "results": [
+    {
+      "class": "ryuki",
+      "nativeBeltApi": true,
+      "actualFTransformAndExit": true,
+      "visualStatus": "PENDING_REVIEW"
+    },
+    {
+      "class": "knight",
+      "nativeBeltApi": true,
+      "actualFTransformAndExit": true,
+      "visualStatus": "PENDING_REVIEW"
+    },
+    {
+      "class": "decade",
+      "nativeBeltApi": true,
+      "actualFTransformAndExit": true,
+      "visualStatus": "PENDING_REVIEW"
+    }
+  ],
+  "classGameplayVerified": false,
+  "modelUserAcceptance": "PENDING"
+}

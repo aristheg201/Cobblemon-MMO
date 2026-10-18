@@ -14,6 +14,6 @@ import vn.svframe.fantasyhub.core.KabutoRuntime;
 abstract class FilamentCosmeticMixin {
   @Inject(method = "filament$addHolder", at = @At("HEAD"), cancellable = true, remap = false)
   private void fantasyhub$cosmetic(LivingEntity entity, Item item, ItemStack stack, String slot, CallbackInfo ci) {
-    if (KabutoRuntime.transformed(entity)) ci.cancel();
+    if (KabutoRuntime.transformed(entity) || vn.svframe.fantasyhub.core.RiderRuntime.transformed(entity)) ci.cancel();
   }
 }

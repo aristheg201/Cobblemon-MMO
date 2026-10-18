@@ -8,7 +8,9 @@
     "KabutoMobAiMixin",
     "FilamentCosmeticMixin",
     "KunaiSwingMixin",
-    "StatusEffectLeaseAccess"
+    "StatusEffectLeaseAccess",
+    "RiderDefenseMixin",
+    "RiderControlMixin"
   ],
   "injectors": {
     "defaultRequire": 1

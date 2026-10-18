@@ -10,7 +10,9 @@
     "ClassItemModelMixin",
     "KabutoPoseMixin",
     "KabutoHeadMixin",
-    "KunaiSoundQaMixin"
+    "KunaiSoundQaMixin",
+    "RiderHeldItemMixin",
+    "RiderFirstPersonMixin"
   ],
   "injectors": {
     "defaultRequire": 1

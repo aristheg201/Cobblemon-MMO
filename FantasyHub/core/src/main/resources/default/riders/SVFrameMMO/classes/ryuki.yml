@@ -1,0 +1,76 @@
+display:
+  name: '&c&lKamen Rider Ryuki'
+  lore:
+  - '&7Dragreder • Rekka Survive'
+  item:
+    material: fantasyhub:ryuki_belt
+exp-curve: levels
+max-level: 100
+exp-table: class_exp_table
+attributes:
+  max-health:
+    base: 30
+    per-level: 0.2
+  max-mana:
+    base: 60
+    per-level: 0.3
+  max-stamina:
+    base: 45
+    per-level: 0.2
+  armor:
+    base: 3
+    per-level: 0.02
+skills:
+  RYUKI_HENSHIN:
+    level: 1
+    max-level: 1
+  RYUKI_STRIKE_VENT:
+    level: 1
+    max-level: 30
+  RYUKI_SWORD_VENT:
+    level: 1
+    max-level: 30
+  RYUKI_GUARD_VENT:
+    level: 1
+    max-level: 30
+  RYUKI_ADVENT:
+    level: 1
+    max-level: 30
+  RYUKI_SURVIVE:
+    level: 20
+    max-level: 1
+  RYUKI_SHOOT_VENT:
+    level: 1
+    max-level: 30
+  RYUKI_FINAL_VENT:
+    level: 50
+    max-level: 30
+skill-slots:
+  1:
+    name: Strike Vent
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  2:
+    name: Sword Vent
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  3:
+    name: Guard Vent
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  4:
+    name: Advent
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  5:
+    name: Survive
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  6:
+    name: Shoot Vent
+    formula: <ACTIVE>
+    unlocked-by-default: true
+  7:
+    name: Final Vent
+    formula: <ACTIVE>
+    unlocked-by-default: true

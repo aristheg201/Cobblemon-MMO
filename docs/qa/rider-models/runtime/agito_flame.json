@@ -1,0 +1,12 @@
+{
+  "scenario": "native_equipment_render",
+  "form": "agito_flame",
+  "classGameplayVerified": false,
+  "HEAD": "agito_flame_helmet",
+  "FEET": "agito_flame_boots",
+  "LEGS": "agito_flame_leggings",
+  "CHEST": "agito_flame_chestplate",
+  "weapon": "agito_flame_saber",
+  "serverHealth": 20.0,
+  "serverMaxHealth": 20.0
+}

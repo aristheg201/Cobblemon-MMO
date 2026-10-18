@@ -1,0 +1,12 @@
+{
+  "scenario": "native_equipment_render",
+  "form": "agito_storm",
+  "classGameplayVerified": false,
+  "HEAD": "agito_storm_helmet",
+  "FEET": "agito_storm_boots",
+  "LEGS": "agito_storm_leggings",
+  "CHEST": "agito_storm_chestplate",
+  "weapon": "agito_storm_halberd",
+  "serverHealth": 20.0,
+  "serverMaxHealth": 20.0
+}

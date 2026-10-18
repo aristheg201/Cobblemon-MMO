@@ -1,1 +1,8 @@
-{"replace": false, "values": ["fantasyhub:rider_kick"]}
+{
+  "replace": false,
+  "values": [
+    "fantasyhub:rider_kick",
+    "fantasyhub:rider_artillery",
+    "fantasyhub:rider_true"
+  ]
+}

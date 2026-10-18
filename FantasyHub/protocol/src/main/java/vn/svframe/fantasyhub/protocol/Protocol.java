@@ -15,18 +15,29 @@ import net.minecraft.registry.Registries;
 public final class Protocol implements ModInitializer {
     private static boolean installed;
     public static final int VERSION=1;
-    public static final String ASSET_REVISION="kabuto-equipment-v10";
+    public static final String ASSET_REVISION="rider-equipment-v11";
     public record Handshake(int version,String assets,String clientVersion,String diagnostic) implements CustomPayload {
         public static final Id<Handshake> ID=new Id<>(Identifier.of("fantasyhub","handshake_v1"));
         public static final PacketCodec<PacketByteBuf,Handshake> CODEC=PacketCodec.of((p,b)->{b.writeVarInt(p.version);b.writeString(p.assets,128);b.writeString(p.clientVersion,32);b.writeString(p.diagnostic,512);},b->new Handshake(b.readVarInt(),b.readString(128),b.readString(32),b.readString(512)));
         @Override public Id<Handshake> getId(){return ID;}
     }
-    public static Item visualBone,dragonbornHat,kabutoHat,zecterBelt,kunaiGun;
+    public static Item visualBone,dragonbornHat,kabutoHat,zecterBelt,kunaiGun,agitoBelt,zoldaBelt,ryukiBelt,knightBelt,decadeBelt;
     /** Only the server publishes form changes; clients never choose visual gameplay state. */
     public record Kabuto(int entityId,int form,boolean clock,boolean hyper,int energy,int gauge,int clockTicks) implements CustomPayload {
         public static final Id<Kabuto> ID=new Id<>(Identifier.of("fantasyhub","kabuto_v1"));
         public static final PacketCodec<RegistryByteBuf,Kabuto> CODEC=PacketCodec.of((p,b)->{b.writeVarInt(p.entityId);b.writeVarInt(p.form);b.writeBoolean(p.clock);b.writeBoolean(p.hyper);b.writeVarInt(p.energy);b.writeVarInt(p.gauge);b.writeVarInt(p.clockTicks);},b->new Kabuto(b.readVarInt(),b.readVarInt(),b.readBoolean(),b.readBoolean(),b.readVarInt(),b.readVarInt(),b.readVarInt()));
         @Override public Id<Kabuto> getId(){return ID;}
+    }
+    /** A form snapshot is presentation only; counters and form choice are server-owned. */
+    public record Rider(int entityId,String form,int force,int remaining) implements CustomPayload {
+        public static final Id<Rider> ID=new Id<>(Identifier.of("fantasyhub","rider_v1"));
+        public static final PacketCodec<RegistryByteBuf,Rider> CODEC=PacketCodec.of((p,b)->{b.writeVarInt(p.entityId);b.writeString(p.form,24);b.writeVarInt(p.force);b.writeVarInt(p.remaining);},b->new Rider(b.readVarInt(),b.readString(24),b.readVarInt(),b.readVarInt()));
+        @Override public Id<Rider> getId(){return ID;}
+    }
+    public record RiderFx(int entityId,String rider,String phase,double x,double y,double z,double tx,double ty,double tz,int duration) implements CustomPayload {
+        public static final Id<RiderFx> ID=new Id<>(Identifier.of("fantasyhub","rider_fx_v1"));
+        public static final PacketCodec<RegistryByteBuf,RiderFx> CODEC=PacketCodec.of((p,b)->{b.writeVarInt(p.entityId);b.writeString(p.rider,16);b.writeString(p.phase,32);b.writeDouble(p.x);b.writeDouble(p.y);b.writeDouble(p.z);b.writeDouble(p.tx);b.writeDouble(p.ty);b.writeDouble(p.tz);b.writeVarInt(p.duration);},b->new RiderFx(b.readVarInt(),b.readString(16),b.readString(32),b.readDouble(),b.readDouble(),b.readDouble(),b.readDouble(),b.readDouble(),b.readDouble(),b.readVarInt()));
+        @Override public Id<RiderFx> getId(){return ID;}
     }
     public record KabutoCue(int entityId,String ability,int duration) implements CustomPayload {
         public static final Id<KabutoCue> ID=new Id<>(Identifier.of("fantasyhub","kabuto_cue_v1"));
@@ -74,8 +85,15 @@ public final class Protocol implements ModInitializer {
         kabutoHat=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","kabuto_hat"),new net.minecraft.item.ArmorItem(net.minecraft.item.ArmorMaterials.LEATHER,net.minecraft.item.ArmorItem.Type.HELMET,new Item.Settings().maxCount(1)));
         zecterBelt=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","zecter_belt"),new Item(new Item.Settings().maxCount(1)));
         kunaiGun=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","kunai_gun"),new Item(new Item.Settings().maxCount(1)));
+        agitoBelt=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","agito_belt"),new Item(new Item.Settings().maxCount(1)));
+        zoldaBelt=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","zolda_belt"),new Item(new Item.Settings().maxCount(1)));
+        ryukiBelt=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","ryuki_belt"),new Item(new Item.Settings().maxCount(1)));
+        knightBelt=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","knight_belt"),new Item(new Item.Settings().maxCount(1)));
+        decadeBelt=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","decade_belt"),new Item(new Item.Settings().maxCount(1)));
         BeltEquipment.install();
         PayloadTypeRegistry.playS2C().register(Kabuto.ID,Kabuto.CODEC);
+        PayloadTypeRegistry.playS2C().register(Rider.ID,Rider.CODEC);
+        PayloadTypeRegistry.playS2C().register(RiderFx.ID,RiderFx.CODEC);
         PayloadTypeRegistry.playS2C().register(KabutoCue.ID,KabutoCue.CODEC);
         PayloadTypeRegistry.configurationS2C().register(Handshake.ID,Handshake.CODEC);
         PayloadTypeRegistry.configurationC2S().register(Handshake.ID,Handshake.CODEC);

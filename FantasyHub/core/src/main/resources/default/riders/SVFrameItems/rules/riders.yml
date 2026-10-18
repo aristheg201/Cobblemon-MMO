@@ -1,0 +1,240 @@
+ZOLDA_HELMET:
+  armor-texture: fantasyhub:riders/zolda
+  item-model: fantasyhub:item/riders/zolda_helmet
+  unbreakable: true
+  disable-enchanting: false
+ZOLDA_CHESTPLATE:
+  armor-texture: fantasyhub:riders/zolda
+  item-model: fantasyhub:item/riders/zolda_chestplate
+  unbreakable: true
+  disable-enchanting: false
+ZOLDA_LEGGINGS:
+  armor-texture: fantasyhub:riders/zolda
+  item-model: fantasyhub:item/riders/zolda_leggings
+  unbreakable: true
+  disable-enchanting: false
+ZOLDA_BOOTS:
+  armor-texture: fantasyhub:riders/zolda
+  item-model: fantasyhub:item/riders/zolda_boots
+  unbreakable: true
+  disable-enchanting: false
+AGITO_GROUND_HELMET:
+  armor-texture: fantasyhub:riders/agito_ground
+  item-model: fantasyhub:item/riders/agito_ground_helmet
+  unbreakable: true
+  disable-enchanting: false
+AGITO_GROUND_CHESTPLATE:
+  armor-texture: fantasyhub:riders/agito_ground
+  item-model: fantasyhub:item/riders/agito_ground_chestplate
+  unbreakable: true
+  disable-enchanting: false
+AGITO_GROUND_LEGGINGS:
+  armor-texture: fantasyhub:riders/agito_ground
+  item-model: fantasyhub:item/riders/agito_ground_leggings
+  unbreakable: true
+  disable-enchanting: false
+AGITO_GROUND_BOOTS:
+  armor-texture: fantasyhub:riders/agito_ground
+  item-model: fantasyhub:item/riders/agito_ground_boots
+  unbreakable: true
+  disable-enchanting: false
+AGITO_STORM_HELMET:
+  armor-texture: fantasyhub:riders/agito_storm
+  item-model: fantasyhub:item/riders/agito_storm_helmet
+  unbreakable: true
+  disable-enchanting: false
+AGITO_STORM_CHESTPLATE:
+  armor-texture: fantasyhub:riders/agito_storm
+  item-model: fantasyhub:item/riders/agito_storm_chestplate
+  unbreakable: true
+  disable-enchanting: false
+AGITO_STORM_LEGGINGS:
+  armor-texture: fantasyhub:riders/agito_storm
+  item-model: fantasyhub:item/riders/agito_storm_leggings
+  unbreakable: true
+  disable-enchanting: false
+AGITO_STORM_BOOTS:
+  armor-texture: fantasyhub:riders/agito_storm
+  item-model: fantasyhub:item/riders/agito_storm_boots
+  unbreakable: true
+  disable-enchanting: false
+AGITO_FLAME_HELMET:
+  armor-texture: fantasyhub:riders/agito_flame
+  item-model: fantasyhub:item/riders/agito_flame_helmet
+  unbreakable: true
+  disable-enchanting: false
+AGITO_FLAME_CHESTPLATE:
+  armor-texture: fantasyhub:riders/agito_flame
+  item-model: fantasyhub:item/riders/agito_flame_chestplate
+  unbreakable: true
+  disable-enchanting: false
+AGITO_FLAME_LEGGINGS:
+  armor-texture: fantasyhub:riders/agito_flame
+  item-model: fantasyhub:item/riders/agito_flame_leggings
+  unbreakable: true
+  disable-enchanting: false
+AGITO_FLAME_BOOTS:
+  armor-texture: fantasyhub:riders/agito_flame
+  item-model: fantasyhub:item/riders/agito_flame_boots
+  unbreakable: true
+  disable-enchanting: false
+AGITO_TRINITY_HELMET:
+  armor-texture: fantasyhub:riders/agito_trinity
+  item-model: fantasyhub:item/riders/agito_trinity_helmet
+  unbreakable: true
+  disable-enchanting: false
+AGITO_TRINITY_CHESTPLATE:
+  armor-texture: fantasyhub:riders/agito_trinity
+  item-model: fantasyhub:item/riders/agito_trinity_chestplate
+  unbreakable: true
+  disable-enchanting: false
+AGITO_TRINITY_LEGGINGS:
+  armor-texture: fantasyhub:riders/agito_trinity
+  item-model: fantasyhub:item/riders/agito_trinity_leggings
+  unbreakable: true
+  disable-enchanting: false
+AGITO_TRINITY_BOOTS:
+  armor-texture: fantasyhub:riders/agito_trinity
+  item-model: fantasyhub:item/riders/agito_trinity_boots
+  unbreakable: true
+  disable-enchanting: false
+AGITO_SHINING_HELMET:
+  armor-texture: fantasyhub:riders/agito_shining
+  item-model: fantasyhub:item/riders/agito_shining_helmet
+  unbreakable: true
+  disable-enchanting: false
+AGITO_SHINING_CHESTPLATE:
+  armor-texture: fantasyhub:riders/agito_shining
+  item-model: fantasyhub:item/riders/agito_shining_chestplate
+  unbreakable: true
+  disable-enchanting: false
+AGITO_SHINING_LEGGINGS:
+  armor-texture: fantasyhub:riders/agito_shining
+  item-model: fantasyhub:item/riders/agito_shining_leggings
+  unbreakable: true
+  disable-enchanting: false
+AGITO_SHINING_BOOTS:
+  armor-texture: fantasyhub:riders/agito_shining
+  item-model: fantasyhub:item/riders/agito_shining_boots
+  unbreakable: true
+  disable-enchanting: false
+RYUKI_HELMET:
+  armor-texture: fantasyhub:riders/ryuki
+  item-model: fantasyhub:item/riders/ryuki_helmet
+  unbreakable: true
+  disable-enchanting: false
+RYUKI_CHESTPLATE:
+  armor-texture: fantasyhub:riders/ryuki
+  item-model: fantasyhub:item/riders/ryuki_chestplate
+  unbreakable: true
+  disable-enchanting: false
+RYUKI_LEGGINGS:
+  armor-texture: fantasyhub:riders/ryuki
+  item-model: fantasyhub:item/riders/ryuki_leggings
+  unbreakable: true
+  disable-enchanting: false
+RYUKI_BOOTS:
+  armor-texture: fantasyhub:riders/ryuki
+  item-model: fantasyhub:item/riders/ryuki_boots
+  unbreakable: true
+  disable-enchanting: false
+KNIGHT_HELMET:
+  armor-texture: fantasyhub:riders/knight
+  item-model: fantasyhub:item/riders/knight_helmet
+  unbreakable: true
+  disable-enchanting: false
+KNIGHT_CHESTPLATE:
+  armor-texture: fantasyhub:riders/knight
+  item-model: fantasyhub:item/riders/knight_chestplate
+  unbreakable: true
+  disable-enchanting: false
+KNIGHT_LEGGINGS:
+  armor-texture: fantasyhub:riders/knight
+  item-model: fantasyhub:item/riders/knight_leggings
+  unbreakable: true
+  disable-enchanting: false
+KNIGHT_BOOTS:
+  armor-texture: fantasyhub:riders/knight
+  item-model: fantasyhub:item/riders/knight_boots
+  unbreakable: true
+  disable-enchanting: false
+DECADE_HELMET:
+  armor-texture: fantasyhub:riders/decade
+  item-model: fantasyhub:item/riders/decade_helmet
+  unbreakable: true
+  disable-enchanting: false
+DECADE_CHESTPLATE:
+  armor-texture: fantasyhub:riders/decade
+  item-model: fantasyhub:item/riders/decade_chestplate
+  unbreakable: true
+  disable-enchanting: false
+DECADE_LEGGINGS:
+  armor-texture: fantasyhub:riders/decade
+  item-model: fantasyhub:item/riders/decade_leggings
+  unbreakable: true
+  disable-enchanting: false
+DECADE_BOOTS:
+  armor-texture: fantasyhub:riders/decade
+  item-model: fantasyhub:item/riders/decade_boots
+  unbreakable: true
+  disable-enchanting: false
+ZOLDA_MAGNA_VISOR:
+  item-model: fantasyhub:item/riders/magna_visor
+  unbreakable: true
+  disable-enchanting: false
+ZOLDA_GIGA_LAUNCHER:
+  item-model: fantasyhub:item/riders/giga_launcher
+  unbreakable: true
+  disable-enchanting: false
+AGITO_FLAME_SABER:
+  item-model: fantasyhub:item/riders/flame_saber
+  unbreakable: true
+  disable-enchanting: false
+AGITO_STORM_HALBERD:
+  item-model: fantasyhub:item/riders/storm_halberd
+  unbreakable: true
+  disable-enchanting: false
+AGITO_SHINING_CALIBER:
+  item-model: fantasyhub:item/riders/shining_caliber
+  unbreakable: true
+  disable-enchanting: false
+RYUKI_DRAG_SABER:
+  item-model: fantasyhub:item/riders/drag_saber
+  unbreakable: true
+  disable-enchanting: false
+KNIGHT_DARK_VISOR:
+  item-model: fantasyhub:item/riders/dark_visor
+  unbreakable: true
+  disable-enchanting: false
+KNIGHT_DARK_BLADE:
+  item-model: fantasyhub:item/riders/dark_blade
+  unbreakable: true
+  disable-enchanting: false
+DECADE_RIDE_BOOKER_SWORD:
+  item-model: fantasyhub:item/riders/ride_booker_sword
+  unbreakable: true
+  disable-enchanting: false
+DECADE_RIDE_BOOKER_GUN:
+  item-model: fantasyhub:item/riders/ride_booker_gun
+  unbreakable: true
+  disable-enchanting: false
+AGITO_BELT:
+  item-model: fantasyhub:item/riders/agito_belt
+  unbreakable: true
+  disable-enchanting: false
+ZOLDA_BELT:
+  item-model: fantasyhub:item/riders/zolda_belt
+  unbreakable: true
+  disable-enchanting: false
+RYUKI_BELT:
+  item-model: fantasyhub:item/riders/ryuki_belt
+  unbreakable: true
+  disable-enchanting: false
+KNIGHT_BELT:
+  item-model: fantasyhub:item/riders/knight_belt
+  unbreakable: true
+  disable-enchanting: false
+DECADE_BELT:
+  item-model: fantasyhub:item/riders/decade_belt
+  unbreakable: true
+  disable-enchanting: false

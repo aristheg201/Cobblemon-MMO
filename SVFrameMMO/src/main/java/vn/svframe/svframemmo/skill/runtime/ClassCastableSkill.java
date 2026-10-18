@@ -24,16 +24,22 @@ public final class ClassCastableSkill extends Skill {
     private final ClassSkill classSkill;
     private final PlayerData caster;
     private final boolean requireClassProgression;
+    private final boolean recast;
 
     public ClassCastableSkill(ClassSkill classSkill, PlayerData caster) {
         this(classSkill, caster, true);
     }
 
     ClassCastableSkill(ClassSkill classSkill, PlayerData caster, boolean requireClassProgression) {
+        this(classSkill, caster, requireClassProgression, false);
+    }
+
+    ClassCastableSkill(ClassSkill classSkill, PlayerData caster, boolean requireClassProgression, boolean recast) {
         super(Objects.requireNonNull(classSkill, "classSkill").getSkill());
         this.classSkill = classSkill;
         this.caster = Objects.requireNonNull(caster, "caster");
         this.requireClassProgression = requireClassProgression;
+        this.recast = recast;
     }
 
     public ClassSkill getClassSkill() { return classSkill; }
@@ -82,8 +88,9 @@ public final class ClassCastableSkill extends Skill {
         if (!getTrigger().isPassive()) {
             int globalTicks = SVFrameMMO.config().globalSkillCooldownTicks();
             if (globalTicks > 0 && mmo.getCooldownMap().isOnCooldown(GLOBAL_COOLDOWN)) return false;
-            if (mmo.getCooldownMap().isOnCooldown(this)) return false;
+            if (!recast && mmo.getCooldownMap().isOnCooldown(this)) return false;
         }
+        if (recast) return true;
         double mana = Math.max(0d, metadata.getParameter("mana"));
         double stamina = Math.max(0d, metadata.getParameter("stamina"));
         return caster.getMana() >= mana && caster.getStamina() >= stamina;
@@ -94,7 +101,7 @@ public final class ClassCastableSkill extends Skill {
         MMOPlayerData mmo = caster.getMMOPlayerData();
         int globalTicks = SVFrameMMO.config().globalSkillCooldownTicks();
         if (globalTicks > 0) mmo.getCooldownMap().applyCooldown(GLOBAL_COOLDOWN, globalTicks / 20d);
-        if (AdminRuntimeState.isNoCooldown(caster.getUniqueId())) {
+        if (recast || AdminRuntimeState.isNoCooldown(caster.getUniqueId())) {
             caster.markCombat();
             return;
         }

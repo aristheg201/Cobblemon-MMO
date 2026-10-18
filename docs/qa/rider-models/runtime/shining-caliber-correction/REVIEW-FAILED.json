@@ -1,0 +1,7 @@
+{
+  "status": "FAILED",
+  "scope": "third-person handle contact",
+  "source": "user:1000391837.jpg",
+  "finding": "Narrowed blade was still floating outside the glove. Previous native width review did not verify the grip.",
+  "next": "Recalibrated actual model handle through vanilla held-item matrices; native corrected grip QA pending."
+}

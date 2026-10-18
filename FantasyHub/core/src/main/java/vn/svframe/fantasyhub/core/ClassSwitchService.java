@@ -47,7 +47,7 @@ final class ClassSwitchService {
     }
     private static String text(String key){return Objects.toString(config.get(key),"");}
     private static boolean permission(ServerPlayerEntity player,String key){return SVFrameMMO.permissions().has(player,key);}
-    static boolean selectable(String id){var script=vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.classPolicy();return script!=null?script.selectable(id):list("selectable-classes").contains(id)||list("additional-native-classes").contains(id);}
+    static boolean selectable(String id){var script=vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.classPolicy();return list("additional-native-classes").contains(id)||(script!=null?script.selectable(id):list("selectable-classes").contains(id));}
     static boolean unlocked(ServerPlayerEntity player,String id) {
         if(!selectable(id))return false;
         if(id.equals("HUNTER"))return permission(player,text("hunter-permission"));

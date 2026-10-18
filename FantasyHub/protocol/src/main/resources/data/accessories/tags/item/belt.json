@@ -1,1 +1,11 @@
-{"replace": false, "values": ["fantasyhub:zecter_belt"]}
+{
+  "replace": false,
+  "values": [
+    "fantasyhub:zecter_belt",
+    "fantasyhub:agito_belt",
+    "fantasyhub:zolda_belt",
+    "fantasyhub:ryuki_belt",
+    "fantasyhub:knight_belt",
+    "fantasyhub:decade_belt"
+  ]
+}

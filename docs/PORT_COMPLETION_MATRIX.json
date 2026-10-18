@@ -471290,6 +471290,1305 @@
       "remaining_incompatibilities": [
         "Actual final-JAR client/server runtime acceptance pending."
       ]
+    },
+    {
+      "id": "rider:2026-10-17:zolda",
+      "category": "class",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "A distinct selectable, purchasable and persistent Zolda class with its complete supplied mechanics, equipment, belt and skills; existing authority remains SVFrameMMO.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:agito",
+      "category": "class",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "A distinct selectable, purchasable and persistent Agito class with its complete supplied mechanics, equipment, belt and skills; existing authority remains SVFrameMMO.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:zolda.lock_on",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Successful ranged/skill hits mark the victim for5s, cap3; source-owned5% damage per stack and a non-duplicating10% armor debuff.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:zolda.strike_vent",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "15% max-health shield for4s; recast releases one close-range AoE piston punch and knockback without paying twice or resetting the original cooldown.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:zolda.shoot_vent",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Giga Launcher server projectile collides with the first entity/block, explosive3x3 AoE and exact40% slow for2s.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:zolda.shoot_vent_ii",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Twin Giga Cannons fire3 ground-targeted bombardment waves, multi-hit damage, smoke and blindness/miss.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:zolda.guard_vent",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Magnu Defender lasts3s, mitigates80% frontal damage and prevents stun, slow and knockback.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:zolda.final_vent",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Summoning, docking and a20-30-projectile barrage over2s in a120-degree cone; damage and shield/armor break with real Magnugiga model, legal targeting and cleanup.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:agito.cross_horn",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Hits and skills build Infinite Force to6, expand the horns, empower the next hit once and reduce ultimate cooldown20%; no free transformation spam gains.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:agito.ground",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Ground Smash AoE,2s slow and temporary damage reduction; use the actual Ground form and generate passive force.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:agito.flame",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Flame Saber forward dash, physical+fire hit and burn; increased critical chance only while this ability is ready.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:agito.storm",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Storm Halberd1.5s spin/tornado, repeated AoE hits and knockback; stance increases movement and attack speed.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:agito.trinity",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Lv20+ Trinity for10 configurable seconds, reset base3 cooldowns, hybrid damage and gold/red/blue aura; base skills must preserve the elevated form timer.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:agito.rider_kick",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Lv50 Ground Kick charges1s with an Agito crest, launches and dives to a target, burst AoE impact and knockup with collision/protection checks.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:agito.shining",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Lv50 Shining lasts12s, dual Shining Caliber,50% damage and CC immunity; recast launches Shining Kick along a straight line without duplicate costs.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:model.zolda",
+      "category": "model",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Original editable Blockbench zolda model, shaded metal/cloth/lenses, full front/back/side detail and sealed player helmet where applicable. Wearable parts follow real player bones; Magnugiga renders through a native display.",
+      "implementation": [
+        "FantasyHub/assets-source/riders/zolda.bbmodel",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderModels.java",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderArmorFeature.java"
+      ],
+      "status": "IMPLEMENTED_UNVERIFIED",
+      "automated_tests": [
+        "FantasyHub/client/src/test/java/vn/svframe/fantasyhub/client/RiderAssetContractTest.java"
+      ],
+      "runtime_qa": "PASS: native standalone equipment/display rendering; class activation remains a separate pending requirement",
+      "evidence": [
+        "docs/qa/rider-models/README.md",
+        "docs/qa/rider-models/runtime/zolda-front.png",
+        "docs/qa/rider-models/runtime/zolda-rear.png"
+      ],
+      "remaining_incompatibilities": [
+        "Standalone native render passed; full class form activation/animation integration acceptance remains pending."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:model.agito_ground",
+      "category": "model",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Original editable Blockbench agito_ground model, shaded metal/cloth/lenses, full front/back/side detail and sealed player helmet where applicable. Wearable parts follow real player bones; Magnugiga renders through a native display.",
+      "implementation": [
+        "FantasyHub/assets-source/riders/agito_ground.bbmodel",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderModels.java",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderArmorFeature.java"
+      ],
+      "status": "IMPLEMENTED_UNVERIFIED",
+      "automated_tests": [
+        "FantasyHub/client/src/test/java/vn/svframe/fantasyhub/client/RiderAssetContractTest.java"
+      ],
+      "runtime_qa": "PASS: native standalone equipment/display rendering; class activation remains a separate pending requirement",
+      "evidence": [
+        "docs/qa/rider-models/README.md",
+        "docs/qa/rider-models/runtime/agito_ground-front.png",
+        "docs/qa/rider-models/runtime/agito_ground-rear.png"
+      ],
+      "remaining_incompatibilities": [
+        "Standalone native render passed; full class form activation/animation integration acceptance remains pending."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:model.agito_storm",
+      "category": "model",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Original editable Blockbench agito_storm model, shaded metal/cloth/lenses, full front/back/side detail and sealed player helmet where applicable. Wearable parts follow real player bones; Magnugiga renders through a native display.",
+      "implementation": [
+        "FantasyHub/assets-source/riders/agito_storm.bbmodel",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderModels.java",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderArmorFeature.java"
+      ],
+      "status": "IMPLEMENTED_UNVERIFIED",
+      "automated_tests": [
+        "FantasyHub/client/src/test/java/vn/svframe/fantasyhub/client/RiderAssetContractTest.java"
+      ],
+      "runtime_qa": "PASS: native standalone equipment/display rendering; class activation remains a separate pending requirement",
+      "evidence": [
+        "docs/qa/rider-models/README.md",
+        "docs/qa/rider-models/runtime/agito_storm-front.png",
+        "docs/qa/rider-models/runtime/agito_storm-rear.png"
+      ],
+      "remaining_incompatibilities": [
+        "Standalone native render passed; full class form activation/animation integration acceptance remains pending."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:model.agito_flame",
+      "category": "model",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Original editable Blockbench agito_flame model, shaded metal/cloth/lenses, full front/back/side detail and sealed player helmet where applicable. Wearable parts follow real player bones; Magnugiga renders through a native display.",
+      "implementation": [
+        "FantasyHub/assets-source/riders/agito_flame.bbmodel",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderModels.java",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderArmorFeature.java"
+      ],
+      "status": "IMPLEMENTED_UNVERIFIED",
+      "automated_tests": [
+        "FantasyHub/client/src/test/java/vn/svframe/fantasyhub/client/RiderAssetContractTest.java"
+      ],
+      "runtime_qa": "PASS: native standalone equipment/display rendering; class activation remains a separate pending requirement",
+      "evidence": [
+        "docs/qa/rider-models/README.md",
+        "docs/qa/rider-models/runtime/agito_flame-front.png",
+        "docs/qa/rider-models/runtime/agito_flame-rear.png"
+      ],
+      "remaining_incompatibilities": [
+        "Standalone native render passed; full class form activation/animation integration acceptance remains pending."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:model.agito_trinity",
+      "category": "model",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Original editable Blockbench agito_trinity model, shaded metal/cloth/lenses, full front/back/side detail and sealed player helmet where applicable. Wearable parts follow real player bones; Magnugiga renders through a native display.",
+      "implementation": [
+        "FantasyHub/assets-source/riders/agito_trinity.bbmodel",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderModels.java",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderArmorFeature.java"
+      ],
+      "status": "IMPLEMENTED_UNVERIFIED",
+      "automated_tests": [
+        "FantasyHub/client/src/test/java/vn/svframe/fantasyhub/client/RiderAssetContractTest.java"
+      ],
+      "runtime_qa": "PASS: native standalone equipment/display rendering; class activation remains a separate pending requirement",
+      "evidence": [
+        "docs/qa/rider-models/README.md",
+        "docs/qa/rider-models/runtime/agito_trinity-front.png",
+        "docs/qa/rider-models/runtime/agito_trinity-rear.png"
+      ],
+      "remaining_incompatibilities": [
+        "Standalone native render passed; full class form activation/animation integration acceptance remains pending."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:model.agito_shining",
+      "category": "model",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Original editable Blockbench agito_shining model, shaded metal/cloth/lenses, full front/back/side detail and sealed player helmet where applicable. Wearable parts follow real player bones; Magnugiga renders through a native display.",
+      "implementation": [
+        "FantasyHub/assets-source/riders/agito_shining.bbmodel",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderModels.java",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderArmorFeature.java"
+      ],
+      "status": "IMPLEMENTED_UNVERIFIED",
+      "automated_tests": [
+        "FantasyHub/client/src/test/java/vn/svframe/fantasyhub/client/RiderAssetContractTest.java"
+      ],
+      "runtime_qa": "PASS: native standalone equipment/display rendering; class activation remains a separate pending requirement",
+      "evidence": [
+        "docs/qa/rider-models/README.md",
+        "docs/qa/rider-models/runtime/agito_shining-front.png",
+        "docs/qa/rider-models/runtime/agito_shining-rear.png"
+      ],
+      "remaining_incompatibilities": [
+        "Standalone native render passed; full class form activation/animation integration acceptance remains pending."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:model.magnugiga",
+      "category": "model",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Original editable Blockbench magnugiga model, shaded metal/cloth/lenses, full front/back/side detail and sealed player helmet where applicable. Wearable parts follow real player bones; Magnugiga renders through a native display.",
+      "implementation": [
+        "FantasyHub/assets-source/riders/magnugiga.bbmodel",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderModels.java",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderArmorFeature.java"
+      ],
+      "status": "IMPLEMENTED_UNVERIFIED",
+      "automated_tests": [
+        "FantasyHub/client/src/test/java/vn/svframe/fantasyhub/client/RiderAssetContractTest.java"
+      ],
+      "runtime_qa": "PASS: native standalone equipment/display rendering; class activation remains a separate pending requirement",
+      "evidence": [
+        "docs/qa/rider-models/README.md",
+        "docs/qa/rider-models/runtime/magnugiga-front.png",
+        "docs/qa/rider-models/runtime/magnugiga-rear.png"
+      ],
+      "remaining_incompatibilities": [
+        "Standalone native render passed; full class form activation/animation integration acceptance remains pending."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:equipment_and_belts",
+      "category": "equipment",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "24 armor pieces,5 weapons,2 form-accurate belt models and native Accessories/Trinkets belt integration, localized names, allowed enchantments/TAN compatibility and class restrictions.",
+      "implementation": [
+        "FantasyHub/core/src/main/resources/default/riders/SVFrameItems/items/riders.yml",
+        "FantasyHub/core/src/main/resources/default/riders/SVFrameItems/rules/riders.yml",
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "FAILED",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "FAILED: native RiderQa preparation reports equippedViaRealApi=false. Native admin command can equip the belt; this does not establish player canEquip acceptance.",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Diagnose the real optional-API canEquip/QA fixture failure; both optional backends and permissions remain pending."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:henshin",
+      "category": "requirement",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "F casting mode and the class-specific equipped belt drive authoritative Henshin; closing F/recasting Henshin restores human appearance and real inventory is preserved.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:effects_sound",
+      "category": "requirement",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Class-specific accepted-action animation timelines, Minecraft plus actual Cobblemon VFX and original authored sound cues; do not misrepresent synthesized sound as supplied original movie samples.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderStateTest.java",
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/RiderSettingsTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native full-class acceptance is pending; exact remaining visual/combat integration is recorded in docs/qa/rider-models/README.md."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:model.giga_cannons",
+      "category": "model",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Twin hip-mounted Giga Cannons model and accepted-cast attachment.",
+      "implementation": [],
+      "status": "NOT_IMPLEMENTED",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Original editable model and native cast attachment are missing."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:model.magnu_defender",
+      "category": "model",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Magnu Defender shield model and three-second attachment.",
+      "implementation": [],
+      "status": "NOT_IMPLEMENTED",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Original editable model and native cast attachment are missing."
+      ]
+    },
+    {
+      "id": "rider:2026-10-17:model.strike_gauntlets",
+      "category": "model",
+      "source": [
+        "user:2026-10-17:Zolda-Agito-forms-skills-and-front-rear-mask-references"
+      ],
+      "required_behavior": "Strike Vent paired Magnugiga knee-derived gauntlets and recast presentation.",
+      "implementation": [],
+      "status": "NOT_IMPLEMENTED",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Original editable model and native cast attachment are missing."
+      ]
+    },
+    {
+      "id": "rider:2026-10-18:shining-caliber-grip",
+      "category": "model",
+      "source": [
+        "user:2026-10-18:1000391837.jpg:handle-outside-hand"
+      ],
+      "required_behavior": "Shining Caliber has a narrow shaded blade and its actual handle is inside both gloves, in first/third person, standing/crouching/swinging, for real equipment and the accepted Shining form projection.",
+      "implementation": [
+        "FantasyHub/assets-source/riders/shining_caliber.bbmodel",
+        "FantasyHub/tools/author_riders_blockbench.js",
+        "FantasyHub/client/src/main/java/vn/svframe/fantasyhub/client/RiderWeaponFeature.java"
+      ],
+      "status": "VERIFIED_COMPLETE",
+      "automated_tests": [
+        "FantasyHub/client/src/test/java/vn/svframe/fantasyhub/client/RiderGripTest.java"
+      ],
+      "runtime_qa": "PASS",
+      "evidence": [
+        "docs/qa/rider-models/runtime/shining-caliber-grip/review.json",
+        "docs/qa/rider-models/runtime/shining-caliber-grip/native-shining-cast.json"
+      ],
+      "remaining_incompatibilities": []
+    },
+    {
+      "id": "card-rider:2026-10-18:ryuki.passive",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Normal hits/skills build Dragon Flame to10 then restore5% mana and burst fire. Survive normal attacks send fire rays; proximity burns respect target/status protections.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:ryuki.strike",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Normal explosive fireball/knockback; Survive3 sequential Meteor Fire projectiles with collision and bounded AoE.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:ryuki.sword",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Normal2 diagonal cuts with fire bleed; Survive forward purple fire slash with50% armor penetration.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:ryuki.guard",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "2 orbiting dragon scales, owned barrier and25% reflected fire damage against nearby attackers without reflection recursion.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:ryuki.advent",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Dragreder spiral flyby with knockup and persistent ground fire rain; owned summon cleanup.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:ryuki.survive",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Permanent on/off Survive stance,20% damage/speed, alternate skill1/2; no duration timeout.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:ryuki.shoot",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Targeted distant fire missile barrage,50% slow and healing reduction with finite per-target owned leases.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:ryuki.final",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Normal airborne Dragon Rider Kick with Dragreder flame; Survive straight Dragranzer phantom charge and broad impact.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:knight.passive",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Behind-target or blinded/controlled victim hits guarantee critical damage and restore stamina once per eligible action.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:knight.sword",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Normal armor-piercing dash35% slow; Survive dual blades make2 rapid passes with legal collision.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:knight.nasty",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Darkwing sonic cone,1.5s stun and3s blindness; native movement/status adapter policies apply.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:knight.trick",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "3 striking shadows and2.5s own invisibility, finite damage and cleanup.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:knight.guard",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Bat wing cloak80% damage reduction2s and radial knockback.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:knight.survive",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Permanent on/off Shippu Survive: faster attacks, lifesteal,20% skill cooldown reduction and dual swords.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:knight.blast",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Mobile multi-hit dark tornado that pulls targets toward caster with movement protection.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:knight.final",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Normal aerial cloak drill kick; Survive linear piercing Knight+Darkwing rush.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:decade.passive",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Each accepted Attack Ride arms the next normal attack with3 hologram cards and true bonus damage once.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:decade.slash_blast",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "First cast3 forward slashes; one free recast within window leaps backward and fires4 matrix bullets, original cooldown retained.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:decade.illusion",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "2 side holograms attack parallel to Decade, tripled bounded total output.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:decade.clock",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "1.5s matrix invisibility then safe teleport behind target and critical slash with clock crest.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:decade.spirit",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Cycle Kuuga shield, Faiz100% speed bonus, Ryuki exploding fire attacks; overhead symbols, unchanged player model.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:decade.complete",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Permanent K-Touch toggle,30% damage and control immunity; orbiting cards, unlocks skill6/7, never replaces player form/model.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:decade.summon",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Complete-only ultimate Rider phantom appears2s, casts a signature ultimate and disappears; no player model substitution.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:decade.final",
+      "category": "class_skill",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Complete-only Dimension Kick traverses5-7 hologram cards along legal line, large true damage against targets on path.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:models",
+      "category": "requirement",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Faithful original Blockbench Ryuki/Knight/Decade armor, weapons, belts and Dragreder/Dragranzer/Darkwing summon geometry; detailed front/rear/sides, Minecraft shoulders and shaded materials; no movie-image texture pasting.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:equipment",
+      "category": "requirement",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Class-locked physical belts through Accessories/Trinkets, F henshin and exit restoration, native armor/item stats/enchant/TAN integration and unchanged real inventory.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:effects",
+      "category": "requirement",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills",
+        "Download.zip",
+        "Download2.zip"
+      ],
+      "required_behavior": "Distinct accepted-action animations, Minecraft and actual Cobblemon particle effects, card matrices/phantoms and sound cues, no claims generated sounds are original film samples.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:class.ryuki",
+      "category": "class",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills"
+      ],
+      "required_behavior": "RYUKI is a distinct selectable, purchasable and persistent native MMO class with its supplied7 active skills and passive, class-locked belt and player transformations.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java",
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/core/src/main/resources/default/riders/SVFrameMMO/classes/ryuki.yml",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/CardRiderStateTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:class.knight",
+      "category": "class",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills"
+      ],
+      "required_behavior": "KNIGHT is a distinct selectable, purchasable and persistent native MMO class with its supplied7 active skills and passive, class-locked belt and player transformations.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java",
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/core/src/main/resources/default/riders/SVFrameMMO/classes/knight.yml",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/CardRiderStateTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
+    },
+    {
+      "id": "card-rider:2026-10-18:class.decade",
+      "category": "class",
+      "source": [
+        "user:2026-10-18:Ryuki-Knight-Decade-seven-skills"
+      ],
+      "required_behavior": "DECADE is a distinct selectable, purchasable and persistent native MMO class with its supplied7 active skills and passive, class-locked belt and player transformations.",
+      "implementation": [
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/RiderRuntime.java",
+        "FantasyHub/core/src/main/java/vn/svframe/fantasyhub/core/CardRiderSkills.java",
+        "FantasyHub/core/src/main/resources/default/riders/SVFrameMMO/classes/decade.yml",
+        "FantasyHub/tools/refine_card_riders.py"
+      ],
+      "status": "IN_PROGRESS",
+      "automated_tests": [
+        "FantasyHub/core/src/test/java/vn/svframe/fantasyhub/core/rider/CardRiderStateTest.java"
+      ],
+      "runtime_qa": "PENDING",
+      "evidence": [],
+      "remaining_incompatibilities": [
+        "Native behavioral acceptance pending.",
+        "Initial model pass explicitly rejected by user. Refined geometry is a candidate; visual acceptance pending."
+      ]
     }
   ]
 }

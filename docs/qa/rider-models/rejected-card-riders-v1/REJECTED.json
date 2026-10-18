@@ -1,0 +1,12 @@
+{
+  "status": "REJECTED_BY_USER",
+  "reason": "Model silhouette and detail do not match supplied references; not acceptable for delivery.",
+  "date": "2026-10-18",
+  "scope": [
+    "Ryuki",
+    "Knight",
+    "Decade",
+    "contract monster models"
+  ],
+  "next": "Rebuild actual geometry and painted material treatment, not just recolor the previous block shells."
+}

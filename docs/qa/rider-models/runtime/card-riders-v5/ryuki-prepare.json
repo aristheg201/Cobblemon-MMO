@@ -1,0 +1,60 @@
+{
+  "scenario": "prepare_ryuki",
+  "beltComponentPresent": true,
+  "beltInventoryGroups": [
+    "legs"
+  ],
+  "beltSlotSize": 1,
+  "beltCanEquip": true,
+  "beltSlotId": "legs/belt/0",
+  "beltCandidateId": "fantasyhub:ryuki_belt",
+  "beltAdapterClass": "jdk.proxy2.$Proxy52",
+  "beltExistingAfterClear": "",
+  "beltClassPredicate": true,
+  "equippedViaRealApi": true,
+  "class": "RYUKI",
+  "bound": {
+    "1": "RYUKI_STRIKE_VENT",
+    "2": "RYUKI_SWORD_VENT",
+    "3": "RYUKI_GUARD_VENT",
+    "4": "RYUKI_ADVENT",
+    "5": "RYUKI_SURVIVE",
+    "6": "RYUKI_SHOOT_VENT",
+    "7": "RYUKI_FINAL_VENT"
+  },
+  "immediate": {
+    "active": false,
+    "class": "AGITO",
+    "form": "",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 1254,
+    "summon": ""
+  },
+  "settled": {
+    "active": false,
+    "class": "RYUKI",
+    "form": "",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 1324,
+    "summon": ""
+  },
+  "maxHealth": 49.8,
+  "health": 49.8,
+  "settledReport": true
+}

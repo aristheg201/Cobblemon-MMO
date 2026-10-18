@@ -1,0 +1,30 @@
+{
+  "vn/svframe/fantasyhub/client/KabutoVisuals.class": {
+    "unchanged": true,
+    "sha256": "9cdfe1ad0f07dd9cc17f4383140b39b2d2f635829cf51b3568dfe3c4236dc086"
+  },
+  "vn/svframe/fantasyhub/client/KabutoEquipmentFeature.class": {
+    "unchanged": true,
+    "sha256": "2186c87055e2b66adef15f4bfd3ccfe6d7caa17d9d476eecf9a049457ad432ba"
+  },
+  "assets/fantasyhub/textures/armor/additions/kabuto_layer_1.png": {
+    "unchanged": true,
+    "sha256": "42bb11e5a10600362660606998685ef1fbc185ebfed3fc002c6db8a862bf3236"
+  },
+  "assets/fantasyhub/textures/armor/additions/kabuto_layer_2.png": {
+    "unchanged": true,
+    "sha256": "259a3a2a06f6b8cfce15252f5c868c9a7278a35086b3714b4cb734b030b98f73"
+  },
+  "assets/fantasyhub/models/item/additions/kunai_gun.json": {
+    "unchanged": true,
+    "sha256": "ded7926320522bd10ebfad6f11ea8e34ac7fadc0df8937ceef204f93a3427d67"
+  },
+  "vn/svframe/fantasyhub/core/KabutoRuntime.class": {
+    "unchanged": true,
+    "sha256": "813989681dda6384d5becbf90c30ea40c17fa467db0978e8f84715cbce804699"
+  },
+  "vn/svframe/fantasyhub/core/ZecterPassives.class": {
+    "unchanged": true,
+    "sha256": "34e7a644b2d79cdac8da1e3a8faf8bc2605c681044cfe0e088752db702ace21a"
+  }
+}

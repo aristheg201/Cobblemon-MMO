@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "scope": "Calibrated Agito dual weapon grip only; not full class acceptance",
+  "runtime": "Minecraft 1.21.1 Fabric 0.18.4 Cobblemon 1.8.1, dedicated server and two native clients",
+  "nativeCastSuccessful": true,
+  "inventoryPreserved": true,
+  "reviewedViews": [
+    "front",
+    "east",
+    "west",
+    "gloves",
+    "projected-side",
+    "projected-front",
+    "projected-crouch",
+    "projected-swing",
+    "projected-first-person"
+  ],
+  "result": "Authored black handles intersect both gloves. Actual swing carries hilt with animated arm; no forward floating grip. First person retains paired sabers. Prior width-only failed screenshots retained.",
+  "beltSetup": "Native admin trinkets set for isolated visual test; equip fixture still failed because Trinkets update replaces inventory objects."
+}

@@ -1,0 +1,60 @@
+{
+  "scenario": "prepare_decade",
+  "beltComponentPresent": true,
+  "beltInventoryGroups": [
+    "legs"
+  ],
+  "beltSlotSize": 1,
+  "beltCanEquip": true,
+  "beltSlotId": "legs/belt/0",
+  "beltCandidateId": "fantasyhub:decade_belt",
+  "beltAdapterClass": "jdk.proxy2.$Proxy52",
+  "beltExistingAfterClear": "",
+  "beltClassPredicate": true,
+  "equippedViaRealApi": true,
+  "class": "DECADE",
+  "bound": {
+    "1": "DECADE_SLASH_BLAST",
+    "2": "DECADE_ILLUSION",
+    "3": "DECADE_CLOCK_UP",
+    "4": "DECADE_HEISEI_SPIRIT",
+    "5": "DECADE_COMPLETE",
+    "6": "DECADE_ULTIMATE_SUMMON",
+    "7": "DECADE_DIMENSION_KICK"
+  },
+  "immediate": {
+    "active": false,
+    "class": "KNIGHT",
+    "form": "",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 1955,
+    "summon": ""
+  },
+  "settled": {
+    "active": false,
+    "class": "DECADE",
+    "form": "",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 2025,
+    "summon": ""
+  },
+  "maxHealth": 49.8,
+  "health": 49.8,
+  "settledReport": true
+}

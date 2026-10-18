@@ -1,0 +1,38 @@
+{
+  "scenario": "status",
+  "immediate": {
+    "active": false,
+    "class": "KNIGHT",
+    "form": "",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 1876,
+    "summon": ""
+  },
+  "settled": {
+    "active": false,
+    "class": "KNIGHT",
+    "form": "",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 1946,
+    "summon": ""
+  },
+  "maxHealth": 49.8,
+  "health": 49.8,
+  "settledReport": true
+}

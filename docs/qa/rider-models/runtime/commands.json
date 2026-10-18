@@ -1,0 +1,625 @@
+[
+  {
+    "at": "2026-10-17T03:47:29.911843+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_zolda",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T03:47:29.920385+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T03:47:31.698757+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T03:47:33.971775+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:47:35.960941+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:47:37.765322+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_ground",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T03:47:37.769563+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T03:47:39.597562+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T03:47:41.448974+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:47:43.265131+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:47:45.507969+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_storm",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T03:47:45.529105+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T03:47:47.354408+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T03:47:49.251931+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:47:51.151494+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:51:56.644984+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_zolda",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T03:51:56.664308+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T03:51:58.908534+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:00.624469+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:02.420238+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:04.670895+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_ground",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T03:52:04.676183+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:06.489981+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:08.154872+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:10.213424+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:12.151828+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_storm",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T03:52:12.159291+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:14.154983+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:15.971869+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:17.754009+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:46.173911+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_flame",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T03:52:46.181260+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:48.143352+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:49.942538+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:52.115950+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:54.271961+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_trinity",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T03:52:54.408698+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:56.250648+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T03:52:58.483572+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:53:00.359921+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:53:02.261734+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_shining",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T03:53:02.268460+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T03:53:05.095481+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T03:53:06.925347+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T03:53:08.699468+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_ground",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 200.5 65.36 1.65 180 0",
+    "result": "Teleported QAAttacker to 200.500000, 65.360000, 1.650000"
+  },
+  {
+    "command": "tp QAAttacker 200.5 65.36 -0.65 0 0",
+    "result": "Teleported QAAttacker to 200.500000, 65.360000, -0.650000"
+  },
+  {
+    "command": "tp QAAttacker 201.65 65.36 0.5 90 0",
+    "result": "Teleported QAAttacker to 201.650000, 65.360000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_zolda",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 200.5 65.36 1.65 180 0",
+    "result": "Teleported QAAttacker to 200.500000, 65.360000, 1.650000"
+  },
+  {
+    "command": "tp QAAttacker 200.5 65.36 -0.65 0 0",
+    "result": "Teleported QAAttacker to 200.500000, 65.360000, -0.650000"
+  },
+  {
+    "command": "tp QAAttacker 201.65 65.36 0.5 90 0",
+    "result": "Teleported QAAttacker to 201.650000, 65.360000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_human",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_model_qa]",
+    "result": "No entity was found"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_magnugiga",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 202 65.3 6.4 150 12",
+    "result": "Teleported QAAttacker to 202.500000, 65.300000, 6.400000"
+  },
+  {
+    "command": "tp QAAttacker 199 65.3 0.6 -30 12",
+    "result": "Teleported QAAttacker to 199.500000, 65.300000, 0.600000"
+  },
+  {
+    "at": "2026-10-17T04:04:16.139410+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_zolda",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T04:04:16.200927+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:18.214867+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:20.023356+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:21.772531+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:23.872709+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_ground",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T04:04:24.047615+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:26.781017+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:29.014245+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:31.009067+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:33.151682+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_storm",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T04:04:33.201556+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:35.700056+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:37.883664+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:39.766153+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:41.718817+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_flame",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T04:04:41.741094+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:43.700385+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:45.481362+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:48.175162+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:50.314352+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_trinity",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T04:04:50.463834+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:52.383808+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:54.213996+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:56.015691+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T04:04:57.955736+00:00",
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_shining",
+    "result": ""
+  },
+  {
+    "at": "2026-10-17T04:04:57.975956+00:00",
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "at": "2026-10-17T04:05:00.272263+00:00",
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "result": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "at": "2026-10-17T04:05:02.183976+00:00",
+    "command": "tp QAAttacker 202.5 65.2 0.5 90 14.5",
+    "result": "Teleported QAAttacker to 202.500000, 65.200000, 0.500000"
+  },
+  {
+    "at": "2026-10-17T04:05:04.207502+00:00",
+    "command": "tp QAAttacker 198.5 65.2 0.5 -90 14.5",
+    "result": "Teleported QAAttacker to 198.500000, 65.200000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_ground",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 200.5 65.36 1.65 180 0",
+    "result": "Teleported QAAttacker to 200.500000, 65.360000, 1.650000"
+  },
+  {
+    "command": "tp QAAttacker 200.5 65.36 -0.65 0 0",
+    "result": "Teleported QAAttacker to 200.500000, 65.360000, -0.650000"
+  },
+  {
+    "command": "tp QAAttacker 201.65 65.36 0.5 90 0",
+    "result": "Teleported QAAttacker to 201.650000, 65.360000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_zolda",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 200.5 65.36 1.65 180 0",
+    "result": "Teleported QAAttacker to 200.500000, 65.360000, 1.650000"
+  },
+  {
+    "command": "tp QAAttacker 200.5 65.36 -0.65 0 0",
+    "result": "Teleported QAAttacker to 200.500000, 65.360000, -0.650000"
+  },
+  {
+    "command": "tp QAAttacker 201.65 65.36 0.5 90 0",
+    "result": "Teleported QAAttacker to 201.650000, 65.360000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_human",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_model_qa]",
+    "result": "Killed Item Display"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_magnugiga",
+    "result": ""
+  },
+  {
+    "command": "tp QAPlayer 198 65 4 0 0",
+    "result": "Teleported QAPlayer to 198.500000, 65.000000, 4.500000"
+  },
+  {
+    "command": "tp QAAttacker 203 66 8 150 9",
+    "result": "Teleported QAAttacker to 203.500000, 66.000000, 8.500000"
+  },
+  {
+    "command": "tp QAAttacker 198 66 -1 -30 9",
+    "result": "Teleported QAAttacker to 198.500000, 66.000000, -0.500000"
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 0.5 0 0",
+    "result": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_ground",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "command": "tp QAAttacker 203 65.25 1.5 90 10",
+    "result": "Teleported QAAttacker to 203.500000, 65.250000, 1.500000"
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 0.5 0 0",
+    "result": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_shining",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_human",
+    "result": ""
+  },
+  {
+    "command": "gamemode survival QAPlayer",
+    "result": "Set QAPlayer's game mode to Survival Mode"
+  },
+  {
+    "command": "kill @e[tag=rider_model_qa]",
+    "result": "No entity was found"
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 0.5 0 0",
+    "result": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_ground",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "command": "tp QAAttacker 203 65.25 1.5 90 10",
+    "result": "Teleported QAAttacker to 203.500000, 65.250000, 1.500000"
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 0.5 0 0",
+    "result": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_shining",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_human",
+    "result": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_agito_ground",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 200.5 65.36 1.65 180 0",
+    "result": "Teleported QAAttacker to 200.500000, 65.360000, 1.650000"
+  },
+  {
+    "command": "tp QAAttacker 200.5 65.36 -0.65 0 0",
+    "result": "Teleported QAAttacker to 200.500000, 65.360000, -0.650000"
+  },
+  {
+    "command": "tp QAAttacker 201.65 65.36 0.5 90 0",
+    "result": "Teleported QAAttacker to 201.650000, 65.360000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_zolda",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 200.5 65.36 1.65 180 0",
+    "result": "Teleported QAAttacker to 200.500000, 65.360000, 1.650000"
+  },
+  {
+    "command": "tp QAAttacker 200.5 65.36 -0.65 0 0",
+    "result": "Teleported QAAttacker to 200.500000, 65.360000, -0.650000"
+  },
+  {
+    "command": "tp QAAttacker 201.65 65.36 0.5 90 0",
+    "result": "Teleported QAAttacker to 201.650000, 65.360000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_human",
+    "result": ""
+  },
+  {
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "result": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "command": "kill @e[tag=rider_model_qa]",
+    "result": "No entity was found"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_gear_magnugiga",
+    "result": ""
+  },
+  {
+    "command": "tp QAPlayer 198 65 4 0 0",
+    "result": "Teleported QAPlayer to 198.500000, 65.000000, 4.500000"
+  },
+  {
+    "command": "tp QAAttacker 203 66 8 150 9",
+    "result": "Teleported QAAttacker to 203.500000, 66.000000, 8.500000"
+  },
+  {
+    "command": "tp QAAttacker 198 66 -1 -30 9",
+    "result": "Teleported QAAttacker to 198.500000, 66.000000, -0.500000"
+  }
+]

@@ -82,5 +82,29 @@
         "attenuation_distance": 16
       }
     ]
+  },
+  "riders.vent": {
+    "subtitle": "subtitle.fantasyhub.riders_vent",
+    "sounds": [
+      "fantasyhub:riders/vent"
+    ]
+  },
+  "riders.form": {
+    "subtitle": "subtitle.fantasyhub.riders_form",
+    "sounds": [
+      "fantasyhub:riders/form"
+    ]
+  },
+  "riders.shot": {
+    "subtitle": "subtitle.fantasyhub.riders_shot",
+    "sounds": [
+      "fantasyhub:riders/shot"
+    ]
+  },
+  "riders.impact": {
+    "subtitle": "subtitle.fantasyhub.riders_impact",
+    "sounds": [
+      "fantasyhub:riders/impact"
+    ]
   }
 }

@@ -32,7 +32,7 @@ public final class HunterArmorFeature extends FeatureRenderer<AbstractClientPlay
         return data!=null&&data.copyNbt().getString("SVFRAME_ITEM_MODEL").equals("fantasyhub:item/hunter/halfmoon_helmet");
     }
     @Override public void render(MatrixStack matrices,VertexConsumerProvider vertices,int light,AbstractClientPlayerEntity entity,float limbAngle,float limbDistance,float tickDelta,float age,float headYaw,float headPitch) {
-        if(entity.isInvisible())return;
+        if(entity.isInvisible()||RiderVisuals.state(entity.getId())!=null)return;
         for(EquipmentSlot slot:List.of(EquipmentSlot.HEAD,EquipmentSlot.CHEST,EquipmentSlot.LEGS,EquipmentSlot.FEET)) {
             String collection=collection(entity.getEquippedStack(slot));if(collection.isEmpty())continue;
             Geometry geometry=MODELS.computeIfAbsent(collection,HunterArmorFeature::load);

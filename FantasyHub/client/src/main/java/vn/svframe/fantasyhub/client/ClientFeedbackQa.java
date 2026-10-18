@@ -4,6 +4,6 @@ package vn.svframe.fantasyhub.client;
 public final class ClientFeedbackQa {
     public static final boolean ENABLED="1".equals(System.getenv("SVFRAME_RUNTIME_QA"));
     public static long damagePackets,hurtCameraFrames;
-    public static long gunSounds,kunaiSounds;
+    public static long gunSounds,kunaiSounds,riderSounds;
     private ClientFeedbackQa(){}
 }

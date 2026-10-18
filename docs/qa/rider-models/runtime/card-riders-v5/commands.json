@@ -1,0 +1,118 @@
+[
+  {
+    "command": "list",
+    "response": "There are 2 of a max of 5 players online: QAPlayer, QAAttacker"
+  },
+  {
+    "command": "list",
+    "response": "There are 2 of a max of 5 players online: QAPlayer, QAAttacker"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_ryuki",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "response": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "response": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "command": "tp QAAttacker 202.6 65.2 .8 98 12",
+    "response": "Teleported QAAttacker to 202.600000, 65.200000, 0.800000"
+  },
+  {
+    "command": "tp QAAttacker 198.4 65.2 .5 -90 12",
+    "response": "Teleported QAAttacker to 198.400000, 65.200000, 0.500000"
+  },
+  {
+    "command": "tp QAAttacker 201.3 65.75 1.95 138 6",
+    "response": "Teleported QAAttacker to 201.300000, 65.750000, 1.950000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_knight",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "response": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "response": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "command": "tp QAAttacker 202.6 65.2 .8 98 12",
+    "response": "Teleported QAAttacker to 202.600000, 65.200000, 0.800000"
+  },
+  {
+    "command": "tp QAAttacker 198.4 65.2 .5 -90 12",
+    "response": "Teleported QAAttacker to 198.400000, 65.200000, 0.500000"
+  },
+  {
+    "command": "tp QAAttacker 201.3 65.75 1.95 138 6",
+    "response": "Teleported QAAttacker to 201.300000, 65.750000, 1.950000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_prepare_decade",
+    "response": ""
+  },
+  {
+    "command": "tp QAPlayer 200.5 65 .5 0 0",
+    "response": "Teleported QAPlayer to 200.500000, 65.000000, 0.500000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  },
+  {
+    "command": "tp QAAttacker 201.25 65.2 2.5 159.44 14.5",
+    "response": "Teleported QAAttacker to 201.250000, 65.200000, 2.500000"
+  },
+  {
+    "command": "tp QAAttacker 199.75 65.2 -1.5 -20.56 14.5",
+    "response": "Teleported QAAttacker to 199.750000, 65.200000, -1.500000"
+  },
+  {
+    "command": "tp QAAttacker 202.6 65.2 .8 98 12",
+    "response": "Teleported QAAttacker to 202.600000, 65.200000, 0.800000"
+  },
+  {
+    "command": "tp QAAttacker 198.4 65.2 .5 -90 12",
+    "response": "Teleported QAAttacker to 198.400000, 65.200000, 0.500000"
+  },
+  {
+    "command": "tp QAAttacker 201.3 65.75 1.95 138 6",
+    "response": "Teleported QAAttacker to 201.300000, 65.750000, 1.950000"
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa rider_game_status",
+    "response": ""
+  }
+]

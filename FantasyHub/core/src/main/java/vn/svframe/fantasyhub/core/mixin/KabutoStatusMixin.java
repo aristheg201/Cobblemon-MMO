@@ -17,6 +17,6 @@ abstract class KabutoStatusMixin {
   private void fantasyhub$slowImmunity(
       StatusEffectInstance effect, Entity source, CallbackInfoReturnable<Boolean> ci) {
     if (effect.getEffectType().equals(StatusEffects.SLOWNESS)
-        && KabutoRuntime.clock((LivingEntity) (Object) this)) ci.setReturnValue(false);
+        && (KabutoRuntime.clock((LivingEntity) (Object) this) || vn.svframe.fantasyhub.core.RiderRuntime.controlImmune((LivingEntity)(Object)this))) ci.setReturnValue(false);
   }
 }

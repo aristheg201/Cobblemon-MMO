@@ -1,0 +1,9 @@
+{
+  "status": "FAILED",
+  "retained_before_fix": true,
+  "issues": [
+    {"case":"magnugiga display", "observed":"Feet below the floor; model facing away and too small.","fix":"Cancel the item renderer's half-block origin on Y, rotate the native display model by 180 degrees, and use a server-owned 1.6 scale."},
+    {"case":"Zolda side profile", "observed":"Side of upper helmet remained black instead of green.","fix":"Add actual green Y/Z side meshes and additional temple fasteners, using plane-aware triangulation."},
+    {"case":"Shining Caliber resting view", "observed":"Segmented blade resembled disconnected red rods.","fix":"Author a continuous crescent silhouette with continuous UVs and silver edges in Blockbench."}
+  ]
+}

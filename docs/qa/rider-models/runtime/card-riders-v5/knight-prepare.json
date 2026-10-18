@@ -1,0 +1,60 @@
+{
+  "scenario": "prepare_knight",
+  "beltComponentPresent": true,
+  "beltInventoryGroups": [
+    "legs"
+  ],
+  "beltSlotSize": 1,
+  "beltCanEquip": true,
+  "beltSlotId": "legs/belt/0",
+  "beltCandidateId": "fantasyhub:knight_belt",
+  "beltAdapterClass": "jdk.proxy2.$Proxy52",
+  "beltExistingAfterClear": "",
+  "beltClassPredicate": true,
+  "equippedViaRealApi": true,
+  "class": "KNIGHT",
+  "bound": {
+    "1": "KNIGHT_SWORD_VENT",
+    "2": "KNIGHT_NASTY_VENT",
+    "3": "KNIGHT_TRICK_VENT",
+    "4": "KNIGHT_GUARD_VENT",
+    "5": "KNIGHT_SURVIVE",
+    "6": "KNIGHT_BLAST_VENT",
+    "7": "KNIGHT_FINAL_VENT"
+  },
+  "immediate": {
+    "active": false,
+    "class": "RYUKI",
+    "form": "",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 1606,
+    "summon": ""
+  },
+  "settled": {
+    "active": false,
+    "class": "KNIGHT",
+    "form": "",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 1676,
+    "summon": ""
+  },
+  "maxHealth": 49.8,
+  "health": 49.8,
+  "settledReport": true
+}

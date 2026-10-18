@@ -1,0 +1,12 @@
+{
+  "scenario": "native_equipment_render",
+  "form": "agito_ground",
+  "classGameplayVerified": false,
+  "HEAD": "agito_ground_helmet",
+  "FEET": "agito_ground_boots",
+  "LEGS": "agito_ground_leggings",
+  "CHEST": "agito_ground_chestplate",
+  "weapon": "",
+  "serverHealth": 20.0,
+  "serverMaxHealth": 20.0
+}

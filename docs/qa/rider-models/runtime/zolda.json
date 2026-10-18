@@ -1,0 +1,12 @@
+{
+  "scenario": "native_equipment_render",
+  "form": "zolda",
+  "classGameplayVerified": false,
+  "HEAD": "zolda_helmet",
+  "FEET": "zolda_boots",
+  "LEGS": "zolda_leggings",
+  "CHEST": "zolda_chestplate",
+  "weapon": "zolda_magna_visor",
+  "serverHealth": 20.0,
+  "serverMaxHealth": 20.0
+}

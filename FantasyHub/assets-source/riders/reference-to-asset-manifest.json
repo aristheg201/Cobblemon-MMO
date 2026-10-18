@@ -1,0 +1,278 @@
+{
+  "schema": 1,
+  "authoritative_references": "User-supplied Download.zip and Download2.zip; images, not source models.",
+  "images": [
+    {
+      "archive": "1-Download.zip",
+      "entry": "2015102194749.jpg",
+      "sha256": "24d822f189dc573307c4386e88af5a9b8123ade523ad79973a6cd12c2134a160",
+      "dimensions": [
+        560,
+        560
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Dragranzer",
+      "category": "Survive summon",
+      "observed_features": "dragon head white/silver crest, crimson/gold armor, wheeled/limbed mechanism",
+      "asset": "dragranzer.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "1-Download.zip",
+      "entry": "41mcTQZ+i1L.jpg",
+      "sha256": "5a39a4408cc36acd55746a45722c6a247c4b298bbfa1c1171ac3451f6ba8e0b1",
+      "dimensions": [
+        500,
+        364
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Ryuki Survive / Dragranzer",
+      "category": "Survive rider and summon",
+      "observed_features": "red/gold optional armor and mechanical dragon silhouette",
+      "asset": "dragranzer.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "1-Download.zip",
+      "entry": "61T5MVlKvXL._AC_UF894,1000_QL80_.jpg",
+      "sha256": "b8ba3523924d01ac82d0dc80b77a4ae19df9ffae6032df34c5085220b7c7e535",
+      "dimensions": [
+        894,
+        574
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Knight Survive",
+      "category": "Survive equipment",
+      "observed_features": "blue/gold bat shoulders, long blade and wing cape",
+      "asset": "dark_blade.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "1-Download.zip",
+      "entry": "81LLVCnbtoL.jpg",
+      "sha256": "e32bdc4180eaa8c0fdcc5978ac0dbbddb7d0eef9fa59a18ea69f0ed895daf652",
+      "dimensions": [
+        1102,
+        2560
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Ryuki Survive",
+      "category": "optional Survive armor",
+      "observed_features": "silver face grille, gold horns, crimson/gold armor",
+      "asset": "ryuki.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "1-Download.zip",
+      "entry": "KR-Knight%26WingKnight.webp",
+      "sha256": "f063981b8ab75ae037da5d2848b151142df1e1b17882a93cf947e4cd8333a1dd",
+      "dimensions": [
+        340,
+        715
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Knight",
+      "category": "normal body",
+      "observed_features": "navy/black, silver chest rails, forearm visor, V-Buckle, knee hinges",
+      "asset": "knight.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "1-Download.zip",
+      "entry": "KRRy-Dragranzer.webp",
+      "sha256": "697e35585eed3099330213bba3dc97cce1f0c1afd9dc4181a6cc0857766b646d",
+      "dimensions": [
+        416,
+        764
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Dragranzer",
+      "category": "Survive summon",
+      "observed_features": "upright segmented silver ventral ribs, gold horns, mechanical limbs",
+      "asset": "dragranzer.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "1-Download.zip",
+      "entry": "Knight_Profile.webp",
+      "sha256": "d23a3c141eaa2f61936b2d13d05c628fa0ceccb057747fbd2ec2d0e07779062d",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Knight",
+      "category": "normal helmet",
+      "observed_features": "curved knight cage with upright slots, bat jaw, swept frame horns and blue/gold crest",
+      "asset": "knight.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "1-Download.zip",
+      "entry": "images (1).jpeg",
+      "sha256": "7a8706743b40d18a8c7d273100532bd0a4fad75d62743ab2c8bb35e45b4ee3b8",
+      "dimensions": [
+        452,
+        678
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Dragreder",
+      "category": "normal summon",
+      "observed_features": "serpentine red/gold segmented armor, silver horns, open jaw, teeth and claws",
+      "asset": "dragreder.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "1-Download.zip",
+      "entry": "images (2).jpeg",
+      "sha256": "4ae37489aa4d1ca3d0a8d1522d0be40b9fc238b98e4bd5efd1c59e6c0210b5d6",
+      "dimensions": [
+        678,
+        452
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Knight normal / Survive",
+      "category": "equipment comparison",
+      "observed_features": "distinct Dark Visor and long Survive blade, cloak silhouette",
+      "asset": "dark_visor.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "1-Download.zip",
+      "entry": "item_0000001578_07.jpg",
+      "sha256": "1677afe9dcb4915642b35b496883c6f3f547ce360624ba53504f277b8fc5288e",
+      "dimensions": [
+        500,
+        357
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Darkwing",
+      "category": "bat summon",
+      "observed_features": "mechanical chest and shoulders, swept ears, red eyes, scalloped membranes, articulated silver claws",
+      "asset": "darkwing.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "1-Download.zip",
+      "entry": "oardefault.jpg",
+      "sha256": "5e0c2659dbd0ecebbd47278b7b2f6523d57fc5c96087da5827b948bfdbb9dcad",
+      "dimensions": [
+        405,
+        720
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Ryuki",
+      "category": "Minecraft armor",
+      "observed_features": "silver chest/grille, red optics, red knee shell, pixel highlights and forearm-mounted reader",
+      "asset": "ryuki.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "2-Download2.zip",
+      "entry": "1792296897858.png",
+      "sha256": "45672772572269ec0955be5ff60ffb14c574c7f915bf32570cab42ffce649436",
+      "dimensions": [
+        1408,
+        768
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Ryuki / Knight / Decade",
+      "category": "Minecraft proportions, forms and environment",
+      "observed_features": "voxel style, layered armor, correct head/belt/weapon attachment; card planes, form auras and summons",
+      "asset": "ryuki.bbmodel / knight.bbmodel / decade.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "2-Download2.zip",
+      "entry": "1792297097386.png",
+      "sha256": "45672772572269ec0955be5ff60ffb14c574c7f915bf32570cab42ffce649436",
+      "dimensions": [
+        1408,
+        768
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Ryuki / Knight / Decade",
+      "category": "Minecraft proportions, forms and environment",
+      "observed_features": "voxel style, layered armor, correct head/belt/weapon attachment; card planes, form auras and summons",
+      "asset": "ryuki.bbmodel / knight.bbmodel / decade.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "2-Download2.zip",
+      "entry": "1792297107510.png",
+      "sha256": "8d98b688b6af24ff34e42fa2c65513bdc09c046b39e20c3144d04c852e7259fc",
+      "dimensions": [
+        1408,
+        768
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Ryuki / Knight / Decade",
+      "category": "Minecraft proportions, forms and environment",
+      "observed_features": "voxel style, layered armor, correct head/belt/weapon attachment; card planes, form auras and summons",
+      "asset": "ryuki.bbmodel / knight.bbmodel / decade.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "2-Download2.zip",
+      "entry": "1792297128561.png",
+      "sha256": "2e792db5af0376d88981db3ed1355ee09bcb7c6e2c48d73968e4dc8d1769fa5b",
+      "dimensions": [
+        1376,
+        768
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Ryuki / Knight / Decade",
+      "category": "Minecraft proportions, forms and environment",
+      "observed_features": "voxel style, layered armor, correct head/belt/weapon attachment; card planes, form auras and summons",
+      "asset": "ryuki.bbmodel / knight.bbmodel / decade.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "2-Download2.zip",
+      "entry": "1792297151246.png",
+      "sha256": "a3640bec26a1a78b591b6b47dcb8f39333bd2d97238d4530e2a79428f7a5db7a",
+      "dimensions": [
+        1376,
+        768
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Ryuki / Knight / Decade",
+      "category": "Minecraft proportions, forms and environment",
+      "observed_features": "voxel style, layered armor, correct head/belt/weapon attachment; card planes, form auras and summons",
+      "asset": "ryuki.bbmodel / knight.bbmodel / decade.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "2-Download2.zip",
+      "entry": "1792297211402.png",
+      "sha256": "d3c37bd31d1c83b04178ea9d6cbae52d514ecba7a0dd08e7e4f580b6f8384b12",
+      "dimensions": [
+        656,
+        1574
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Ryuki / Knight / Decade",
+      "category": "Minecraft proportions, forms and environment",
+      "observed_features": "voxel style, layered armor, correct head/belt/weapon attachment; card planes, form auras and summons",
+      "asset": "ryuki.bbmodel / knight.bbmodel / decade.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    },
+    {
+      "archive": "2-Download2.zip",
+      "entry": "1792298622552.png",
+      "sha256": "aef1e37d919e45758a3dd39ed16bfc56d525c383519658c911cecb135cccf064",
+      "dimensions": [
+        656,
+        1574
+      ],
+      "inspection": "Opened in image viewer; all18 inspected individually, contact sheet also retained privately.",
+      "rider": "Ryuki / Knight / Decade",
+      "category": "Minecraft proportions, forms and environment",
+      "observed_features": "voxel style, layered armor, correct head/belt/weapon attachment; card planes, form auras and summons",
+      "asset": "ryuki.bbmodel / knight.bbmodel / decade.bbmodel",
+      "comparison_status": "IN_PROGRESS; initial pass rejected by user; native v5 evidence exists but master specification adds required attachments and animation."
+    }
+  ],
+  "no_ai_concept_reference": true,
+  "native_candidate_evidence": "docs/qa/rider-models/runtime/card-riders-v5"
+}

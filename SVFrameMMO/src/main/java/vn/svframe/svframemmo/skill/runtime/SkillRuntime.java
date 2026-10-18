@@ -26,6 +26,11 @@ import java.util.UUID;
 
 /** Owns runtime-only passive registrations, class scripts and skill-slot parameter buffs. */
 public final class SkillRuntime {
+    /** Server-owned recast windows retain the normal skill identity and cancellable events. */
+    private final Map<String, java.util.function.BiPredicate<PlayerData, ClassSkill>> recastWindows = new LinkedHashMap<>();
+    public void registerRecastWindow(String owner, java.util.function.BiPredicate<PlayerData, ClassSkill> window) {
+        recastWindows.put(Objects.requireNonNull(owner), Objects.requireNonNull(window));
+    }
     private final Map<UUID, Map<String, Registration>> registrations = new LinkedHashMap<>();
 
     public synchronized void attach(PlayerData data) { refresh(data); }
@@ -120,7 +125,9 @@ public final class SkillRuntime {
         Objects.requireNonNull(skill, "skill");
         if (skill.getTrigger().isPassive()) throw new IllegalArgumentException("Passive skills cannot be manually cast: " + skill.getSkill().getId());
         if (!data.isOnline()) throw new IllegalStateException("Cannot cast a skill for an offline player");
-        ClassCastableSkill cast = new ClassCastableSkill(skill, data, requireClassProgression);
+        boolean recast = requireClassProgression && data.canUseSkill(skill)
+                && recastWindows.values().stream().anyMatch(window -> window.test(data, skill));
+        ClassCastableSkill cast = new ClassCastableSkill(skill, data, requireClassProgression, recast);
         return cast.cast(new SkillMetadata(cast, data.getMMOPlayerData()));
     }
 
