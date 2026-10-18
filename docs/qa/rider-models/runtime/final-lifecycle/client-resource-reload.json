@@ -1,0 +1,178 @@
+{
+  "after": {
+    "scenario": "status",
+    "targetsBefore": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "health": 1000.0,
+        "uuid": "3e5aad36-902e-4c20-bb12-a8fb4a7b6b35",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "health": 1000.0,
+        "uuid": "3fc43a42-6c20-4913-b1b7-9e5a1068db7c",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "health": 1000.0,
+        "uuid": "79b6d3bd-e936-4daa-a246-ffa0c4c981c6",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      }
+    ],
+    "immediate": {
+      "active": true,
+      "class": "DECADE",
+      "form": "decade",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 2,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": true,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 16434,
+      "summon": ""
+    },
+    "targetsImmediate": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "health": 1000.0,
+        "uuid": "3e5aad36-902e-4c20-bb12-a8fb4a7b6b35",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "health": 1000.0,
+        "uuid": "3fc43a42-6c20-4913-b1b7-9e5a1068db7c",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "health": 1000.0,
+        "uuid": "79b6d3bd-e936-4daa-a246-ffa0c4c981c6",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      }
+    ],
+    "hitsImmediate": [],
+    "settled": {
+      "active": true,
+      "class": "DECADE",
+      "form": "decade",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 2,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": true,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 16504,
+      "summon": ""
+    },
+    "targetsSettled": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "health": 1000.0,
+        "uuid": "3e5aad36-902e-4c20-bb12-a8fb4a7b6b35",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "health": 1000.0,
+        "uuid": "3fc43a42-6c20-4913-b1b7-9e5a1068db7c",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "health": 1000.0,
+        "uuid": "79b6d3bd-e936-4daa-a246-ffa0c4c981c6",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      }
+    ],
+    "hits": [],
+    "savedPreferences": {
+      "fantasyhub.rider.cooldown.decade_complete": "1792343786148",
+      "fantasyhub.rider.last-stance": "elevated",
+      "fantasyhub.rider.spirit": "3",
+      "fantasyhub.rider.cooldown.ryuki_advent": "1792343778579",
+      "fantasyhub.rider.projection": "2",
+      "fantasyhub.rider.class": "DECADE"
+    },
+    "maxHealth": 49.8,
+    "health": 49.8,
+    "settledReport": true
+  },
+  "online": "There are 2 of a max of 5 players online: QAAttacker, QAPlayer",
+  "checks": {
+    "stillConnected": true,
+    "completeStillActive": true,
+    "sameDecadeModel": true
+  }
+}

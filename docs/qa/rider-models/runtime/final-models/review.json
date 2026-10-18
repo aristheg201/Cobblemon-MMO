@@ -1,0 +1,34 @@
+{
+  "source": "Actual Minecraft1.21.1 X11 captures, no image edits",
+  "riders": [
+    "ryuki",
+    "knight",
+    "decade"
+  ],
+  "views": [
+    "front",
+    "rear",
+    "left",
+    "right",
+    "three-quarter",
+    "helmet-front",
+    "helmet-rear",
+    "helmet-side",
+    "belt",
+    "weapon-grip",
+    "first-person",
+    "crouch",
+    "swing",
+    "elevated"
+  ],
+  "geometryInspected": true,
+  "userAestheticApproval": "pending",
+  "observations": [
+    "Distinct closed helmet silhouettes; no exposed player face in inspected views",
+    "Square layered shoulders and fitted arm/leg plates",
+    "Rear helmet stripes, back armor panels, bracer and heel detail exist",
+    "Belt devices and held grips inspected at native close-up",
+    "Decade keeps his model in the Complete capture"
+  ],
+  "lightingFixtureFailure": "../photo-lighting-fixture-v1/README.txt"
+}

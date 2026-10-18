@@ -17,10 +17,15 @@ public class AttackMetadata {
     private final StatProvider attacker;
     private boolean applied;
     private double appliedDamage;
+    private boolean cancelled, eventDispatched;
+    public void beginApplication() { applied=false; appliedDamage=0; cancelled=false; eventDispatched=false; }
+    public boolean isCancelled() { return cancelled; }
+    public void setCancelled(boolean value) { cancelled=value; }
+    public boolean claimEventDispatch() { if(eventDispatched)return false; eventDispatched=true; return true; }
     /** Result of the native damage call, including cancellations and immunity. */
     public boolean wasApplied(){return applied;}
     public double getAppliedDamage(){return appliedDamage;}
-    public void recordApplication(boolean accepted,double amount){applied=accepted;appliedDamage=accepted?Math.max(0,amount):0;}
+    public void recordApplication(boolean accepted,double amount){applied=accepted&&!cancelled;appliedDamage=applied?Math.max(0,amount):0;}
 
     @Deprecated
     public AttackMetadata(DamageMetadata damage, StatProvider attacker) { this(damage, null, attacker); }

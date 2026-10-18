@@ -1,0 +1,275 @@
+[
+  {
+    "id": "DECADE",
+    "name": "\u00a7d\u00a7lKamen Rider Decade",
+    "description": [
+      "\u00a77\u00a77Attack Ride \u2022 K-Touch \u2022 Dimension Kick"
+    ],
+    "attributeDescription": [],
+    "maxLevel": 100,
+    "price": {
+      "fee": "3000",
+      "economyAvailable": true,
+      "canAfford": true,
+      "currency": "beastcoin",
+      "currencyKey": "beconomy:secondary"
+    },
+    "selectable": true,
+    "unlocked": true,
+    "current": true,
+    "baseStats": {
+      "ARMOR": 3.0,
+      "MAX_HEALTH": 30.0,
+      "MAX_MANA": 60.0,
+      "MAX_STAMINA": 45.0
+    },
+    "skills": [
+      {
+        "id": "DECADE_HEISEI_SPIRIT",
+        "name": "HEISEI SPIRIT",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "DECADE_SLASH_BLAST",
+        "name": "SLASH BLAST",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "DECADE_COMPLETE",
+        "name": "COMPLETE",
+        "passive": false,
+        "requiredLevel": 20,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "DECADE_CLOCK_UP",
+        "name": "CLOCK UP",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "DECADE_HENSHIN",
+        "name": "HENSHIN",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "DECADE_DIMENSION_KICK",
+        "name": "DIMENSION KICK",
+        "passive": false,
+        "requiredLevel": 50,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "DECADE_ILLUSION",
+        "name": "ILLUSION",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "DECADE_ULTIMATE_SUMMON",
+        "name": "ULTIMATE SUMMON",
+        "passive": false,
+        "requiredLevel": 50,
+        "available": true,
+        "issues": []
+      }
+    ]
+  },
+  {
+    "id": "KNIGHT",
+    "name": "\u00a79\u00a7lKamen Rider Knight",
+    "description": [
+      "\u00a77\u00a77Darkwing \u2022 Shippu Survive"
+    ],
+    "attributeDescription": [],
+    "maxLevel": 100,
+    "price": {
+      "fee": "3000",
+      "economyAvailable": true,
+      "canAfford": true,
+      "currency": "beastcoin",
+      "currencyKey": "beconomy:secondary"
+    },
+    "selectable": true,
+    "unlocked": true,
+    "current": false,
+    "baseStats": {
+      "ARMOR": 3.0,
+      "MAX_HEALTH": 30.0,
+      "MAX_MANA": 60.0,
+      "MAX_STAMINA": 45.0
+    },
+    "skills": [
+      {
+        "id": "KNIGHT_HENSHIN",
+        "name": "HENSHIN",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "KNIGHT_SWORD_VENT",
+        "name": "SWORD VENT",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "KNIGHT_BLAST_VENT",
+        "name": "BLAST VENT",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "KNIGHT_SURVIVE",
+        "name": "SURVIVE",
+        "passive": false,
+        "requiredLevel": 20,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "KNIGHT_FINAL_VENT",
+        "name": "FINAL VENT",
+        "passive": false,
+        "requiredLevel": 50,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "KNIGHT_GUARD_VENT",
+        "name": "GUARD VENT",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "KNIGHT_TRICK_VENT",
+        "name": "TRICK VENT",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "KNIGHT_NASTY_VENT",
+        "name": "NASTY VENT",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      }
+    ]
+  },
+  {
+    "id": "RYUKI",
+    "name": "\u00a7c\u00a7lKamen Rider Ryuki",
+    "description": [
+      "\u00a77\u00a77Dragreder \u2022 Rekka Survive"
+    ],
+    "attributeDescription": [],
+    "maxLevel": 100,
+    "price": {
+      "fee": "3000",
+      "economyAvailable": true,
+      "canAfford": true,
+      "currency": "beastcoin",
+      "currencyKey": "beconomy:secondary"
+    },
+    "selectable": true,
+    "unlocked": true,
+    "current": false,
+    "baseStats": {
+      "ARMOR": 3.0,
+      "MAX_HEALTH": 30.0,
+      "MAX_MANA": 60.0,
+      "MAX_STAMINA": 45.0
+    },
+    "skills": [
+      {
+        "id": "RYUKI_SHOOT_VENT",
+        "name": "SHOOT VENT",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "RYUKI_HENSHIN",
+        "name": "HENSHIN",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "RYUKI_SWORD_VENT",
+        "name": "SWORD VENT",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "RYUKI_ADVENT",
+        "name": "ADVENT",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "RYUKI_SURVIVE",
+        "name": "SURVIVE",
+        "passive": false,
+        "requiredLevel": 20,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "RYUKI_STRIKE_VENT",
+        "name": "STRIKE VENT",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "RYUKI_FINAL_VENT",
+        "name": "FINAL VENT",
+        "passive": false,
+        "requiredLevel": 50,
+        "available": true,
+        "issues": []
+      },
+      {
+        "id": "RYUKI_GUARD_VENT",
+        "name": "GUARD VENT",
+        "passive": false,
+        "requiredLevel": 1,
+        "available": true,
+        "issues": []
+      }
+    ]
+  }
+]

@@ -1,0 +1,23 @@
+[
+  {
+    "rider": "RYUKI",
+    "guiClassChanged": true,
+    "chargedExactlyConfiguredFee": true,
+    "otherCurrenciesPreserved": true,
+    "transactionCommitted": true
+  },
+  {
+    "rider": "KNIGHT",
+    "guiClassChanged": true,
+    "chargedExactlyConfiguredFee": true,
+    "otherCurrenciesPreserved": true,
+    "transactionCommitted": true
+  },
+  {
+    "rider": "DECADE",
+    "guiClassChanged": true,
+    "chargedExactlyConfiguredFee": true,
+    "otherCurrenciesPreserved": true,
+    "transactionCommitted": true
+  }
+]

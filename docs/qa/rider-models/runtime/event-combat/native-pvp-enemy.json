@@ -1,0 +1,226 @@
+{
+  "native": {
+    "scenario": "cast_ryuki_strike_vent",
+    "targetsBefore": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "health": 49.8,
+        "uuid": "e585ad00-e318-3e35-aa1c-115aefd03416",
+        "effects": [
+          "minecraft:night_vision:16378"
+        ],
+        "stunned": false,
+        "armor": 4
+      },
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "health": 0.0,
+        "uuid": "6d013f5a-e6b9-43e0-9aa5-a0c84c7a5c0a",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "health": 0.0,
+        "uuid": "1cc14f52-0413-4234-a906-a2b6caa5a37c",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "health": 0.0,
+        "uuid": "40dbfe3d-d615-4c71-9913-9c01c1227c56",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      }
+    ],
+    "manaBefore": 89.7,
+    "staminaBefore": 64.8,
+    "inventoryBefore": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"}]",
+    "before": {
+      "active": true,
+      "class": "RYUKI",
+      "form": "ryuki",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 1,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 2184,
+      "summon": ""
+    },
+    "castResult": true,
+    "manaAfter": 86.7,
+    "staminaAfter": 62.8,
+    "inventoryAfter": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"}]",
+    "cooldownAfter": 6.997,
+    "immediate": {
+      "active": true,
+      "class": "RYUKI",
+      "form": "ryuki",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 1,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 0,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 2184,
+      "summon": ""
+    },
+    "targetsImmediate": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "health": 49.8,
+        "uuid": "e585ad00-e318-3e35-aa1c-115aefd03416",
+        "effects": [
+          "minecraft:night_vision:16378"
+        ],
+        "stunned": false,
+        "armor": 4
+      },
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.2
+        ],
+        "health": 0.0,
+        "uuid": "6d013f5a-e6b9-43e0-9aa5-a0c84c7a5c0a",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      },
+      {
+        "position": [
+          202.5,
+          65.0,
+          4.8
+        ],
+        "health": 0.0,
+        "uuid": "1cc14f52-0413-4234-a906-a2b6caa5a37c",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      },
+      {
+        "position": [
+          199.3,
+          65.0,
+          5.3
+        ],
+        "health": 0.0,
+        "uuid": "40dbfe3d-d615-4c71-9913-9c01c1227c56",
+        "effects": [],
+        "stunned": false,
+        "armor": 20
+      }
+    ],
+    "hitsImmediate": [],
+    "settled": {
+      "active": true,
+      "class": "RYUKI",
+      "form": "ryuki",
+      "force": 0,
+      "formRemaining": 0,
+      "shield": 0.0,
+      "spiritSelected": 3,
+      "projection": 1,
+      "recastRemaining": 0,
+      "spiritSelectionRemaining": 0,
+      "guard": false,
+      "projectiles": 0,
+      "elevated": false,
+      "dragonFlame": 1,
+      "nextCards": false,
+      "spirit": 0,
+      "tick": 2254,
+      "summon": ""
+    },
+    "targetsSettled": [
+      {
+        "position": [
+          200.5,
+          65.0,
+          3.904723749752686
+        ],
+        "health": 38.150658,
+        "uuid": "e585ad00-e318-3e35-aa1c-115aefd03416",
+        "effects": [
+          "minecraft:night_vision:16308"
+        ],
+        "stunned": false,
+        "armor": 4
+      }
+    ],
+    "hits": [
+      {
+        "tick": 2186,
+        "amount": 11.61600112915039,
+        "target": "e585ad00-e318-3e35-aa1c-115aefd03416",
+        "critical": false,
+        "fire": true,
+        "armorBefore": 4,
+        "health": 38.184,
+        "armorDuring": 4,
+        "armorAfter": 4
+      }
+    ],
+    "savedPreferences": {
+      "fantasyhub.rider.cooldown.knight_nasty_vent": "1792343084653",
+      "fantasyhub.rider.class": "RYUKI",
+      "fantasyhub.rider.projection": "1",
+      "fantasyhub.rider.cooldown.ryuki_strike_vent": "1792343091662",
+      "fantasyhub.rider.cooldown.decade_ultimate_summon": "1792340491271",
+      "fantasyhub.rider.last-stance": "normal",
+      "fantasyhub.rider.spirit": "3"
+    },
+    "maxHealth": 49.8,
+    "health": 49.8,
+    "settledReport": true
+  },
+  "healthBefore": 49.8,
+  "healthAfter": 38.150658,
+  "checks": {
+    "accepted": true,
+    "actualPlayerHit": true,
+    "playerHealthDecreased": true
+  }
+}

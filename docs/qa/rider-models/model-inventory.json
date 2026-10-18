@@ -1,112 +1,570 @@
 {
-  "scope": "presentation/equipment only; new class gameplay remains incomplete",
-  "forms": [
+  "scope": "Card Rider production candidate; source geometry inventory, native evidence and user visual acceptance are separate",
+  "editableProjects": 41,
+  "atlasSize": 512,
+  "originalMaterials": 41,
+  "wearableForms": [
+    "zolda",
+    "agito_ground",
+    "agito_storm",
+    "agito_flame",
+    "agito_trinity",
+    "agito_shining",
+    "ryuki",
+    "knight",
+    "decade"
+  ],
+  "phantomsNotWearable": [
+    "kuuga_ultimate",
+    "blade_king",
+    "kiva_emperor"
+  ],
+  "creatures": [
+    "magnugiga",
+    "dragreder",
+    "dragranzer",
+    "darkwing"
+  ],
+  "formsAndVisualObjects": [
+    "zolda",
+    "agito_ground",
+    "agito_storm",
+    "agito_flame",
+    "agito_trinity",
+    "agito_shining",
+    "magnugiga",
+    "ryuki",
+    "knight",
+    "decade",
+    "dragreder",
+    "dragranzer",
+    "darkwing",
+    "rider_card",
+    "drag_shield",
+    "drag_visor",
+    "drag_claw",
+    "drag_visor_z",
+    "ktouch",
+    "knight_cloak",
+    "kuuga_ultimate",
+    "blade_king",
+    "kiva_emperor"
+  ],
+  "individualEquipment": [
+    "zolda_belt",
+    "agito_belt",
+    "magna_visor",
+    "giga_launcher",
+    "flame_saber",
+    "storm_halberd",
+    "shining_caliber",
+    "ryuki_belt",
+    "knight_belt",
+    "decade_belt",
+    "drag_saber",
+    "dark_visor",
+    "dark_blade",
+    "ride_booker_sword",
+    "ride_booker_gun"
+  ],
+  "projects": [
     {
-      "id": "zolda",
-      "bones": [
-        "head",
-        "body",
-        "left_arm",
-        "right_arm",
-        "left_leg",
-        "right_leg"
-      ],
-      "parts": 161,
-      "meshParts": 25,
-      "editableProject": "FantasyHub/assets-source/riders/zolda.bbmodel"
-    },
-    {
-      "id": "agito_ground",
-      "bones": [
-        "head",
-        "body",
-        "left_arm",
-        "right_arm",
-        "left_leg",
-        "right_leg"
-      ],
-      "parts": 128,
-      "meshParts": 34,
-      "editableProject": "FantasyHub/assets-source/riders/agito_ground.bbmodel"
-    },
-    {
-      "id": "agito_storm",
-      "bones": [
-        "head",
-        "body",
-        "left_arm",
-        "right_arm",
-        "left_leg",
-        "right_leg"
-      ],
-      "parts": 132,
-      "meshParts": 38,
-      "editableProject": "FantasyHub/assets-source/riders/agito_storm.bbmodel"
+      "id": "agito_belt",
+      "path": "FantasyHub/assets-source/riders/agito_belt.bbmodel",
+      "format": "java_block",
+      "elements": 30,
+      "animationCount": 0,
+      "rootBones": []
     },
     {
       "id": "agito_flame",
-      "bones": [
-        "head",
-        "body",
-        "left_arm",
-        "right_arm",
-        "left_leg",
-        "right_leg"
-      ],
-      "parts": 132,
-      "meshParts": 38,
-      "editableProject": "FantasyHub/assets-source/riders/agito_flame.bbmodel"
+      "path": "FantasyHub/assets-source/riders/agito_flame.bbmodel",
+      "format": "free",
+      "elements": 132,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
     },
     {
-      "id": "agito_trinity",
-      "bones": [
-        "head",
-        "body",
-        "left_arm",
-        "right_arm",
-        "left_leg",
-        "right_leg"
-      ],
-      "parts": 133,
-      "meshParts": 39,
-      "editableProject": "FantasyHub/assets-source/riders/agito_trinity.bbmodel"
+      "id": "agito_ground",
+      "path": "FantasyHub/assets-source/riders/agito_ground.bbmodel",
+      "format": "free",
+      "elements": 128,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
     },
     {
       "id": "agito_shining",
-      "bones": [
-        "head",
-        "body",
-        "left_arm",
-        "right_arm",
-        "left_leg",
-        "right_leg"
-      ],
-      "parts": 128,
-      "meshParts": 34,
-      "editableProject": "FantasyHub/assets-source/riders/agito_shining.bbmodel"
+      "path": "FantasyHub/assets-source/riders/agito_shining.bbmodel",
+      "format": "free",
+      "elements": 128,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "agito_storm",
+      "path": "FantasyHub/assets-source/riders/agito_storm.bbmodel",
+      "format": "free",
+      "elements": 132,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "agito_trinity",
+      "path": "FantasyHub/assets-source/riders/agito_trinity.bbmodel",
+      "format": "free",
+      "elements": 133,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "blade_king",
+      "path": "FantasyHub/assets-source/riders/blade_king.bbmodel",
+      "format": "free",
+      "elements": 40,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "dark_blade",
+      "path": "FantasyHub/assets-source/riders/dark_blade.bbmodel",
+      "format": "java_block",
+      "elements": 33,
+      "animationCount": 0,
+      "rootBones": []
+    },
+    {
+      "id": "dark_visor",
+      "path": "FantasyHub/assets-source/riders/dark_visor.bbmodel",
+      "format": "java_block",
+      "elements": 33,
+      "animationCount": 0,
+      "rootBones": []
+    },
+    {
+      "id": "darkwing",
+      "path": "FantasyHub/assets-source/riders/darkwing.bbmodel",
+      "format": "free",
+      "elements": 41,
+      "animationCount": 1,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "decade",
+      "path": "FantasyHub/assets-source/riders/decade.bbmodel",
+      "format": "free",
+      "elements": 179,
+      "animationCount": 12,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "decade_belt",
+      "path": "FantasyHub/assets-source/riders/decade_belt.bbmodel",
+      "format": "java_block",
+      "elements": 38,
+      "animationCount": 0,
+      "rootBones": []
+    },
+    {
+      "id": "decade_helmet",
+      "path": "FantasyHub/assets-source/riders/decade_helmet.bbmodel",
+      "format": "free",
+      "elements": 38,
+      "animationCount": 0,
+      "rootBones": [
+        null
+      ]
+    },
+    {
+      "id": "drag_claw",
+      "path": "FantasyHub/assets-source/riders/drag_claw.bbmodel",
+      "format": "free",
+      "elements": 31,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "drag_saber",
+      "path": "FantasyHub/assets-source/riders/drag_saber.bbmodel",
+      "format": "java_block",
+      "elements": 29,
+      "animationCount": 0,
+      "rootBones": []
+    },
+    {
+      "id": "drag_shield",
+      "path": "FantasyHub/assets-source/riders/drag_shield.bbmodel",
+      "format": "free",
+      "elements": 27,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "drag_visor",
+      "path": "FantasyHub/assets-source/riders/drag_visor.bbmodel",
+      "format": "free",
+      "elements": 27,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "drag_visor_z",
+      "path": "FantasyHub/assets-source/riders/drag_visor_z.bbmodel",
+      "format": "free",
+      "elements": 28,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "dragranzer",
+      "path": "FantasyHub/assets-source/riders/dragranzer.bbmodel",
+      "format": "free",
+      "elements": 307,
+      "animationCount": 1,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "dragreder",
+      "path": "FantasyHub/assets-source/riders/dragreder.bbmodel",
+      "format": "free",
+      "elements": 257,
+      "animationCount": 1,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "flame_saber",
+      "path": "FantasyHub/assets-source/riders/flame_saber.bbmodel",
+      "format": "java_block",
+      "elements": 94,
+      "animationCount": 0,
+      "rootBones": []
+    },
+    {
+      "id": "giga_launcher",
+      "path": "FantasyHub/assets-source/riders/giga_launcher.bbmodel",
+      "format": "java_block",
+      "elements": 8,
+      "animationCount": 0,
+      "rootBones": []
+    },
+    {
+      "id": "kiva_emperor",
+      "path": "FantasyHub/assets-source/riders/kiva_emperor.bbmodel",
+      "format": "free",
+      "elements": 37,
+      "animationCount": 1,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "knight",
+      "path": "FantasyHub/assets-source/riders/knight.bbmodel",
+      "format": "free",
+      "elements": 142,
+      "animationCount": 12,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "knight_belt",
+      "path": "FantasyHub/assets-source/riders/knight_belt.bbmodel",
+      "format": "java_block",
+      "elements": 12,
+      "animationCount": 0,
+      "rootBones": []
+    },
+    {
+      "id": "knight_cloak",
+      "path": "FantasyHub/assets-source/riders/knight_cloak.bbmodel",
+      "format": "free",
+      "elements": 8,
+      "animationCount": 1,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "knight_helmet",
+      "path": "FantasyHub/assets-source/riders/knight_helmet.bbmodel",
+      "format": "free",
+      "elements": 28,
+      "animationCount": 0,
+      "rootBones": [
+        null
+      ]
+    },
+    {
+      "id": "ktouch",
+      "path": "FantasyHub/assets-source/riders/ktouch.bbmodel",
+      "format": "free",
+      "elements": 17,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "kuuga_ultimate",
+      "path": "FantasyHub/assets-source/riders/kuuga_ultimate.bbmodel",
+      "format": "free",
+      "elements": 39,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "magna_visor",
+      "path": "FantasyHub/assets-source/riders/magna_visor.bbmodel",
+      "format": "java_block",
+      "elements": 11,
+      "animationCount": 0,
+      "rootBones": []
     },
     {
       "id": "magnugiga",
-      "bones": [
-        "head",
-        "body",
-        "left_arm",
-        "right_arm",
-        "left_leg",
-        "right_leg"
-      ],
-      "parts": 59,
-      "meshParts": 4,
-      "editableProject": "FantasyHub/assets-source/riders/magnugiga.bbmodel"
+      "path": "FantasyHub/assets-source/riders/magnugiga.bbmodel",
+      "format": "free",
+      "elements": 59,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "ride_booker_gun",
+      "path": "FantasyHub/assets-source/riders/ride_booker_gun.bbmodel",
+      "format": "java_block",
+      "elements": 9,
+      "animationCount": 0,
+      "rootBones": []
+    },
+    {
+      "id": "ride_booker_sword",
+      "path": "FantasyHub/assets-source/riders/ride_booker_sword.bbmodel",
+      "format": "java_block",
+      "elements": 30,
+      "animationCount": 0,
+      "rootBones": []
+    },
+    {
+      "id": "rider_card",
+      "path": "FantasyHub/assets-source/riders/rider_card.bbmodel",
+      "format": "free",
+      "elements": 7,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "ryuki",
+      "path": "FantasyHub/assets-source/riders/ryuki.bbmodel",
+      "format": "free",
+      "elements": 144,
+      "animationCount": 12,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "ryuki_belt",
+      "path": "FantasyHub/assets-source/riders/ryuki_belt.bbmodel",
+      "format": "java_block",
+      "elements": 12,
+      "animationCount": 0,
+      "rootBones": []
+    },
+    {
+      "id": "ryuki_helmet",
+      "path": "FantasyHub/assets-source/riders/ryuki_helmet.bbmodel",
+      "format": "free",
+      "elements": 31,
+      "animationCount": 0,
+      "rootBones": [
+        null
+      ]
+    },
+    {
+      "id": "shining_caliber",
+      "path": "FantasyHub/assets-source/riders/shining_caliber.bbmodel",
+      "format": "java_block",
+      "elements": 87,
+      "animationCount": 0,
+      "rootBones": []
+    },
+    {
+      "id": "storm_halberd",
+      "path": "FantasyHub/assets-source/riders/storm_halberd.bbmodel",
+      "format": "java_block",
+      "elements": 18,
+      "animationCount": 0,
+      "rootBones": []
+    },
+    {
+      "id": "zolda",
+      "path": "FantasyHub/assets-source/riders/zolda.bbmodel",
+      "format": "free",
+      "elements": 161,
+      "animationCount": 0,
+      "rootBones": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": "zolda_belt",
+      "path": "FantasyHub/assets-source/riders/zolda_belt.bbmodel",
+      "format": "java_block",
+      "elements": 11,
+      "animationCount": 0,
+      "rootBones": []
     }
   ],
-  "editableProjects": 14,
-  "paintedAtlasPixels": [
-    512,
-    512
-  ],
-  "paintedMaterials": 23,
-  "armorPieces": 24,
-  "weaponDefinitions": 5,
-  "nativeModelIds": 32
+  "nativeEvidence": "runtime/final-models (current); runtime/local-models (earlier)",
+  "referenceManifest": "FantasyHub/assets-source/riders/reference-to-asset-manifest.json",
+  "visualAcceptance": "Actual rendered geometry must be inspected. User approval is not implied by this inventory."
 }

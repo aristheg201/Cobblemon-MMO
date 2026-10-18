@@ -188,6 +188,7 @@ public final class RiderRuntime {
 
   static void install() {
     reload();
+    vn.svframe.svframelib.api.event.FinalDamageEvent.EVENT.register(RiderRuntime::incoming);
     RiderSummons.install();
     BeltEquipment.allow(
         Protocol.agitoBelt, e -> !(e instanceof ServerPlayerEntity p) || type(p).equals("AGITO"));

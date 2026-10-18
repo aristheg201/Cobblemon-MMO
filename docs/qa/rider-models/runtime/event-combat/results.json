@@ -1,0 +1,47 @@
+[
+  {
+    "scenario": "knight-eighty-percent-guard",
+    "baselineDamagePositive": true,
+    "eightyPercentReduction": true
+  },
+  {
+    "scenario": "ryuki-reflection-mob_attack",
+    "shieldAbsorbedDamage": true,
+    "reflectsTwentyFivePercent": true
+  },
+  {
+    "scenario": "ryuki-reflection-arrow",
+    "shieldAbsorbedDamage": true,
+    "rangedNotReflected": true
+  },
+  {
+    "scenario": "ryuki-half-armor-and-restoration",
+    "accepted": true,
+    "realHits": true,
+    "halfArmorDuringEveryHit": true,
+    "armorRestoredAfterEveryHit": true
+  },
+  {
+    "scenario": "knight-rear-passive",
+    "realHits": true,
+    "staminaRestoresOnce": true,
+    "everyRearHitCritical": true
+  },
+  {
+    "scenario": "knight-front-passive",
+    "realHits": true,
+    "staminaRestoresOnce": true
+  },
+  {
+    "scenario": "native-pvp-enemy",
+    "accepted": true,
+    "actualPlayerHit": true,
+    "playerHealthDecreased": true
+  },
+  {
+    "scenario": "native-pvp-friendly-fire",
+    "accepted": true,
+    "noAllyHit": true,
+    "allyHealthPreserved": true
+  }
+]

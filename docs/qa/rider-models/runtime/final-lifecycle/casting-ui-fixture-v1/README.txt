@@ -1,0 +1,1 @@
+Fixture compared active casting UI to hidden UI after death. The hidden bar correctly has no rendered slots; native persistent loadout retained all7 bindings. Corrected assertion compares the actual loadout, and a real F activation revalidates all7 slots. No gameplay source change.

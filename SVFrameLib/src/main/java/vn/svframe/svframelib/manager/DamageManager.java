@@ -53,7 +53,7 @@ public class DamageManager extends Module {
     /**
      * Registers and applies custom damage. AttackEvent/PlayerAttackEvent are not
      * dispatched here: like 1.7.1, they are emitted by the global damage pipeline
-     * for every attack after attack reconstruction and combat modifiers.
+     * for every attack after vanilla mitigation and before native RPG modifiers.
      */
     public boolean registerAttack(AttackMetadata attack, boolean knockback, boolean ignoreImmunity) {
         return registerAttack(attack,knockback,ignoreImmunity,null);
@@ -63,6 +63,7 @@ public class DamageManager extends Module {
     public boolean registerAttack(AttackMetadata attack, boolean knockback, boolean ignoreImmunity, DamageSource configuredSource) {
         Objects.requireNonNull(attack, "Attack cannot be null");
         if (attack.getTarget() == null) throw new IllegalArgumentException("Target cannot be null");
+        attack.beginApplication();
         LivingEntity attacker = attack.hasAttacker() ? attack.getAttacker().getEntity() : null;
         if(!vn.svframe.svframelib.entity.RpgEntityAdapters.allows(attacker,attack.getTarget(),vn.svframe.svframelib.entity.RpgEntityAdapters.Effect.DAMAGE)){attack.recordApplication(false,0);return false;}
         double before=attack.getTarget().getHealth()+attack.getTarget().getAbsorptionAmount();
@@ -70,7 +71,7 @@ public class DamageManager extends Module {
         try {
             boolean accepted=applyDamage(attack.getDamage().getDamage(), attack.getTarget(), attacker, knockback, ignoreImmunity, configuredSource);
             attack.recordApplication(accepted,before-attack.getTarget().getHealth()-attack.getTarget().getAbsorptionAmount());
-            return accepted;
+            return accepted && !attack.isCancelled();
         } finally {
             unmarkAsMetadata(attack.getTarget());
         }

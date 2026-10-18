@@ -1,0 +1,541 @@
+{
+  "scenario": "cast_ryuki_advent",
+  "targetsBefore": [
+    {
+      "position": [
+        200.5,
+        65.0,
+        3.2
+      ],
+      "health": 1000.0,
+      "uuid": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "effects": [],
+      "stunned": false,
+      "armor": 20
+    },
+    {
+      "position": [
+        202.5,
+        65.0,
+        4.8
+      ],
+      "health": 1000.0,
+      "uuid": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "effects": [],
+      "stunned": false,
+      "armor": 20
+    },
+    {
+      "position": [
+        199.3,
+        65.0,
+        5.3
+      ],
+      "health": 1000.0,
+      "uuid": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "effects": [],
+      "stunned": false,
+      "armor": 20
+    }
+  ],
+  "manaBefore": 89.7,
+  "staminaBefore": 64.8,
+  "inventoryBefore": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"}]",
+  "before": {
+    "active": true,
+    "class": "RYUKI",
+    "form": "ryuki",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "spiritSelected": 3,
+    "projection": 1,
+    "recastRemaining": 0,
+    "spiritSelectionRemaining": 0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 7659,
+    "summon": ""
+  },
+  "castResult": true,
+  "manaAfter": 80.7,
+  "staminaAfter": 64.8,
+  "inventoryAfter": "[{Slot:0b,count:1,id:\"minecraft:diamond_sword\"},{Slot:1b,count:7,id:\"minecraft:stone\"}]",
+  "cooldownAfter": 17.949,
+  "immediate": {
+    "active": true,
+    "class": "RYUKI",
+    "form": "ryuki",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "spiritSelected": 3,
+    "projection": 1,
+    "recastRemaining": 0,
+    "spiritSelectionRemaining": 0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 0,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 7659,
+    "summon": "6544ca14-aa29-40a1-aecd-15f60eb012f5"
+  },
+  "targetsImmediate": [
+    {
+      "position": [
+        200.5,
+        65.0,
+        3.2
+      ],
+      "health": 1000.0,
+      "uuid": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "effects": [],
+      "stunned": false,
+      "armor": 20
+    },
+    {
+      "position": [
+        202.5,
+        65.0,
+        4.8
+      ],
+      "health": 1000.0,
+      "uuid": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "effects": [],
+      "stunned": false,
+      "armor": 20
+    },
+    {
+      "position": [
+        199.3,
+        65.0,
+        5.3
+      ],
+      "health": 1000.0,
+      "uuid": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "effects": [],
+      "stunned": false,
+      "armor": 20
+    }
+  ],
+  "hitsImmediate": [],
+  "settled": {
+    "active": true,
+    "class": "RYUKI",
+    "form": "ryuki",
+    "force": 0,
+    "formRemaining": 0,
+    "shield": 0.0,
+    "spiritSelected": 3,
+    "projection": 1,
+    "recastRemaining": 0,
+    "spiritSelectionRemaining": 0,
+    "guard": false,
+    "projectiles": 0,
+    "elevated": false,
+    "dragonFlame": 1,
+    "nextCards": false,
+    "spirit": 0,
+    "tick": 7729,
+    "summon": ""
+  },
+  "targetsSettled": [
+    {
+      "position": [
+        200.5,
+        65.0,
+        3.2
+      ],
+      "health": 970.19995,
+      "uuid": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "effects": [],
+      "stunned": false,
+      "armor": 20
+    },
+    {
+      "position": [
+        202.5,
+        65.0,
+        4.8
+      ],
+      "health": 970.19995,
+      "uuid": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "effects": [],
+      "stunned": false,
+      "armor": 20
+    },
+    {
+      "position": [
+        199.3,
+        65.0,
+        5.3
+      ],
+      "health": 970.19995,
+      "uuid": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "effects": [],
+      "stunned": false,
+      "armor": 20
+    }
+  ],
+  "hits": [
+    {
+      "tick": 7660,
+      "amount": 2.3800048828125,
+      "target": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 997.62,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7660,
+      "amount": 2.3800048828125,
+      "target": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 997.62,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7660,
+      "amount": 2.3800048828125,
+      "target": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 997.62,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7664,
+      "amount": 2.3800048828125,
+      "target": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 994.24,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7664,
+      "amount": 2.3800048828125,
+      "target": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 994.24,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7664,
+      "amount": 2.3800048828125,
+      "target": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 994.24,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7669,
+      "amount": 2.3800048828125,
+      "target": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 991.86,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7669,
+      "amount": 2.3800048828125,
+      "target": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 991.86,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7669,
+      "amount": 2.3800048828125,
+      "target": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 991.86,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7674,
+      "amount": 2.3800048828125,
+      "target": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 989.48,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7674,
+      "amount": 2.3800048828125,
+      "target": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 989.48,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7674,
+      "amount": 2.3800048828125,
+      "target": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 989.48,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7679,
+      "amount": 2.3800048828125,
+      "target": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 986.1,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7679,
+      "amount": 2.3800048828125,
+      "target": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 986.1,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7679,
+      "amount": 2.3800048828125,
+      "target": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 986.1,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7684,
+      "amount": 2.3800048828125,
+      "target": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 983.72,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7684,
+      "amount": 2.3800048828125,
+      "target": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 983.72,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7684,
+      "amount": 2.3800048828125,
+      "target": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 983.72,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7689,
+      "amount": 2.3800048828125,
+      "target": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 980.33997,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7689,
+      "amount": 2.3800048828125,
+      "target": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 980.33997,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7689,
+      "amount": 2.3800048828125,
+      "target": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 980.33997,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7694,
+      "amount": 2.3800048828125,
+      "target": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 977.95996,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7694,
+      "amount": 2.3800048828125,
+      "target": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 977.95996,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7694,
+      "amount": 2.3800048828125,
+      "target": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 977.95996,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7699,
+      "amount": 2.3800048828125,
+      "target": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 974.57996,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7699,
+      "amount": 2.3800048828125,
+      "target": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 974.57996,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7699,
+      "amount": 2.3800048828125,
+      "target": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 974.57996,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7704,
+      "amount": 2.3800048828125,
+      "target": "087ec7ed-bb56-4d79-a36d-68b87d91c230",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 972.19995,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7704,
+      "amount": 2.3800048828125,
+      "target": "b48d3280-b248-46cb-abdb-5c3cd6db2415",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 972.19995,
+      "armorDuring": 20,
+      "armorAfter": 20
+    },
+    {
+      "tick": 7704,
+      "amount": 2.3800048828125,
+      "target": "665e1911-171a-4f14-8a68-9d9695c45f0b",
+      "critical": false,
+      "fire": true,
+      "armorBefore": 20,
+      "health": 972.19995,
+      "armorDuring": 20,
+      "armorAfter": 20
+    }
+  ],
+  "savedPreferences": {
+    "fantasyhub.rider.cooldown.ryuki_strike_vent": "1792343330447",
+    "fantasyhub.rider.projection": "1",
+    "fantasyhub.rider.cooldown.knight_nasty_vent": "1792343084653",
+    "fantasyhub.rider.cooldown.ryuki_sword_vent": "1792343343977",
+    "fantasyhub.rider.cooldown.ryuki_advent": "1792343378727",
+    "fantasyhub.rider.cooldown.ryuki_guard_vent": "1792343362208",
+    "fantasyhub.rider.cooldown.decade_ultimate_summon": "1792340491271",
+    "fantasyhub.rider.last-stance": "normal",
+    "fantasyhub.rider.class": "RYUKI",
+    "fantasyhub.rider.spirit": "3"
+  },
+  "maxHealth": 49.8,
+  "health": 49.8,
+  "settledReport": true,
+  "checks": {
+    "accepted": true,
+    "inventoryPreserved": true,
+    "cooldownApplied": true,
+    "actualDamageEvents": 30,
+    "damageObserved": true,
+    "resourceConsumed": true
+  }
+}

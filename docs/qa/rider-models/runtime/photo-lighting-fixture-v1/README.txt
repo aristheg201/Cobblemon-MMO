@@ -1,0 +1,1 @@
+Native first photo attempt rejected: an elevated temporary PvP test platform at y159 blocked skylight over the studio. Preserved unedited. Remove only that temporary fixture platform and recapture with closer decimal camera coordinates. No texture/model change or image brightening.

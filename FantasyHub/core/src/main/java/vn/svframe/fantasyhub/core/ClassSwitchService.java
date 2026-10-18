@@ -25,7 +25,7 @@ final class ClassSwitchService {
     private static ClassPricing pricing;
     static void reload() throws IOException {
         var path=FabricLoader.getInstance().getConfigDir().resolve("FantasyHub/class-switch.yml");
-        var next=new LinkedHashMap<String,Object>(YamlLite.map(YamlLite.parse(path)));
+        var next=new LinkedHashMap<String,Object>(RiderRosterMigration.migrate(path,YamlLite.map(YamlLite.parse(path))));
         if(!Objects.toString(next.get("pricing-version"),"1").equals("2")) {
             next.put("pricing-version",2);next.put("fee",3000);next.put("currency","beconomy:secondary");
             next.put("premium-currency","beconomy:primary");next.put("premium-fee",2);

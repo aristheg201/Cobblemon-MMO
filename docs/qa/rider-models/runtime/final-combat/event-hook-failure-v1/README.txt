@@ -1,0 +1,1 @@
+Genuine native failure, retained: Knight restored4Stamina from rear hits, but its forced-critical metadata remainedfalse and hitdamage stayedunbuffed. Rootcause: the native SVFrameLib pipeline never dispatched canonical AttackEvent/PlayerAttackEvent, despite public subscriptions and its API comment. Shared event bridge correction is being built; this evidence does not pass.

@@ -1,0 +1,49 @@
+[
+  {
+    "scenario": "ryuki-three-toggle-cycles",
+    "allOnAccepted": true,
+    "allOffAccepted": true,
+    "noDuplicateModifiers": true,
+    "baselineRestored": true
+  },
+  {
+    "scenario": "knight-three-toggle-cycles",
+    "allOnAccepted": true,
+    "allOffAccepted": true,
+    "noDuplicateModifiers": true,
+    "baselineRestored": true
+  },
+  {
+    "scenario": "dimension-state-reset",
+    "enteredNether": true,
+    "humanInNewDimension": true,
+    "humanAfterReturn": true,
+    "sameClass": true,
+    "cleanActors": true
+  },
+  {
+    "scenario": "death-respawn-no-leak",
+    "humanAfterDeath": true,
+    "sameClass": true,
+    "levelPreserved": true,
+    "loadoutPreserved": true,
+    "baselineSpeed": true,
+    "cleanActors": true,
+    "realFRestoresSevenSlots": true
+  },
+  {
+    "scenario": "logout-during-live-summon",
+    "liveSummonBeforeLogout": true,
+    "actorRemoved": true,
+    "loggedOut": true,
+    "humanAfterReconnect": true,
+    "cleanActors": true,
+    "sameClass": true
+  },
+  {
+    "scenario": "client-resource-reload",
+    "stillConnected": true,
+    "completeStillActive": true,
+    "sameDecadeModel": true
+  }
+]

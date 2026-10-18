@@ -50,7 +50,8 @@ public final class FabricDamageBridge {
     public static float modifyAppliedDamage(LivingEntity target, DamageSource source, float vanillaModifiedDamage) {
         if (target == null || source == null || vanillaModifiedDamage <= 0.0f || target.getWorld().isClient()) return vanillaModifiedDamage;
         SVFrameLibDamageSettings value = settings;
-        return ReferenceClassSkillRuntime.modifyDamage(target,source,SVFrameLibCombatRuntime.process(target, source, vanillaModifiedDamage, classify(source, value), value));
+        float calculated=ReferenceClassSkillRuntime.modifyDamage(target,source,SVFrameLibCombatRuntime.process(target, source, vanillaModifiedDamage, classify(source, value), value));
+        return vn.svframe.svframelib.api.event.FinalDamageEvent.EVENT.invoker().modify(target,source,calculated);
     }
 
     public static List<DamageType> classify(DamageSource source) {

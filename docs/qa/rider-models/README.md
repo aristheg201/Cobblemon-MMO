@@ -1,3 +1,17 @@
+# Current Card Rider milestone — local builds only
+
+Ryuki, Knight and Decade now have native server gameplay for seven active skills each, their passives, permanent Survive/Complete toggles and bundled client presentation. The current editable inventory is `model-inventory.json` (41 real Blockbench projects); older inventory/build counts below are historical. The rejected first model pass remains retained and is not the shipped candidate.
+
+The latest native damage pipeline correction fixes canonical attack-event dispatch and removes competing damage-return mixins. Local Java21 builds pass92 JUnit tests and MMO nativeCoreSmoke. `runtime/event-combat/results.json` records eight actual-server checks including forced critical hits, shield reflection/reduction, scoped armor penetration and enemy/friendly PvP. The matching four-JAR stack is recorded in `runtime/pipeline-skills/environment.json`; its full21-skill integration rerun has separate results. Compilation does not imply acceptance.
+
+`runtime/final-extra` and `runtime/final-restart` contain two-real-client ability/packet/collision/CC/phantom evidence and actual process-restart durability. Current native model photos and additional lifecycle evidence are recorded separately. User visual approval is still pending. All captures are native Minecraft X11 frames; Blockbench previews remain under `blockbench/`. No AI render is gameplay evidence.
+
+Use `LOCAL_BUILD.md` for the entirely local build/install workflow. No GitHub Actions was run for this expansion. Original imported user assets/photos remain out of the public source repository and are supplied in the private reproducible source bundle.
+
+---
+
+Historical milestones follow; their old pending states and test counts are superseded by the current reports above.
+
 # Current model review
 
 The user rejected the first Ryuki/Knight/Decade model pass. It is retained under `rejected-card-riders-v1/` and must not be distributed as accepted work. `blockbench/` now contains the refined v5 candidate: closed faceted masks, corrected Ryuki silver chest armor, wrapped Knight grille/jaw, integrated Decade barcode, painted contract deck crests and articulated S-shaped dragons/Darkwing. These are real Blockbench exports, not native gameplay screenshots. User visual acceptance is still pending.

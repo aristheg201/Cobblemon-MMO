@@ -1,0 +1,26 @@
+{
+  "ryuki": {
+    "unbuffedReferenceDamage": 18.4,
+    "configuredMultiplier": 1.2,
+    "observed": [
+      22.08001708984375,
+      22.08001708984375
+    ],
+    "pass": true
+  },
+  "decade": {
+    "baseTrueDamage": 48,
+    "configuredMultiplier": 1.3,
+    "observed": [
+      62.4000244140625,
+      62.4000244140625
+    ],
+    "pass": true
+  },
+  "knightCritical": {
+    "rearDamage": 10.55999755859375,
+    "frontDamage": 5.280029296875,
+    "ratio": 1.9999884403754566,
+    "pass": true
+  }
+}

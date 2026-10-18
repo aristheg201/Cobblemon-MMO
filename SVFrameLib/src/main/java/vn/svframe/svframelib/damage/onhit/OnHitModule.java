@@ -50,6 +50,7 @@ public final class OnHitModule extends Module {
     public Map<String, OnHitEffect> getOnHitEffects() { return Map.copyOf(registry); }
 
     private void onHitAttackEffects(PlayerAttackEvent event) {
+        if(vn.svframe.svframelib.fabric.runtime.RegisteredDamageMetadataBridge.dispatching())return;
         if (!isEnabled() || registry.isEmpty() || event.isCancelled()) return;
         MMOPlayerData playerData = event.getAttacker().getData();
         Lazy<SkillMetadata> lazySkillMeta = SkillMetadata.lazyOf(event);

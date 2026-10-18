@@ -81,7 +81,8 @@ public final class SVFrameLibCombatRuntime {
     public static float process(LivingEntity target, DamageSource source, float vanillaDamage,
                                 List<DamageType> classifiedTypes, SVFrameLibDamageSettings settings) {
         if (target == null || source == null || vanillaDamage <= 0.0f) return vanillaDamage;
-        NativeDamageMetadata damage = RegisteredDamageMetadataBridge.resolve(target, vanillaDamage, classifiedTypes);
+        NativeDamageMetadata damage = RegisteredDamageMetadataBridge.resolve(target,source,vanillaDamage,classifiedTypes);
+        if(damage==null)return 0;
         Entity rawAttacker = source.getAttacker();
         LivingEntity attacker = rawAttacker instanceof LivingEntity living ? living : null;
 

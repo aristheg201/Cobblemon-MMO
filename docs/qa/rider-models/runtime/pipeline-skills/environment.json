@@ -1,0 +1,28 @@
+{
+  "build": "local",
+  "sourceCommit": "6bf190835210b6a7cf4958a4207c88967ce2f27a",
+  "sourceDirty": true,
+  "artifacts": [
+    {
+      "file": "FantasyHubBridge-0.1.12.jar",
+      "sha256": "c22936e6c8eb37aab98d602bd04259c1e37a8ceb77c8d9287d2f2c43fa55a6bd",
+      "matchesLocalBuild": true
+    },
+    {
+      "file": "FantasyHubClient-0.1.12.jar",
+      "sha256": "6f52ce392cb9e1058cd2cbb83df6d72d8543c3ce51b7430d9f53dd9a9a06fc9b",
+      "matchesLocalBuild": true
+    },
+    {
+      "file": "SVFrameLib-1.7.2-fabric.jar",
+      "sha256": "af5319e5ca9a52148b501f3c574c7d474b6acab6cb196a3c96b2f5270793b500",
+      "matchesLocalBuild": true
+    },
+    {
+      "file": "SVFrameMMO-1.13.4-fabric.jar",
+      "sha256": "808b420d10b50b5ef877e2c02bb58c30943ee4143e36602eec3bcde38edb4a35",
+      "matchesLocalBuild": true
+    }
+  ],
+  "runtime": "Minecraft1.21.1 / Fabric0.18.4 / Java21.0.2 / 2 real clients"
+}

@@ -1,0 +1,35 @@
+{
+  "source": "6bf190835210b6a7cf4958a4207c88967ce2f27a",
+  "dirty": true,
+  "artifacts": [
+    {
+      "file": "FantasyHubBridge-0.1.12.jar",
+      "bytes": 1266550,
+      "sha256": "59a734ed181e33bbd76a1084dc7b513812eea4cdb1354666979ebf872ae25e13",
+      "deployedSha256": "59a734ed181e33bbd76a1084dc7b513812eea4cdb1354666979ebf872ae25e13",
+      "exactlyMatched": true
+    },
+    {
+      "file": "FantasyHubClient-0.1.12.jar",
+      "bytes": 2557837,
+      "sha256": "6f52ce392cb9e1058cd2cbb83df6d72d8543c3ce51b7430d9f53dd9a9a06fc9b",
+      "deployedSha256": "6f52ce392cb9e1058cd2cbb83df6d72d8543c3ce51b7430d9f53dd9a9a06fc9b",
+      "exactlyMatched": true
+    },
+    {
+      "file": "SVFrameLib-1.7.2-fabric.jar",
+      "bytes": 1841510,
+      "sha256": "af5319e5ca9a52148b501f3c574c7d474b6acab6cb196a3c96b2f5270793b500",
+      "deployedSha256": "af5319e5ca9a52148b501f3c574c7d474b6acab6cb196a3c96b2f5270793b500",
+      "exactlyMatched": true
+    },
+    {
+      "file": "SVFrameMMO-1.13.4-fabric.jar",
+      "bytes": 5166319,
+      "sha256": "808b420d10b50b5ef877e2c02bb58c30943ee4143e36602eec3bcde38edb4a35",
+      "deployedSha256": "808b420d10b50b5ef877e2c02bb58c30943ee4143e36602eec3bcde38edb4a35",
+      "exactlyMatched": true
+    }
+  ],
+  "localTests": 92
+}

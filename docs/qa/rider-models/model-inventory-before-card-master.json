@@ -1,0 +1,112 @@
+{
+  "scope": "presentation/equipment only; new class gameplay remains incomplete",
+  "forms": [
+    {
+      "id": "zolda",
+      "bones": [
+        "head",
+        "body",
+        "left_arm",
+        "right_arm",
+        "left_leg",
+        "right_leg"
+      ],
+      "parts": 161,
+      "meshParts": 25,
+      "editableProject": "FantasyHub/assets-source/riders/zolda.bbmodel"
+    },
+    {
+      "id": "agito_ground",
+      "bones": [
+        "head",
+        "body",
+        "left_arm",
+        "right_arm",
+        "left_leg",
+        "right_leg"
+      ],
+      "parts": 128,
+      "meshParts": 34,
+      "editableProject": "FantasyHub/assets-source/riders/agito_ground.bbmodel"
+    },
+    {
+      "id": "agito_storm",
+      "bones": [
+        "head",
+        "body",
+        "left_arm",
+        "right_arm",
+        "left_leg",
+        "right_leg"
+      ],
+      "parts": 132,
+      "meshParts": 38,
+      "editableProject": "FantasyHub/assets-source/riders/agito_storm.bbmodel"
+    },
+    {
+      "id": "agito_flame",
+      "bones": [
+        "head",
+        "body",
+        "left_arm",
+        "right_arm",
+        "left_leg",
+        "right_leg"
+      ],
+      "parts": 132,
+      "meshParts": 38,
+      "editableProject": "FantasyHub/assets-source/riders/agito_flame.bbmodel"
+    },
+    {
+      "id": "agito_trinity",
+      "bones": [
+        "head",
+        "body",
+        "left_arm",
+        "right_arm",
+        "left_leg",
+        "right_leg"
+      ],
+      "parts": 133,
+      "meshParts": 39,
+      "editableProject": "FantasyHub/assets-source/riders/agito_trinity.bbmodel"
+    },
+    {
+      "id": "agito_shining",
+      "bones": [
+        "head",
+        "body",
+        "left_arm",
+        "right_arm",
+        "left_leg",
+        "right_leg"
+      ],
+      "parts": 128,
+      "meshParts": 34,
+      "editableProject": "FantasyHub/assets-source/riders/agito_shining.bbmodel"
+    },
+    {
+      "id": "magnugiga",
+      "bones": [
+        "head",
+        "body",
+        "left_arm",
+        "right_arm",
+        "left_leg",
+        "right_leg"
+      ],
+      "parts": 59,
+      "meshParts": 4,
+      "editableProject": "FantasyHub/assets-source/riders/magnugiga.bbmodel"
+    }
+  ],
+  "editableProjects": 14,
+  "paintedAtlasPixels": [
+    512,
+    512
+  ],
+  "paintedMaterials": 23,
+  "armorPieces": 24,
+  "weaponDefinitions": 5,
+  "nativeModelIds": 32
+}
