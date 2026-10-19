@@ -14,6 +14,16 @@
      if(edge<2)value-=.36;else if(edge<4)value+=(x<32&&y<32?.22:-.14);
      if(!cloth&&!lens)value+=.18*Math.exp(-(((x-17)/10)**2));
      if(lens){const cell=((x+(Math.floor(y/5)%2)*3)%6),row=y%5;value+=(cell===2&&row===2?.2:-.07);if(x<26&&y<23&&((x-19)**2+(y-16)**2)<64)value+=.45;}
+     if(name.startsWith('pixel_')){
+       const gx=Math.floor(x/4),gy=Math.floor(y/4),metal=/silver|gold/.test(name),lens=/lens/.test(name);
+       value=metal?(gy<3?.16:gy>12?-.15:0):(gy<4?.035:gy>11?-.09:0);
+       if(gx===0||gy===0)value+=metal?.12:-.09;
+       if(gx===15||gy===15)value-=.16;
+       if(!metal&&!lens&&gx>9&&gy>3&&gy<12)value-=.035;
+       if(lens){value+=(gx%3===1&&gy%3===1?.17:-.04);if(gx>=3&&gx<=5&&gy>=2&&gy<=4)value+=.35;}
+       const c=base.map(v=>Math.max(0,Math.min(255,Math.round(v*(1+value)))));
+       ctx.fillStyle=`rgb(${c.join(',')})`;ctx.fillRect(x0+x,y0+y,1,1);continue;
+     }
      const c=base.map(v=>Math.max(0,Math.min(255,Math.round(v*(1+value)+noise))));
      ctx.fillStyle=`rgb(${c.join(',')})`;ctx.fillRect(x0+x,y0+y,1,1);
    }
@@ -31,6 +41,28 @@
    if(name==='crest_ryuki'){poly([[20,14],[35,10],[44,15],[36,17],[29,17],[29,29],[24,28]],'#f1da88',x,y);ctx.fillStyle='#391c14';ctx.fillRect(x+37,y+14,3,3);}
    else poly([[11,19],[21,25],[29,21],[32,15],[32,29],[26,34],[21,27],[15,31]],'#eed581',x,y);
    ctx.fillStyle='#a5b0b5';ctx.fillRect(x+3,y+3,58,2);ctx.fillRect(x+3,y+59,58,2);
+ }
+ // Original pixel tracing of the supplied normal/Survive V-Buckle and Decadriver.
+ for(const name of ['pixel_deck_black','pixel_deck_survive','pixel_decadriver']){
+   const i=names.indexOf(name);if(i<0)continue;const x=i%8*64,y=Math.floor(i/8)*64;
+   if(name==='pixel_decadriver'){
+     ctx.fillStyle='#dce3e6';ctx.fillRect(x,y,64,64);ctx.fillStyle='#89969d';ctx.fillRect(x+3,y+3,58,58);ctx.fillStyle='#eff2ed';ctx.fillRect(x+5,y+5,54,54);
+     const colors=['#d61d29','#3159ac','#c2a337','#309364','#9b237a','#264256','#b6253d','#cbd3d9','#78459b'];
+     const emblems=['10101/10101/01110/00100/00100','00100/01110/10101/01110/00100','01010/11011/01110/01010/00100','01110/10101/10101/01110/00100','00100/01110/11111/01110/00100','10101/01110/10101/11111/00100','10001/01010/01110/00100/00100','01110/10001/10101/10001/01110','11011/11111/01110/01010/00100'];
+     for(let a=0;a<9;a++){const t=(a/9)*Math.PI*2-Math.PI/2,cx=Math.round(32+Math.cos(t)*23),cy=Math.round(32+Math.sin(t)*23);ctx.fillStyle='#25282a';ctx.fillRect(x+cx-4,y+cy-4,8,8);ctx.fillStyle='#e5e9e1';ctx.fillRect(x+cx-3,y+cy-3,6,6);ctx.fillStyle=colors[a];emblems[a].split('/').forEach((row,ry)=>[...row].forEach((bit,rx)=>{if(bit==='1')ctx.fillRect(x+cx-2+rx,y+cy-2+ry,1,1);}));}
+     ctx.fillStyle='#353b3e';ctx.fillRect(x+17,y+17,30,30);ctx.fillStyle='#f0f0eb';ctx.fillRect(x+20,y+20,24,24);ctx.fillStyle='#b61b2c';ctx.fillRect(x+24,y+23,16,18);ctx.fillStyle='#e33b43';ctx.fillRect(x+25,y+24,4,13);ctx.fillStyle='#519c53';ctx.fillRect(x+18,y+21,6,6);ctx.fillStyle='#345cba';ctx.fillRect(x+40,y+36,6,6);
+   }else{
+     ctx.fillStyle=name==='pixel_deck_black'?'#101b2b':'#7e1129';ctx.fillRect(x,y,64,64);
+     ctx.fillStyle='#cdd7dc';ctx.fillRect(x+2,y+2,60,2);ctx.fillRect(x+2,y+60,60,2);
+     for(let n=0;n<6;n++){ctx.fillRect(x+3+n*3,y+5,1,3);ctx.fillRect(x+43+n*3,y+56,1,3);}
+     for(const [cx,cy]of [[4,6],[55,6],[4,50],[55,50]]){ctx.fillStyle='#c6d0d6';ctx.fillRect(x+cx,y+cy,5,8);ctx.fillStyle='#162231';ctx.fillRect(x+cx+2,y+cy+2,1,4);}
+     // Ryuki's forked dragon head: horns, paired eye cuts and pointed lower jaw.
+     const crest=[[32,8],[36,20],[42,7],[43,22],[51,16],[47,30],[43,35],[44,43],[38,50],[32,57],[26,50],[20,43],[21,35],[17,30],[13,16],[21,22],[22,7],[28,20]];
+     poly(crest,'#8c5b1e',x+1,y+1);poly(crest,'#d5ac44',x,y);
+     poly([[22,12],[26,24],[31,30],[31,49],[27,44],[25,34],[21,28]],'#f1d780',x,y);
+     poly([[23,31],[29,34],[26,38],[22,35]],'#242229',x,y);poly([[41,31],[35,34],[38,38],[42,35]],'#242229',x,y);
+     ctx.fillStyle='#e0bb59';ctx.fillRect(x+30,y+39,4,10);
+   }
  }
  // Pixel-painted card portrait and K-Touch screen. The armor itself remains full geometry.
  for(const name of ['card_decade','ktouch_screen']){
@@ -126,7 +158,7 @@
          animator.addKeyframe({channel:'rotation',time:Math.min(t,length),interpolation:'linear',data_points:[{x:'0',y:'0',z:'0',[a.axis]:String(a.axis==='y'?angle:-angle)}]});
        }
      }
-   } else if(['ryuki','knight','decade'].includes(name)) {
+   } else if(['ryuki','ryuki_survive','knight','decade'].includes(name)) {
      const poses={idle:{},walk:{left_leg:[30,0,0],right_leg:[-30,0,0],left_arm:[-20,0,0],right_arm:[20,0,0]},sprint:{left_leg:[45,0,0],right_leg:[-45,0,0],left_arm:[-40,0,0],right_arm:[40,0,0]},jump:{left_leg:[25,0,0],right_leg:[-35,0,0]},sword:{right_arm:[-90,0,-30],body:[0,25,0]},punch:{right_arm:[-90,0,0]},casting:{left_arm:[-65,25,0],right_arm:[-50,-25,0]},block:{left_arm:[-70,40,0],right_arm:[-70,-40,0]},hit:{body:[-12,0,0]},rider_kick:{right_leg:[-77,0,0],left_leg:[35,0,0],body:[12,0,0]},henshin:{left_arm:[-65,25,0],right_arm:[-60,-25,0]},recovery:{}};
      for(const [pose,bones]of Object.entries(poses)){
        const loop=['idle','walk','sprint'].includes(pose),clip=new Animation({name:pose,length:1,loop:loop?'loop':'once'}).add();clip.select();
@@ -137,7 +169,7 @@
      }
    }
    save(name);
-   if(['ryuki','knight','decade'].includes(name)){
+   if(['ryuki','ryuki_survive','knight','decade'].includes(name)){
      const helmet=JSON.parse(Codecs.project.compile({compressed:false})),head=baseBones.get('head'),ids=new Set(head.children.map(e=>e.uuid));
      helmet.name=name+'_helmet';helmet.elements=helmet.elements.filter(e=>ids.has(e.uuid));helmet.groups=helmet.groups.filter(g=>g.uuid===head.uuid);helmet.outliner=helmet.outliner.filter(g=>g.uuid===head.uuid);helmet.animations=[];
      write(source+'/'+name+'_helmet.bbmodel',helmet);projects.push(name+'_helmet');

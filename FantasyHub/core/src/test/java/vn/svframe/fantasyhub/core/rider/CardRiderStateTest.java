@@ -6,6 +6,22 @@ import org.junit.jupiter.api.Test;
 
 class CardRiderStateTest {
   @Test
+  void ryukiSurviveSelectsItsOwnArmorWhileDecadeNeverChangesIdentity() {
+    var state = new CardRiderState();
+    assertEquals("", state.visualForm("RYUKI"));
+    state.henshin();
+    assertEquals("ryuki", state.visualForm("RYUKI"));
+    assertEquals("decade", state.visualForm("DECADE"));
+    state.toggle();
+    assertEquals("ryuki_survive", state.visualForm("RYUKI"));
+    assertEquals("decade", state.visualForm("DECADE"));
+    state.toggle();
+    assertEquals("ryuki", state.visualForm("RYUKI"));
+    state.clear();
+    assertEquals("", state.visualForm("RYUKI"));
+  }
+
+  @Test
   void surviveIsExplicitlyToggledAndHumanResetRevokesEveryPower() {
     var state = new CardRiderState();
     assertFalse(state.toggle());

@@ -27,6 +27,8 @@
     "kuuga_ultimate",
     "blade_king",
     "kiva_emperor",
+    "ryuki_survive",
+    "ryuki_survive_helmet",
     "zolda_belt",
     "agito_belt",
     "magna_visor",
@@ -41,7 +43,8 @@
     "dark_visor",
     "dark_blade",
     "ride_booker_sword",
-    "ride_booker_gun"
+    "ride_booker_gun",
+    "ryuki_survive_belt"
   ],
   "materials": [
     "gold",
@@ -84,7 +87,26 @@
     "crest_ryuki",
     "crest_knight",
     "card_decade",
-    "ktouch_screen"
+    "ktouch_screen",
+    "pixel_ruby",
+    "pixel_ruby_light",
+    "pixel_ruby_dark",
+    "pixel_crimson",
+    "pixel_crimson_light",
+    "pixel_black",
+    "pixel_silver",
+    "pixel_silver_dark",
+    "pixel_silver_light",
+    "pixel_gold",
+    "pixel_gold_light",
+    "pixel_gold_dark",
+    "pixel_magenta",
+    "pixel_magenta_dark",
+    "pixel_lens_red",
+    "pixel_lens_green",
+    "pixel_deck_black",
+    "pixel_deck_survive",
+    "pixel_decadriver"
   ],
   "textureSize": 512,
   "references": {
@@ -129,12 +151,27 @@
       "https://www.kamen-rider-official.com/zukan/forms/562",
       "https://www.kamen-rider-official.com/zukan/forms/291"
     ],
+    "armor_correction_2026_10_18": {
+      "images": [
+        "1000391841.jpg (Decade Minecraft)",
+        "1000391826.jpg (normal Ryuki Minecraft)",
+        "1000391827.jpg (Survive full body)",
+        "1000395522.jpg (Survive helmet all angles)",
+        "1000395528.jpg (normal/Survive anatomy and equipment)"
+      ],
+      "rules": [
+        "Ryuki normal has red limbs and black dragon Card Deck",
+        "Ryuki Survive is a distinct crimson/gold/black wearable model",
+        "Decade preserves its own model in Complete",
+        "All geometry uses original pixel atlas, not pasted photographs"
+      ]
+    },
     "card_riders": {
       "archives": [
         "Download.zip",
         "Download2.zip"
       ],
-      "notes": "18 source photographs/game screenshots; no original model files. Base armor remains unchanged in Survive/Complete by user request.",
+      "notes": "18 source photographs/game screenshots; no original model files. Initial base-armor Survive request is superseded for Ryuki by armor_correction_2026_10_18; Knight Survive and Decade Complete retain their player armor.",
       "ryuki": [
         "oardefault.jpg",
         "1792297107510.png",

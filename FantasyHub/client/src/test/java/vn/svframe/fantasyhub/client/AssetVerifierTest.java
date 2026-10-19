@@ -9,6 +9,14 @@ import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AssetVerifierTest {
+    @Test void actualMergedModResourcesPassTheirPackagedIndex() throws Exception {
+        var index=getClass().getResource("/assets/fantasyhub/asset-index.json");
+        assertNotNull(index);
+        Path indexFile=Path.of(index.toURI());
+        Path resources=indexFile.getParent().getParent().getParent();
+        assertEquals("",AssetVerifier.diagnose(name->{Path path=resources.resolve(name);return Files.exists(path)?path:null;},vn.svframe.fantasyhub.protocol.Protocol.ASSET_REVISION));
+    }
+
     @TempDir Path root;
     private Path find(String name){Path p=root.resolve(name);return Files.exists(p)?p:null;}
     private void write(String name,String value)throws Exception{Path p=root.resolve(name);Files.createDirectories(p.getParent());Files.writeString(p,value);}

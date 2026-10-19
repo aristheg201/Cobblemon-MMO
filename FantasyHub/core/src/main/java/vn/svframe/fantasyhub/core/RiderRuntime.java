@@ -141,7 +141,7 @@ public final class RiderRuntime {
           ? ""
           : type.equals("AGITO")
               ? "agito_" + agito.form(tick).name().toLowerCase(Locale.ROOT)
-              : type.equals("ZOLDA") ? "zolda" : type.toLowerCase(Locale.ROOT);
+              : type.equals("ZOLDA") ? "zolda" : cards.visualForm(type);
     }
   }
 

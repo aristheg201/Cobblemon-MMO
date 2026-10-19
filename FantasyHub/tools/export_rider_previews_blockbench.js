@@ -4,7 +4,7 @@
  const read=p=>new Promise(resolve=>Blockbench.read([p],{readtype:'text'},f=>resolve(f[0].content)));
  const write=(p,v)=>Blockbench.writeFile(p,{content:JSON.stringify(v,null,2),savetype:'text'});
  const manifest=JSON.parse(await read(assets+'/riders-models.json'));
- const names=['zolda','agito_ground','agito_storm','agito_flame','agito_trinity','agito_shining','ryuki','knight','decade','magnugiga','dragreder','dragranzer','darkwing'];
+ const names=['zolda','agito_ground','agito_storm','agito_flame','agito_trinity','agito_shining','ryuki','ryuki_survive','knight','decade','magnugiga','dragreder','dragranzer','darkwing'];
  for(const name of names){
   const project=ModelProject.all.filter(p=>p.name===name).at(-1);project.select();const view=Preview.selected;
   const visible=element=>!element.name.startsWith('cross_horn_expanded_');

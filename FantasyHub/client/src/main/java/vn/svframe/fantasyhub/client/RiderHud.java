@@ -9,16 +9,17 @@ final class RiderHud {
     var client = MinecraftClient.getInstance();
     if (client.player == null) return;
     var form = RiderVisuals.state(client.player.getId());
-    if (form == null || !java.util.Set.of("ryuki", "knight", "decade").contains(form.form()))
+    String family = form != null && form.form().equals("ryuki_survive") ? "ryuki" : form == null ? "" : form.form();
+    if (form == null || !java.util.Set.of("ryuki", "knight", "decade").contains(family))
       return;
     var status =
         Text.translatable(
             "fantasyhub.rider.status",
-            Text.translatable("fantasyhub.rider.class." + form.form()),
+            Text.translatable("fantasyhub.rider.class." + family),
             Text.translatable(
                 "fantasyhub.rider.form."
                     + (form.force() == 1
-                        ? (form.form().equals("decade") ? "complete" : "survive")
+                        ? (family.equals("decade") ? "complete" : "survive")
                         : "normal")));
     int y = context.getScaledWindowHeight() - 112;
     context.drawCenteredTextWithShadow(
@@ -26,18 +27,18 @@ final class RiderHud {
         status,
         context.getScaledWindowWidth() / 2,
         y,
-        form.form().equals("ryuki")
+        family.equals("ryuki")
             ? 0xffffa54e
-            : form.form().equals("knight") ? 0xffa2c9ff : 0xffff91d5);
+            : family.equals("knight") ? 0xffa2c9ff : 0xffff91d5);
     var state = FantasyHubClient.state().getAsJsonObject("riderStatus");
     if (state == null || !state.has("flame")) return;
     Text passive =
-        form.form().equals("ryuki")
+        family.equals("ryuki")
             ? Text.translatable(
                 "fantasyhub.rider.passive.ryuki",
                 state.get("flame").getAsInt(),
                 state.get("threshold").getAsInt())
-            : form.form().equals("decade") && state.get("cardsReady").getAsBoolean()
+            : family.equals("decade") && state.get("cardsReady").getAsBoolean()
                 ? Text.translatable("fantasyhub.rider.passive.ready")
                 : Text.empty();
     context.getMatrices().push();

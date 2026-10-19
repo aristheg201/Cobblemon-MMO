@@ -264,5 +264,9 @@
   "fantasyhub.rider.class.ryuki": "Kamen Rider Ryuki",
   "fantasyhub.rider.class.knight": "Kamen Rider Knight",
   "fantasyhub.rider.class.decade": "Kamen Rider Decade",
-  "fantasyhub.rider.passive.ryuki.description": "Drag-Resonance: at ten stacks restore 5% maximum Mana and trigger a fire explosion. Survive grants extra fire projectiles and nearby Burning."
+  "fantasyhub.rider.passive.ryuki.description": "Drag-Resonance: at ten stacks restore 5% maximum Mana and trigger a fire explosion. Survive grants extra fire projectiles and nearby Burning.",
+  "item.fantasyhub.ryuki_survive_helmet": "Ryuki Survive Helmet",
+  "item.fantasyhub.ryuki_survive_chestplate": "Ryuki Survive Chestplate",
+  "item.fantasyhub.ryuki_survive_leggings": "Ryuki Survive Leggings",
+  "item.fantasyhub.ryuki_survive_boots": "Ryuki Survive Boots"
 }

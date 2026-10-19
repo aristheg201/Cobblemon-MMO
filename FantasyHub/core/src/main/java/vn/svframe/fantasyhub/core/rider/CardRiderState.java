@@ -24,6 +24,14 @@ public final class CardRiderState {
     return elevated;
   }
 
+  /** Visual stance only; Decade Complete always keeps the Decade armor. */
+  public String visualForm(String rider) {
+    if (!transformed) return "";
+    return rider.equals("RYUKI") && elevated
+        ? "ryuki_survive"
+        : rider.toLowerCase(java.util.Locale.ROOT);
+  }
+
   public boolean resonance() {
     return resonance(10);
   }

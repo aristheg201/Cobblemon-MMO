@@ -138,6 +138,26 @@ RYUKI_BOOTS:
   item-model: fantasyhub:item/riders/ryuki_boots
   unbreakable: true
   disable-enchanting: false
+RYUKI_SURVIVE_HELMET:
+  armor-texture: fantasyhub:riders/ryuki_survive
+  item-model: fantasyhub:item/riders/ryuki_survive_helmet
+  unbreakable: true
+  disable-enchanting: false
+RYUKI_SURVIVE_CHESTPLATE:
+  armor-texture: fantasyhub:riders/ryuki_survive
+  item-model: fantasyhub:item/riders/ryuki_survive_chestplate
+  unbreakable: true
+  disable-enchanting: false
+RYUKI_SURVIVE_LEGGINGS:
+  armor-texture: fantasyhub:riders/ryuki_survive
+  item-model: fantasyhub:item/riders/ryuki_survive_leggings
+  unbreakable: true
+  disable-enchanting: false
+RYUKI_SURVIVE_BOOTS:
+  armor-texture: fantasyhub:riders/ryuki_survive
+  item-model: fantasyhub:item/riders/ryuki_survive_boots
+  unbreakable: true
+  disable-enchanting: false
 KNIGHT_HELMET:
   armor-texture: fantasyhub:riders/knight
   item-model: fantasyhub:item/riders/knight_helmet

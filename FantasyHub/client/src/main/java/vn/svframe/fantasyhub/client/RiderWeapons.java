@@ -17,6 +17,7 @@ public final class RiderWeapons {
     return state != null
         && switch (state.form()) {
           case "ryuki",
+                  "ryuki_survive",
                   "knight",
                   "decade",
                   "agito_storm",
@@ -33,7 +34,7 @@ public final class RiderWeapons {
     if (state == null) return ItemStack.EMPTY;
     String model =
         switch (state.form()) {
-          case "ryuki" ->
+          case "ryuki", "ryuki_survive" ->
               hand == Hand.MAIN_HAND && !RiderAnimator.posing(entity, "PUNCH") ? "drag_saber" : "";
           case "knight" ->
               hand == Hand.MAIN_HAND

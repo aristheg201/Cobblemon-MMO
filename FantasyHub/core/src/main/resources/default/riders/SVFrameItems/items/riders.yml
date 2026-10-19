@@ -250,6 +250,42 @@ RYUKI_BOOTS:
     armor:
       value: 2
       decimals: 0
+RYUKI_SURVIVE_HELMET:
+  type: armor
+  material: minecraft:leather_helmet
+  name: Ryuki Survive Helmet
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
+RYUKI_SURVIVE_CHESTPLATE:
+  type: armor
+  material: minecraft:leather_chestplate
+  name: Ryuki Survive Chestplate
+  rarity: common
+  stats:
+    armor:
+      value: 6
+      decimals: 0
+RYUKI_SURVIVE_LEGGINGS:
+  type: armor
+  material: minecraft:leather_leggings
+  name: Ryuki Survive Leggings
+  rarity: common
+  stats:
+    armor:
+      value: 4
+      decimals: 0
+RYUKI_SURVIVE_BOOTS:
+  type: armor
+  material: minecraft:leather_boots
+  name: Ryuki Survive Boots
+  rarity: common
+  stats:
+    armor:
+      value: 2
+      decimals: 0
 KNIGHT_HELMET:
   type: armor
   material: minecraft:leather_helmet

@@ -477,5 +477,72 @@
       "inspection": "Opened individually; original projection silhouette authored from official reference.",
       "comparison_status": "CANDIDATE; no wearable transformation for Decade."
     }
+  ],
+  "armor_reference_correction": [
+    {
+      "file": "1-1000391841.jpg",
+      "sha256": "c7d7c8daba693fd765602e06266ce8fce22fc63f46be6affa643a1a320a7c883",
+      "dimensions": [
+        1280,
+        698
+      ],
+      "category": "Decade Minecraft",
+      "asset": "decade.bbmodel",
+      "observed_features": "Stepped green eyes, integral barcode, white/black diagonal chest, slim magenta panels, rectangular white shin guards, Decadriver",
+      "inspection": "Opened individually in image viewer on this task. Original photo is private.",
+      "comparison": "Actual Blockbench geometry and native Minecraft0.1.13 front/back/side/helmet/belt captures inspected. Final form/runtime checks pass; user aesthetic acceptance and literal100%likeness not claimed."
+    },
+    {
+      "file": "2-1000391826.jpg",
+      "sha256": "4ae075bf006a1c39f919f5800a9deadda68ad5f71f5b01b9d29746fb9b45d319",
+      "dimensions": [
+        720,
+        1280
+      ],
+      "category": "Ryuki normal Minecraft",
+      "asset": "ryuki.bbmodel",
+      "observed_features": "Silver V-shaped face grille, red suit/gloves/legs, black/red shoulder mounts, black gold-crested Card Deck with silver V-Buckle",
+      "inspection": "Opened individually in image viewer on this task. Original photo is private.",
+      "comparison": "Actual Blockbench geometry and native Minecraft0.1.13 front/back/side/helmet/belt captures inspected. Final form/runtime checks pass; user aesthetic acceptance and literal100%likeness not claimed."
+    },
+    {
+      "file": "3-1000391827.jpg",
+      "sha256": "52935bd60aa602f267f8b2267a809313054f56721a6a1031bfe25776f010ad31",
+      "dimensions": [
+        551,
+        1280
+      ],
+      "category": "Ryuki Survive full body",
+      "asset": "ryuki_survive.bbmodel",
+      "observed_features": "Black suit, crimson gold-edged dragon chest/raised shoulders, silver abdominal ribs, gold forearms/shins and red Card Deck",
+      "inspection": "Opened individually in image viewer on this task. Original photo is private.",
+      "comparison": "Actual Blockbench geometry and native Minecraft0.1.13 front/back/side/helmet/belt captures inspected. Final form/runtime checks pass; user aesthetic acceptance and literal100%likeness not claimed."
+    },
+    {
+      "file": "4-1000395522.jpg",
+      "sha256": "6e8b8f08e91737d38c28712d58889a04f2d7cf7860ef847c80b209754d1658b0",
+      "dimensions": [
+        767,
+        1280
+      ],
+      "category": "Ryuki Survive helmet all angles",
+      "asset": "ryuki_survive_helmet.bbmodel",
+      "observed_features": "Swept gold crown, fine gold antennae, red compound eyes behind silver rails, vented pointed jaw, black rear and silver nape wedge",
+      "inspection": "Opened individually in image viewer on this task. Original photo is private.",
+      "comparison": "Actual Blockbench geometry and native Minecraft0.1.13 front/back/side/helmet/belt captures inspected. Final form/runtime checks pass; user aesthetic acceptance and literal100%likeness not claimed."
+    },
+    {
+      "file": "5-1000395528.jpg",
+      "sha256": "0d821d1d588d802aafbee45c27a45b85520c3b77ab866e02a6cec38e6780b632",
+      "dimensions": [
+        665,
+        1280
+      ],
+      "category": "Ryuki normal/Survive comparison",
+      "asset": "ryuki.bbmodel;ryuki_survive.bbmodel",
+      "observed_features": "Distinct normal red limbs versus black Survive thighs, distinct plate silhouettes and appropriate belt/equipment",
+      "inspection": "Opened individually in image viewer on this task. Original photo is private.",
+      "comparison": "Actual Blockbench geometry and native Minecraft0.1.13 front/back/side/helmet/belt captures inspected. Final form/runtime checks pass; user aesthetic acceptance and literal100%likeness not claimed."
+    }
   ]
 }

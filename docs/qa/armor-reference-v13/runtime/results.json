@@ -1,0 +1,65 @@
+[
+  {
+    "scenario": "normal-ryuki-model",
+    "realHenshin": true,
+    "normalModel": true,
+    "inventoryPreserved": true
+  },
+  {
+    "scenario": "survive-model-is-distinct",
+    "castAccepted": true,
+    "surviveModel": true,
+    "stanceElevated": true,
+    "inventoryPreserved": true
+  },
+  {
+    "scenario": "survive-reverts-to-normal",
+    "accepted": true,
+    "normalModelRestored": true,
+    "stanceOff": true,
+    "inventoryPreserved": true
+  },
+  {
+    "scenario": "decade-complete-no-model-change",
+    "accepted": true,
+    "sameModel": true,
+    "elevated": true,
+    "inventoryPreserved": true
+  },
+  {
+    "scenario": "F-clears-armor",
+    "inactive": true,
+    "noModel": true
+  },
+  {
+    "scenario": "survive-gameplay-strike_vent",
+    "accepted": true,
+    "realHits": true,
+    "correctModel": true,
+    "inventoryPreserved": true,
+    "projectilesCleaned": true
+  },
+  {
+    "scenario": "survive-gameplay-sword_vent",
+    "accepted": true,
+    "realHits": true,
+    "correctModel": true,
+    "inventoryPreserved": true,
+    "projectilesCleaned": true
+  },
+  {
+    "scenario": "survive-gameplay-final_vent",
+    "accepted": true,
+    "realHits": true,
+    "correctModel": true,
+    "inventoryPreserved": true,
+    "projectilesCleaned": true
+  },
+  {
+    "scenario": "decade-gameplay-dimension",
+    "accepted": true,
+    "realHits": true,
+    "sameDecadeModel": true,
+    "inventoryPreserved": true
+  }
+]

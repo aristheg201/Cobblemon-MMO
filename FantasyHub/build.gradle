@@ -3,7 +3,7 @@ subprojects {
     apply plugin: 'fabric-loom'
     group='vn.svframe.fantasyhub'
     // Original Rider equipment and matching client presentation.
-    version=project.name in ['core','client','protocol'] ? '0.1.12' : '0.1.0'
+    version=project.name in ['core','client','protocol'] ? '0.1.13' : '0.1.0'
     repositories { mavenCentral(); maven { url='https://maven.fabricmc.net/' } }
     dependencies {
         minecraft "com.mojang:minecraft:${minecraft_version}"
@@ -51,6 +51,23 @@ project(':client') {
         from(rootProject.file('../SVFrameItems').isDirectory() ? rootProject.file('../SVFrameItems/src/main/resources') : rootProject.file('../../items/SVFrameItems/src/main/resources')) { include 'assets/**/lang/*.json' }
         for(String module:['SVFrameLib','SVFrameMMO','SVFrameMMOCobblemon']) {
             from(rootProject.file('../'+module+'/src/main/resources')) { include 'assets/**/lang/*.json' }
+        }
+        // Index the final merged mod resources, not a stale authoring snapshot.
+        doLast {
+            def resourceRoot = destinationDir.toPath()
+            // A targeted armor export must not drop existing summon models.
+            def riderModels = fileTree(new File(destinationDir, 'assets/fantasyhub/models/item/riders')).matching { include '**/*.json' }.files.collect { file ->
+                'fantasyhub:' + new File(destinationDir, 'assets/fantasyhub/models').toPath().relativize(file.toPath()).toString().replace('\\', '/').replaceAll(/\.json$/, '')
+            }.sort()
+            new File(destinationDir, 'assets/fantasyhub/riders-models.json').text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(riderModels)) + '\n'
+            def index = new TreeMap<String, String>()
+            fileTree(destinationDir).matching { include 'assets/**'; exclude '**/asset-index.json' }.files.each { file ->
+                def path = resourceRoot.relativize(file.toPath()).toString().replace('\\', '/')
+                index[path] = java.security.MessageDigest.getInstance('SHA-256').digest(file.bytes).encodeHex().toString()
+            }
+            def target = new File(destinationDir, 'assets/fantasyhub/asset-index.json')
+            target.parentFile.mkdirs()
+            target.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(index)) + '\n'
         }
     }
 }

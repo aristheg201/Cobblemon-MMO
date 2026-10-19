@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 public final class Protocol implements ModInitializer {
   private static boolean installed;
   public static final int VERSION = 3;
-  public static final String ASSET_REVISION = "rider-equipment-v12";
+  public static final String ASSET_REVISION = "rider-equipment-v13";
 
   public record Handshake(int version, String assets, String clientVersion, String diagnostic)
       implements CustomPayload {

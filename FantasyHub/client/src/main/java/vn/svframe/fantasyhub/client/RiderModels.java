@@ -22,6 +22,7 @@ final class RiderModels {
           "agito_shining",
           "magnugiga",
           "ryuki",
+          "ryuki_survive",
           "knight",
           "decade",
           "dragreder",
@@ -46,6 +47,7 @@ final class RiderModels {
           "agito_trinity",
           "agito_shining",
           "ryuki",
+          "ryuki_survive",
           "knight",
           "decade");
   private static final Identifier TEXTURE =

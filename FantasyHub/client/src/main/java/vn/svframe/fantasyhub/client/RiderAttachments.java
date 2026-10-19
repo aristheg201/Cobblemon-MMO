@@ -18,8 +18,8 @@ final class RiderAttachments {
       int light) {
     var state = RiderVisuals.state(player.getId());
     if (state == null) return;
-    if (state.form().equals("ryuki")) {
-      attach("drag_visor", model.leftArm, matrices, vertices, light, 1, 6.1f, -.1f, .62f);
+    if (state.form().equals("ryuki") || state.form().equals("ryuki_survive")) {
+      attach(state.form().equals("ryuki_survive") ? "drag_visor_z" : "drag_visor", model.leftArm, matrices, vertices, light, 1, 6.1f, -.1f, .62f);
       if (RiderAnimator.posing(player.getId(), "PUNCH"))
         attach(
             state.force() == 1 ? "drag_visor_z" : "drag_claw",

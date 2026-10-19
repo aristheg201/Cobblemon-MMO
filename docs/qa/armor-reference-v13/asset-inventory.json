@@ -1,0 +1,26 @@
+{
+  "checks": {
+    "other21FormsUnchanged": true,
+    "first41MaterialTilesBytePreserved": true,
+    "existingWeaponExportsUnchanged": true,
+    "allFinalChecksumsValid": true
+  },
+  "editableProjects": 44,
+  "forms": 24,
+  "wearableForms": 10,
+  "preloadedModels": 60,
+  "indexedAssets": 507,
+  "materials": 60,
+  "armorIcons": 40,
+  "itemsDefinitions": 55,
+  "preservedWeaponExports": [
+    "drag_saber",
+    "dark_visor",
+    "dark_blade",
+    "ride_booker_sword",
+    "ride_booker_gun",
+    "shining_caliber",
+    "flame_saber",
+    "storm_halberd"
+  ]
+}

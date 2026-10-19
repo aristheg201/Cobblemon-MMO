@@ -1,0 +1,6 @@
+{
+  "observed": "Client rejected by strict presentation handshake: asset checksum mismatch assets/fantasyhub/authored/rider_forms.json",
+  "cause": "Authoring exporter changed assets but the imported static asset index was stale",
+  "fix": "Client processResources now indexes its final merged output; actual packaged-resource verifier test added",
+  "nativeRetest": "PASS: both actual final clients verified rider-equipment-v13; final nine runtime scenarios passed"
+}

@@ -1,0 +1,14 @@
+{
+  "game": "Minecraft1.21.1",
+  "loader": "Fabric0.18.4",
+  "java": "21",
+  "players": "There are 2 of a max of 5 players online: QAAttacker, QAPlayer",
+  "scenariosPassed": 9,
+  "nativePngs": 44,
+  "assetsRevision": "rider-equipment-v13",
+  "artifactHashes": {
+    "FantasyHubBridge-0.1.13.jar": "39f374b0209b983fb764a44d79bca74b9ef5cbf8a12f7515bc1d85f3a19e0165",
+    "FantasyHubClient-0.1.13.jar": "fcd44a55a053ef3b6867f18ec8036953df7c4bb165106e24fee284a4f0079adf"
+  },
+  "bothClientsNoFinalRenderException": true
+}

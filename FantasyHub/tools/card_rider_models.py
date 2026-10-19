@@ -1,6 +1,7 @@
 """Ryuki/Knight/Decade: original bone-local models based on the supplied eighteen references.
 
-Survive and Complete deliberately retain their base armor silhouettes. Alternate weapons,
+Knight Survive and Decade Complete retain their base armor silhouettes. Ryuki Survive
+has a distinct armor model after the later reference correction. Alternate weapons,
 contract monsters and card projections carry the changed state. No photographs become textures.
 """
 import math
@@ -152,4 +153,6 @@ def extend(data):
     attachments(data)
     from rider_ultimate_projections import extend as ultimates
     ultimates(data)
-    data['references']['card_riders']={'archives':['Download.zip','Download2.zip'],'notes':'18 source photographs/game screenshots; no original model files. Base armor remains unchanged in Survive/Complete by user request.','ryuki':['oardefault.jpg','1792297107510.png','1792297128561.png'],'knight':['KR-Knight%26WingKnight.webp','Knight_Profile.webp','images (2).jpeg'],'decade':['1792296897858.png','1792297097386.png'],'monsters':['2015102194749.jpg','41mcTQZ+i1L.jpg','KRRy-Dragranzer.webp','images (1).jpeg','item_0000001578_07.jpg']}
+    from faithful_card_rider_armor import extend as faithful_armor
+    faithful_armor(data)
+    data['references']['card_riders']={'archives':['Download.zip','Download2.zip'],'notes':'18 source photographs/game screenshots; no original model files. Initial base-armor Survive request is superseded for Ryuki by armor_correction_2026_10_18; Knight Survive and Decade Complete retain their player armor.','ryuki':['oardefault.jpg','1792297107510.png','1792297128561.png'],'knight':['KR-Knight%26WingKnight.webp','Knight_Profile.webp','images (2).jpeg'],'decade':['1792296897858.png','1792297097386.png'],'monsters':['2015102194749.jpg','41mcTQZ+i1L.jpg','KRRy-Dragranzer.webp','images (1).jpeg','item_0000001578_07.jpg']}
