@@ -1,0 +1,10 @@
+[
+  {
+    "command": "execute as QAPlayer run trinkets set legs belt 0 minecraft:air",
+    "response": ""
+  },
+  {
+    "command": "execute as QAPlayer run fantasyhubqa kabuto_prepare",
+    "response": ""
+  }
+]

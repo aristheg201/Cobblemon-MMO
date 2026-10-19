@@ -1,0 +1,173 @@
+{
+  "checks": {
+    "scenario": "small-window-960x540",
+    "sevenRenderedSlots": true,
+    "width": 960,
+    "height": 540
+  },
+  "observation": {
+    "clientHealth": 49.8,
+    "kabutoEffects": {
+      "phases": {},
+      "minecraftParticleRequests": 0,
+      "activeTimelines": 0,
+      "budgetDrops": 0,
+      "density": 1.0,
+      "cobblemon": {
+        "backend": "Cobblemon 1.8 ParticleStorm",
+        "emitters": {
+          "swordsdance_sparkle": 7,
+          "explosion_burst_flash": 1,
+          "scratch_targetsparks": 3
+        },
+        "nativeParticlesPeak": 8,
+        "textureRepairs": {
+          "explosion_burst_flash": "cobblemon:vanilla/flash"
+        },
+        "available": true
+      }
+    },
+    "riderEffects": {
+      "phases": {
+        "DECADE:CARDS": 9,
+        "DECADE:COMPLETE": 1,
+        "DECADE:HENSHIN": 2,
+        "DECADE:MATRIX_SLASH": 3,
+        "DECADE:VENT": 2,
+        "KNIGHT:AURA": 9,
+        "KNIGHT:HENSHIN": 1,
+        "KNIGHT:SURVIVE": 1,
+        "KNIGHT:VENT": 1,
+        "RYUKI:AURA": 9,
+        "RYUKI:HENSHIN": 1,
+        "RYUKI:KICK_IMPACT": 1,
+        "RYUKI:SURVIVE": 1,
+        "RYUKI:VENT": 2
+      },
+      "minecraftParticleRequests": 8254,
+      "nativeCobblemonRequests": 11,
+      "activeJobs": 0,
+      "dimensionCards": 0,
+      "projectiles": {
+        "received": 1,
+        "active": 0
+      }
+    },
+    "rider": {
+      "form": "decade",
+      "force": 0,
+      "remaining": 0
+    },
+    "equippedModels": {
+      "HEAD": "",
+      "CHEST": "",
+      "LEGS": "",
+      "FEET": ""
+    },
+    "clientMaxHealth": 49.8,
+    "hurtTime": 0,
+    "maxHurtTime": 0,
+    "stateHealth": 49.79999923706055,
+    "stateMaxHealth": 49.79999923706055,
+    "clientTick": 1540,
+    "clientVanillaLevel": 0,
+    "clientVanillaProgress": 0.2857143,
+    "clientVanillaTotal": 2,
+    "rpgExperienceRendered": false,
+    "experienceDisplay": "VANILLA",
+    "trackedPlayers": [
+      "QAPlayer"
+    ],
+    "clientCasting": {
+      "active": true,
+      "mode": "SKILL_BAR",
+      "slots": [
+        {
+          "inputSlot": 2,
+          "id": "DECADE_SLASH_BLAST",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 3,
+          "id": "DECADE_ILLUSION",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 4,
+          "id": "DECADE_CLOCK_UP",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 5,
+          "id": "DECADE_HEISEI_SPIRIT",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 6,
+          "id": "DECADE_COMPLETE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 7,
+          "id": "DECADE_ULTIMATE_SUMMON",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 8,
+          "id": "DECADE_DIMENSION_KICK",
+          "cooldownRemaining": 0.0
+        }
+      ]
+    },
+    "displayedSkillSlots": [
+      {
+        "inputSlot": 2,
+        "id": "DECADE_SLASH_BLAST",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 3,
+        "id": "DECADE_ILLUSION",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 4,
+        "id": "DECADE_CLOCK_UP",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 5,
+        "id": "DECADE_HEISEI_SPIRIT",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 6,
+        "id": "DECADE_COMPLETE",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 7,
+        "id": "DECADE_ULTIMATE_SUMMON",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 8,
+        "id": "DECADE_DIMENSION_KICK",
+        "cooldownRemaining": 0.0
+      }
+    ],
+    "renderedSkillSlots": 7,
+    "damagePackets": 0,
+    "hurtCameraFrames": 0,
+    "riderSounds": 13,
+    "gunSounds": 0,
+    "kunaiSounds": 0,
+    "serverMaxHealth": 49.8,
+    "serverHealth": 49.8,
+    "serverVanillaLevel": 0,
+    "serverVanillaProgress": 0.2857143,
+    "serverVanillaTotal": 2,
+    "serverTick": 17631,
+    "scenario": "rider_game_status"
+  }
+}

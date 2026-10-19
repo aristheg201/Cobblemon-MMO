@@ -1,0 +1,161 @@
+{
+  "scenario": "ryuki-cooldown",
+  "checks": {
+    "sevenRenderedSlots": true,
+    "actualCastAccepted": true,
+    "actualCooldown": true
+  },
+  "observation": {
+    "clientHealth": 49.8,
+    "kabutoEffects": {
+      "phases": {},
+      "minecraftParticleRequests": 0,
+      "activeTimelines": 0,
+      "budgetDrops": 0,
+      "density": 1.0,
+      "cobblemon": {
+        "backend": "Cobblemon 1.8 ParticleStorm",
+        "emitters": {
+          "swordsdance_sparkle": 1,
+          "explosion_burst_flash": 1
+        },
+        "nativeParticlesPeak": 6,
+        "textureRepairs": {
+          "explosion_burst_flash": "cobblemon:vanilla/flash"
+        },
+        "available": true
+      }
+    },
+    "riderEffects": {
+      "phases": {
+        "RYUKI:HENSHIN": 1,
+        "RYUKI:KICK_IMPACT": 1,
+        "RYUKI:VENT": 1
+      },
+      "minecraftParticleRequests": 1190,
+      "nativeCobblemonRequests": 2,
+      "activeJobs": 2,
+      "dimensionCards": 0,
+      "projectiles": {
+        "received": 1,
+        "active": 0
+      }
+    },
+    "rider": {
+      "form": "ryuki",
+      "force": 0,
+      "remaining": 0
+    },
+    "equippedModels": {
+      "HEAD": "",
+      "CHEST": "",
+      "LEGS": "",
+      "FEET": ""
+    },
+    "clientMaxHealth": 49.8,
+    "hurtTime": 0,
+    "maxHurtTime": 0,
+    "stateHealth": 49.79999923706055,
+    "stateMaxHealth": 49.79999923706055,
+    "clientTick": 550,
+    "clientVanillaLevel": 0,
+    "clientVanillaProgress": 0.2857143,
+    "clientVanillaTotal": 2,
+    "rpgExperienceRendered": false,
+    "experienceDisplay": "VANILLA",
+    "trackedPlayers": [
+      "QAPlayer"
+    ],
+    "clientCasting": {
+      "active": true,
+      "mode": "SKILL_BAR",
+      "slots": [
+        {
+          "inputSlot": 2,
+          "id": "RYUKI_STRIKE_VENT",
+          "cooldownRemaining": 6.629
+        },
+        {
+          "inputSlot": 3,
+          "id": "RYUKI_SWORD_VENT",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 4,
+          "id": "RYUKI_GUARD_VENT",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 5,
+          "id": "RYUKI_ADVENT",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 6,
+          "id": "RYUKI_SURVIVE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 7,
+          "id": "RYUKI_SHOOT_VENT",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 8,
+          "id": "RYUKI_FINAL_VENT",
+          "cooldownRemaining": 0.0
+        }
+      ]
+    },
+    "displayedSkillSlots": [
+      {
+        "inputSlot": 2,
+        "id": "RYUKI_STRIKE_VENT",
+        "cooldownRemaining": 6.629
+      },
+      {
+        "inputSlot": 3,
+        "id": "RYUKI_SWORD_VENT",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 4,
+        "id": "RYUKI_GUARD_VENT",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 5,
+        "id": "RYUKI_ADVENT",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 6,
+        "id": "RYUKI_SURVIVE",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 7,
+        "id": "RYUKI_SHOOT_VENT",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 8,
+        "id": "RYUKI_FINAL_VENT",
+        "cooldownRemaining": 0.0
+      }
+    ],
+    "renderedSkillSlots": 7,
+    "damagePackets": 0,
+    "hurtCameraFrames": 0,
+    "riderSounds": 3,
+    "gunSounds": 0,
+    "kunaiSounds": 0,
+    "serverMaxHealth": 49.8,
+    "serverHealth": 49.8,
+    "serverVanillaLevel": 0,
+    "serverVanillaProgress": 0.2857143,
+    "serverVanillaTotal": 2,
+    "serverTick": 10148,
+    "scenario": "rider_game_cast_ryuki_strike_vent"
+  }
+}

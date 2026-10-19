@@ -1,0 +1,15 @@
+{
+  "nativeScenarios": 11,
+  "passed": true,
+  "nativePngs": 11,
+  "normalSkillIcons": 45,
+  "surviveVariants": 5,
+  "unchangedPreviousAssets": 504,
+  "jarHashes": {
+    "FantasyHubBridge-0.1.14.jar": "1ea6f59a9786b6e18dd273ace68af58d45a3dea46e3f2f40af575bfa77b0f53c",
+    "FantasyHubClient-0.1.14.jar": "255d388bfae1ffe50f0cc2397adbfd43bec006f42e0a7cd3a7943f5aa3cf14f0"
+  },
+  "singleClientUiRegression": true,
+  "version": "0.1.14",
+  "gui": "1280x720 and960x540, capped action bar scale, existing HUD scale preference .8"
+}

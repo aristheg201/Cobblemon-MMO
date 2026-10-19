@@ -1,0 +1,167 @@
+{
+  "scenario": "knight-elevated",
+  "checks": {
+    "sevenRenderedSlots": true,
+    "actualCastAccepted": true,
+    "elevated": true
+  },
+  "observation": {
+    "clientHealth": 49.8,
+    "kabutoEffects": {
+      "phases": {},
+      "minecraftParticleRequests": 0,
+      "activeTimelines": 0,
+      "budgetDrops": 0,
+      "density": 1.0,
+      "cobblemon": {
+        "backend": "Cobblemon 1.8 ParticleStorm",
+        "emitters": {
+          "swordsdance_sparkle": 4,
+          "explosion_burst_flash": 1
+        },
+        "nativeParticlesPeak": 8,
+        "textureRepairs": {
+          "explosion_burst_flash": "cobblemon:vanilla/flash"
+        },
+        "available": true
+      }
+    },
+    "riderEffects": {
+      "phases": {
+        "KNIGHT:AURA": 8,
+        "KNIGHT:HENSHIN": 1,
+        "KNIGHT:SURVIVE": 1,
+        "KNIGHT:VENT": 1,
+        "RYUKI:AURA": 9,
+        "RYUKI:HENSHIN": 1,
+        "RYUKI:KICK_IMPACT": 1,
+        "RYUKI:SURVIVE": 1,
+        "RYUKI:VENT": 2
+      },
+      "minecraftParticleRequests": 5284,
+      "nativeCobblemonRequests": 5,
+      "activeJobs": 1,
+      "dimensionCards": 0,
+      "projectiles": {
+        "received": 1,
+        "active": 0
+      }
+    },
+    "rider": {
+      "form": "knight",
+      "force": 1,
+      "remaining": 0
+    },
+    "equippedModels": {
+      "HEAD": "",
+      "CHEST": "",
+      "LEGS": "",
+      "FEET": ""
+    },
+    "clientMaxHealth": 49.8,
+    "hurtTime": 0,
+    "maxHurtTime": 0,
+    "stateHealth": 49.79999923706055,
+    "stateMaxHealth": 49.79999923706055,
+    "clientTick": 1010,
+    "clientVanillaLevel": 0,
+    "clientVanillaProgress": 0.2857143,
+    "clientVanillaTotal": 2,
+    "rpgExperienceRendered": false,
+    "experienceDisplay": "VANILLA",
+    "trackedPlayers": [
+      "QAPlayer"
+    ],
+    "clientCasting": {
+      "active": true,
+      "mode": "SKILL_BAR",
+      "slots": [
+        {
+          "inputSlot": 2,
+          "id": "KNIGHT_SWORD_VENT",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 3,
+          "id": "KNIGHT_NASTY_VENT",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 4,
+          "id": "KNIGHT_TRICK_VENT",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 5,
+          "id": "KNIGHT_GUARD_VENT",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 6,
+          "id": "KNIGHT_SURVIVE",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 7,
+          "id": "KNIGHT_BLAST_VENT",
+          "cooldownRemaining": 0.0
+        },
+        {
+          "inputSlot": 8,
+          "id": "KNIGHT_FINAL_VENT",
+          "cooldownRemaining": 0.0
+        }
+      ]
+    },
+    "displayedSkillSlots": [
+      {
+        "inputSlot": 2,
+        "id": "KNIGHT_SWORD_VENT",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 3,
+        "id": "KNIGHT_NASTY_VENT",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 4,
+        "id": "KNIGHT_TRICK_VENT",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 5,
+        "id": "KNIGHT_GUARD_VENT",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 6,
+        "id": "KNIGHT_SURVIVE",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 7,
+        "id": "KNIGHT_BLAST_VENT",
+        "cooldownRemaining": 0.0
+      },
+      {
+        "inputSlot": 8,
+        "id": "KNIGHT_FINAL_VENT",
+        "cooldownRemaining": 0.0
+      }
+    ],
+    "renderedSkillSlots": 7,
+    "damagePackets": 0,
+    "hurtCameraFrames": 0,
+    "riderSounds": 8,
+    "gunSounds": 0,
+    "kunaiSounds": 0,
+    "serverMaxHealth": 49.8,
+    "serverHealth": 49.8,
+    "serverVanillaLevel": 0,
+    "serverVanillaProgress": 0.2857143,
+    "serverVanillaTotal": 2,
+    "serverTick": 10608,
+    "scenario": "rider_game_cast_knight_survive"
+  }
+}

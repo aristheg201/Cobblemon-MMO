@@ -268,5 +268,11 @@
   "item.fantasyhub.ryuki_survive_helmet": "Ryuki Survive Helmet",
   "item.fantasyhub.ryuki_survive_chestplate": "Ryuki Survive Chestplate",
   "item.fantasyhub.ryuki_survive_leggings": "Ryuki Survive Leggings",
-  "item.fantasyhub.ryuki_survive_boots": "Ryuki Survive Boots"
+  "item.fantasyhub.ryuki_survive_boots": "Ryuki Survive Boots",
+  "fantasyhub.rider.hud.ryuki": "RYUKI",
+  "fantasyhub.rider.hud.knight": "KNIGHT",
+  "fantasyhub.rider.hud.decade": "DECADE",
+  "fantasyhub.rider.hud.normal": "NORMAL",
+  "fantasyhub.rider.hud.survive": "SURVIVE",
+  "fantasyhub.rider.hud.complete": "COMPLETE"
 }

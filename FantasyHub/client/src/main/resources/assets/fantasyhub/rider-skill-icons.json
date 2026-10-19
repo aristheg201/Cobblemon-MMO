@@ -1,0 +1,142 @@
+{
+  "RYUKI_HENSHIN": {
+    "normal": "ryuki_henshin"
+  },
+  "KNIGHT_HENSHIN": {
+    "normal": "knight_henshin"
+  },
+  "DECADE_HENSHIN": {
+    "normal": "decade_henshin"
+  },
+  "AGITO_HENSHIN": {
+    "normal": "agito_henshin"
+  },
+  "ZOLDA_HENSHIN": {
+    "normal": "zolda_henshin"
+  },
+  "KABUTO_HENSHIN": {
+    "normal": "kabuto_henshin"
+  },
+  "RYUKI_STRIKE_VENT": {
+    "normal": "ryuki_strike_vent",
+    "survive": "ryuki_strike_vent_survive"
+  },
+  "RYUKI_SWORD_VENT": {
+    "normal": "ryuki_sword_vent",
+    "survive": "ryuki_sword_vent_survive"
+  },
+  "RYUKI_GUARD_VENT": {
+    "normal": "ryuki_guard_vent"
+  },
+  "RYUKI_ADVENT": {
+    "normal": "ryuki_advent"
+  },
+  "RYUKI_SURVIVE": {
+    "normal": "ryuki_survive"
+  },
+  "RYUKI_SHOOT_VENT": {
+    "normal": "ryuki_shoot_vent"
+  },
+  "RYUKI_FINAL_VENT": {
+    "normal": "ryuki_final_vent",
+    "survive": "ryuki_final_vent_survive"
+  },
+  "KNIGHT_SWORD_VENT": {
+    "normal": "knight_sword_vent",
+    "survive": "knight_sword_vent_survive"
+  },
+  "KNIGHT_NASTY_VENT": {
+    "normal": "knight_nasty_vent"
+  },
+  "KNIGHT_TRICK_VENT": {
+    "normal": "knight_trick_vent"
+  },
+  "KNIGHT_GUARD_VENT": {
+    "normal": "knight_guard_vent"
+  },
+  "KNIGHT_SURVIVE": {
+    "normal": "knight_survive"
+  },
+  "KNIGHT_BLAST_VENT": {
+    "normal": "knight_blast_vent"
+  },
+  "KNIGHT_FINAL_VENT": {
+    "normal": "knight_final_vent",
+    "survive": "knight_final_vent_survive"
+  },
+  "DECADE_SLASH_BLAST": {
+    "normal": "decade_slash_blast"
+  },
+  "DECADE_ILLUSION": {
+    "normal": "decade_illusion"
+  },
+  "DECADE_CLOCK_UP": {
+    "normal": "decade_clock_up"
+  },
+  "DECADE_HEISEI_SPIRIT": {
+    "normal": "decade_heisei_spirit"
+  },
+  "DECADE_COMPLETE": {
+    "normal": "decade_complete"
+  },
+  "DECADE_ULTIMATE_SUMMON": {
+    "normal": "decade_ultimate_summon"
+  },
+  "DECADE_DIMENSION_KICK": {
+    "normal": "decade_dimension_kick"
+  },
+  "AGITO_GROUND_SMASH": {
+    "normal": "agito_ground_smash"
+  },
+  "AGITO_FLAME_SABER": {
+    "normal": "agito_flame_saber"
+  },
+  "AGITO_STORM_HALBERD": {
+    "normal": "agito_storm_halberd"
+  },
+  "AGITO_TRINITY": {
+    "normal": "agito_trinity"
+  },
+  "AGITO_RIDER_KICK": {
+    "normal": "agito_rider_kick"
+  },
+  "AGITO_SHINING": {
+    "normal": "agito_shining"
+  },
+  "ZOLDA_MAGNA_SHOT": {
+    "normal": "zolda_magna_shot"
+  },
+  "ZOLDA_STRIKE_VENT": {
+    "normal": "zolda_strike_vent"
+  },
+  "ZOLDA_SHOOT_VENT": {
+    "normal": "zolda_shoot_vent"
+  },
+  "ZOLDA_GIGA_CANNONS": {
+    "normal": "zolda_giga_cannons"
+  },
+  "ZOLDA_GUARD_VENT": {
+    "normal": "zolda_guard_vent"
+  },
+  "ZOLDA_FINAL_VENT": {
+    "normal": "zolda_final_vent"
+  },
+  "KABUTO_CAST_OFF": {
+    "normal": "kabuto_cast_off"
+  },
+  "KABUTO_CLOCK_UP": {
+    "normal": "kabuto_clock_up"
+  },
+  "KABUTO_RIDER_KICK": {
+    "normal": "kabuto_rider_kick"
+  },
+  "KABUTO_KUNAI_MODE": {
+    "normal": "kabuto_kunai_mode"
+  },
+  "KABUTO_KUNAI_STRIKE": {
+    "normal": "kabuto_kunai_strike"
+  },
+  "KABUTO_HYPER_FORM": {
+    "normal": "kabuto_hyper_form"
+  }
+}

@@ -112,17 +112,21 @@ public final class KabutoVisuals {
     if (client.player == null) return;
     var s = state(client.player.getId());
     if (s == null) return;
-    if (SkillBarPresentation.slots(FantasyHubClient.state()).isEmpty() && !s.clock()) return;
-    int x = c.getScaledWindowWidth() / 2 - 91, y = c.getScaledWindowHeight() - 105;
+    int count=SkillBarPresentation.slots(FantasyHubClient.state()).size();
+    if(count==0&&!s.clock())return;
+    var layout=AbilityHud.layout(c,Math.max(7,count));
+    AbilityHud.transform(c,layout);
+    try {
+    int x=layout.x(),y=layout.y()-9,gauge=(layout.width()-18)/2,second=gauge+18;
     // Two compact gauges sit directly above the skill row, away from thirst.
     int color = s.hyper() ? 0xffffca43 : 0xffdc2432;
-    c.fill(x, y, x + 81, y + 3, 0xff29232a);
-    c.fill(x, y, x + s.energy() * 81 / 100, y + 3, color);
-    c.fill(x + 101, y, x + 182, y + 3, 0xff29232a);
+    c.fill(x, y, x + gauge, y + 3, 0xff29232a);
+    c.fill(x, y, x + s.energy() * gauge / 100, y + 3, color);
+    c.fill(x + second, y, x + second + gauge, y + 3, 0xff29232a);
     c.fill(
-        x + 101,
+        x + second,
         y,
-        x + 101 + (s.clock() ? Math.clamp(s.clockTicks(), 0, 100) : s.gauge()) * 81 / 100,
+        x + second + (s.clock() ? Math.clamp(s.clockTicks(), 0, 100) : s.gauge()) * gauge / 100,
         y + 3,
         0xff34cef5);
     c.getMatrices().push();
@@ -142,10 +146,11 @@ public final class KabutoVisuals {
             s.clock()
                 ? String.format(java.util.Locale.ROOT, "%.1fs", s.clockTicks() / 20d)
                 : String.valueOf(s.gauge())),
-        155,
+        Math.round(second/.65f),
         0,
         0xffb7f7ff,
         true);
     c.getMatrices().pop();
+    } finally {c.getMatrices().pop();}
   }
 }

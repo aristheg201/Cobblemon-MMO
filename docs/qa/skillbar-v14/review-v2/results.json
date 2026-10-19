@@ -1,0 +1,54 @@
+[
+  {
+    "scenario": "ryuki-ready",
+    "sevenRenderedSlots": true
+  },
+  {
+    "scenario": "ryuki-cooldown",
+    "sevenRenderedSlots": true,
+    "actualCastAccepted": true,
+    "actualCooldown": true
+  },
+  {
+    "scenario": "ryuki-elevated",
+    "sevenRenderedSlots": true,
+    "actualCastAccepted": true,
+    "elevated": true
+  },
+  {
+    "scenario": "knight-ready",
+    "sevenRenderedSlots": true
+  },
+  {
+    "scenario": "knight-elevated",
+    "sevenRenderedSlots": true,
+    "actualCastAccepted": true,
+    "elevated": true
+  },
+  {
+    "scenario": "decade-ready",
+    "sevenRenderedSlots": true
+  },
+  {
+    "scenario": "decade-recast",
+    "sevenRenderedSlots": true,
+    "actualCastAccepted": true
+  },
+  {
+    "scenario": "decade-elevated",
+    "sevenRenderedSlots": true,
+    "actualCastAccepted": true,
+    "elevated": true
+  },
+  {
+    "scenario": "F-hides-skillbar",
+    "inactive": true,
+    "zeroRenderedSlots": true
+  },
+  {
+    "scenario": "small-window-960x540",
+    "sevenRenderedSlots": true,
+    "width": 960,
+    "height": 540
+  }
+]

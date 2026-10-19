@@ -1,0 +1,15 @@
+# Kamen Riders 0.1.14 — skill bar correction
+
+The previous bar repeated the class belt icon in every slot. This update uses original pixel skill glyphs and replaces the ornate gold frames with compact dark action slots. Rider colors distinguish the class; actual bound keys have a separate footer. Cooldowns use a vertical wipe and readable countdown, recasts have a cyan indicator, and active Survive/Complete toggles retain a colored outline. The class/form caption and passive fit on one compact line.
+
+The authored set contains **45 native skill icons plus five Survive variants**, covering Ryuki, Knight, Decade, Agito, Zolda and Kabuto. Editable integer-coordinate recipes are in `FantasyHub/assets-source/ui/rider-skill-icons.json`; regenerate PNGs with `FantasyHub/tools/author_rider_skill_icons.py`. Assets are inside the client JAR. No external resource pack or generated concept illustration is needed.
+
+Seven action slots keep their server-provided `inputSlot` order. The displayed key comes from the client's actual hotbar keybinding; it is not inferred from position in the visual row. Other classes retain their existing custom texture/item fallback. Gameplay, skill costs/cooldowns, server authority, armor models, persistence and the shared SVFrame framework are retained.
+
+The bar caps its rendering size at Minecraft GUI scale2 and respects the existing HUD-size preference, so high GUI scales do not push it into the crosshair. Kabuto gauges use the same anchor and scale. The final layout reserves the vanilla action-message row and the existing health, mana, stamina and thirst HUDs. During native review at a smaller window, the first draft overlapped an action message; it was narrowed and moved above the reserved row. The earlier draft is retained under `docs/qa/skillbar-v14/review-v1`, not counted as final acceptance evidence.
+
+Local verification: **104 JUnit tests** (Core45, Client29, Lib30), plus MMO72 mapping cases and preference-codec/native-core checks. Tests cover visible/distinct icon bytes, variant lookup, fallback, seven-slot layout across four scaled viewport sizes, cooldown clamping/subsecond text and the existing toggle/binding/resource contracts. Native evidence is documented in `docs/qa/skillbar-v14/REVIEW.md`; screenshots are actual Minecraft client frames, not mockups.
+
+Both **FantasyHubBridge-0.1.14.jar** on the server and **FantasyHubClient-0.1.14.jar** on every client must replace their old counterparts because the existing handshake requires matching release versions. Keep one version of each, keep the exact Lib/MMO/dependency set from the previous delivery and preserve worlds/player data/custom configuration. Do not install bundled FantasyHubCore alongside Bridge. The new asset revision is `rider-equipment-v14`, with wire protocol3 unchanged.
+
+Builds and tests run locally using Java21/Gradle8.8; no GitHub Actions. Use `FantasyHub/tools/build_local.sh`. Exact release commit, hashes, test XML and build logs accompany the delivery manifest/source bundle. The source retains the complete implementation and editable armor; the previous armor correction remains part of this release.

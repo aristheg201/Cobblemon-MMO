@@ -268,5 +268,11 @@
   "item.fantasyhub.ryuki_survive_helmet": "Mũ Ryuki Survive",
   "item.fantasyhub.ryuki_survive_chestplate": "Giáp ngực Ryuki Survive",
   "item.fantasyhub.ryuki_survive_leggings": "Giáp chân Ryuki Survive",
-  "item.fantasyhub.ryuki_survive_boots": "Ủng Ryuki Survive"
+  "item.fantasyhub.ryuki_survive_boots": "Ủng Ryuki Survive",
+  "fantasyhub.rider.hud.ryuki": "RYUKI",
+  "fantasyhub.rider.hud.knight": "KNIGHT",
+  "fantasyhub.rider.hud.decade": "DECADE",
+  "fantasyhub.rider.hud.normal": "THƯỜNG",
+  "fantasyhub.rider.hud.survive": "SURVIVE",
+  "fantasyhub.rider.hud.complete": "COMPLETE"
 }
