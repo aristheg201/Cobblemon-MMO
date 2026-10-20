@@ -32,7 +32,7 @@ heroes=[dict(id='SPIDER_MAN',name='Spider-Man',name_vi='Người Nhện',resourc
  skill('HOUSE_PARTY','House Party Protocol','Giao Thức Giáp Hỗ Trợ',30,50,[phase(P,.5,8,1,1),phase(P,.5,8,1,1)],duration=8,drones=2,reduction=.1),
  skill('ORBITAL_STRIKE','Satellite Orbital Strike','Oanh Tạc Vệ Tinh',65,80,[phase(TP,4.5,start=2)],radius=5,duration=3,root=2,silence=2,shield_destroy=1,emp=3,ultimate=True)
 ]),dict(id='THOR',name='Thor',name_vi='Lôi Thần Thor',resource='MANA',resource_name='Lightning Force',resource_name_vi='Lôi lực',maximum=100,suit='external:thor',passives=['Asgardian Flight & Worthy Return','Lightning Armor'],regen_idle=4,regen_combat=0,abilities=[
- skill('MJOLNIR_THROW','Mjolnir Throw','Ném Búa Sấm Thần',7,15,[phase(P,1.6),phase(P,.7,start=.7)],range=14,radius=3,stun=1,return_slow=.3),
+ skill('MJOLNIR_THROW','Stormbreaker Throw','Ném Rìu Stormbreaker',7,15,[phase(P,1.6),phase(P,.7,start=.7)],range=14,radius=3,stun=1,return_slow=.3),
  skill('THUNDEROUS_SLAM','Thunderous Leap & Slam','Nhảy Vọt Dậm Sét',12,20,[phase(P,2.4,start=.8)],range=10,radius=4,knockup=.6),
  skill('LIGHTNING_SPIN','Lightning Spin','Lốc Xoáy Sét',10,15,[phase(P,.4,4,0,.5)],duration=2,projectile_block=1,speed=.5),
  skill('STORMBREAKER','Stormbreaker Strike','Nhát Cắt Bão Sét',14,25,[phase(P,2.2),phase(P,.3,3,1,1)],armor_penetration=.5,zone_duration=3),
@@ -56,7 +56,17 @@ heroes=[dict(id='SPIDER_MAN',name='Spider-Man',name_vi='Người Nhện',resourc
  skill('CAPE_COMBO','Cape Sweep & Stun Combo','Áo Choàng Liên Hoàn',12,25,[phase(P,.5,4,.3,.2)],range=4,cone=180,stun=1.5,knockup=.6),
  skill('BATWING_STRIKE','Batwing Orbital Strike','Oanh Tạc Phi Thuyền Đêm',60,50,[phase(TP,4.2,start=2)],radius=5,duration=3,slow=.7,silence=2,stun=2,knockback=5,ultimate=True)
 ])]
+passive_values={
+'SPIDER_MAN':dict(evasion=.2,instinct_max=5,instinct_duration=6,instinct_speed=.05,instinct_critical=.04,wall_range=.8,wall_rise=.15),
+'SORCERER_SUPREME':dict(emergency_threshold=.3,emergency_shield=.2,emergency_duration=5,emergency_cooldown=60,emergency_knockback=4,mystic_max=5,mystic_cooldown_reduction=.3,mystic_burst=1),
+'IRON_MAN':dict(flight_upkeep=1.5,heat_per_skill=15,heat_max=100,overdrive_duration=6,overdrive_speed=.25,overdrive_cooldown_reduction=.5,repulsor_attack=.6,repulsor_radius=2),
+'THOR':dict(static_max=5,static_armor=.03,static_lightning=.04,static_counter=.3,force_per_hit=8,force_hit_cooldown=.5,force_per_block=4,return_damage=.7,return_slow=.3),
+'FLASH':dict(speed_max=5,speed_per_level=.15,punch_per_level=.1,health_regen_multiplier=4,projectile_catch_level=4,projectile_catch_radius=3,moving_gain=8,speed_level_seconds=1.5,movement_cap_blocks_second=12),
+'BATMAN':dict(combo_max=10,combo_attack_speed=.03,combo_critical_damage=.05,combo_expiry=5,parry=.15,parry_stun=.5,escape_threshold=.25,escape_duration=2.5,escape_speed=.5,escape_cooldown=60)
+}
 for h in heroes:
+ h['passive_values']=passive_values[h['id']]
+ if h['id']=='THOR':h['suit']='jmctheroes:thor_infinity'
  for i,s in enumerate(h['abilities']):s.update(id=h['id']+'_'+s['key'],slot=i+1)
 data=dict(schema=1,heroes=heroes,balance=dict(pvp_multiplier=.65,regular_cast_hp_cap=.25,ultimate_cast_hp_cap=.4,ultimate_attack_budget=3,pvp_control_cap_ticks=30,control_window_ticks=200,pvp_silence_cap_ticks=40,pvp_slow_cap=.65,max_targets=12,ultimate_max_targets=20,cooldown_reduction_cap=.5,max_displacement=5,friendly_fire=False),assumptions=['Area NxN means square side N; radial range is N/2 for matching circular visual bounds.','Mirror Dimension damages once per second for three ticks; Agamotto bands run two seconds after 2.5s freeze.','Thor final storm has four 0.5x bolts over two seconds by default.','Flash funnel lasts 1.8 seconds with six 0.3s damage pulses.','Iron Man laser burn is 5% max HP total spread over three seconds.','Batarang recast window is two seconds; all recasts share the first activation budget.','Independent drone damage is two drones, each 0.5x per second for eight seconds.'])
 if __name__=='__main__':

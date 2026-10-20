@@ -10,7 +10,7 @@ public final class CompactHud {
     public static final int MANA_VERTICAL_OFFSET=20;
     private CompactHud(){}
     public static boolean active(){var client=MinecraftClient.getInstance();return FantasyHubClient.hudEnabled&&client.player!=null&&client.interactionManager!=null&&client.interactionManager.hasStatusBars()&&!client.options.hudHidden&&FantasyHubClient.state().has("schema");}
-    public static boolean visible(String resource){return active()&&FantasyHubClient.options.visible(resource);}
+    public static boolean visible(String resource){return active()&&FantasyHubClient.options.visible(resource)&&(!resource.equals("mana")||FantasyHubClient.number("manaMax")>0);}
     public static boolean rpgExperience(){return active()&&ExperiencePresentation.rpg(FantasyHubClient.state());}
     public static int oxygenY(int vanillaY){
         if(!visible("mana"))return vanillaY;

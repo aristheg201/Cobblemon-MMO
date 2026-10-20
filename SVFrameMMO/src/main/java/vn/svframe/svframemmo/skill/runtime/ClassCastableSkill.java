@@ -83,6 +83,7 @@ public final class ClassCastableSkill extends Skill {
 
     private boolean validate(SkillMetadata metadata) {
         if (!caster.isOnline()) return false;
+        if (!getTrigger().isPassive() && !vn.svframe.svframelib.skill.SkillCastPolicies.allows(caster.getUniqueId(), classSkill.getSkill().getId())) return false;
         if (requireClassProgression && !caster.canUseSkill(classSkill)) return false;
         MMOPlayerData mmo = caster.getMMOPlayerData();
         if (!getTrigger().isPassive()) {
@@ -107,8 +108,8 @@ public final class ClassCastableSkill extends Skill {
         }
         double cooldown = Math.max(0d, metadata.getParameter("cooldown"));
         if (cooldown > 0d) {
-            double reduction = Math.max(0d, Math.min(1d, mmo.getStatMap().getStat("COOLDOWN_REDUCTION") / 100d));
-            mmo.getCooldownMap().applyCooldown(this, cooldown).reduceInitialCooldown(reduction);
+            double seconds = vn.svframe.svframelib.skill.SkillCastPolicies.cooldownSeconds(caster.getUniqueId(), classSkill.getSkill().getId(), getParameter("cooldown"), cooldown, mmo.getStatMap().getStat("COOLDOWN_REDUCTION") / 100d);
+            mmo.getCooldownMap().applyCooldown(this, seconds);
         }
         double mana = Math.max(0d, metadata.getParameter("mana"));
         double stamina = Math.max(0d, metadata.getParameter("stamina"));

@@ -17,8 +17,9 @@ public final class HeroCatalog {
   }
   public record Hero(String id,String name,String nameVi,String resource,String resourceName,
       String resourceNameVi,double maximum,String suit,List<String> passives,double regenIdle,
-      double regenCombat,List<Ability> abilities) {
-    public Hero {passives=List.copyOf(passives);abilities=List.copyOf(abilities);}
+      double regenCombat,List<Ability> abilities,Map<String,Double> passiveValues) {
+    public Hero {passives=List.copyOf(passives);abilities=List.copyOf(abilities);passiveValues=Map.copyOf(passiveValues);}
+    public double passive(String key){var n=passiveValues.get(key);if(n==null)throw new IllegalArgumentException("Unknown passive value "+id+"/"+key);return n;}
   }
   private final Map<String,Hero> heroes;
   private final Map<String,Ability> abilities;
@@ -62,7 +63,9 @@ public final class HeroCatalog {
         String resource=text(h,"resource");if(!Set.of("MANA","STAMINA").contains(resource))throw new IllegalArgumentException("Unknown native resource");
         var passives=new ArrayList<String>();for(var p:h.getAsJsonArray("passives"))passives.add(p.getAsString());
         if(passives.size()!=2)throw new IllegalArgumentException("Missing hero passives");
-        var hero=new Hero(id,text(h,"name"),text(h,"name_vi"),resource,text(h,"resource_name"),text(h,"resource_name_vi"),number(h,"maximum",1,500),text(h,"suit"),passives,number(h,"regen_idle",0,100),number(h,"regen_combat",0,100),list);
+        var passiveValues=new LinkedHashMap<String,Double>();
+        for(var e:h.getAsJsonObject("passive_values").entrySet())passiveValues.put(e.getKey(),number(h.getAsJsonObject("passive_values"),e.getKey(),0,1000));
+        var hero=new Hero(id,text(h,"name"),text(h,"name_vi"),resource,text(h,"resource_name"),text(h,"resource_name_vi"),number(h,"maximum",1,500),text(h,"suit"),passives,number(h,"regen_idle",0,100),number(h,"regen_combat",0,100),list,passiveValues);
         if(heroes.putIfAbsent(id,hero)!=null)throw new IllegalArgumentException("Duplicate hero ID");
       }
       if(!heroes.keySet().equals(Set.of("SPIDER_MAN","SORCERER_SUPREME","IRON_MAN","THOR","FLASH","BATMAN")))throw new IllegalArgumentException("Incomplete superhero class roster");

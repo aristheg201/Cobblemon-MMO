@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 public final class Protocol implements ModInitializer {
   private static boolean installed;
   public static final int VERSION = 3;
-  public static final String ASSET_REVISION = "rider-equipment-v14";
+  public static final String ASSET_REVISION = "heroes-expansion-v2";
 
   public record Handshake(int version, String assets, String clientVersion, String diagnostic)
       implements CustomPayload {
@@ -43,6 +43,7 @@ public final class Protocol implements ModInitializer {
       kabutoHat,
       zecterBelt,
       kunaiGun,
+      stormbreaker,
       agitoBelt,
       zoldaBelt,
       ryukiBelt,
@@ -288,6 +289,12 @@ public final class Protocol implements ModInitializer {
     }
   }
 
+  /** Compact server-only presentation snapshots/cues, independent of saved player data. */
+  public record Hero(String json) implements CustomPayload {
+    public static final Id<Hero> ID=new Id<>(Identifier.of("fantasyhub","hero_visual_v1"));
+    public static final PacketCodec<RegistryByteBuf,Hero> CODEC=PacketCodec.of((p,b)->b.writeString(p.json,12288),b->new Hero(b.readString(12288)));
+    public Id<Hero> getId(){return ID;}
+  }
   public record State(String json) implements CustomPayload {
     public static final Id<State> ID = new Id<>(Identifier.of("fantasyhub", "state_v2"));
     public static final PacketCodec<RegistryByteBuf, State> CODEC =
@@ -396,6 +403,9 @@ public final class Protocol implements ModInitializer {
             Registries.ITEM,
             Identifier.of("fantasyhub", "kunai_gun"),
             new Item(new Item.Settings().maxCount(1)));
+    stormbreaker=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","stormbreaker"),
+        new net.minecraft.item.AxeItem(net.minecraft.item.ToolMaterials.IRON,
+            new Item.Settings().attributeModifiers(net.minecraft.item.AxeItem.createAttributeModifiers(net.minecraft.item.ToolMaterials.IRON,6,-3.1f))));
     agitoBelt =
         Registry.register(
             Registries.ITEM,
@@ -430,6 +440,7 @@ public final class Protocol implements ModInitializer {
     PayloadTypeRegistry.configurationS2C().register(Handshake.ID, Handshake.CODEC);
     PayloadTypeRegistry.configurationC2S().register(Handshake.ID, Handshake.CODEC);
     PayloadTypeRegistry.playS2C().register(State.ID, State.CODEC);
+    PayloadTypeRegistry.playS2C().register(Hero.ID,Hero.CODEC);
     PayloadTypeRegistry.playS2C().register(KabutoFx.ID, KabutoFx.CODEC);
     PayloadTypeRegistry.playS2C().register(Casting.ID, Casting.CODEC);
     PayloadTypeRegistry.playS2C().register(Open.ID, Open.CODEC);

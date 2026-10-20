@@ -11,6 +11,10 @@ import vn.svframe.fantasyhub.client.RiderWeapons;
 
 @Mixin(HeldItemFeatureRenderer.class)
 abstract class RiderHeldItemMixin {
+  @Inject(method="renderItem",at=@At("HEAD"),cancellable=true)
+  private void fantasyhub$thorMainHand(LivingEntity entity,net.minecraft.item.ItemStack stack,net.minecraft.client.render.model.json.ModelTransformationMode mode,net.minecraft.util.Arm arm,MatrixStack matrices,VertexConsumerProvider vertices,int light,CallbackInfo ci) {
+    if(arm==entity.getMainArm()&&vn.svframe.fantasyhub.client.HeroEquipmentModels.overrides(entity))ci.cancel();
+  }
   @Inject(
       method =
           "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/entity/LivingEntity;FFFFFF)V",

@@ -1,3 +1,19 @@
+# Active task update — 2026-10-20
+
+User paused Kamen Rider and prioritized SIX superhero classes and balance. Work locally only; no Actions, no public publishing, no FiskHeroes mod JAR nested in ours. Armor is ordinary stat equipment, NOT Henshin. Branch `feature/superhero-classes-balanced-local`, stable base `e4c0208`; catalog/balance commit `c4c48ca`.
+
+User approved classic Spider-Man and another Thor variant. FiskHeroes 2.4.0 is Forge 1.7.10 only; native Fabric adaptation required. Source JAR `/workspace/references/FiskHeroes-1.7.10-2.4.0.jar`; real Thor source `/workspace/references/jmcthp-v3.1.0.zip` (official CurseForge file4625355), assets `jmctheroes:thor_infinity`. Do not ask again for those skins. Extract only necessary data assets, no Forge classes.
+
+All 42 native hero handlers, controls, combat, passives and client presentation now compile. Latest local build has 141 passing tests (71 core, 34 Lib, 36 client), plus MMO native skill-bar smoke. Real dedicated server accepted all 42 casts with exact initial resource costs and all three free recasts; eight native passive scenarios passed. These broad probes do not certify every utility submechanic or full production acceptance. See `docs/superhero-local-validation.md` for evidence and remaining QA.
+
+Current versions: Bridge/Client 0.2.1, protocol 3, assets `heroes-expansion-v2`; exact rebuilt Lib/MMO also required. Latest user complaints: first-person Stormbreaker had no gripping hand and was too large. Native item renderer now adds the actual skin/suit arm at the shared haft grip, retains the original first-person size, fixes blade direction around the grip, and avoids adding arms during playerAnimator's third-person-model pass. Actual right/left-hand screenshots inspected. Better Combat 2.4.0 is OPTIONAL and separately installed with its dependencies; two actual clients saw the same swings and class interruption, actual damage occurred, EMF yielded and finite attacks expired. Native item and SVFrame item have the same +8 damage/-3.1 speed modifiers (no doubling). Detailed Animations + E19 are built-in selectable packs; no Xaero embedding/dependency. Details `docs/superhero-better-combat.md` and `docs/superhero-client-hud-packs.md`.
+
+Native Rider WIP was preserved on its old branch, commit `08b9e42`, plus private resources `/workspace/artifacts/creature-weapons-v15-paused`. It compiled with107 tests but had NO completed native acceptance; do not deliver it as accepted. QA processes2659086/2696922/2702859 were absent when paused; RCON stopped responding. Current private client assets were restored from native-tested0.1.14 JAR, avoiding Rider0.1.15 contamination.
+
+Skills read for current task: superpowers using, brainstorming, writing-plans, using-git-worktrees, TDD, executing-plans, verification. Continue inline; no proactive agents. Follow user authorization to complete, do not introduce new approval stalls. Record meaningful choices and tests in ledger; build/test locally.
+
+---
+
 # CURRENT delivery0.1.14 — Rider skill bar correction,2026-10-19
 
 User rejects v13skillbar: seven repeated belticons/ornategoldframes. Implemented original50pixelglyphs(45nativeactives incl6Riders+5Survivevariants), darkcompactrow, actualkeybindingfooters, CDwipe/subsecondtext, recastindicator, toggleoutline, compactclass/passiveline. UIreservedvanillaactionmessage+existingresourceHUDrows, capsbaratGUIscale2andrespectsexistingHUDscalepref(.8default); Kabutogaugesanchored/scaledwithrow. No gameplay/armor change. All504previousrenderassetsbytepreserved excludingversion/localization; verificationJSONauthoritativecount.

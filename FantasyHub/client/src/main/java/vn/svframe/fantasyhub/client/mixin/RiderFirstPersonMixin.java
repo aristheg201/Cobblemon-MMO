@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
+import vn.svframe.fantasyhub.client.HeroEquipmentModels;
 import vn.svframe.fantasyhub.client.RiderWeapons;
 
 @Mixin(HeldItemRenderer.class)
@@ -25,6 +26,7 @@ abstract class RiderFirstPersonMixin {
       MatrixStack matrices,
       VertexConsumerProvider vertices,
       int light) {
+    if(HeroEquipmentModels.overrides(p)&&hand==Hand.MAIN_HAND)return ItemStack.EMPTY;
     return RiderWeapons.overrides(p.getId()) ? RiderWeapons.projected(p.getId(), hand) : original;
   }
 }

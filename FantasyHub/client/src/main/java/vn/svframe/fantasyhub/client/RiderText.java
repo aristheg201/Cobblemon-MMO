@@ -13,6 +13,7 @@ final class RiderText {
 
   static Text description(String id) {
     String key = "fantasyhub.rider.description." + id.toLowerCase(Locale.ROOT);
+    if(I18n.hasTranslation("fantasyhub.hero.description."+id.toLowerCase(Locale.ROOT)))key="fantasyhub.hero.description."+id.toLowerCase(Locale.ROOT);
     var player = MinecraftClient.getInstance().player;
     var state = player == null ? null : RiderVisuals.state(player.getId());
     if (state != null && state.force() == 1 && I18n.hasTranslation(key + ".survive"))

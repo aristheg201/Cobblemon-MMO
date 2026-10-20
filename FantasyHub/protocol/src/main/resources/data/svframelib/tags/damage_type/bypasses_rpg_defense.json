@@ -1,1 +1,7 @@
-{"replace":false,"values":["fantasyhub:rider_true"]}
+{
+  "replace": false,
+  "values": [
+    "fantasyhub:rider_true",
+    "fantasyhub:hero_true"
+  ]
+}

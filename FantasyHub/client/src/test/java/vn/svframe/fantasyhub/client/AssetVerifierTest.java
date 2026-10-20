@@ -1,6 +1,7 @@
 package vn.svframe.fantasyhub.client;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.nio.file.*;
 import java.security.MessageDigest;
 import java.util.HexFormat;
@@ -42,5 +43,16 @@ class AssetVerifierTest {
     @Test void staleRevisionDoesNotPassEvenWithValidIndex()throws Exception{
         valid();write("assets/fantasyhub/asset-revision.txt","reference-dragonborn-v3");
         assertTrue(AssetVerifier.diagnose(this::find,"reference-dragonborn-v4").startsWith("asset-revision.txt does not match"));
+    }
+    @Test void packagedPackTamperingIsVerifiedToo()throws Exception{
+        valid();
+        String name="resourcepacks/detailed_animations/pack.mcmeta";
+        write(name,"{}");
+        var index=JsonParser.parseString(Files.readString(root.resolve("assets/fantasyhub/asset-index.json"))).getAsJsonObject();
+        index.addProperty(name,HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest("{}".getBytes(java.nio.charset.StandardCharsets.UTF_8))));
+        write("assets/fantasyhub/asset-index.json",index.toString());
+        assertEquals("",AssetVerifier.diagnose(this::find,"reference-dragonborn-v4"));
+        write(name,"{\"changed\":true}");
+        assertEquals("asset checksum mismatch: "+name,AssetVerifier.diagnose(this::find,"reference-dragonborn-v4"));
     }
 }

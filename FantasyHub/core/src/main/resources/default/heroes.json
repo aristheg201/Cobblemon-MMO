@@ -231,7 +231,16 @@
           "id": "SPIDER_MAN_WORLD_WEB_TRAP",
           "slot": 7
         }
-      ]
+      ],
+      "passive_values": {
+        "evasion": 0.2,
+        "instinct_max": 5,
+        "instinct_duration": 6,
+        "instinct_speed": 0.05,
+        "instinct_critical": 0.04,
+        "wall_range": 0.8,
+        "wall_rise": 0.15
+      }
     },
     {
       "id": "SORCERER_SUPREME",
@@ -445,7 +454,17 @@
           "id": "SORCERER_SUPREME_EYE_OF_AGAMOTTO",
           "slot": 7
         }
-      ]
+      ],
+      "passive_values": {
+        "emergency_threshold": 0.3,
+        "emergency_shield": 0.2,
+        "emergency_duration": 5,
+        "emergency_cooldown": 60,
+        "emergency_knockback": 4,
+        "mystic_max": 5,
+        "mystic_cooldown_reduction": 0.3,
+        "mystic_burst": 1
+      }
     },
     {
       "id": "IRON_MAN",
@@ -674,7 +693,17 @@
           "id": "IRON_MAN_ORBITAL_STRIKE",
           "slot": 7
         }
-      ]
+      ],
+      "passive_values": {
+        "flight_upkeep": 1.5,
+        "heat_per_skill": 15,
+        "heat_max": 100,
+        "overdrive_duration": 6,
+        "overdrive_speed": 0.25,
+        "overdrive_cooldown_reduction": 0.5,
+        "repulsor_attack": 0.6,
+        "repulsor_radius": 2
+      }
     },
     {
       "id": "THOR",
@@ -684,7 +713,7 @@
       "resource_name": "Lightning Force",
       "resource_name_vi": "Lôi lực",
       "maximum": 100,
-      "suit": "external:thor",
+      "suit": "jmctheroes:thor_infinity",
       "passives": [
         "Asgardian Flight & Worthy Return",
         "Lightning Armor"
@@ -694,8 +723,8 @@
       "abilities": [
         {
           "key": "MJOLNIR_THROW",
-          "name": "Mjolnir Throw",
-          "name_vi": "Ném Búa Sấm Thần",
+          "name": "Stormbreaker Throw",
+          "name_vi": "Ném Rìu Stormbreaker",
           "cooldown": 7,
           "cost": 15,
           "range": 14,
@@ -911,7 +940,18 @@
           "id": "THOR_BRING_ME_THANOS",
           "slot": 7
         }
-      ]
+      ],
+      "passive_values": {
+        "static_max": 5,
+        "static_armor": 0.03,
+        "static_lightning": 0.04,
+        "static_counter": 0.3,
+        "force_per_hit": 8,
+        "force_hit_cooldown": 0.5,
+        "force_per_block": 4,
+        "return_damage": 0.7,
+        "return_slow": 0.3
+      }
     },
     {
       "id": "FLASH",
@@ -1108,7 +1148,18 @@
           "id": "FLASH_INFINITE_MASS_PUNCH",
           "slot": 7
         }
-      ]
+      ],
+      "passive_values": {
+        "speed_max": 5,
+        "speed_per_level": 0.15,
+        "punch_per_level": 0.1,
+        "health_regen_multiplier": 4,
+        "projectile_catch_level": 4,
+        "projectile_catch_radius": 3,
+        "moving_gain": 8,
+        "speed_level_seconds": 1.5,
+        "movement_cap_blocks_second": 12
+      }
     },
     {
       "id": "BATMAN",
@@ -1319,7 +1370,19 @@
           "id": "BATMAN_BATWING_STRIKE",
           "slot": 7
         }
-      ]
+      ],
+      "passive_values": {
+        "combo_max": 10,
+        "combo_attack_speed": 0.03,
+        "combo_critical_damage": 0.05,
+        "combo_expiry": 5,
+        "parry": 0.15,
+        "parry_stun": 0.5,
+        "escape_threshold": 0.25,
+        "escape_duration": 2.5,
+        "escape_speed": 0.5,
+        "escape_cooldown": 60
+      }
     }
   ],
   "balance": {

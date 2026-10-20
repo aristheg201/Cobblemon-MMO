@@ -17,6 +17,7 @@ final class AbilityHud {
   private static final Set<String> ICONS=Set.of("death_sentence","death_strike","phantom_charge","cursed_seal","necrotic_whirlwind","wraithbound_chains");
   private AbilityHud() {}
   static Identifier icon(String id) {
+    var hero=HeroSkillIcons.icon(id);if(hero!=null)return hero;
     var rider=RiderSkillIcons.icon(id,false);if(rider!=null)return rider;
     String prefix="CLS_DEATH_KNIGHT_";
     if(!id.startsWith(prefix))return null;
@@ -58,7 +59,7 @@ final class AbilityHud {
         if(texture!=null)c.drawTexture(texture,x+2,y+2,18,18,0,0,32,32,32,32);
         else {
           texture=icon(id);
-          if(texture!=null)c.drawTexture(texture,x+2,y+2,18,18,0,0,64,64,64,64);
+          if(texture!=null){int size=HeroSkillIcons.icon(id)!=null?32:64;c.drawTexture(texture,x+2,y+2,18,18,0,0,size,size,size,size);}
           else if(skill.has("iconMaterial")) {
             var material=Identifier.tryParse(skill.get("iconMaterial").getAsString());
             if(material!=null) {

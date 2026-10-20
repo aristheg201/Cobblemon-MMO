@@ -27,7 +27,11 @@ public final class FantasyHubClient implements ClientModInitializer {
 
   @Override
   public void onInitializeClient() {
+    ClientHudPacks.register();
+    BetterCombatCompat.install();
     Protocol.install();
+    net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.INSTANCE.register(
+        Protocol.stormbreaker,(stack,mode,matrices,vertices,light,overlay)->HeroEquipmentModels.item(mode,matrices,vertices,light));
     net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin.register(
         context -> {
           for (String manifest :
@@ -35,7 +39,7 @@ public final class FantasyHubClient implements ClientModInitializer {
                   "dragonborn-models.json",
                   "hunter-models.json",
                   "additions-models.json",
-                  "riders-models.json")) {
+                  "riders-models.json", "heroes-models.json")) {
             try (var input =
                 FantasyHubClient.class.getResourceAsStream("/assets/fantasyhub/" + manifest)) {
               if (input == null)
@@ -59,6 +63,7 @@ public final class FantasyHubClient implements ClientModInitializer {
                   instanceof net.minecraft.client.render.entity.PlayerEntityRenderer player) {
                 helper.register(new DragonbornHatFeature(player));
                 helper.register(new HunterArmorFeature(player));
+                helper.register(new HeroArmorFeature(player));
                 helper.register(new KabutoEquipmentFeature(player));
                 helper.register(new RiderArmorFeature(player));
                 helper.register(new RiderWeaponFeature(player));
@@ -128,6 +133,7 @@ public final class FantasyHubClient implements ClientModInitializer {
           RiderVisuals.remove(entity.getId());
         });
     RiderEffects.install();
+    ClientPlayNetworking.registerGlobalReceiver(Protocol.Hero.ID,(payload,context)->context.client().execute(()->HeroVisuals.accept(payload)));
     ClientPlayNetworking.registerGlobalReceiver(
         Protocol.RiderProjectile.ID, (payload, context) -> RiderProjectiles.accept(payload));
     ClientPlayNetworking.registerGlobalReceiver(
@@ -237,6 +243,7 @@ public final class FantasyHubClient implements ClientModInitializer {
           castingState.reset();
           KabutoVisuals.clear();
           RiderVisuals.clear();
+          HeroVisuals.clear();
           KabutoEffects.clear();
           RiderEffects.clear();
         });
@@ -250,6 +257,7 @@ public final class FantasyHubClient implements ClientModInitializer {
     ClientTickEvents.END_CLIENT_TICK.register(
         client -> {
           ticks++;
+          HeroVisuals.tick(client,ticks);
           KabutoEffects.tick();
           RiderEffects.tick();
           while (menu.wasPressed())
@@ -263,6 +271,9 @@ public final class FantasyHubClient implements ClientModInitializer {
             o.addProperty("clientHealth", client.player.getHealth());
             o.add("kabutoEffects", KabutoEffects.observation());
             o.add("riderEffects", RiderEffects.observation());
+            o.add("clientHudPacks",ClientHudPacks.observation());
+            o.add("heroEffects",HeroEffects.observation());
+            o.add("betterCombat",BetterCombatCompat.observation());
             var rider = RiderVisuals.state(client.player.getId());
             if (rider != null) {
               var rs = new JsonObject();
@@ -272,6 +283,7 @@ public final class FantasyHubClient implements ClientModInitializer {
               o.add("rider", rs);
             }
             JsonObject equipment = new JsonObject();
+            JsonObject armorTextures=new JsonObject();
             for (var slot :
                 java.util.List.of(
                     net.minecraft.entity.EquipmentSlot.HEAD,
@@ -280,10 +292,12 @@ public final class FantasyHubClient implements ClientModInitializer {
                     net.minecraft.entity.EquipmentSlot.FEET)) {
               var stack = client.player.getEquippedStack(slot);
               var data = stack.get(net.minecraft.component.DataComponentTypes.CUSTOM_DATA);
+              armorTextures.addProperty(slot.name(),data==null?"":data.copyNbt().getString("SVFRAME_ARMOR_TEXTURE"));
               equipment.addProperty(
                   slot.name(), data == null ? "" : data.copyNbt().getString("SVFRAME_ITEM_MODEL"));
             }
             o.add("equippedModels", equipment);
+            o.add("armorTextures",armorTextures);o.addProperty("playerInvisible",client.player.isInvisible());o.addProperty("heroArmorRenders",HeroArmorFeature.qaRenders);
             var kb = KabutoVisuals.state(client.player.getId());
             if (kb != null) {
               var visual = new JsonObject();
@@ -345,6 +359,7 @@ public final class FantasyHubClient implements ClientModInitializer {
           AbilityHud.render(context);
           KabutoVisuals.hud(context);
           RiderHud.render(context);
+          HeroHud.render(context);
         });
   }
 
@@ -366,7 +381,7 @@ public final class FantasyHubClient implements ClientModInitializer {
   }
 
   public static Text name(String raw) {
-    return Text.literal(raw.replaceAll("[&§][0-9a-fk-orA-FK-OR]", ""));
+    return HeroText.name(raw.replaceAll("[&§][0-9a-fk-orA-FK-OR]", ""));
   }
 
   static void saveOptions() {

@@ -27,6 +27,7 @@ final class RiderSkillIcons {
     return Identifier.of("fantasyhub","textures/gui/skills/"+row.get(field).getAsString()+".png");
   }
   static int color(String id) {
+    if(id.startsWith("SPIDER_MAN_"))return 0xffff5c70;if(id.startsWith("SORCERER_SUPREME_"))return 0xffff983f;if(id.startsWith("IRON_MAN_"))return 0xff75e1ff;if(id.startsWith("THOR_"))return 0xff9dbfff;if(id.startsWith("FLASH_"))return 0xffffce48;if(id.startsWith("BATMAN_"))return 0xff9aadc8;
     int split=id.indexOf('_');return COLORS.getOrDefault(split<0?id:id.substring(0,split),0xff91a5bd);
   }
 }

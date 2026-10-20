@@ -11,6 +11,6 @@ import vn.svframe.fantasyhub.core.KabutoRuntime;
 abstract class KabutoMobAiMixin {
   @Inject(method = "tickNewAi", at = @At("HEAD"), cancellable = true)
   private void fantasyhub$clock(CallbackInfo ci) {
-    if (KabutoRuntime.frozen((MobEntity) (Object) this) || vn.svframe.fantasyhub.core.CardRiderControl.stunned((MobEntity)(Object)this)) ci.cancel();
+    if (vn.svframe.fantasyhub.core.hero.HeroControl.stunned((MobEntity)(Object)this) || KabutoRuntime.frozen((MobEntity) (Object) this) || vn.svframe.fantasyhub.core.CardRiderControl.stunned((MobEntity)(Object)this)) ci.cancel();
   }
 }

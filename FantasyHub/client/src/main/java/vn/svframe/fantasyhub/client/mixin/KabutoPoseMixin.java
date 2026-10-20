@@ -19,6 +19,8 @@ abstract class KabutoPoseMixin {
       float headYaw,
       float headPitch,
       CallbackInfo ci) {
+    vn.svframe.fantasyhub.client.HeroVisuals.animate((PlayerEntityModel<?>)(Object)this,entity,age);
+    vn.svframe.fantasyhub.client.HeroArmorFeature.visibility((PlayerEntityModel<?>)(Object)this,entity);
     KabutoVisuals.animate((PlayerEntityModel<?>) (Object) this, entity, age);
     vn.svframe.fantasyhub.client.RiderAnimator.animate(
         (PlayerEntityModel<?>) (Object) this, entity, age);

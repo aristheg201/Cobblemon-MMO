@@ -10,7 +10,7 @@ import vn.svframe.fantasyhub.core.CardRiderControl;
 abstract class RiderControlMixin {
   @Inject(method = "jump", at = @At("HEAD"), cancellable = true)
   private void fantasyhub$stun(CallbackInfo ci) {
-    if (CardRiderControl.stunned((LivingEntity) (Object) this)) ci.cancel();
+    if (CardRiderControl.stunned((LivingEntity) (Object) this)||vn.svframe.fantasyhub.core.hero.HeroControl.rooted((LivingEntity)(Object)this)) ci.cancel();
   }
 
   @ModifyVariable(method = "heal", at = @At("HEAD"), argsOnly = true)

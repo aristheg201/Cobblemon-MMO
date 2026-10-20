@@ -22,6 +22,8 @@ public abstract class ClassArmorMixin {
     private void svframe$armor(MatrixStack matrices,VertexConsumerProvider vertices,LivingEntity entity,EquipmentSlot slot,int light,BipedEntityModel<?> model,CallbackInfo ci) {
         if(vn.svframe.fantasyhub.client.KabutoVisuals.state(entity.getId())!=null||vn.svframe.fantasyhub.client.RiderVisuals.state(entity.getId())!=null){ci.cancel();return;}
         svframe$texture=null;fantasyhub$kabutoArms=false;var stack=entity.getEquippedStack(slot);
+        if(entity instanceof net.minecraft.entity.player.PlayerEntity&&!vn.svframe.fantasyhub.client.HeroArmorFeature.suit(stack).isEmpty()){ci.cancel();return;}
+        if(!(entity instanceof net.minecraft.entity.player.PlayerEntity)&&vn.svframe.fantasyhub.client.HeroArmorFeature.renderSlot(matrices,vertices,light,entity,slot,model,entity.age)){ci.cancel();return;}
         if(entity instanceof net.minecraft.entity.player.PlayerEntity&&!vn.svframe.fantasyhub.client.RiderArmorFeature.form(stack).isEmpty()){ci.cancel();return;}
         if(stack.isOf(Protocol.kabutoHat)||stack.isOf(Protocol.dragonbornHat)||vn.svframe.fantasyhub.client.HunterArmorFeature.hat(stack)||(entity instanceof net.minecraft.entity.player.PlayerEntity&&!vn.svframe.fantasyhub.client.HunterArmorFeature.collection(stack).isEmpty())){ci.cancel();return;}
         // Only this newly supplied three-piece Wolven set has narrower arms.

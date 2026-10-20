@@ -41,6 +41,7 @@ public final class FantasyHubCore implements ModInitializer {
     KabutoRuntime.install();
     RiderEquipment.install();
     RiderRuntime.install();
+    vn.svframe.fantasyhub.core.hero.HeroRuntime.install();
     vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.registerMenu(
         "svframe_class_switch",
         player -> {
@@ -111,6 +112,7 @@ public final class FantasyHubCore implements ModInitializer {
         Protocol.Action.ID,
         (request, context) -> {
           var player = context.player();
+          if(request.action().equals("hero_input")){vn.svframe.fantasyhub.core.hero.HeroRuntime.input(player,request.slot());return;}
           long now = tick;
           if (now < nextAction.getOrDefault(player.getUuid(), -1L)) return;
           nextAction.put(player.getUuid(), now + 2);
@@ -600,6 +602,7 @@ public final class FantasyHubCore implements ModInitializer {
     out.put("schema", Protocol.VERSION);
     out.put("casting", castingState(player));
     out.put("riderStatus", RiderRuntime.uiState(player));
+    out.put("heroStatus",vn.svframe.fantasyhub.core.hero.HeroRuntime.inspect(player));
     out.put(
         "experienceDisplay",
         vn.svframe.svframemmo.experience.vanilla.VanillaProgressionRuntime.instance()

@@ -22,14 +22,14 @@ final class AssetVerifier {
             Path indexPath=find.apply("assets/fantasyhub/asset-index.json");
             if(indexPath==null)return "missing asset-index.json";
             byte[] bytes;
-            try(var stream=Files.newInputStream(indexPath)) {bytes=stream.readNBytes(262145);}
-            if(bytes.length>262144)return "asset-index.json exceeds size limit";
+            try(var stream=Files.newInputStream(indexPath)) {bytes=stream.readNBytes(4_194_305);}
+            if(bytes.length>4_194_304)return "asset-index.json exceeds size limit";
             var index=JsonParser.parseString(new String(bytes,StandardCharsets.UTF_8)).getAsJsonObject();
-            if(index.size()<180||index.size()>4096||!index.has("assets/fantasyhub/models/item/visual_bone.json")||!index.has("assets/svframe_imported/models/vfx_soul_blade/cube_0.json"))return "asset-index.json is incomplete";
+            if(index.size()<180||index.size()>20000||!index.has("assets/fantasyhub/models/item/visual_bone.json")||!index.has("assets/svframe_imported/models/vfx_soul_blade/cube_0.json"))return "asset-index.json is incomplete";
             var digest=MessageDigest.getInstance("SHA-256");
             for(var entry:index.entrySet()) {
                 String name=entry.getKey();
-                if(!name.startsWith("assets/")||name.contains(".."))return "invalid asset path";
+                if(!(name.startsWith("assets/")||name.startsWith("resourcepacks/detailed_animations/")||name.startsWith("resourcepacks/e19_minimap_icons/"))||name.contains("..")||name.contains("\\"))return "invalid asset path";
                 Path path=find.apply(name);
                 if(path==null)return "missing "+name;
                 try(var stream=Files.newInputStream(path)) {
