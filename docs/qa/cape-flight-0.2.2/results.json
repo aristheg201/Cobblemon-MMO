@@ -1,0 +1,503 @@
+{
+  "scope": "Equipment-gated Thor/Sorcerer flight and skin cape priority; not full six-class production acceptance",
+  "implementationCommit": "40bfe4b888fc7480741126222853eab7182235c2",
+  "localBuild": {
+    "build": "local",
+    "runtimeAcceptance": "NOT_IMPLIED_BY_BUILD",
+    "commit": "40bfe4b888fc7480741126222853eab7182235c2",
+    "dirty": false,
+    "artifacts": [
+      {
+        "file": "FantasyHubBridge-0.2.2.jar",
+        "bytes": 1457553,
+        "sha256": "fe262e97f10be0da8d3214cae2218f3852c246ed8c312f4f79f94dcd1c1f464b"
+      },
+      {
+        "file": "FantasyHubClient-0.2.2.jar",
+        "bytes": 15541526,
+        "sha256": "f2f6c2da615a0acc3c6baf7aaccd74b033f65f63aae6e1353599c1ce141461e5"
+      },
+      {
+        "file": "SVFrameLib-1.7.2-fabric.jar",
+        "bytes": 1844962,
+        "sha256": "29e73cea717b96e9b6c67aed8b924167baad4b8b1961ff48e15316a1bf347cae"
+      },
+      {
+        "file": "SVFrameMMO-1.13.4-fabric.jar",
+        "bytes": 5166364,
+        "sha256": "040254f3b840c615dea57cf02fee243df2d03771bace7aa75c21b63ec2581c03"
+      }
+    ],
+    "tests": [
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.ClassPricingTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.hero.HeroBarriersTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.hero.HeroFlightRulesTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.hero.HeroExecutionCoverageTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.RiderEffectTransportTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.hero.HeroCatalogTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.rider.RiderSettingsTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.rider.RiderStateTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.hero.HeroBalanceTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.StateCompressionTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.hero.HeroEquipmentTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.hero.HeroInstallationTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.RiderRosterMigrationTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.KabutoStateTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.rider.SweptPathTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.PresentationCompatibilityTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.HeroRosterMigrationTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.hero.HeroPowerStateTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.RiderCollisionTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.rider.CardRiderStateTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.hero.HeroTimelineTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.KabutoSettingsTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "core",
+        "suite": "vn.svframe.fantasyhub.core.KabutoEffectsTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.RiderSkillIconsTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.HeroCapePresentationTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.RiderGripTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.CastingStateTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.QaPresentationSnapshotTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.ExperiencePresentationTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.StormbreakerGripTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.SkillBarPresentationTest",
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.PresentationReleaseTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.HeroArmorStateTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.AssetVerifierTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.RiderAssetContractTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.ArmorReferenceRevisionTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "client",
+        "suite": "vn.svframe.fantasyhub.client.ClientHudPacksTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.fabric.runtime.NativeAttackEventBridgeTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.fabric.HeroEntranceSettingsTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.version.ServerVersionTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.fabric.runtime.FinalDamageEventTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.fabric.runtime.RegisteredDamageMetadataBridgeTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.fabric.runtime.LegacySkillParameterTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.fabric.runtime.NativeStatEngineTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.fabric.runtime.NativePlaceholderRegistryTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.gui.editable.InventoryLayersTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.config.SourceYamlTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.fabric.runtime.NativeStatReferenceTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.util.configobject.JsonWrapperTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.skill.SkillCastPoliciesTest",
+        "tests": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "project": "SVFrameLib",
+        "suite": "vn.svframe.svframelib.fabric.BuiltinSkillOwnershipTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ]
+  },
+  "native": {
+    "trinkets": {
+      "cases": 18,
+      "passed": 18
+    },
+    "accessories": {
+      "cases": 18,
+      "passed": 18
+    },
+    "death-respawn.json": {
+      "flightBeforeDeath": true,
+      "flightRevoked": true,
+      "leaseCleared": true,
+      "classPreserved": true
+    },
+    "dimension-change-final.json": {
+      "flightBefore": true,
+      "enteredNether": true,
+      "noLeakedFlight": true,
+      "classPreserved": true
+    },
+    "restart-reconnect-final.json": {
+      "flewBeforeRestart": true,
+      "bothActualClientsReconnected": true,
+      "classPreserved": true,
+      "gearAndBackPreserved": true,
+      "flightStartsOff": true,
+      "noLeakedPermission": true
+    },
+    "restart-before-final.json": {
+      "flightBeforeRestart": true,
+      "classThor": true,
+      "eligible": true,
+      "temporaryGrantNotSaved": true
+    },
+    "real-keyboard-double-tap-off-final.json": {
+      "flightToggledOff": true
+    },
+    "realKeyboardFlightEnabled": true
+  },
+  "screenshots": {
+    "stormbreaker-third-person-blade-down.png": "91731349c1b69538015a28ab63e6d168542c8093e3cfc9d3e858b22b5ce79403",
+    "strange-flight-back.png": "8e21ec01c852ec31581ff65ea4fc1637f07b475bb6d65ec5b253b95a19159c47",
+    "strange-flight-front.png": "162a440ec72f8c0fcd2c97f0f839f472dbe8243cc63d032df4ae8058161a8bce",
+    "thor-flight-back.png": "7e51ccb55107ae7d01db8b46154ee5956794a5a783083f7810b2ce665037c70f",
+    "thor-flight-front.png": "5f0d78e97c4eed5ff9078f89b42c866a3bc4c0b101e5b50af575202bdb740da4"
+  },
+  "limitations": [
+    "No authenticated profile cape on offline QA users; priority covered by client tests and native cape path inspection.",
+    "Broader hero utilities remain subject to superhero-local-validation.md."
+  ],
+  "installedJarHashesMatch": {
+    "server/SVFrameLib-1.7.2-fabric.jar": true,
+    "server/FantasyHubBridge-0.2.2.jar": true,
+    "server/SVFrameMMO-Cobblemon-Integration-0.1.18.jar": true,
+    "server/SVFrameSkript-0.1.0.jar": true,
+    "server/SVFrameMMO-1.13.4-fabric.jar": true,
+    "server/SVFrameItems-0.1.2-fabric.jar": true,
+    "server/SVFrameMobs-0.1.2-fabric.jar": true,
+    "client/FantasyHubClient-0.2.2.jar": true
+  }
+}
