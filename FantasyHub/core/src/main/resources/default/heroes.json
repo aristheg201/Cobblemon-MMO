@@ -1,0 +1,1349 @@
+{
+  "schema": 1,
+  "heroes": [
+    {
+      "id": "SPIDER_MAN",
+      "name": "Spider-Man",
+      "name_vi": "Người Nhện",
+      "resource": "STAMINA",
+      "resource_name": "Stamina",
+      "resource_name_vi": "Thể lực",
+      "maximum": 100,
+      "suit": "fiskheroes:spider_man",
+      "passives": [
+        "Brand New Reflexes",
+        "Wall Crawl"
+      ],
+      "regen_idle": 8,
+      "regen_combat": 4,
+      "abilities": [
+        {
+          "key": "WEB_BLITZ",
+          "name": "Web Blitz",
+          "name_vi": "Lướt Tơ Trảm",
+          "cooldown": 8,
+          "cost": 15,
+          "range": 8,
+          "radius": 0,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 1.5,
+              "hits": 3,
+              "start": 0,
+              "interval": 0.15
+            }
+          ],
+          "effects": {
+            "max_targets": 3,
+            "bleed": 0.15,
+            "bleed_duration": 3,
+            "slow": 0.3,
+            "slow_duration": 3
+          },
+          "id": "SPIDER_MAN_WEB_BLITZ",
+          "slot": 1
+        },
+        {
+          "key": "WEB_SWING",
+          "name": "Web Swing Acrobatics",
+          "name_vi": "Đu Tơ Nhào Lộn",
+          "cooldown": 12,
+          "cost": 20,
+          "range": 12,
+          "radius": 4,
+          "duration": 0.8,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 2.2,
+              "hits": 1,
+              "start": 0.8,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "knockup": 0.6,
+            "control_immunity": 1
+          },
+          "id": "SPIDER_MAN_WEB_SWING",
+          "slot": 2
+        },
+        {
+          "key": "WEB_SHOOTER_BARRAGE",
+          "name": "Web-Shooter Barrage",
+          "name_vi": "Mưa Tơ Áp Suất",
+          "cooldown": 10,
+          "cost": 25,
+          "range": 10,
+          "radius": 0,
+          "duration": 1.5,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.3,
+              "hits": 8,
+              "start": 0,
+              "interval": 0.2
+            }
+          ],
+          "effects": {
+            "slow_stack": 0.05,
+            "max_stacks": 8,
+            "blindness": 2.5
+          },
+          "id": "SPIDER_MAN_WEB_SHOOTER_BARRAGE",
+          "slot": 3
+        },
+        {
+          "key": "COCOON_SLAM",
+          "name": "Web Cocoon Slam",
+          "name_vi": "Trói Kén Quật Đất",
+          "cooldown": 15,
+          "cost": 30,
+          "range": 10,
+          "radius": 3,
+          "duration": 0,
+          "recast": 3,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.5,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            },
+            {
+              "kind": "PHYSICAL",
+              "scale": 2.8,
+              "hits": 1,
+              "start": -1,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "stun": 2
+          },
+          "id": "SPIDER_MAN_COCOON_SLAM",
+          "slot": 4
+        },
+        {
+          "key": "AIR_COMBO",
+          "name": "Air Combo Assault",
+          "name_vi": "Chuỗi Đòn Không Trung",
+          "cooldown": 18,
+          "cost": 35,
+          "range": 4,
+          "radius": 0,
+          "duration": 1.8,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.7,
+              "hits": 5,
+              "start": 0,
+              "interval": 0.36
+            }
+          ],
+          "effects": {
+            "air_lock": 1.8
+          },
+          "id": "SPIDER_MAN_AIR_COMBO",
+          "slot": 5
+        },
+        {
+          "key": "WEB_SHIELD",
+          "name": "Web Shield Counter",
+          "name_vi": "Kén Tơ Phản Đòn",
+          "cooldown": 20,
+          "cost": 20,
+          "range": 10,
+          "radius": 0,
+          "duration": 2,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [],
+          "effects": {
+            "reduction": 0.9,
+            "invisibility": 1,
+            "root": 2,
+            "counter": 1
+          },
+          "id": "SPIDER_MAN_WEB_SHIELD",
+          "slot": 6
+        },
+        {
+          "key": "WORLD_WEB_TRAP",
+          "name": "Brand New World Web-Trap",
+          "name_vi": "Đại Mạng Nhện",
+          "cooldown": 60,
+          "cost": 60,
+          "range": 10,
+          "radius": 6,
+          "duration": 4,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": true,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.8,
+              "hits": 6,
+              "start": 3,
+              "interval": 0.12
+            },
+            {
+              "kind": "TRUE_PHYSICAL",
+              "scale": 3,
+              "hits": 1,
+              "start": 3.8,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "root": 3,
+            "blindness": 3,
+            "knockback": 5
+          },
+          "id": "SPIDER_MAN_WORLD_WEB_TRAP",
+          "slot": 7
+        }
+      ]
+    },
+    {
+      "id": "SORCERER_SUPREME",
+      "name": "Sorcerer Supreme",
+      "name_vi": "Phù Thủy Tối Thượng",
+      "resource": "MANA",
+      "resource_name": "Mana",
+      "resource_name_vi": "Ma lực",
+      "maximum": 500,
+      "suit": "fiskheroes:doctor_strange",
+      "passives": [
+        "Cloak of Levitation",
+        "Astral Intuition"
+      ],
+      "regen_idle": 25,
+      "regen_combat": 12.5,
+      "abilities": [
+        {
+          "key": "ELDRITCH_WHIP",
+          "name": "Eldritch Whip",
+          "name_vi": "Ruy-Băng Ma Thuật",
+          "cooldown": 6,
+          "cost": 40,
+          "range": 10,
+          "radius": 0,
+          "duration": 0,
+          "recast": 2,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "MAGIC",
+              "scale": 1.8,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "pull": 1,
+            "slow": 0.4,
+            "slow_duration": 2
+          },
+          "id": "SORCERER_SUPREME_ELDRITCH_WHIP",
+          "slot": 1
+        },
+        {
+          "key": "TAO_MANDALAS",
+          "name": "Tao Mandalas",
+          "name_vi": "Khiên Ma Trận",
+          "cooldown": 12,
+          "cost": 60,
+          "range": 10,
+          "radius": 0,
+          "duration": 3,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [],
+          "effects": {
+            "reduction": 0.7,
+            "cone": 120,
+            "reflect": 0.8
+          },
+          "id": "SORCERER_SUPREME_TAO_MANDALAS",
+          "slot": 2
+        },
+        {
+          "key": "MIRROR_DIMENSION",
+          "name": "Mirror Dimension",
+          "name_vi": "Không Gian Gương",
+          "cooldown": 16,
+          "cost": 90,
+          "range": 10,
+          "radius": 5,
+          "duration": 3,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "MAGIC",
+              "scale": 0.4,
+              "hits": 3,
+              "start": 0,
+              "interval": 1
+            }
+          ],
+          "effects": {
+            "projectile_reflect": 1,
+            "mobility_lock": 1
+          },
+          "id": "SORCERER_SUPREME_MIRROR_DIMENSION",
+          "slot": 3
+        },
+        {
+          "key": "ASTRAL_PROJECTION",
+          "name": "Astral Projection",
+          "name_vi": "Tách Hồn Thần Thức",
+          "cooldown": 25,
+          "cost": 80,
+          "range": 10,
+          "radius": 0,
+          "duration": 3.5,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [],
+          "effects": {
+            "invulnerable": 1,
+            "mana_refund": 0.15
+          },
+          "id": "SORCERER_SUPREME_ASTRAL_PROJECTION",
+          "slot": 4
+        },
+        {
+          "key": "SLING_RING",
+          "name": "Sling Ring Portal",
+          "name_vi": "Cổng Không Gian",
+          "cooldown": 20,
+          "cost": 100,
+          "range": 20,
+          "radius": 0,
+          "duration": 6,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "MAGIC",
+              "scale": 1.5,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "stun": 1.5
+          },
+          "id": "SORCERER_SUPREME_SLING_RING",
+          "slot": 5
+        },
+        {
+          "key": "IMAGES_OF_IKONN",
+          "name": "Images of Ikonn",
+          "name_vi": "Bội Nhân Ma Thuật",
+          "cooldown": 22,
+          "cost": 110,
+          "range": 10,
+          "radius": 6,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "MAGIC",
+              "scale": 2,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "clones": 8,
+            "silence": 2.5,
+            "root": 2.5
+          },
+          "id": "SORCERER_SUPREME_IMAGES_OF_IKONN",
+          "slot": 6
+        },
+        {
+          "key": "EYE_OF_AGAMOTTO",
+          "name": "Eye of Agamotto & Crimson Bands",
+          "name_vi": "Mắt Agamotto",
+          "cooldown": 70,
+          "cost": 200,
+          "range": 10,
+          "radius": 7.5,
+          "duration": 5,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": true,
+          "phases": [
+            {
+              "kind": "MAGIC",
+              "scale": 1,
+              "hits": 2,
+              "start": 2.5,
+              "interval": 1
+            },
+            {
+              "kind": "TRUE_MAGIC",
+              "scale": 4,
+              "hits": 1,
+              "start": 4.5,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "freeze": 2.5,
+            "knockup": 0.6
+          },
+          "id": "SORCERER_SUPREME_EYE_OF_AGAMOTTO",
+          "slot": 7
+        }
+      ]
+    },
+    {
+      "id": "IRON_MAN",
+      "name": "Iron Man",
+      "name_vi": "Người Sắt",
+      "resource": "MANA",
+      "resource_name": "Arc Power",
+      "resource_name_vi": "Năng lượng Arc",
+      "maximum": 100,
+      "suit": "fiskheroes:iron_man",
+      "passives": [
+        "Thruster Flight",
+        "Arc Reactor Overdrive"
+      ],
+      "regen_idle": 10,
+      "regen_combat": 5,
+      "abilities": [
+        {
+          "key": "REPULSOR_BLAST",
+          "name": "Repulsor Blast",
+          "name_vi": "Xung Năng Lòng Bàn Tay",
+          "cooldown": 3,
+          "cost": 10,
+          "range": 15,
+          "radius": 0,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 1.2,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "knockback": 3,
+            "flight_recoil": 2
+          },
+          "id": "IRON_MAN_REPULSOR_BLAST",
+          "slot": 1
+        },
+        {
+          "key": "MICRO_MISSILES",
+          "name": "Micro-Missile Barrage",
+          "name_vi": "Thảm Tên Lửa Mini",
+          "cooldown": 9,
+          "cost": 25,
+          "range": 10,
+          "radius": 4,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.25,
+              "hits": 12,
+              "start": 0,
+              "interval": 0.1
+            }
+          ],
+          "effects": {
+            "slow": 0.4,
+            "slow_duration": 2.5
+          },
+          "id": "IRON_MAN_MICRO_MISSILES",
+          "slot": 2
+        },
+        {
+          "key": "TARGETING_LASERS",
+          "name": "Smart-Targeting Lasers",
+          "name_vi": "Laser Ngắm Bắn",
+          "cooldown": 11,
+          "cost": 20,
+          "range": 10,
+          "radius": 0,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 1.6,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            },
+            {
+              "kind": "MAX_HEALTH",
+              "scale": 0.016666666666666666,
+              "hits": 3,
+              "start": 1,
+              "interval": 1
+            }
+          ],
+          "effects": {
+            "armor_reduction": 0.3,
+            "armor_duration": 4
+          },
+          "id": "IRON_MAN_TARGETING_LASERS",
+          "slot": 3
+        },
+        {
+          "key": "THRUSTER_DASH",
+          "name": "Thruster Dash & Repulsor Shield",
+          "name_vi": "Lướt Đẩy Và Khiên Xung",
+          "cooldown": 13,
+          "cost": 15,
+          "range": 6,
+          "radius": 0,
+          "duration": 3,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [],
+          "effects": {
+            "cleanse_slow": 1,
+            "shield": 0.15,
+            "reduction": 0.6
+          },
+          "id": "IRON_MAN_THRUSTER_DASH",
+          "slot": 4
+        },
+        {
+          "key": "UNIBEAM",
+          "name": "Unibeam Assault",
+          "name_vi": "Pháo Lực Ngực",
+          "cooldown": 18,
+          "cost": 45,
+          "range": 18,
+          "radius": 0,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0.8,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 3.8,
+              "hits": 1,
+              "start": 0.8,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "side_knockback": 1
+          },
+          "id": "IRON_MAN_UNIBEAM",
+          "slot": 5
+        },
+        {
+          "key": "HOUSE_PARTY",
+          "name": "House Party Protocol",
+          "name_vi": "Giao Thức Giáp Hỗ Trợ",
+          "cooldown": 30,
+          "cost": 50,
+          "range": 10,
+          "radius": 0,
+          "duration": 8,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.5,
+              "hits": 8,
+              "start": 1,
+              "interval": 1
+            },
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.5,
+              "hits": 8,
+              "start": 1,
+              "interval": 1
+            }
+          ],
+          "effects": {
+            "drones": 2,
+            "reduction": 0.1
+          },
+          "id": "IRON_MAN_HOUSE_PARTY",
+          "slot": 6
+        },
+        {
+          "key": "ORBITAL_STRIKE",
+          "name": "Satellite Orbital Strike",
+          "name_vi": "Oanh Tạc Vệ Tinh",
+          "cooldown": 65,
+          "cost": 80,
+          "range": 10,
+          "radius": 5,
+          "duration": 3,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": true,
+          "phases": [
+            {
+              "kind": "TRUE_PHYSICAL",
+              "scale": 4.5,
+              "hits": 1,
+              "start": 2,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "root": 2,
+            "silence": 2,
+            "shield_destroy": 1,
+            "emp": 3
+          },
+          "id": "IRON_MAN_ORBITAL_STRIKE",
+          "slot": 7
+        }
+      ]
+    },
+    {
+      "id": "THOR",
+      "name": "Thor",
+      "name_vi": "Lôi Thần Thor",
+      "resource": "MANA",
+      "resource_name": "Lightning Force",
+      "resource_name_vi": "Lôi lực",
+      "maximum": 100,
+      "suit": "external:thor",
+      "passives": [
+        "Asgardian Flight & Worthy Return",
+        "Lightning Armor"
+      ],
+      "regen_idle": 4,
+      "regen_combat": 0,
+      "abilities": [
+        {
+          "key": "MJOLNIR_THROW",
+          "name": "Mjolnir Throw",
+          "name_vi": "Ném Búa Sấm Thần",
+          "cooldown": 7,
+          "cost": 15,
+          "range": 14,
+          "radius": 3,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 1.6,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            },
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.7,
+              "hits": 1,
+              "start": 0.7,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "stun": 1,
+            "return_slow": 0.3
+          },
+          "id": "THOR_MJOLNIR_THROW",
+          "slot": 1
+        },
+        {
+          "key": "THUNDEROUS_SLAM",
+          "name": "Thunderous Leap & Slam",
+          "name_vi": "Nhảy Vọt Dậm Sét",
+          "cooldown": 12,
+          "cost": 20,
+          "range": 10,
+          "radius": 4,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 2.4,
+              "hits": 1,
+              "start": 0.8,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "knockup": 0.6
+          },
+          "id": "THOR_THUNDEROUS_SLAM",
+          "slot": 2
+        },
+        {
+          "key": "LIGHTNING_SPIN",
+          "name": "Lightning Spin",
+          "name_vi": "Lốc Xoáy Sét",
+          "cooldown": 10,
+          "cost": 15,
+          "range": 10,
+          "radius": 0,
+          "duration": 2,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.4,
+              "hits": 4,
+              "start": 0,
+              "interval": 0.5
+            }
+          ],
+          "effects": {
+            "projectile_block": 1,
+            "speed": 0.5
+          },
+          "id": "THOR_LIGHTNING_SPIN",
+          "slot": 3
+        },
+        {
+          "key": "STORMBREAKER",
+          "name": "Stormbreaker Strike",
+          "name_vi": "Nhát Cắt Bão Sét",
+          "cooldown": 14,
+          "cost": 25,
+          "range": 10,
+          "radius": 0,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 2.2,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            },
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.3,
+              "hits": 3,
+              "start": 1,
+              "interval": 1
+            }
+          ],
+          "effects": {
+            "armor_penetration": 0.5,
+            "zone_duration": 3
+          },
+          "id": "THOR_STORMBREAKER",
+          "slot": 4
+        },
+        {
+          "key": "BIFROST",
+          "name": "Bifrost Summon",
+          "name_vi": "Cầu Vồng Bifrost",
+          "cooldown": 22,
+          "cost": 30,
+          "range": 12,
+          "radius": 4,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "MAGIC",
+              "scale": 2,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "cleanse": 1,
+            "shield": 0.2,
+            "knockback": 4
+          },
+          "id": "THOR_BIFROST",
+          "slot": 5
+        },
+        {
+          "key": "GOD_OF_THUNDER",
+          "name": "God of Thunder Mode",
+          "name_vi": "Bộc Phát Sấm Sét",
+          "cooldown": 35,
+          "cost": 50,
+          "range": 10,
+          "radius": 0,
+          "duration": 10,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [],
+          "effects": {
+            "damage_bonus": 0.3,
+            "attack_speed": 0.25,
+            "chain_scale": 0.5,
+            "chain_targets": 3,
+            "throw_cooldown_reduction": 0.4
+          },
+          "id": "THOR_GOD_OF_THUNDER",
+          "slot": 6
+        },
+        {
+          "key": "BRING_ME_THANOS",
+          "name": "Bring Me Thanos!",
+          "name_vi": "Sấm Sét Tối Thượng",
+          "cooldown": 65,
+          "cost": 80,
+          "range": 10,
+          "radius": 6,
+          "duration": 4,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": true,
+          "phases": [
+            {
+              "kind": "TRUE_PHYSICAL",
+              "scale": 5,
+              "hits": 1,
+              "start": 2,
+              "interval": 0
+            },
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.5,
+              "hits": 4,
+              "start": 2.2,
+              "interval": 0.5
+            }
+          ],
+          "effects": {
+            "silence": 2,
+            "slow": 0.7
+          },
+          "id": "THOR_BRING_ME_THANOS",
+          "slot": 7
+        }
+      ]
+    },
+    {
+      "id": "FLASH",
+      "name": "The Flash",
+      "name_vi": "Tia Chớp",
+      "resource": "MANA",
+      "resource_name": "Speed Force",
+      "resource_name_vi": "Speed Force",
+      "maximum": 100,
+      "suit": "fiskheroes:the_flash",
+      "passives": [
+        "Speed Force Levels & Regeneration",
+        "Arrow & Projectile Catching"
+      ],
+      "regen_idle": 4,
+      "regen_combat": 0,
+      "abilities": [
+        {
+          "key": "SUPER_SPEED",
+          "name": "Super-Speed Toggle",
+          "name_vi": "Tốc Độ Siêu Việt",
+          "cooldown": 1,
+          "cost": 0,
+          "range": 10,
+          "radius": 0,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 2,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [],
+          "effects": {
+            "speed": 1.5,
+            "jump": 3
+          },
+          "id": "FLASH_SUPER_SPEED",
+          "slot": 1
+        },
+        {
+          "key": "SLOW_MOTION",
+          "name": "Slow-Motion Vision",
+          "name_vi": "Tầm Nhìn Chậm",
+          "cooldown": 15,
+          "cost": 20,
+          "range": 10,
+          "radius": 15,
+          "duration": 3,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [],
+          "effects": {
+            "slow": 0.9,
+            "mining_fatigue": 4
+          },
+          "id": "FLASH_SLOW_MOTION",
+          "slot": 2
+        },
+        {
+          "key": "LIGHTNING_THROW",
+          "name": "Lightning Throw",
+          "name_vi": "Phóng Tia Sét",
+          "cooldown": 8,
+          "cost": 15,
+          "range": 12,
+          "radius": 0,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 1.7,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            },
+            {
+              "kind": "PHYSICAL",
+              "scale": 1.02,
+              "hits": 2,
+              "start": 0.1,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "stun": 1.5,
+            "chain_targets": 2
+          },
+          "id": "FLASH_LIGHTNING_THROW",
+          "slot": 3
+        },
+        {
+          "key": "WIND_FUNNEL",
+          "name": "Wind Funnel",
+          "name_vi": "Lốc Xoáy Chân Không",
+          "cooldown": 12,
+          "cost": 25,
+          "range": 10,
+          "radius": 5,
+          "duration": 1.8,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.3,
+              "hits": 6,
+              "start": 0,
+              "interval": 0.3
+            }
+          ],
+          "effects": {
+            "pull": 1,
+            "knockup": 0.6
+          },
+          "id": "FLASH_WIND_FUNNEL",
+          "slot": 4
+        },
+        {
+          "key": "MOLECULAR_PHASING",
+          "name": "Molecular Phasing",
+          "name_vi": "Xuyên Thể Phân Tử",
+          "cooldown": 18,
+          "cost": 30,
+          "range": 10,
+          "radius": 0,
+          "duration": 2,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [],
+          "effects": {
+            "phase": 1,
+            "physical_immunity": 1
+          },
+          "id": "FLASH_MOLECULAR_PHASING",
+          "slot": 5
+        },
+        {
+          "key": "SPEED_SIPHON",
+          "name": "Speed Siphon",
+          "name_vi": "Hút Tốc Độ",
+          "cooldown": 20,
+          "cost": 25,
+          "range": 10,
+          "radius": 0,
+          "duration": 5,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [],
+          "effects": {
+            "cleanse": 1,
+            "speed_steal": 0.3
+          },
+          "id": "FLASH_SPEED_SIPHON",
+          "slot": 6
+        },
+        {
+          "key": "INFINITE_MASS_PUNCH",
+          "name": "Infinite Mass Punch",
+          "name_vi": "Cú Đấm Khối Lượng Vô Hạn",
+          "cooldown": 60,
+          "cost": 70,
+          "range": 10,
+          "radius": 7.5,
+          "duration": 3,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": true,
+          "phases": [
+            {
+              "kind": "TRUE_PHYSICAL",
+              "scale": 5,
+              "hits": 1,
+              "start": 2.5,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "slow": 0.8,
+            "freeze": 1,
+            "knockback": 5
+          },
+          "id": "FLASH_INFINITE_MASS_PUNCH",
+          "slot": 7
+        }
+      ]
+    },
+    {
+      "id": "BATMAN",
+      "name": "Batman",
+      "name_vi": "Người Dơi",
+      "resource": "STAMINA",
+      "resource_name": "Stamina",
+      "resource_name_vi": "Thể lực",
+      "maximum": 100,
+      "suit": "fiskheroes:batman_dceu",
+      "passives": [
+        "Freeflow Combat & Counter Instinct",
+        "Glider Cape & Smoke Escape"
+      ],
+      "regen_idle": 8,
+      "regen_combat": 4,
+      "abilities": [
+        {
+          "key": "BATARANG",
+          "name": "Batarang Throw",
+          "name_vi": "Phi Batarang",
+          "cooldown": 5,
+          "cost": 10,
+          "range": 10,
+          "radius": 2.5,
+          "duration": 0,
+          "recast": 2,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.4,
+              "hits": 3,
+              "start": 0,
+              "interval": 0.1
+            },
+            {
+              "kind": "PHYSICAL",
+              "scale": 1.5,
+              "hits": 1,
+              "start": -1,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "slow": 0.3,
+            "interrupt": 1
+          },
+          "id": "BATMAN_BATARANG",
+          "slot": 1
+        },
+        {
+          "key": "BATCLAW",
+          "name": "Batclaw Pull & Slam",
+          "name_vi": "Móc Dơi Quật Ngược",
+          "cooldown": 9,
+          "cost": 15,
+          "range": 12,
+          "radius": 0,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 1.2,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "pull": 1,
+            "stun": 1,
+            "armor_reduction": 0.3,
+            "armor_duration": 3
+          },
+          "id": "BATMAN_BATCLAW",
+          "slot": 2
+        },
+        {
+          "key": "SMOKE_TAKEDOWN",
+          "name": "Smoke Bomb & Silent Takedown",
+          "name_vi": "Bom Khói Hạ Gục",
+          "cooldown": 16,
+          "cost": 20,
+          "range": 10,
+          "radius": 4,
+          "duration": 3,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [],
+          "effects": {
+            "blindness": 3,
+            "silence": 3,
+            "invisibility": 3,
+            "critical_scale": 2.5
+          },
+          "id": "BATMAN_SMOKE_TAKEDOWN",
+          "slot": 3
+        },
+        {
+          "key": "DETECTIVE_VISION",
+          "name": "Detective Vision",
+          "name_vi": "Tầm Nhìn Thám Tử",
+          "cooldown": 20,
+          "cost": 25,
+          "range": 10,
+          "radius": 20,
+          "duration": 6,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [],
+          "effects": {
+            "glowing": 6,
+            "vulnerability": 0.2
+          },
+          "id": "BATMAN_DETECTIVE_VISION",
+          "slot": 4
+        },
+        {
+          "key": "DISRUPTOR",
+          "name": "Disruptor Jammer",
+          "name_vi": "Thiết Bị Phá Sóng",
+          "cooldown": 18,
+          "cost": 20,
+          "range": 10,
+          "radius": 0,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [],
+          "effects": {
+            "silence": 2.5,
+            "shield_destroy": 1
+          },
+          "id": "BATMAN_DISRUPTOR",
+          "slot": 5
+        },
+        {
+          "key": "CAPE_COMBO",
+          "name": "Cape Sweep & Stun Combo",
+          "name_vi": "Áo Choàng Liên Hoàn",
+          "cooldown": 12,
+          "cost": 25,
+          "range": 4,
+          "radius": 0,
+          "duration": 0,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 0.5,
+              "hits": 4,
+              "start": 0.3,
+              "interval": 0.2
+            }
+          ],
+          "effects": {
+            "cone": 180,
+            "stun": 1.5,
+            "knockup": 0.6
+          },
+          "id": "BATMAN_CAPE_COMBO",
+          "slot": 6
+        },
+        {
+          "key": "BATWING_STRIKE",
+          "name": "Batwing Orbital Strike",
+          "name_vi": "Oanh Tạc Phi Thuyền Đêm",
+          "cooldown": 60,
+          "cost": 50,
+          "range": 10,
+          "radius": 5,
+          "duration": 3,
+          "recast": 0,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": true,
+          "phases": [
+            {
+              "kind": "TRUE_PHYSICAL",
+              "scale": 4.2,
+              "hits": 1,
+              "start": 2,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "slow": 0.7,
+            "silence": 2,
+            "stun": 2,
+            "knockback": 5
+          },
+          "id": "BATMAN_BATWING_STRIKE",
+          "slot": 7
+        }
+      ]
+    }
+  ],
+  "balance": {
+    "pvp_multiplier": 0.65,
+    "regular_cast_hp_cap": 0.25,
+    "ultimate_cast_hp_cap": 0.4,
+    "ultimate_attack_budget": 3,
+    "pvp_control_cap_ticks": 30,
+    "control_window_ticks": 200,
+    "pvp_silence_cap_ticks": 40,
+    "pvp_slow_cap": 0.65,
+    "max_targets": 12,
+    "ultimate_max_targets": 20,
+    "cooldown_reduction_cap": 0.5,
+    "max_displacement": 5,
+    "friendly_fire": false
+  },
+  "assumptions": [
+    "Area NxN means square side N; radial range is N/2 for matching circular visual bounds.",
+    "Mirror Dimension damages once per second for three ticks; Agamotto bands run two seconds after 2.5s freeze.",
+    "Thor final storm has four 0.5x bolts over two seconds by default.",
+    "Flash funnel lasts 1.8 seconds with six 0.3s damage pulses.",
+    "Iron Man laser burn is 5% max HP total spread over three seconds.",
+    "Batarang recast window is two seconds; all recasts share the first activation budget.",
+    "Independent drone damage is two drones, each 0.5x per second for eight seconds."
+  ]
+}

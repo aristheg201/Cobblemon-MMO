@@ -12,3 +12,6 @@
 
 # Local release candidates and build manifests
 /artifacts/
+
+# Local task execution ledgers and private review scratch
+.superpowers/
