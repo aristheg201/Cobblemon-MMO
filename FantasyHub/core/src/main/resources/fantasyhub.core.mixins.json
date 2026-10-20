@@ -10,7 +10,8 @@
     "KunaiSwingMixin",
     "StatusEffectLeaseAccess",
     "RiderDefenseMixin",
-    "RiderControlMixin"
+    "RiderControlMixin",
+    "HeroFlightSaveMixin"
   ],
   "injectors": {
     "defaultRequire": 1

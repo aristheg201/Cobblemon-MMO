@@ -21,8 +21,10 @@ public final class HeroEquipmentFiles {
     // SVFrame owns these modifiers, matching an iron axe (+8 damage, -3.1 speed).
     // Its source policy clears native item modifiers, preventing double application.
     var weapon=Map.of("HERO_THOR_STORMBREAKER",Map.of("type","tool","material","fantasyhub:stormbreaker","name","Stormbreaker","rarity","common","stats",Map.of("attack-damage",Map.of("value",8,"decimals",1),"attack-speed",Map.of("value",-3.1,"decimals",1))));
+    var capes=Map.of("HERO_THOR_CAPE",Map.of("type","accessory","material","fantasyhub:thor_cape","name","Thor Cape","rarity","common","stats",Map.of()),"HERO_SORCERER_SUPREME_CAPE",Map.of("type","accessory","material","fantasyhub:cloak_of_levitation","name","Cloak of Levitation","rarity","common","stats",Map.of()));
     return Map.of("SVFrameItems/items/heroes.yml",new Yaml().dump(items).getBytes(StandardCharsets.UTF_8),"SVFrameItems/rules/heroes.yml",new Yaml().dump(rules).getBytes(StandardCharsets.UTF_8),
         "SVFrameItems/items/heroes-weapons.yml",new Yaml().dump(weapon).getBytes(StandardCharsets.UTF_8),
-        "SVFrameItems/rules/heroes-weapons.yml",new Yaml().dump(Map.of("HERO_THOR_STORMBREAKER",Map.of("unbreakable",false,"disable-enchanting",false))).getBytes(StandardCharsets.UTF_8));
+        "SVFrameItems/rules/heroes-weapons.yml",new Yaml().dump(Map.of("HERO_THOR_STORMBREAKER",Map.of("unbreakable",false,"disable-enchanting",false))).getBytes(StandardCharsets.UTF_8),
+        "SVFrameItems/items/heroes-capes.yml",new Yaml().dump(capes).getBytes(StandardCharsets.UTF_8));
   }
 }

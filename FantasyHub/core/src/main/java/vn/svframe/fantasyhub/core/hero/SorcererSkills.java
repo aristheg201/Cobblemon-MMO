@@ -20,7 +20,7 @@ final class SorcererSkills {
       }
       case "ASTRAL_PROJECTION" -> {
         s.returnAnchor=p.getPos();s.flag("astral",a.duration());s.flag("busy",a.duration());HeroActions.actor(c,s.returnAnchor,a.duration());
-        HeroActions.effect(p,StatusEffects.INVISIBILITY,a.duration(),0);p.getAbilities().allowFlying=true;p.getAbilities().flying=true;p.getAbilities().setFlySpeed(.12f);p.sendAbilitiesUpdate();
+        HeroActions.effect(p,StatusEffects.INVISIBILITY,a.duration(),0);HeroFlight.claim(s,.12f);
       }
       case "SLING_RING" -> HeroActions.portal(c);
       case "IMAGES_OF_IKONN" -> {

@@ -16,6 +16,9 @@ public final class HeroBootstrap {
       if(in==null)throw new IOException("Missing superhero definitions");defaults=in.readAllBytes();
     }
     HeroDataInstaller.install(root,Map.of("FantasyHub/heroes.json",defaults));
+    try(var in=HeroBootstrap.class.getResourceAsStream("/default/hero-flight.json")){
+      if(in==null)throw new IOException("Missing hero flight rules");HeroDataInstaller.install(root,Map.of("FantasyHub/hero-flight.json",in.readAllBytes()));
+    }
     var c=HeroCatalog.parse(JsonParser.parseString(Files.readString(root.resolve("FantasyHub/heroes.json"))).getAsJsonObject());
     HeroDataInstaller.install(root,HeroClassFiles.generate(c));
     HeroDataInstaller.install(root,HeroEquipmentFiles.generate(c));

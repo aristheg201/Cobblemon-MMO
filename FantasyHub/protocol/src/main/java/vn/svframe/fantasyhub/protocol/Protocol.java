@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 public final class Protocol implements ModInitializer {
   private static boolean installed;
   public static final int VERSION = 3;
-  public static final String ASSET_REVISION = "heroes-expansion-v2";
+  public static final String ASSET_REVISION = "heroes-expansion-v3";
 
   public record Handshake(int version, String assets, String clientVersion, String diagnostic)
       implements CustomPayload {
@@ -44,6 +44,8 @@ public final class Protocol implements ModInitializer {
       zecterBelt,
       kunaiGun,
       stormbreaker,
+      thorCape,
+      levitationCloak,
       agitoBelt,
       zoldaBelt,
       ryukiBelt,
@@ -431,7 +433,10 @@ public final class Protocol implements ModInitializer {
             Registries.ITEM,
             Identifier.of("fantasyhub", "decade_belt"),
             new Item(new Item.Settings().maxCount(1)));
+    thorCape=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","thor_cape"),new HeroCapeItem(new Item.Settings().maxCount(1),"fantasyhub.flight.requirements.thor"));
+    levitationCloak=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","cloak_of_levitation"),new HeroCapeItem(new Item.Settings().maxCount(1),"fantasyhub.flight.requirements.sorcerer_supreme"));
     BeltEquipment.install();
+    BackEquipment.install();
     PayloadTypeRegistry.playS2C().register(Kabuto.ID, Kabuto.CODEC);
     PayloadTypeRegistry.playS2C().register(Rider.ID, Rider.CODEC);
     PayloadTypeRegistry.playS2C().register(RiderFx.ID, RiderFx.CODEC);

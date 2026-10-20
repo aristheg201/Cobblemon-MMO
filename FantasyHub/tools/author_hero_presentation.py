@@ -56,9 +56,9 @@ text={
 }
 passives_vi={
 'SPIDER_MAN':['Phản Xạ Nhện: 20% né đòn; né/lướt tích tối đa năm tầng tăng tốc và chí mạng.','Bám Tường: giữ tiến sát tường để leo; miễn sát thương rơi.'],
-'SORCERER_SUPREME':['Áo Choàng Bay: giữ cúi trên không để lượn; tự tạo khiên khi Máu dưới 30%.','Trực Giác Thần Thức: năm kỹ năng trúng cường hóa chiêu kế tiếp và giảm hồi chiêu.'],
+'SORCERER_SUPREME':['Áo Choàng Bay: trang bị áo choàng ở ô Back, nhấn đúp Nhảy để bay; tự tạo khiên khi Máu dưới 30%.','Trực Giác Thần Thức: năm kỹ năng trúng cường hóa chiêu kế tiếp và giảm hồi chiêu.'],
 'IRON_MAN':['Bay Phản Lực: nhấn đúp Nhảy để bật bay; tiêu hao Arc Power khi bay.','Quá Tải Lõi Arc: dùng chiêu tích nhiệt, đủ nhiệt nhận Overdrive sáu giây.'],
-'THOR':['Xoay Rìu Bay: giữ Nhảy trên không; Stormbreaker thu về gây thêm sát thương và làm chậm.','Giáp Sét: đánh thường tích tối đa năm tầng tăng giáp/sát thương sét; phản đòn cận chiến.'],
+'THOR':['Bay Asgard: đủ bộ Thor và áo choàng ô Back, nhấn đúp Nhảy để bay; vũ khí trở về gây thêm sát thương.','Giáp Sét: đánh thường tích tối đa năm tầng tăng giáp/sát thương sét; phản đòn cận chiến.'],
 'FLASH':['Speed Force: di chuyển tăng tối đa năm cấp tốc độ/sát thương; hồi Máu gấp bốn, kháng độc, Wither và buồn nôn.','Bắt Đạn: từ cấp tốc độ bốn, tự triệt tiêu đạn đang bay tới trong ba ô.'],
 'BATMAN':['Freeflow: tối đa mười tầng tăng tốc đánh/sát thương chí mạng; 15% đỡ đòn cận chiến phía trước.','Áo Choàng Lượn: giữ Nhảy để lượn; tự thoát bằng khói khi Máu dưới 25%.']}
 lookup={};icons={}

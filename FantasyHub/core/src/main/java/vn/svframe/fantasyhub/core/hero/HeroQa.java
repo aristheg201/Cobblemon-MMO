@@ -64,6 +64,12 @@ public final class HeroQa {
       }
       case "input" -> HeroRuntime.input(p,Integer.parseInt(value));
       case "weapon" -> p.equipStack(net.minecraft.entity.EquipmentSlot.MAINHAND,vn.svframe.svframeitems.SVFrameItems.generator().generate("hero_thor_stormbreaker",1));
+      case "back" -> {
+        String id=value.equalsIgnoreCase("thor")?"hero_thor_cape":value.equalsIgnoreCase("strange")?"hero_sorcerer_supreme_cape":"";
+        report.put("backEquip",setBack(p,id.isEmpty()?ItemStack.EMPTY:vn.svframe.svframeitems.SVFrameItems.generator().generate(id,1)));
+      }
+      case "save-flight" -> {var nbt=new net.minecraft.nbt.NbtCompound();p.writeNbt(nbt);report.put("savedAbilities",nbt.getCompound("abilities").toString());}
+      case "change-class" -> {SVFrameMMO.skillBar().leave(data);report.put("classChanged",data.changeClass(SVFrameMMO.classes().get(value.toUpperCase(Locale.ROOT)),PlayerClassChangeEvent.Reason.GUI));}
       case "strike","incoming" -> {
         var target=p.getServerWorld().getEntitiesByClass(LivingEntity.class,p.getBoundingBox().expand(6),e->e.getCommandTags().contains("hero_qa_target")).stream().findFirst().orElseThrow();
         if(action.equals("strike"))p.attack(target);
@@ -85,6 +91,7 @@ public final class HeroQa {
     p.getServer().getCommandSource().sendFeedback(()->Text.literal(new com.google.gson.Gson().toJson(report)),false);return 1;
   }
   private static void clearTestAccessories(ServerPlayerEntity p) {
+    if(net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("accessories"))setBack(p,ItemStack.EMPTY);
     if(!net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("trinkets"))return;
     try {
       var api=Class.forName("dev.emi.trinkets.api.TrinketsApi");
@@ -98,5 +105,29 @@ public final class HeroQa {
         slots.markDirty();
       }
     }catch(ReflectiveOperationException ex){throw new IllegalStateException("Cannot reset native QA accessories",ex);}
+  }
+  private static Map<String,Object> setBack(ServerPlayerEntity p,ItemStack stack){
+    try{
+      if(net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("accessories")){
+        var ref=Class.forName("io.wispforest.accessories.api.slot.SlotReference");var slot=ref.getMethod("of",LivingEntity.class,String.class,int.class).invoke(null,p,"back",0);
+        ref.getMethod("setStack",ItemStack.class).invoke(slot,ItemStack.EMPTY);
+        var api=Class.forName("io.wispforest.accessories.api.AccessoriesAPI");boolean allowed=stack.isEmpty()||(boolean)api.getMethod("canEquip",ItemStack.class,ref).invoke(null,stack,slot);
+        boolean wrong=false;if(!stack.isEmpty()){var belt=ref.getMethod("of",LivingEntity.class,String.class,int.class).invoke(null,p,"belt",0);wrong=(boolean)api.getMethod("canEquip",ItemStack.class,ref).invoke(null,stack,belt);}
+        boolean applied=allowed&&(boolean)ref.getMethod("setStack",ItemStack.class).invoke(slot,stack);return Map.of("backend","accessories","applied",applied,"wrongSlotCanEquip",wrong);
+      }
+      var api=Class.forName("dev.emi.trinkets.api.TrinketsApi");var type=Class.forName("dev.emi.trinkets.api.TrinketComponent");
+      var component=(Optional<?>)api.getMethod("getTrinketComponent",LivingEntity.class).invoke(null,p);if(component.isEmpty())return Map.of("applied",false,"reason","no component");
+      var groups=(Map<?,?>)type.getMethod("getInventory").invoke(component.get());var chest=(Map<?,?>)groups.get("chest");
+      if(chest==null||!(chest.get("back") instanceof net.minecraft.inventory.Inventory slot)||slot.size()==0)return Map.of("applied",false,"reason","no back slot","groups",groups.keySet().toString());
+      slot.setStack(0,ItemStack.EMPTY);
+      var refType=Class.forName("dev.emi.trinkets.api.SlotReference");var ref=refType.getConstructor(Class.forName("dev.emi.trinkets.api.TrinketInventory"),int.class).newInstance(slot,0);
+      boolean allowed=true;
+      if(!stack.isEmpty()){
+        var trinket=api.getMethod("getTrinket",net.minecraft.item.Item.class).invoke(null,stack.getItem());
+        allowed=(boolean)Class.forName("dev.emi.trinkets.api.Trinket").getMethod("canEquip",ItemStack.class,refType,LivingEntity.class).invoke(trinket,stack,ref,p);
+      }
+      if(allowed){slot.setStack(0,stack);slot.markDirty();}
+      return Map.of("backend","trinkets","applied",allowed,"slot",refType.getMethod("getId").invoke(ref));
+    }catch(ReflectiveOperationException e){throw new IllegalStateException("Cannot equip QA back cape",e);}
   }
 }

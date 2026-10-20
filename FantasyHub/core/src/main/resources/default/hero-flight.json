@@ -1,0 +1,24 @@
+{
+  "doubleTapTicks": 7,
+  "landingGraceTicks": 100,
+  "rules": {
+    "THOR": {
+      "enabled": true,
+      "capeItem": "fantasyhub:thor_cape",
+      "requiredArmor": {
+        "CHEST": "HERO_THOR_CHESTPLATE",
+        "LEGS": "HERO_THOR_LEGGINGS",
+        "FEET": "HERO_THOR_BOOTS"
+      },
+      "speed": 0.06,
+      "upkeepPerSecond": 0.0
+    },
+    "SORCERER_SUPREME": {
+      "enabled": true,
+      "capeItem": "fantasyhub:cloak_of_levitation",
+      "requiredArmor": {},
+      "speed": 0.05,
+      "upkeepPerSecond": 0.0
+    }
+  }
+}

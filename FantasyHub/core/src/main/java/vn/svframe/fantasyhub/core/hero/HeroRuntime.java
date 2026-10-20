@@ -27,12 +27,15 @@ import vn.svframe.svframemmo.SVFrameMMO;
 /** Class session/action coordinator. MMO remains the owner of resources, skill costs and saves. */
 public final class HeroRuntime {
   private static HeroCatalog catalog;
+  private static HeroFlightRules flightRules;
   private static final Map<UUID,Session> SESSIONS=new HashMap<>();
   static final HeroTimeline TIMELINE=new HeroTimeline();
   static MinecraftServer server;
   static long tick,sequence;
   private static boolean installed;
   public static HeroCatalog catalog(){return catalog;}
+  public static HeroFlightRules flightRules(){return flightRules;}
+  public static void saveFlightBaseline(ServerPlayerEntity p,net.minecraft.nbt.NbtCompound nbt){var s=SESSIONS.get(p.getUuid());if(s!=null&&s.player==p)HeroFlight.saveBaseline(s,nbt);}
 
   static final class Session {
     final ServerPlayerEntity player;
@@ -46,16 +49,17 @@ public final class HeroRuntime {
     final Map<String,Cast> recasts=new HashMap<>();
     final Map<Long,Cast> casts=new HashMap<>();
     final List<Runnable> cleanup=new ArrayList<>();
-    final boolean priorFlight,priorFlying,priorNoClip;
-    final float priorFlySpeed;
+    final boolean priorNoClip;
+    final HeroFlightLease flightLease=new HeroFlightLease();
+    final Map<net.minecraft.entity.EquipmentSlot,net.minecraft.component.type.NbtComponent> armorComponents=new EnumMap<>(net.minecraft.entity.EquipmentSlot.class);
+    final Map<String,String> armorIds=new HashMap<>();
     Vec3d lastPosition,lastSafe,returnAnchor,channelAnchor;
     long lastInput,lastJump=-100,lastHit=-100,emergencyReady,movementTicks;
     int inputFlags,heat,speedLevel,standingTicks;
     boolean jumping,emergencyPending;
     Session(ServerPlayerEntity p,HeroCatalog.Hero hero) {
       player=p;world=p.getServerWorld();this.hero=hero;
-      priorFlight=p.getAbilities().allowFlying;priorFlying=p.getAbilities().flying;
-      priorFlySpeed=p.getAbilities().getFlySpeed();priorNoClip=p.noClip;
+      priorNoClip=p.noClip;
       lastPosition=lastSafe=p.getPos();
     }
     double passive(String key){return hero.passive(key);}
@@ -132,6 +136,9 @@ public final class HeroRuntime {
       for(var owner:List.copyOf(SESSIONS.values()))if(!valid(owner))close(owner);
     });
     ServerPlayConnectionEvents.DISCONNECT.register((handler,s)->{var owner=SESSIONS.get(handler.player.getUuid());if(owner!=null)close(owner);});
+    net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer,newPlayer,alive)->{
+      var previous=SESSIONS.get(oldPlayer.getUuid());if(previous!=null&&previous.player==oldPlayer){HeroFlight.restoreForRespawn(previous,newPlayer);close(previous);}
+    });
     ServerLifecycleEvents.SERVER_STOPPING.register(s->{for(var owner:List.copyOf(SESSIONS.values()))close(owner);TIMELINE.clear();HeroControl.clear();HeroBarriers.clear();server=null;});
   }
   static Session session(ServerPlayerEntity p) {
@@ -156,7 +163,9 @@ public final class HeroRuntime {
     try {
       HeroBootstrap.install();
       var next=HeroCatalog.parse(JsonParser.parseString(Files.readString(FabricLoader.getInstance().getConfigDir().resolve("FantasyHub/heroes.json"))).getAsJsonObject());
+      var nextFlight=HeroFlightRules.parse(JsonParser.parseString(Files.readString(FabricLoader.getInstance().getConfigDir().resolve("FantasyHub/hero-flight.json"))).getAsJsonObject());
       for(var s:List.copyOf(SESSIONS.values()))close(s);catalog=next;HeroControl.configure(next);
+      flightRules=nextFlight;
       if(installed&&SVFrameLib.inst()!=null)materializeHandlers();
     } catch(IOException failure){throw new IllegalStateException("Cannot load superhero definitions",failure);}
   }
@@ -199,6 +208,8 @@ public final class HeroRuntime {
     // Keep the existing inspector keys while exposing native passive observations.
     info.put("superSpeed",s.active("super_speed"));
     for(String key:List.of("instinct","mystic","static","combo"))info.put(key,s.power.stacks(key,tick));
+    info.put("flightEligible",HeroFlight.eligible(s));info.put("backItem",HeroFlight.backItem(s));
+    info.put("allowFlying",p.getAbilities().allowFlying);info.put("flying",p.getAbilities().flying);info.put("flySpeed",p.getAbilities().getFlySpeed());info.put("flightLeaseOwned",s.flightLease.owned());
     info.put("pendingActions",TIMELINE.pending());return info;
   }
   private static final class Handler extends SkillHandler<Prepared> implements NativeSkillProviders.BackedHandler {

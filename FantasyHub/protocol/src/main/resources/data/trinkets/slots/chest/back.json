@@ -1,0 +1,8 @@
+{
+  "amount": 1,
+  "operation": "SET",
+  "icon": "trinkets:gui/slots/back",
+  "validator_predicates": [
+    "trinkets:tag"
+  ]
+}

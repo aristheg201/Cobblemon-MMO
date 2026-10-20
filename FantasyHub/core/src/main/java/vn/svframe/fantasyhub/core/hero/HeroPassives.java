@@ -39,8 +39,13 @@ final class HeroPassives {
   static void input(HeroRuntime.Session s,int flags) {
     boolean jump=(flags&1)!=0;
     if(jump&&!s.jumping) {
-      if(s.hero.id().equals("IRON_MAN")&&!s.player.isOnGround()&&HeroRuntime.tick-s.lastJump<=7&&!HeroControl.mobilityLocked(s.player))flight(s,!s.active("flight"));
-      s.lastJump=HeroRuntime.tick;
+      boolean pair=!s.player.isOnGround()&&HeroRuntime.tick-s.lastJump<=HeroRuntime.flightRules().doubleTapTicks()&&!HeroControl.mobilityLocked(s.player);
+      if(pair){
+        if(s.active("flight"))flight(s,false);
+        else if(s.hero.id().equals("IRON_MAN")||HeroFlight.eligible(s))flight(s,true);
+        else if(HeroRuntime.flightRules().rule(s.hero.id())!=null)s.player.sendMessage(net.minecraft.text.Text.translatable("fantasyhub.flight.requirements."+s.hero.id().toLowerCase(Locale.ROOT)),true);
+      }
+      s.lastJump=pair?-100:HeroRuntime.tick;
     }s.jumping=jump;
   }
   static void castStarted(HeroRuntime.Cast c) {
@@ -94,6 +99,7 @@ final class HeroPassives {
     double moved=p.getPos().subtract(s.lastPosition).multiply(1,0,1).length();s.lastPosition=p.getPos();
     if(p.isOnGround()||HeroWorld.safe(p,p.getPos(),true))s.lastSafe=p.getPos();
     if(HeroControl.mobilityLocked(p)){if(s.active("flight"))flight(s,false);}
+    HeroFlight.tick(s);
     if(s.hero.id().equals("FLASH")) {
       if(moved>.025&&moved<.7){s.movementTicks++;s.standingTicks=0;}else if(++s.standingTicks>40)s.movementTicks=Math.max(0,s.movementTicks-2);
       s.speedLevel=Math.min((int)s.passive("speed_max"),(int)(s.movementTicks/(s.passive("speed_level_seconds")*20)));
@@ -114,17 +120,16 @@ final class HeroPassives {
     }
     if(s.hero.id().equals("IRON_MAN")&&s.active("flight")&&tick%20==0&&!spend(s,s.passive("flight_upkeep")))flight(s,false);
     if(s.active("astral")){p.fallDistance=0;}else if(s.returnAnchor!=null){
-      HeroWorld.teleport(p,s.returnAnchor);s.returnAnchor=null;restoreFlight(s);gain(s,s.hero.maximum()*HeroRuntime.catalog().ability("SORCERER_SUPREME_ASTRAL_PROJECTION").effect("mana_refund"));
+      HeroWorld.teleport(p,s.returnAnchor);s.returnAnchor=null;if(s.active("flight"))HeroFlight.claim(s,HeroFlight.speed(s));else HeroFlight.release(s);gain(s,s.hero.maximum()*HeroRuntime.catalog().ability("SORCERER_SUPREME_ASTRAL_PROJECTION").effect("mana_refund"));
     }
-    if(s.active("flight")||s.active("astral")){p.fallDistance=0;if(!p.getAbilities().allowFlying){p.getAbilities().allowFlying=true;p.getAbilities().flying=true;p.sendAbilitiesUpdate();}}
+    if(s.active("flight")||s.active("astral")){p.fallDistance=0;HeroFlight.claim(s,s.active("astral")?.12f:HeroFlight.speed(s));}
     boolean input=(s.inputFlags&1)!=0,forward=(s.inputFlags&2)!=0,sneak=(s.inputFlags&4)!=0;
     if(s.hero.id().equals("SPIDER_MAN")&&forward&&!p.isOnGround()&&!HeroControl.mobilityLocked(p)) {
       var box=p.getBoundingBox().expand(s.passive("wall_range"),0,s.passive("wall_range"));
       if(!s.world.isSpaceEmpty(p,box)){HeroWorld.velocity(p,new Vec3d(p.getVelocity().x,s.passive("wall_rise"),p.getVelocity().z));p.fallDistance=0;}
     }
     if(!p.isOnGround()&&!HeroControl.mobilityLocked(p)) {
-      if(s.hero.id().equals("SORCERER_SUPREME")&&sneak||s.hero.id().equals("BATMAN")&&input){Vec3d facing=HeroWorld.forward(p);HeroWorld.velocity(p,facing.multiply(s.hero.id().equals("BATMAN")?.45:.12).add(0,-.06,0));p.fallDistance=0;}
-      if(s.hero.id().equals("THOR")&&input){HeroWorld.velocity(p,p.getRotationVec(1).multiply(.5).add(0,.12,0));p.fallDistance=0;}
+      if(s.hero.id().equals("SORCERER_SUPREME")&&sneak&&!s.active("flight")&&!s.active("astral")&&HeroFlight.eligible(s)||s.hero.id().equals("BATMAN")&&input){Vec3d facing=HeroWorld.forward(p);HeroWorld.velocity(p,facing.multiply(s.hero.id().equals("BATMAN")?.45:.12).add(0,-.06,0));p.fallDistance=0;}
     }
     if(tick%4==0)refresh(s);
   }
@@ -161,16 +166,22 @@ final class HeroPassives {
     instance.removeModifier(id);if(value!=0)instance.addTemporaryModifier(new EntityAttributeModifier(id,value,EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
   }
   static void flight(HeroRuntime.Session s,boolean on) {
-    if(on){s.flag("flight",0);s.player.getAbilities().allowFlying=true;s.player.getAbilities().flying=true;s.player.getAbilities().setFlySpeed(.08f);s.player.sendAbilitiesUpdate();}
-    else {s.power.unset("flight");restoreFlight(s);}
+    boolean changed=s.active("flight")!=on;
+    if(on){if(!s.hero.id().equals("IRON_MAN")&&!HeroFlight.eligible(s))return;s.flag("flight",0);HeroFlight.claim(s,HeroFlight.speed(s));}
+    else {s.power.unset("flight");if(!s.active("astral"))HeroFlight.release(s);}
+    if(changed)s.player.sendMessage(net.minecraft.text.Text.translatable("fantasyhub.flight."+(on?"enabled":"disabled")),true);
   }
-  private static void restoreFlight(HeroRuntime.Session s){var p=s.player;if(!p.isCreative()&&!p.isSpectator()){p.getAbilities().allowFlying=s.priorFlight;p.getAbilities().flying=s.priorFlying;p.getAbilities().setFlySpeed(s.priorFlySpeed);p.sendAbilitiesUpdate();}}
   static void restoreMovement(HeroRuntime.Session s){
     if(s.returnAnchor!=null&&s.world==s.player.getWorld())HeroWorld.teleport(s.player,s.returnAnchor);
     if(s.player.noClip&&!s.priorNoClip&&!HeroWorld.safe(s.player,s.player.getPos(),true))HeroWorld.teleport(s.player,s.lastSafe);
-    s.player.noClip=s.priorNoClip;restoreFlight(s);
+    s.player.noClip=s.priorNoClip;HeroFlight.release(s);
     attribute(s.player,EntityAttributes.GENERIC_MOVEMENT_SPEED,"speed",0);attribute(s.player,EntityAttributes.GENERIC_ATTACK_SPEED,"attack_speed",0);attribute(s.player,EntityAttributes.GENERIC_ARMOR,"armor",0);
   }
-  static boolean spend(HeroRuntime.Session s,double amount) {var data=SVFrameMMO.playerData().get(s.player);var resource=PlayerResource.valueOf(s.hero.resource());if(resource.getCurrent(data)<amount)return false;return resource.give(data,-amount,ResourceUpdateReason.SKILL);}
+  static boolean spend(HeroRuntime.Session s,double amount) {
+    if(!Double.isFinite(amount)||amount<0)return false;
+    // Native setResource returns false for a no-op; free upkeep is still paid.
+    if(amount==0)return true;
+    var data=SVFrameMMO.playerData().get(s.player);var resource=PlayerResource.valueOf(s.hero.resource());if(resource.getCurrent(data)<amount)return false;return resource.give(data,-amount,ResourceUpdateReason.SKILL);
+  }
   static void gain(HeroRuntime.Session s,double amount){PlayerResource.valueOf(s.hero.resource()).give(SVFrameMMO.playerData().get(s.player),amount,ResourceUpdateReason.SKILL);}
 }

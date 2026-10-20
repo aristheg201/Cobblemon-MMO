@@ -78,12 +78,14 @@ public final class FantasyHubClient implements ClientModInitializer {
                 Protocol.zoldaBelt,
                 Protocol.ryukiBelt,
                 Protocol.knightBelt,
-                Protocol.decadeBelt))
+                Protocol.decadeBelt,
+                Protocol.thorCape,
+                Protocol.levitationCloak))
           Class.forName("io.wispforest.accessories.api.client.AccessoriesRendererRegistry")
               .getMethod("registerNoRenderer", net.minecraft.item.Item.class)
               .invoke(null, belt);
       } catch (ReflectiveOperationException failure) {
-        throw new IllegalStateException("Cannot register the native Zecter belt renderer", failure);
+        throw new IllegalStateException("Cannot register native equipment renderers", failure);
       }
     net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.INSTANCE.register(
         Protocol.kabutoHat,

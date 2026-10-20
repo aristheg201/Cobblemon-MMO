@@ -294,7 +294,7 @@
   "fantasyhub.hero.description.spider_man_world_web_trap": "Trói chân, gây mù cả vùng, chém sáu nhát rồi kích nổ mạng nhện bằng sát thương chuẩn.",
   "fantasyhub.hero.resource.spider_man": "Thể lực",
   "fantasyhub.hero.name.sorcerer_supreme": "Phù Thủy Tối Thượng",
-  "fantasyhub.hero.passive.sorcerer_supreme.1": "Áo Choàng Bay: giữ cúi trên không để lượn; tự tạo khiên khi Máu dưới 30%.",
+  "fantasyhub.hero.passive.sorcerer_supreme.1": "Áo Choàng Bay: trang bị áo choàng ở ô Back, nhấn đúp Nhảy để bay; tự tạo khiên khi Máu dưới 30%.",
   "fantasyhub.hero.passive.sorcerer_supreme.2": "Trực Giác Thần Thức: năm kỹ năng trúng cường hóa chiêu kế tiếp và giảm hồi chiêu.",
   "fantasyhub.skill.sorcerer_supreme_eldritch_whip": "Ruy-Băng Ma Thuật",
   "fantasyhub.hero.description.sorcerer_supreme_eldritch_whip": "Quất roi ma thuật; bấm lại trong hai giây để kéo và làm chậm cùng mục tiêu.",
@@ -330,7 +330,7 @@
   "fantasyhub.hero.description.iron_man_orbital_strike": "Khóa vùng, bắn pháo vệ tinh gây sát thương chuẩn, phá khiên và gây câm lặng bằng EMP.",
   "fantasyhub.hero.resource.iron_man": "Năng lượng Arc",
   "fantasyhub.hero.name.thor": "Lôi Thần Thor",
-  "fantasyhub.hero.passive.thor.1": "Xoay Rìu Bay: giữ Nhảy trên không; Stormbreaker thu về gây thêm sát thương và làm chậm.",
+  "fantasyhub.hero.passive.thor.1": "Bay Asgard: đủ bộ Thor và áo choàng ô Back, nhấn đúp Nhảy để bay; vũ khí trở về gây thêm sát thương.",
   "fantasyhub.hero.passive.thor.2": "Giáp Sét: đánh thường tích tối đa năm tầng tăng giáp/sát thương sét; phản đòn cận chiến.",
   "fantasyhub.skill.thor_mjolnir_throw": "Ném Rìu Stormbreaker",
   "fantasyhub.hero.description.thor_mjolnir_throw": "Ném Stormbreaker, gây choáng tại điểm cuối rồi đánh thêm và làm chậm trên đường thu rìu.",
@@ -392,5 +392,12 @@
   "fantasyhub.hero.hud.flight": "Đang bay",
   "fantasyhub.hero.hud.awakened": "Thức tỉnh",
   "fantasyhub.hero.hud.phasing": "Xuyên thể",
-  "item.fantasyhub.stormbreaker": "Stormbreaker"
+  "item.fantasyhub.stormbreaker": "Stormbreaker",
+  "item.fantasyhub.thor_cape": "Áo choàng Thor",
+  "item.fantasyhub.cloak_of_levitation": "Áo choàng Bay",
+  "fantasyhub.flight.requirements.thor": "Bay: class Thor + đủ áo, quần, giày Thor + áo choàng Thor ở ô Back.",
+  "fantasyhub.flight.requirements.sorcerer_supreme": "Bay: class Sorcerer Supreme + Áo choàng Bay ở ô Back.",
+  "fantasyhub.flight.enabled": "Đã bật bay · Nhấn đúp Jump để hạ cánh",
+  "fantasyhub.flight.disabled": "Đã tắt bay",
+  "fantasyhub.flight.control": "Ô Back · Nhấn đúp Jump để bật/tắt bay"
 }

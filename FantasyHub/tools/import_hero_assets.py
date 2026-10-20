@@ -22,7 +22,14 @@ for hero,(source,chest,legs,boots) in heroes.items():
   path=out/f'models/item/heroes/hero_{hero}_{part}.json';path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps({'parent':'minecraft:item/generated','textures':{'layer0':f'fantasyhub:item/heroes/hero_{hero}_{part}'}},indent=2)+'\n')
  if hero in ['sorcerer_supreme','batman']:copy(fisk,f'assets/fiskheroes/textures/heroes/{source}_cape.png',f'textures/armor/heroes/{hero}_cape.png')
 for slot,suffix in [('chest','layer1'),('legs','layer2'),('feet','layer1')]:copy(jmct,f'assets/jmctheroes/textures/heroes/thor/thor_infinity_{suffix}.png',f'textures/armor/heroes/thor_{slot}.png')
-# The Infinity variant is unmasked and capeless, following its actual renderer definition.
+# Back-slot flight now has its own cape, independent of the unmasked armor.
+copy(jmct,'assets/jmctheroes/textures/heroes/thor/thor_cape.png','textures/armor/heroes/thor_cape.png')
+atlas=out.parent/'minecraft/atlases/blocks.json'
+atlas_data=json.loads(atlas.read_text()) if atlas.exists() else {'sources':[]}
+for cape in ['thor','sorcerer_supreme']:
+ resource=f'fantasyhub:armor/heroes/{cape}_cape'
+ if not any(s.get('resource')==resource for s in atlas_data['sources']):atlas_data['sources'].append({'type':'minecraft:single','resource':resource})
+atlas.parent.mkdir(parents=True,exist_ok=True);atlas.write_text(json.dumps(atlas_data,indent=2)+'\n')
 for i,part in [(1,'chestplate'),(2,'leggings'),(3,'boots')]:
  copy(jmct,f'assets/jmctheroes/textures/items/heroes/thor_infinity_{i}.png',f'textures/item/heroes/hero_thor_{part}.png')
  path=out/f'models/item/heroes/hero_thor_{part}.json';path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps({'parent':'minecraft:item/generated','textures':{'layer0':f'fantasyhub:item/heroes/hero_thor_{part}'}},indent=2)+'\n')

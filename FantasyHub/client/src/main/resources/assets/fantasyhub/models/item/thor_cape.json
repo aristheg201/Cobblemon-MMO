@@ -1,0 +1,118 @@
+{
+  "textures": {
+    "cape": "fantasyhub:armor/heroes/thor_cape",
+    "particle": "fantasyhub:armor/heroes/thor_cape"
+  },
+  "texture_size": [
+    64,
+    32
+  ],
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        7.5
+      ],
+      "to": [
+        13,
+        16,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0.25,
+            0.5,
+            2.75,
+            12.5
+          ],
+          "texture": "#cape"
+        },
+        "south": {
+          "uv": [
+            3,
+            0.5,
+            5.5,
+            12.5
+          ],
+          "texture": "#cape"
+        },
+        "west": {
+          "uv": [
+            0,
+            0.5,
+            0.25,
+            12.5
+          ],
+          "texture": "#cape"
+        },
+        "east": {
+          "uv": [
+            2.75,
+            0.5,
+            3,
+            12.5
+          ],
+          "texture": "#cape"
+        },
+        "up": {
+          "uv": [
+            0.25,
+            0,
+            2.75,
+            0.5
+          ],
+          "texture": "#cape"
+        },
+        "down": {
+          "uv": [
+            2.75,
+            0,
+            5.25,
+            0.5
+          ],
+          "texture": "#cape"
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        10,
+        25,
+        0
+      ],
+      "scale": [
+        0.85,
+        0.85,
+        0.85
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -90,
+        20
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  }
+}

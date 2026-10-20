@@ -29,7 +29,9 @@ public final class HeroArmorFeature extends FeatureRenderer<AbstractClientPlayer
     if(entity.isInvisible())return;qaRenders++;
     for(var slot:List.of(EquipmentSlot.HEAD,EquipmentSlot.CHEST,EquipmentSlot.LEGS,EquipmentSlot.FEET))renderSlot(matrices,vertices,light,entity,slot,getContextModel(),age);
     String chest=suit(entity.getEquippedStack(EquipmentSlot.CHEST));
-    if(chest.equals("batman")||chest.equals("sorcerer_supreme"))cape(matrices,vertices,light,getContextModel(),entity,chest,age);
+    var back=vn.svframe.fantasyhub.protocol.BackEquipment.equippedAny(entity);
+    String cape=HeroCapePresentation.fallback(entity.getSkinTextures().capeTexture()!=null&&entity.isPartVisible(net.minecraft.entity.player.PlayerModelPart.CAPE),back.isOf(vn.svframe.fantasyhub.protocol.Protocol.thorCape),back.isOf(vn.svframe.fantasyhub.protocol.Protocol.levitationCloak),chest);
+    if(entity.isPartVisible(net.minecraft.entity.player.PlayerModelPart.CAPE)&&!cape.isEmpty())cape(matrices,vertices,light,getContextModel(),entity,cape,age);
     HeroEquipmentModels.held(matrices,vertices,light,getContextModel(),entity,age);
   }
   private static void copy(BipedEntityModel<?> source){

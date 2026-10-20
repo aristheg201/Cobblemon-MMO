@@ -392,5 +392,12 @@
   "fantasyhub.hero.hud.flight": "Flight",
   "fantasyhub.hero.hud.awakened": "Awakened",
   "fantasyhub.hero.hud.phasing": "Phasing",
-  "item.fantasyhub.stormbreaker": "Stormbreaker"
+  "item.fantasyhub.stormbreaker": "Stormbreaker",
+  "item.fantasyhub.thor_cape": "Thor Cape",
+  "item.fantasyhub.cloak_of_levitation": "Cloak of Levitation",
+  "fantasyhub.flight.requirements.thor": "Flight: Thor class + Thor chestplate, leggings, boots + Thor cape in Back.",
+  "fantasyhub.flight.requirements.sorcerer_supreme": "Flight: Sorcerer Supreme class + Cloak of Levitation in Back.",
+  "fantasyhub.flight.enabled": "Flight enabled · Double-tap Jump to land",
+  "fantasyhub.flight.disabled": "Flight disabled",
+  "fantasyhub.flight.control": "Back slot · Double-tap Jump to toggle flight"
 }
