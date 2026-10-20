@@ -20,6 +20,7 @@
     "fantasyhubclient.mixins.json"
   ],
   "custom": {
-    "svframe-client-patch": "vanilla-xp-preserved-1"
+    "svframe-client-patch": "vanilla-xp-preserved-1",
+    "svframe-startup-patch": "native-geometry-isolation-1"
   }
 }

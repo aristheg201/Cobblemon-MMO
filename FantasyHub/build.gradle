@@ -55,6 +55,13 @@ project(':client') {
         // Index the final merged mod resources, not a stale authoring snapshot.
         doLast {
             def resourceRoot = destinationDir.toPath()
+            // geo/ is shared with GeckoLib/AzureLib, which scan every namespace.
+            // Reject private/native formats here before producing an unloadable JAR.
+            fileTree(new File(destinationDir, 'assets/fantasyhub/geo')).matching { include '**/*.json' }.files.each { file ->
+                def geometry = new groovy.json.JsonSlurper().parse(file)['minecraft:geometry']
+                if (!(geometry instanceof List) || geometry.isEmpty())
+                    throw new GradleException("Non-Bedrock model in reserved geo/ directory: ${file}. Use native_geometry/ for native formats.")
+            }
             // A targeted armor export must not drop existing summon models.
             def riderModels = fileTree(new File(destinationDir, 'assets/fantasyhub/models/item/riders')).matching { include '**/*.json' }.files.collect { file ->
                 'fantasyhub:' + new File(destinationDir, 'assets/fantasyhub/models').toPath().relativize(file.toPath()).toString().replace('\\', '/').replaceAll(/\.json$/, '')

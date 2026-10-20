@@ -34,15 +34,20 @@ for i,part in [(1,'chestplate'),(2,'leggings'),(3,'boots')]:
  copy(jmct,f'assets/jmctheroes/textures/items/heroes/thor_infinity_{i}.png',f'textures/item/heroes/hero_thor_{part}.png')
  path=out/f'models/item/heroes/hero_thor_{part}.json';path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps({'parent':'minecraft:item/generated','textures':{'layer0':f'fantasyhub:item/heroes/hero_thor_{part}'}},indent=2)+'\n')
 for slot in ['layer1','layer2']:copy(fisk,f'assets/fiskheroes/textures/heroes/iron_man_lights_{slot}.png',f'textures/armor/heroes/iron_man_lights_{slot}.png')
+# geo/ is globally scanned by GeckoLib and AzureLib for Bedrock models.
+# These source mesh/Tabula formats belong only to our native renderer.
+geometry='native_geometry/heroes'
+for name in ['cape_default','cape_batman','tao_mandala','mjolnir','stormbreaker']:
+ (out/f'geo/heroes/{name}.json').unlink(missing_ok=True)
 for name in ['cape_default','cape_batman']:
- copy(fisk,f'assets/fiskheroes/models/mesh/{name}.mesh.json',f'geo/heroes/{name}.json')
-copy(fisk,'assets/fiskheroes/models/shapes/tao_mandala.json','geo/heroes/tao_mandala.json')
+ copy(fisk,f'assets/fiskheroes/models/mesh/{name}.mesh.json',f'{geometry}/{name}.json')
+copy(fisk,'assets/fiskheroes/models/shapes/tao_mandala.json',f'{geometry}/tao_mandala.json')
 for name in ['mjolnir','stormbreaker']:
  import io
  table=zipfile.ZipFile(io.BytesIO(jmct.read(f'assets/jmctheroes/models/tabula/{name}.tbl')))
- data=json.loads(table.read('model.json'));path=out/f'geo/heroes/{name}.json';path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(data,indent=2)+'\n')
+ data=json.loads(table.read('model.json'));path=out/f'{geometry}/{name}.json';path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(data,indent=2)+'\n')
  copy(jmct,f'assets/jmctheroes/textures/heroes/thor/{name}.png',f'textures/item/heroes/{name}.png')
- manifest.append({'sourceArchive':a.jmct.name,'source':f'assets/jmctheroes/models/tabula/{name}.tbl!model.json','target':f'assets/fantasyhub/geo/heroes/{name}.json','author':data.get('authorName'),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
+ manifest.append({'sourceArchive':a.jmct.name,'source':f'assets/jmctheroes/models/tabula/{name}.tbl!model.json','target':f'assets/fantasyhub/{geometry}/{name}.json','author':data.get('authorName'),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
 (out/'heroes-assets.json').write_text(json.dumps({'distribution':'INTERNAL_ONLY','binaryForgeRuntimeBundled':False,'sources':[{'project':'FiskHeroes 2.4.0','url':'https://modrinth.com/mod/fiskheroes'},{'project':"JMCT’s Heropack 3.1.0",'url':'https://www.curseforge.com/minecraft/customization/jmcts-heropack/files/4625355'}],'files':manifest},indent=2)+'\n')
 models=sorted('fantasyhub:'+str(f.relative_to(out/'models')).replace('.json','') for f in (out/'models/item/heroes').glob('*.json'))
 (out/'heroes-models.json').write_text(json.dumps(models,indent=2)+'\n')

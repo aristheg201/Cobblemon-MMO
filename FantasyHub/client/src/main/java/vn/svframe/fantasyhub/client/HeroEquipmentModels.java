@@ -32,7 +32,7 @@ public final class HeroEquipmentModels {
       result.add(new Node(position,rotation,scale,cube,o.has("children")?nodes(o.getAsJsonArray("children"),width,height):List.of()));
     }return result;
   }
-  private static Mesh load(String name){try(var in=HeroEquipmentModels.class.getResourceAsStream("/assets/fantasyhub/geo/heroes/"+name+".json")) {
+  private static Mesh load(String name){try(var in=HeroEquipmentModels.class.getResourceAsStream("/assets/fantasyhub/native_geometry/heroes/"+name+".json")) {
     if(in==null)throw new IOException("Missing native weapon "+name);var o=JsonParser.parseReader(new InputStreamReader(in,java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();float w=o.get("textureWidth").getAsFloat(),h=o.get("textureHeight").getAsFloat();return new Mesh(w,h,nodes(o.getAsJsonArray("cubes"),w,h));
   }catch(IOException failure){throw new IllegalStateException(failure);}}
   public static boolean overrides(LivingEntity player) {
