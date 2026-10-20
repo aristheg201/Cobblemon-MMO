@@ -332,8 +332,8 @@
   "fantasyhub.hero.name.thor": "Lôi Thần Thor",
   "fantasyhub.hero.passive.thor.1": "Bay Asgard: đủ bộ Thor và áo choàng ô Back, nhấn đúp Nhảy để bay; vũ khí trở về gây thêm sát thương.",
   "fantasyhub.hero.passive.thor.2": "Giáp Sét: đánh thường tích tối đa năm tầng tăng giáp/sát thương sét; phản đòn cận chiến.",
-  "fantasyhub.skill.thor_mjolnir_throw": "Ném Rìu Stormbreaker",
-  "fantasyhub.hero.description.thor_mjolnir_throw": "Ném Stormbreaker, gây choáng tại điểm cuối rồi đánh thêm và làm chậm trên đường thu rìu.",
+  "fantasyhub.skill.thor_mjolnir_throw": "Ném Búa Mjolnir",
+  "fantasyhub.hero.description.thor_mjolnir_throw": "Ném Mjolnir, gây choáng tại điểm cuối rồi đánh thêm và làm chậm trên đường thu rìu.",
   "fantasyhub.skill.thor_thunderous_slam": "Nhảy Vọt Dậm Sét",
   "fantasyhub.hero.description.thor_thunderous_slam": "Nhảy vọt rồi dậm sấm, gây sát thương và hất tung kẻ địch quanh điểm đáp.",
   "fantasyhub.skill.thor_lightning_spin": "Lốc Xoáy Sét",
@@ -399,5 +399,7 @@
   "fantasyhub.flight.requirements.sorcerer_supreme": "Bay: class Sorcerer Supreme + Áo choàng Bay ở ô Back.",
   "fantasyhub.flight.enabled": "Đã bật bay · Nhấn đúp Jump để hạ cánh",
   "fantasyhub.flight.disabled": "Đã tắt bay",
-  "fantasyhub.flight.control": "Ô Back · Nhấn đúp Jump để bật/tắt bay"
+  "fantasyhub.flight.control": "Ô Back · Nhấn đúp Jump để bật/tắt bay",
+  "item.fantasyhub.batman_cape": "Áo Choàng Liệng Batman",
+  "fantasyhub.glide.requirements.batman": "Class Batman + cape trong ô Back. Giữ Nhảy khi đang rơi để liệng; thả để dừng."
 }

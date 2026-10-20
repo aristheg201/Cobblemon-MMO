@@ -37,6 +37,9 @@ public final class HeroRuntime {
   public static HeroFlightRules flightRules(){return flightRules;}
   public static void saveFlightBaseline(ServerPlayerEntity p,net.minecraft.nbt.NbtCompound nbt){var s=SESSIONS.get(p.getUuid());if(s!=null&&s.player==p)HeroFlight.saveBaseline(s,nbt);}
 
+  public static boolean batmanGliding(ServerPlayerEntity p){
+    var s=SESSIONS.get(p.getUuid());return s!=null&&s.player==p&&valid(s)&&s.hero.id().equals("BATMAN")&&s.active("cape_glide")&&!p.isOnGround()&&!p.isTouchingWater()&&!p.hasVehicle()&&!HeroControl.mobilityLocked(p)&&!vn.svframe.fantasyhub.protocol.BackEquipment.equipped(p,vn.svframe.fantasyhub.protocol.Protocol.batmanCape).isEmpty();
+  }
   static final class Session {
     final ServerPlayerEntity player;
     final ServerWorld world;
@@ -119,7 +122,7 @@ public final class HeroRuntime {
       var s=SESSIONS.get(data.getUniqueId());String id=skill.getSkill().getId();
       return s!=null&&valid(s)&&(s.power.canRecast(id,tick)||id.equals("FLASH_SUPER_SPEED")&&s.active("super_speed"));
     });
-    HeroCombat.install();HeroPassives.install();HeroQa.install();
+    HeroCombat.install();HeroPassives.install();HeroGearIntegrity.install();HeroQa.install();
     vn.svframe.svframelib.entity.RpgEntityAdapters.register("fantasyhub:heroes",new vn.svframe.svframelib.entity.RpgEntityAdapters.Adapter(){
       public boolean supports(LivingEntity target){return false;}
       public boolean allows(Entity actor,LivingEntity target,vn.svframe.svframelib.entity.RpgEntityAdapters.Effect effect){return true;}
@@ -188,7 +191,7 @@ public final class HeroRuntime {
       if(a.recast()>0){s.power.openRecast(a.id(),(int)(a.recast()*20),tick);s.recasts.put(a.id(),cast);}
       HeroPassives.castStarted(cast);
     }
-    HeroPresentation.cue(cast,"CAST",s.player.getPos(),cast.point,Math.min(6,Math.max(.5,Math.max(a.duration(),a.phases().stream().mapToDouble(ph->Math.max(0,ph.start())+(ph.hits()-1)*ph.interval()).max().orElse(a.castTime())))));
+    HeroPresentation.cue(cast,"CAST",s.player.getPos(),cast.target!=null?cast.target.getPos():cast.point,Math.min(6,Math.max(.5,Math.max(a.duration(),a.phases().stream().mapToDouble(ph->Math.max(0,ph.start())+(ph.hits()-1)*ph.interval()).max().orElse(a.castTime())))));
     HeroSkillRouter.execute(cast);
   }
   public static void input(ServerPlayerEntity p,int flags) {

@@ -31,12 +31,13 @@ public final class BetterCombatCompat {
         diagnostic="Better Combat "+FabricLoader.getInstance().getModContainer("bettercombat").orElseThrow().getMetadata().getVersion().getFriendlyString();
       } else diagnostic="Better Combat absent; native combat retained";
     }catch(ReflectiveOperationException|RuntimeException|LinkageError error){fail(error);}
-    // Detailed Animations must still yield to class skills without Better Combat,
+    // Switch to the intact vanilla rig during external poses, instead of freezing
+    // Detailed Animations' segmented child transforms mid-stride. This also works without Better Combat,
     // or when an unsupported optional Better Combat API is encountered.
     try {
       if(FabricLoader.getInstance().isModLoaded("entity_model_features")) {
         var api=Class.forName("traben.entity_model_features.EMFAnimationApi");
-        emfHook=Boolean.TRUE.equals(api.getMethod("registerPauseCondition",Function.class).invoke(null,(Function<Object,Boolean>)BetterCombatCompat::ownsAnimation));
+        emfHook=Boolean.TRUE.equals(api.getMethod("registerVanillaModelCondition",Function.class).invoke(null,(Function<Object,Boolean>)BetterCombatCompat::ownsAnimation));
       }
     }catch(ReflectiveOperationException|RuntimeException|LinkageError error){fail(error);}
   }
@@ -53,7 +54,7 @@ public final class BetterCombatCompat {
   public static void attackStopped(LivingEntity player,float fade) {
     if(ATTACKS.containsKey(player.getId()))ATTACKS.put(player.getId(),tick+Math.clamp((int)Math.ceil(fade),1,10));
   }
-  public static boolean skillOwnsPose(LivingEntity player){return HeroVisuals.cue(player.getId())!=null;}
+  public static boolean skillOwnsPose(LivingEntity player){var s=HeroVisuals.state(player.getId());return HeroVisuals.cue(player.getId())!=null||s!=null&&(s.flags()&(1|128|256|2048))!=0;}
   public static Object emptyPose() {
     try{return pose==null?null:pose.newInstance("","");}
     catch(ReflectiveOperationException error){fail(error);return null;}
@@ -66,10 +67,7 @@ public final class BetterCombatCompat {
   private static boolean ownsAnimation(Object candidate) {
     if(!(candidate instanceof LivingEntity player))return false;
     boolean result=skillOwnsPose(player)||ATTACKS.getOrDefault(player.getId(),0L)>tick;
-    if(!result&&mainPose!=null&&mainPose.getDeclaringClass().isInstance(player))try {
-      // Better Combat's configured weapon stance also owns its body pose.
-      result=!Objects.toString(mainPose.invoke(player),"").isEmpty()||!Objects.toString(offPose.invoke(player),"").isEmpty();
-    }catch(ReflectiveOperationException error){fail(error);}
+    // An idle weapon stance must not freeze EMF locomotion. Only attacks/skills own it.
     if(result)pausedFrames++;return result;
   }
   static com.google.gson.JsonObject observation() {

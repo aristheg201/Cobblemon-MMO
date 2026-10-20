@@ -32,7 +32,7 @@ heroes=[dict(id='SPIDER_MAN',name='Spider-Man',name_vi='Người Nhện',resourc
  skill('HOUSE_PARTY','House Party Protocol','Giao Thức Giáp Hỗ Trợ',30,50,[phase(P,.5,8,1,1),phase(P,.5,8,1,1)],duration=8,drones=2,reduction=.1),
  skill('ORBITAL_STRIKE','Satellite Orbital Strike','Oanh Tạc Vệ Tinh',65,80,[phase(TP,4.5,start=2)],radius=5,duration=3,root=2,silence=2,shield_destroy=1,emp=3,ultimate=True)
 ]),dict(id='THOR',name='Thor',name_vi='Lôi Thần Thor',resource='MANA',resource_name='Lightning Force',resource_name_vi='Lôi lực',maximum=100,suit='external:thor',passives=['Asgardian Flight & Worthy Return','Lightning Armor'],regen_idle=4,regen_combat=0,abilities=[
- skill('MJOLNIR_THROW','Stormbreaker Throw','Ném Rìu Stormbreaker',7,15,[phase(P,1.6),phase(P,.7,start=.7)],range=14,radius=3,stun=1,return_slow=.3),
+ skill('MJOLNIR_THROW','Mjolnir Throw','Ném Búa Mjolnir',7,15,[phase(P,1.6),phase(P,.7,start=.7)],range=14,radius=3,stun=1,return_slow=.3),
  skill('THUNDEROUS_SLAM','Thunderous Leap & Slam','Nhảy Vọt Dậm Sét',12,20,[phase(P,2.4,start=.8)],range=10,radius=4,knockup=.6),
  skill('LIGHTNING_SPIN','Lightning Spin','Lốc Xoáy Sét',10,15,[phase(P,.4,4,0,.5)],duration=2,projectile_block=1,speed=.5),
  skill('STORMBREAKER','Stormbreaker Strike','Nhát Cắt Bão Sét',14,25,[phase(P,2.2),phase(P,.3,3,1,1)],armor_penetration=.5,zone_duration=3),
@@ -47,7 +47,7 @@ heroes=[dict(id='SPIDER_MAN',name='Spider-Man',name_vi='Người Nhện',resourc
  skill('MOLECULAR_PHASING','Molecular Phasing','Xuyên Thể Phân Tử',18,30,duration=2,phase=1,physical_immunity=1),
  skill('SPEED_SIPHON','Speed Siphon','Hút Tốc Độ',20,25,duration=5,cleanse=1,speed_steal=.3),
  skill('INFINITE_MASS_PUNCH','Infinite Mass Punch','Cú Đấm Khối Lượng Vô Hạn',60,70,[phase(TP,5,start=2.5)],radius=7.5,duration=3,slow=.8,freeze=1,knockback=5,ultimate=True)
-]),dict(id='BATMAN',name='Batman',name_vi='Người Dơi',resource='STAMINA',resource_name='Stamina',resource_name_vi='Thể lực',maximum=100,suit='fiskheroes:batman_dceu',passives=['Freeflow Combat & Counter Instinct','Glider Cape & Smoke Escape'],regen_idle=8,regen_combat=4,abilities=[
+]),dict(id='BATMAN',name='Batman',name_vi='Người Dơi',resource='STAMINA',resource_name='Stamina',resource_name_vi='Thể lực',maximum=100,suit='jmctheroes:batman_comics',passives=['Freeflow Combat & Counter Instinct','Glider Cape & Smoke Escape'],regen_idle=8,regen_combat=4,abilities=[
  skill('BATARANG','Batarang Throw','Phi Batarang',5,10,[phase(P,.4,3,0,.1),phase(P,1.5,start=-1)],range=10,recast=2,radius=2.5,slow=.3,interrupt=1),
  skill('BATCLAW','Batclaw Pull & Slam','Móc Dơi Quật Ngược',9,15,[phase(P,1.2)],range=12,pull=1,stun=1,armor_reduction=.3,armor_duration=3),
  skill('SMOKE_TAKEDOWN','Smoke Bomb & Silent Takedown','Bom Khói Hạ Gục',16,20,radius=4,duration=3,blindness=3,silence=3,invisibility=3,critical_scale=2.5),

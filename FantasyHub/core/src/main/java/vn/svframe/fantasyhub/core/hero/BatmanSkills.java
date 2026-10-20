@@ -11,7 +11,7 @@ final class BatmanSkills {
         HeroControl.slow(s,t,a.effect("slow"),3);if(c.recastUsed)HeroControl.apply(s,t,HeroControl.Kind.SILENCE,.5);
       }));
       case "BATCLAW" -> {
-        if(c.target!=null){HeroPresentation.trail(c,p.getEyePos(),c.target.getEyePos());if(HeroCombat.hit(c,c.target,a.phases().get(0))) {HeroActions.pull(c,c.target,p.getPos(),.5);HeroControl.apply(s,c.target,HeroControl.Kind.STUN,a.effect("stun"));HeroActions.debuffs(c,c.target);}}
+        if(c.target!=null){HeroPresentation.cue(c,"BEAM",p.getEyePos(),c.target.getEyePos(),.65);if(HeroCombat.hit(c,c.target,a.phases().get(0))) {HeroActions.pull(c,c.target,p.getPos(),.5);HeroControl.apply(s,c.target,HeroControl.Kind.STUN,a.effect("stun"));HeroActions.debuffs(c,c.target);}}
         else HeroActions.dash(c,c.point,a.range(),at->{});
       }
       case "SMOKE_TAKEDOWN" -> {
@@ -25,7 +25,7 @@ final class BatmanSkills {
           HeroActions.effect(c,t,StatusEffects.GLOWING,a.effect("glowing"),0);HeroCombat.mark(s,t,a.duration(),a.effect("vulnerability"));
         }
       }
-      case "DISRUPTOR" -> {HeroCombat.shields(c.target);HeroControl.apply(s,c.target,HeroControl.Kind.SILENCE,a.effect("silence"));HeroPresentation.trail(c,p.getEyePos(),c.target.getEyePos());}
+      case "DISRUPTOR" -> {HeroCombat.shields(c.target);HeroControl.apply(s,c.target,HeroControl.Kind.SILENCE,a.effect("silence"));HeroPresentation.cue(c,"BEAM",p.getEyePos(),c.target.getEyePos(),.65);}
       case "CAPE_COMBO" -> {
         for(var t:HeroWorld.cone(p,p.getPos(),a.range(),a.effect("cone"),c.cap()))HeroControl.apply(s,t,HeroControl.Kind.STUN,a.effect("stun"));
         HeroActions.phases(c,(phase,index)->{for(var t:HeroWorld.cone(p,p.getPos(),a.range(),a.effect("cone"),c.cap()))if(HeroCombat.hit(c,t,phase)&&index==phase.hits()-1)HeroWorld.push(p,t,p.getPos(),0,a.effect("knockup"));});

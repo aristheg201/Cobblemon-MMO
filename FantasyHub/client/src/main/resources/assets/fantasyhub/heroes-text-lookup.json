@@ -58,5 +58,6 @@
   "Detective Vision": "fantasyhub.skill.batman_detective_vision",
   "Disruptor Jammer": "fantasyhub.skill.batman_disruptor",
   "Cape Sweep & Stun Combo": "fantasyhub.skill.batman_cape_combo",
-  "Batwing Orbital Strike": "fantasyhub.skill.batman_batwing_strike"
+  "Batwing Orbital Strike": "fantasyhub.skill.batman_batwing_strike",
+  "Mjolnir Throw": "fantasyhub.skill.thor_mjolnir_throw"
 }

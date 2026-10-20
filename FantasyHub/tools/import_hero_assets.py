@@ -26,7 +26,7 @@ for slot,suffix in [('chest','layer1'),('legs','layer2'),('feet','layer1')]:copy
 copy(jmct,'assets/jmctheroes/textures/heroes/thor/thor_cape.png','textures/armor/heroes/thor_cape.png')
 atlas=out.parent/'minecraft/atlases/blocks.json'
 atlas_data=json.loads(atlas.read_text()) if atlas.exists() else {'sources':[]}
-for cape in ['thor','sorcerer_supreme']:
+for cape in ['thor','sorcerer_supreme','batman']:
  resource=f'fantasyhub:armor/heroes/{cape}_cape'
  if not any(s.get('resource')==resource for s in atlas_data['sources']):atlas_data['sources'].append({'type':'minecraft:single','resource':resource})
 atlas.parent.mkdir(parents=True,exist_ok=True);atlas.write_text(json.dumps(atlas_data,indent=2)+'\n')
@@ -48,6 +48,16 @@ for name in ['mjolnir','stormbreaker']:
  data=json.loads(table.read('model.json'));path=out/f'{geometry}/{name}.json';path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(data,indent=2)+'\n')
  copy(jmct,f'assets/jmctheroes/textures/heroes/thor/{name}.png',f'textures/item/heroes/{name}.png')
  manifest.append({'sourceArchive':a.jmct.name,'source':f'assets/jmctheroes/models/tabula/{name}.tbl!model.json','target':f'assets/fantasyhub/{geometry}/{name}.json','author':data.get('authorName'),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
+# Batman Comics replaces the older DCEU suit; Back cape uses the matching glider atlas.
+for slot,layer in [('head','layer1'),('chest','layer1'),('legs','layer2'),('feet','layer1')]:
+ copy(jmct,f'assets/jmctheroes/textures/heroes/bat/batman_{layer}.png',f'textures/armor/heroes/batman_{slot}.png')
+for i,part in enumerate(['helmet','chestplate','leggings','boots']):
+ copy(jmct,f'assets/jmctheroes/textures/items/heroes/batman_comics_{i}.png',f'textures/item/heroes/hero_batman_{part}.png')
+for source,target in [('cape1','cape'),('cape2','glider'),('eye_lights','lights')]:
+ copy(jmct,f'assets/jmctheroes/textures/heroes/bat/batman_{source}.png',f'textures/armor/heroes/batman_{target}.png')
+(out/'models/item/batman_cape.json').write_text(json.dumps({'parent':'minecraft:item/generated','textures':{'layer0':'fantasyhub:armor/heroes/batman_cape'}},indent=2)+'\n')
+# Last source wins when a preceding source was replaced.
+manifest=list({entry['target']:entry for entry in manifest}.values())
 (out/'heroes-assets.json').write_text(json.dumps({'distribution':'INTERNAL_ONLY','binaryForgeRuntimeBundled':False,'sources':[{'project':'FiskHeroes 2.4.0','url':'https://modrinth.com/mod/fiskheroes'},{'project':"JMCT’s Heropack 3.1.0",'url':'https://www.curseforge.com/minecraft/customization/jmcts-heropack/files/4625355'}],'files':manifest},indent=2)+'\n')
 models=sorted('fantasyhub:'+str(f.relative_to(out/'models')).replace('.json','') for f in (out/'models/item/heroes').glob('*.json'))
 (out/'heroes-models.json').write_text(json.dumps(models,indent=2)+'\n')

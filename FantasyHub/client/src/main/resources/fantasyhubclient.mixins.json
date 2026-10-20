@@ -16,7 +16,9 @@
     "KunaiSoundQaMixin",
     "RiderHeldItemMixin",
     "RiderFirstPersonMixin",
-    "RiderFirstPersonArmorMixin"
+    "RiderFirstPersonArmorMixin",
+    "BatmanSkinCapeMixin",
+    "HeroItemColorMixin"
   ],
   "injectors": {
     "defaultRequire": 1

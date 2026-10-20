@@ -19,7 +19,7 @@ final class SpiderSkills {
           }});
         });}
       }
-      case "WEB_SWING" -> HeroActions.leap(c,c.point,a.duration(),3,at->HeroActions.area(c,at,a.radius(),a.phases().get(0),t->HeroWorld.push(p,t,at,0,a.effect("knockup"))));
+      case "WEB_SWING" -> HeroActions.leap(c,c.target!=null?c.target.getPos():c.point,a.duration(),3,at->HeroActions.area(c,at,a.radius(),a.phases().get(0),t->HeroWorld.push(p,t,at,0,a.effect("knockup"))));
       case "WEB_SHOOTER_BARRAGE" -> {
         var stacks=new HashMap<UUID,Integer>();
         HeroActions.phases(c,(phase,index)->HeroActions.projectile(c,p.getEyePos(),HeroWorld.point(p,a.range()),null,1.5,0,phase,t->{
@@ -31,7 +31,7 @@ final class SpiderSkills {
       case "COCOON_SLAM" -> {
         if(!HeroWorld.legal(p,c.target)||!HeroWorld.visible(p,p.getEyePos(),c.target)||p.distanceTo(c.target)>a.range())return;
         if(c.recastUsed)HeroActions.area(c,c.target.getPos(),a.radius(),a.phases().get(1),t->HeroWorld.push(p,t,c.target.getPos(),1,.2));
-        else {HeroCombat.hit(c,c.target,a.phases().get(0));HeroControl.apply(s,c.target,HeroControl.Kind.STUN,a.effect("stun"));HeroPresentation.ring(c,c.target.getPos(),.7);}
+        else {HeroCombat.hit(c,c.target,a.phases().get(0));HeroControl.apply(s,c.target,HeroControl.Kind.STUN,a.effect("stun"));HeroPresentation.ring(c,c.target.getPos(),.7);HeroPresentation.cue(c,"ZONE",c.target.getPos(),c.target.getPos(),a.effect("stun"));}
       }
       case "AIR_COMBO" -> {
         var t=c.target;if(!HeroWorld.legal(p,t))return;

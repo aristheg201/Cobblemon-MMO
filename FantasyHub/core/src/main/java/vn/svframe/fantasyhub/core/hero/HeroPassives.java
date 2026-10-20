@@ -129,8 +129,13 @@ final class HeroPassives {
       if(!s.world.isSpaceEmpty(p,box)){HeroWorld.velocity(p,new Vec3d(p.getVelocity().x,s.passive("wall_rise"),p.getVelocity().z));p.fallDistance=0;}
     }
     if(!p.isOnGround()&&!HeroControl.mobilityLocked(p)) {
-      if(s.hero.id().equals("SORCERER_SUPREME")&&sneak&&!s.active("flight")&&!s.active("astral")&&HeroFlight.eligible(s)||s.hero.id().equals("BATMAN")&&input){Vec3d facing=HeroWorld.forward(p);HeroWorld.velocity(p,facing.multiply(s.hero.id().equals("BATMAN")?.45:.12).add(0,-.06,0));p.fallDistance=0;}
+      if(s.hero.id().equals("SORCERER_SUPREME")&&sneak&&!s.active("flight")&&!s.active("astral")&&HeroFlight.eligible(s)){Vec3d facing=HeroWorld.forward(p);HeroWorld.velocity(p,facing.multiply(.12).add(0,-.06,0));p.fallDistance=0;}
     }
+    boolean gliding=s.active("cape_glide");
+    boolean eligible=s.hero.id().equals("BATMAN")&&!vn.svframe.fantasyhub.protocol.BackEquipment.equipped(p,vn.svframe.fantasyhub.protocol.Protocol.batmanCape).isEmpty();
+    if(HeroGlidePolicy.shouldGlide(eligible,input,p.isOnGround(),HeroControl.mobilityLocked(p)||p.isTouchingWater()||p.hasVehicle()||p.getAbilities().flying,gliding,p.getVelocity().y)){
+      s.flag("cape_glide",0);if(!p.isFallFlying())p.startFallFlying();
+    }else if(gliding){s.power.unset("cape_glide");p.stopFallFlying();}
     if(tick%4==0)refresh(s);
   }
   static void refresh(HeroRuntime.Session s) {
@@ -174,6 +179,7 @@ final class HeroPassives {
   static void restoreMovement(HeroRuntime.Session s){
     if(s.returnAnchor!=null&&s.world==s.player.getWorld())HeroWorld.teleport(s.player,s.returnAnchor);
     if(s.player.noClip&&!s.priorNoClip&&!HeroWorld.safe(s.player,s.player.getPos(),true))HeroWorld.teleport(s.player,s.lastSafe);
+    if(s.active("cape_glide")){s.player.stopFallFlying();s.power.unset("cape_glide");}
     s.player.noClip=s.priorNoClip;HeroFlight.release(s);
     attribute(s.player,EntityAttributes.GENERIC_MOVEMENT_SPEED,"speed",0);attribute(s.player,EntityAttributes.GENERIC_ATTACK_SPEED,"attack_speed",0);attribute(s.player,EntityAttributes.GENERIC_ARMOR,"armor",0);
   }

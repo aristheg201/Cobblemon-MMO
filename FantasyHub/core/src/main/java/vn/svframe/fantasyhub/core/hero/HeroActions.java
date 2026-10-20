@@ -38,7 +38,7 @@ final class HeroActions {
     for(var t:HeroWorld.near(c.owner.player,center,radius,c.cap()))HeroControl.apply(c.owner,t,kind,duration);
   }
   static void area(HeroRuntime.Cast c,Vec3d center,double radius,HeroCatalog.Phase phase,Consumer<LivingEntity> impact) {
-    HeroPresentation.cue(c,"IMPACT",center,center,.3);
+    HeroPresentation.cue(c,"IMPACT",center,center,.7);
     for(var t:HeroWorld.near(c.owner.player,center,radius,c.cap()))if(HeroCombat.hit(c,t,phase))impact.accept(t);
   }
   static void phases(HeroRuntime.Cast c,BiConsumer<HeroCatalog.Phase,Integer> action) {
@@ -83,9 +83,9 @@ final class HeroActions {
         double remaining=pos.distanceTo(goal);Vec3d next=pos.add(direction.multiply(Math.min(speed,remaining)));
         var clipped=HeroWorld.rayEnd(c.owner.player,pos,next);var targets=HeroWorld.line(c.owner.player,pos,clipped,.22,1);
         boolean hit=!targets.isEmpty();if(hit)clipped=targets.get(0).getPos().add(0,.8,0);
-        HeroPresentation.trail(c,pos,clipped);
+        HeroPresentation.cue(c,"PROJECTILE",pos,clipped,.15);
         if(hit||clipped.squaredDistanceTo(next)>.01||remaining<=speed) {
-          var at=clipped;HeroPresentation.cue(c,"IMPACT",at,at,.25);
+          var at=clipped;HeroPresentation.cue(c,"IMPACT",at,at,.65);
           var victims=radius>0?HeroWorld.near(c.owner.player,at,radius,c.cap()):targets;
           for(var t:victims)if(c.once("projectile:"+id,t.getUuid())&&HeroCombat.hit(c,t,phase))impact.accept(t);
           return;
@@ -95,10 +95,11 @@ final class HeroActions {
     }new Flight().run();
   }
   static void beam(HeroRuntime.Cast c,Vec3d from,Vec3d to,double width,HeroCatalog.Phase phase,Consumer<LivingEntity> impact) {
-    var end=HeroWorld.rayEnd(c.owner.player,from,to);HeroPresentation.trail(c,from,end);HeroPresentation.cue(c,"BEAM",from,end,.25);
+    var end=HeroWorld.rayEnd(c.owner.player,from,to);HeroPresentation.trail(c,from,end);HeroPresentation.cue(c,"BEAM",from,end,c.ability.key().equals("UNIBEAM")?1.1:.45);
     for(var t:HeroWorld.line(c.owner.player,from,end,width,c.cap()))if(HeroCombat.hit(c,t,phase))impact.accept(t);
   }
   static void zone(HeroRuntime.Cast c,Vec3d at,double radius,double duration,double interval,Consumer<LivingEntity> pulse) {
+    HeroPresentation.cue(c,"ZONE",at,at,duration);
     int frames=Math.max(1,(int)Math.ceil(duration/interval));
     for(int i=0;i<frames;i++){double time=i*interval;Runnable task=()->{HeroPresentation.ring(c,at,radius);for(var t:HeroWorld.near(c.owner.player,at,radius,c.cap()))pulse.accept(t);};if(i==0)task.run();else c.later(time,task);}
   }

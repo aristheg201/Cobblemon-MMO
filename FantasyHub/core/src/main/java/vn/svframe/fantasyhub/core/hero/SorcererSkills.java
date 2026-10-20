@@ -8,7 +8,7 @@ final class SorcererSkills {
     switch(a.key()) {
       case "ELDRITCH_WHIP" -> {
         if(!HeroWorld.legal(p,c.target)||p.distanceTo(c.target)>a.range()||!HeroWorld.visible(p,p.getEyePos(),c.target))return;
-        HeroPresentation.trail(c,p.getEyePos(),c.target.getEyePos());
+        HeroPresentation.cue(c,"BEAM",p.getEyePos(),c.target.getEyePos(),.8);
         if(c.recastUsed){HeroActions.pull(c,c.target,p.getPos(),.4);HeroActions.debuffs(c,c.target);}else HeroCombat.hit(c,c.target,a.phases().get(0));
       }
       case "TAO_MANDALAS" -> {s.flag("mandalas",a.duration());HeroPresentation.ring(c,p.getPos().add(HeroWorld.forward(p)),1);}

@@ -8,12 +8,20 @@ final class ThorSkills {
     var s=c.owner;var p=s.player;var a=c.ability;
     switch(a.key()) {
       case "MJOLNIR_THROW" -> {
-        Vec3d origin=p.getEyePos(),end=HeroWorld.rayEnd(p,origin,c.point);
-        HeroActions.beam(c,origin,end,.5,a.phases().get(0),t->{});
-        for(var t:HeroWorld.near(p,end,a.radius(),c.cap()))HeroControl.apply(s,t,HeroControl.Kind.STUN,a.effect("stun"));
-        c.later(a.phases().get(1).start(),()->HeroActions.beam(c,end,p.getEyePos(),.5,a.phases().get(1),t->HeroControl.slow(s,t,a.effect("return_slow"),2)));
+        Vec3d origin=p.getEyePos(),end=HeroWorld.rayEnd(p,origin,c.target!=null?c.target.getEyePos():c.point);
+        double travel=Math.clamp(origin.distanceTo(end)/24,.25,.55);
+        HeroPresentation.cue(c,"WEAPON_THROW",origin,end,travel);
+        c.later(travel,()->{
+          HeroActions.beam(c,origin,end,.5,a.phases().get(0),t->{});
+          HeroPresentation.cue(c,"IMPACT",end,end,.65);
+          for(var t:HeroWorld.near(p,end,a.radius(),c.cap()))HeroControl.apply(s,t,HeroControl.Kind.STUN,a.effect("stun"));
+        });
+        c.later(a.phases().get(1).start(),()->{
+          HeroPresentation.cue(c,"WEAPON_THROW",end,p.getEyePos(),.5);
+          c.later(.5,()->HeroActions.beam(c,end,p.getEyePos(),.5,a.phases().get(1),t->HeroControl.slow(s,t,a.effect("return_slow"),2)));
+        });
       }
-      case "THUNDEROUS_SLAM" -> HeroActions.leap(c,c.point,.8,3,at->HeroActions.area(c,at,a.radius(),a.phases().get(0),t->HeroWorld.push(p,t,at,0,a.effect("knockup"))));
+      case "THUNDEROUS_SLAM" -> HeroActions.leap(c,c.target!=null?c.target.getPos():c.point,.8,3,at->HeroActions.area(c,at,a.radius(),a.phases().get(0),t->HeroWorld.push(p,t,at,0,a.effect("knockup"))));
       case "LIGHTNING_SPIN" -> {
         s.flag("spin",a.duration());HeroPassives.refresh(s);
         HeroActions.phases(c,(phase,index)->HeroActions.area(c,p.getPos(),3,phase,t->{}));

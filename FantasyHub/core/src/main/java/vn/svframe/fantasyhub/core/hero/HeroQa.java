@@ -65,7 +65,7 @@ public final class HeroQa {
       case "input" -> HeroRuntime.input(p,Integer.parseInt(value));
       case "weapon" -> p.equipStack(net.minecraft.entity.EquipmentSlot.MAINHAND,vn.svframe.svframeitems.SVFrameItems.generator().generate("hero_thor_stormbreaker",1));
       case "back" -> {
-        String id=value.equalsIgnoreCase("thor")?"hero_thor_cape":value.equalsIgnoreCase("strange")?"hero_sorcerer_supreme_cape":"";
+        String id=value.equalsIgnoreCase("batman")?"hero_batman_cape":value.equalsIgnoreCase("thor")?"hero_thor_cape":value.equalsIgnoreCase("strange")?"hero_sorcerer_supreme_cape":"";
         report.put("backEquip",setBack(p,id.isEmpty()?ItemStack.EMPTY:vn.svframe.svframeitems.SVFrameItems.generator().generate(id,1)));
       }
       case "save-flight" -> {var nbt=new net.minecraft.nbt.NbtCompound();p.writeNbt(nbt);report.put("savedAbilities",nbt.getCompound("abilities").toString());}
@@ -81,6 +81,9 @@ public final class HeroQa {
     }
     report.put("state",HeroRuntime.inspect(p));report.put("mana",data.getMana());report.put("stamina",data.getStamina());report.put("hits",HITS.getOrDefault(p.getUuid(),List.of()));
     report.put("health",p.getHealth());report.put("maxHealth",p.getMaxHealth());report.put("effects",p.getStatusEffects().stream().map(e->e.getEffectType().getIdAsString()).toList());
+    report.put("gear",java.util.Arrays.stream(net.minecraft.entity.EquipmentSlot.values()).map(slot->{var stack=p.getEquippedStack(slot);return Map.of("slot",slot.name(),"item",net.minecraft.registry.Registries.ITEM.getId(stack.getItem()).toString(),"unbreakable",stack.contains(net.minecraft.component.DataComponentTypes.UNBREAKABLE),"damage",stack.getDamage());}).toList());
+    var input=HeroRuntime.session(p);if(input!=null)report.put("input",Map.of("flags",input.inputFlags,"lastJumpAge",HeroRuntime.tick-input.lastJump,"lastInputAge",HeroRuntime.tick-input.lastInput,"onGround",p.isOnGround(),"mobilityLocked",HeroControl.mobilityLocked(p)));
+    report.put("fallFlying",p.isFallFlying());
     report.put("attributes",Map.of("speed",p.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED),"attackSpeed",p.getAttributeValue(EntityAttributes.GENERIC_ATTACK_SPEED),"armor",p.getAttributeValue(EntityAttributes.GENERIC_ARMOR),"attack",p.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
     if(net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("bettercombat"))try {
       var registry=Class.forName("net.bettercombat.logic.WeaponRegistry");var weapon=registry.getMethod("getAttributes",ItemStack.class).invoke(null,p.getMainHandStack());

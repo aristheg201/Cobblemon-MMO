@@ -80,7 +80,7 @@ public final class FantasyHubClient implements ClientModInitializer {
                 Protocol.knightBelt,
                 Protocol.decadeBelt,
                 Protocol.thorCape,
-                Protocol.levitationCloak))
+                Protocol.levitationCloak,Protocol.batmanCape))
           Class.forName("io.wispforest.accessories.api.client.AccessoriesRendererRegistry")
               .getMethod("registerNoRenderer", net.minecraft.item.Item.class)
               .invoke(null, belt);
@@ -285,7 +285,7 @@ public final class FantasyHubClient implements ClientModInitializer {
               o.add("rider", rs);
             }
             JsonObject equipment = new JsonObject();
-            JsonObject armorTextures=new JsonObject();
+            JsonObject armorTextures=new JsonObject();JsonObject sprites=new JsonObject();
             for (var slot :
                 java.util.List.of(
                     net.minecraft.entity.EquipmentSlot.HEAD,
@@ -294,12 +294,13 @@ public final class FantasyHubClient implements ClientModInitializer {
                     net.minecraft.entity.EquipmentSlot.FEET)) {
               var stack = client.player.getEquippedStack(slot);
               var data = stack.get(net.minecraft.component.DataComponentTypes.CUSTOM_DATA);
+              sprites.addProperty(slot.name(),client.getItemRenderer().getModel(stack,client.world,client.player,0).getParticleSprite().getContents().getId().toString());
               armorTextures.addProperty(slot.name(),data==null?"":data.copyNbt().getString("SVFRAME_ARMOR_TEXTURE"));
               equipment.addProperty(
                   slot.name(), data == null ? "" : data.copyNbt().getString("SVFRAME_ITEM_MODEL"));
             }
             o.add("equippedModels", equipment);
-            o.add("armorTextures",armorTextures);o.addProperty("playerInvisible",client.player.isInvisible());o.addProperty("heroArmorRenders",HeroArmorFeature.qaRenders);
+            o.add("itemModelSprites",sprites);o.add("armorTextures",armorTextures);o.addProperty("playerInvisible",client.player.isInvisible());o.addProperty("heroArmorRenders",HeroArmorFeature.qaRenders);o.addProperty("heroEmfSuitRenders",HeroArmorFeature.qaEmfRenders);
             var kb = KabutoVisuals.state(client.player.getId());
             if (kb != null) {
               var visual = new JsonObject();

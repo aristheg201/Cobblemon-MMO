@@ -25,7 +25,7 @@ final class IronSkills {
         Vec3d facing=p.getRotationVec(1),right=HeroWorld.forward(p).crossProduct(new Vec3d(0,1,0));
         var from=p.getEyePos();var end=HeroWorld.rayEnd(p,from,from.add(facing.multiply(a.range())));
         HeroActions.beam(c,from.add(right.multiply(.4)),end.subtract(right.multiply(.4)),.4,phase,t->{victims.add(t);HeroActions.debuffs(c,t);});
-        HeroPresentation.trail(c,from.subtract(right.multiply(.4)),end.add(right.multiply(.4)));
+        HeroPresentation.cue(c,"BEAM",from.subtract(right.multiply(.4)),end.add(right.multiply(.4)),.45);
         var burn=a.phases().get(1);for(int i=0;i<burn.hits();i++)c.later(burn.start()+i*burn.interval(),()->{for(var t:victims)if(HeroWorld.visible(p,p.getEyePos(),t))HeroCombat.hit(c,t,burn);});
       }
       case "THRUSTER_DASH" -> {
@@ -50,7 +50,8 @@ final class IronSkills {
       case "ORBITAL_STRIKE" -> {
         var center=c.target!=null?c.target.getPos():c.point;HeroPresentation.ring(c,center,a.radius());HeroActions.control(c,center,a.radius(),HeroControl.Kind.ROOT,a.effect("root"));HeroActions.control(c,center,a.radius(),HeroControl.Kind.SILENCE,a.effect("silence"));
         c.later(2,()->{
-          HeroPresentation.trail(c,center.add(0,25,0),center);
+          HeroPresentation.cue(c,"BEAM",center.add(0,25,0),center,1.3);
+          HeroPresentation.cue(c,"IMPACT",center,center,1.2);
           for(var t:HeroWorld.near(p,center,a.radius(),c.cap())){HeroCombat.shields(t);HeroControl.apply(s,t,HeroControl.Kind.SILENCE,a.effect("emp"));HeroCombat.hit(c,t,a.phases().get(0));}
         });
       }

@@ -332,8 +332,8 @@
   "fantasyhub.hero.name.thor": "Thor",
   "fantasyhub.hero.passive.thor.1": "Asgardian Flight & Worthy Return",
   "fantasyhub.hero.passive.thor.2": "Lightning Armor",
-  "fantasyhub.skill.thor_mjolnir_throw": "Stormbreaker Throw",
-  "fantasyhub.hero.description.thor_mjolnir_throw": "Throw Stormbreaker outward, stun at the endpoint and strike again on its slowing return path.",
+  "fantasyhub.skill.thor_mjolnir_throw": "Mjolnir Throw",
+  "fantasyhub.hero.description.thor_mjolnir_throw": "Throw Mjolnir outward, stun at the endpoint and strike again on its slowing return path.",
   "fantasyhub.skill.thor_thunderous_slam": "Thunderous Leap & Slam",
   "fantasyhub.hero.description.thor_thunderous_slam": "Leap and slam with thunder, damaging and launching enemies around the landing point.",
   "fantasyhub.skill.thor_lightning_spin": "Lightning Spin",
@@ -399,5 +399,7 @@
   "fantasyhub.flight.requirements.sorcerer_supreme": "Flight: Sorcerer Supreme class + Cloak of Levitation in Back.",
   "fantasyhub.flight.enabled": "Flight enabled · Double-tap Jump to land",
   "fantasyhub.flight.disabled": "Flight disabled",
-  "fantasyhub.flight.control": "Back slot · Double-tap Jump to toggle flight"
+  "fantasyhub.flight.control": "Back slot · Double-tap Jump to toggle flight",
+  "item.fantasyhub.batman_cape": "Batman Glider Cape",
+  "fantasyhub.glide.requirements.batman": "Batman class + cape in Back. Hold Jump while falling to glide; release to stop."
 }

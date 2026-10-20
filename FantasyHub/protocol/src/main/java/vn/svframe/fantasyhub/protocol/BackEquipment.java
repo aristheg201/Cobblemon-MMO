@@ -42,11 +42,11 @@ public final class BackEquipment {
         throw new UnsupportedOperationException("Unrecognized "+mod+" cape API method: "+m);
       });
       var method=api.getMethod(accessories?"registerAccessory":"registerTrinket",Item.class,contract);
-      method.invoke(null,Protocol.thorCape,adapter);method.invoke(null,Protocol.levitationCloak,adapter);
+      method.invoke(null,Protocol.batmanCape,adapter);method.invoke(null,Protocol.thorCape,adapter);method.invoke(null,Protocol.levitationCloak,adapter);
     }catch(ReflectiveOperationException e){throw new IllegalStateException("Cannot initialize installed "+mod+" back-slot API",e);}
   }
   public static ItemStack equippedAny(LivingEntity entity){
-    for(Item item:new Item[]{Protocol.thorCape,Protocol.levitationCloak}){var stack=equipped(entity,item);if(!stack.isEmpty())return stack;}
+    for(Item item:new Item[]{Protocol.batmanCape,Protocol.thorCape,Protocol.levitationCloak}){var stack=equipped(entity,item);if(!stack.isEmpty())return stack;}
     return ItemStack.EMPTY;
   }
   public static ItemStack equipped(LivingEntity entity,Item item){

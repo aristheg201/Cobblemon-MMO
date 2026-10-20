@@ -11,7 +11,8 @@
     "StatusEffectLeaseAccess",
     "RiderDefenseMixin",
     "RiderControlMixin",
-    "HeroFlightSaveMixin"
+    "HeroFlightSaveMixin",
+    "BatmanGlideMixin"
   ],
   "injectors": {
     "defaultRequire": 1

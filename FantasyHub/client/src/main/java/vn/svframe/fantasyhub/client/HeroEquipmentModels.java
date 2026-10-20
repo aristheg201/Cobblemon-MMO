@@ -36,8 +36,8 @@ public final class HeroEquipmentModels {
     if(in==null)throw new IOException("Missing native weapon "+name);var o=JsonParser.parseReader(new InputStreamReader(in,java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();float w=o.get("textureWidth").getAsFloat(),h=o.get("textureHeight").getAsFloat();return new Mesh(w,h,nodes(o.getAsJsonArray("cubes"),w,h));
   }catch(IOException failure){throw new IllegalStateException(failure);}}
   public static boolean overrides(LivingEntity player) {
-    var state=HeroVisuals.state(player.getId());
-    return state!=null&&state.hero().equals("THOR")&&!player.getMainHandStack().isOf(vn.svframe.fantasyhub.protocol.Protocol.stormbreaker)&&!player.getOffHandStack().isOf(vn.svframe.fantasyhub.protocol.Protocol.stormbreaker)&&(player.getMainHandStack().isEmpty()||HeroVisuals.cue(player.getId())!=null);
+    // Equipment is rendered by the real item renderer, never inferred from class.
+    return false;
   }
   private static void weapon(String name,MatrixStack matrices,VertexConsumerProvider vertices,int light) {
     var mesh=MODELS.computeIfAbsent(name,HeroEquipmentModels::load);var consumer=vertices.getBuffer(RenderLayer.getEntityCutoutNoCull(Identifier.of("fantasyhub","textures/item/heroes/"+name+".png")));

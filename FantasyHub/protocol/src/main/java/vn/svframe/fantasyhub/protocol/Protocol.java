@@ -13,9 +13,10 @@ import net.minecraft.util.Identifier;
 
 /** Versioned requests and immutable server snapshots. No client damage/resource values accepted. */
 public final class Protocol implements ModInitializer {
+  public static Item batmanCape;
   private static boolean installed;
   public static final int VERSION = 3;
-  public static final String ASSET_REVISION = "heroes-expansion-v3";
+  public static final String ASSET_REVISION = "heroes-expansion-v4";
 
   public record Handshake(int version, String assets, String clientVersion, String diagnostic)
       implements CustomPayload {
@@ -407,7 +408,7 @@ public final class Protocol implements ModInitializer {
             new Item(new Item.Settings().maxCount(1)));
     stormbreaker=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","stormbreaker"),
         new net.minecraft.item.AxeItem(net.minecraft.item.ToolMaterials.IRON,
-            new Item.Settings().attributeModifiers(net.minecraft.item.AxeItem.createAttributeModifiers(net.minecraft.item.ToolMaterials.IRON,6,-3.1f))));
+            new Item.Settings().component(net.minecraft.component.DataComponentTypes.UNBREAKABLE,new net.minecraft.component.type.UnbreakableComponent(true)).attributeModifiers(net.minecraft.item.AxeItem.createAttributeModifiers(net.minecraft.item.ToolMaterials.IRON,6,-3.1f))));
     agitoBelt =
         Registry.register(
             Registries.ITEM,
@@ -435,6 +436,7 @@ public final class Protocol implements ModInitializer {
             new Item(new Item.Settings().maxCount(1)));
     thorCape=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","thor_cape"),new HeroCapeItem(new Item.Settings().maxCount(1),"fantasyhub.flight.requirements.thor"));
     levitationCloak=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","cloak_of_levitation"),new HeroCapeItem(new Item.Settings().maxCount(1),"fantasyhub.flight.requirements.sorcerer_supreme"));
+    batmanCape=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","batman_cape"),new HeroCapeItem(new Item.Settings().maxCount(1),"fantasyhub.glide.requirements.batman"));
     BeltEquipment.install();
     BackEquipment.install();
     PayloadTypeRegistry.playS2C().register(Kabuto.ID, Kabuto.CODEC);

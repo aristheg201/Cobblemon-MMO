@@ -21,10 +21,10 @@ final class HeroPresentation {
   static void cue(HeroRuntime.Cast c,String phase,Vec3d from,Vec3d to,double duration) {
     if(!c.valid())return;
     if(!phase.equals("HIT")||c.once("hit-cue:"+(HeroRuntime.tick/4),c.owner.player.getUuid())) {
-      var data=base(c.owner);data.addProperty("kind","cue");data.addProperty("ability",c.ability.key());data.addProperty("phase",phase);data.addProperty("duration",duration);data.addProperty("cast",c.id);
+      var data=base(c.owner);data.addProperty("kind","cue");data.addProperty("ability",c.ability.key());data.addProperty("phase",phase);data.addProperty("duration",duration);data.addProperty("cast",c.id);data.addProperty("radius",c.ability.radius());
       data.add("from",point(from));data.add("to",point(to));send(c.owner,data);
     }
-    c.owner.world.spawnParticles(particle(c.owner),from.x,from.y+1,from.z,phase.equals("IMPACT")?14:5,.25,.35,.25,.025);
+    if(phase.equals("CAST")||phase.equals("IMPACT"))c.owner.world.spawnParticles(particle(c.owner),from.x,from.y+.5,from.z,phase.equals("IMPACT")?22:8,.35,.45,.35,.045);
     if(phase.equals("CAST")||phase.equals("IMPACT")) {
       SoundEvent sound=switch(c.owner.hero.id()) {
         case "SPIDER_MAN" -> SoundEvents.ENTITY_SNOWBALL_THROW;
@@ -34,10 +34,11 @@ final class HeroPresentation {
         case "FLASH" -> SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP;
         default -> SoundEvents.ENTITY_BAT_TAKEOFF;
       };
-      c.owner.world.playSound(null,from.x,from.y,from.z,sound,SoundCategory.PLAYERS,.55f,phase.equals("IMPACT")?.8f:1.2f);
+      c.owner.world.playSound(null,from.x,from.y,from.z,sound,SoundCategory.PLAYERS,c.owner.hero.id().equals("THOR")?1.5f:.85f,phase.equals("IMPACT")?.8f:1.2f);
     }
   }
   static void trail(HeroRuntime.Cast c,Vec3d from,Vec3d to) {
+    if(from.squaredDistanceTo(to)>.02)cue(c,"TRAIL",from,to,.3);
     int count=Math.min(18,Math.max(1,(int)(from.distanceTo(to)*3)));
     for(int i=0;i<count;i++){var p=from.lerp(to,i/(double)count);c.owner.world.spawnParticles(particle(c.owner),p.x,p.y,p.z,1,0,0,0,0);}
   }
@@ -52,7 +53,7 @@ final class HeroPresentation {
   }
   static void publish(HeroRuntime.Session s) {
     if(HeroRuntime.tick%10!=0)return;var data=base(s);data.addProperty("kind","state");int flags=0;
-    String[] keys={"flight","astral","phase","super_speed","overdrive","awakened","web_shield","mandalas","spin","drones","busy"};
+    String[] keys={"flight","astral","phase","super_speed","overdrive","awakened","web_shield","mandalas","spin","drones","busy","cape_glide"};
     for(int i=0;i<keys.length;i++)if(s.active(keys[i]))flags|=1<<i;
     data.addProperty("flags",flags);data.addProperty("speed",s.speedLevel);data.addProperty("heat",s.heat);data.addProperty("stacks",s.power.stacks(s.hero.id().equals("SPIDER_MAN")?"instinct":s.hero.id().equals("BATMAN")?"combo":s.hero.id().equals("THOR")?"static":"mystic",HeroRuntime.tick));send(s,data);
   }

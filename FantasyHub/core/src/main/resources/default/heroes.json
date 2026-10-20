@@ -723,8 +723,8 @@
       "abilities": [
         {
           "key": "MJOLNIR_THROW",
-          "name": "Stormbreaker Throw",
-          "name_vi": "Ném Rìu Stormbreaker",
+          "name": "Mjolnir Throw",
+          "name_vi": "Ném Búa Mjolnir",
           "cooldown": 7,
           "cost": 15,
           "range": 14,
@@ -1169,7 +1169,7 @@
       "resource_name": "Stamina",
       "resource_name_vi": "Thể lực",
       "maximum": 100,
-      "suit": "fiskheroes:batman_dceu",
+      "suit": "jmctheroes:batman_comics",
       "passives": [
         "Freeflow Combat & Counter Instinct",
         "Glider Cape & Smoke Escape"
