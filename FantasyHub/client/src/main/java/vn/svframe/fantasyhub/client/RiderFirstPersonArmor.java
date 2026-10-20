@@ -16,7 +16,7 @@ public final class RiderFirstPersonArmor {
       boolean left) {
     HeroArmorFeature.firstPerson(player,model,matrices,vertices,light,left);
     if(left==(player.getMainArm()==net.minecraft.util.Arm.LEFT))
-      HeroEquipmentModels.held(matrices,vertices,light,model,player,0);
+      HeroEquipmentModels.heldFirstPerson(matrices,vertices,light,model,player);
     var state = RiderVisuals.state(player.getId());
     if (state == null) return;
     RiderModels.render(

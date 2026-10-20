@@ -46,7 +46,8 @@ third-person skill frame were inspected. A later user correction specifically
 required the cutting edge to face forward, without shrinking the axe. Native
 first-person and side-view images in `direction-*.png` supersede earlier grip
 images for orientation acceptance. Geometry tests now verify both fists, an
-upright haft, a forward cutting edge, identical real/manifested poses, and
+relaxed downward/forward third-person carry, a forward cutting edge, identical
+real/manifested third-person poses, and
 first-person blade direction on both sides. First-person scale remains 0.68. The built-in hand follows the same
 item transform as the shaft; no static image is substituted for geometry.
 
@@ -69,3 +70,19 @@ not a supported mixed-mod multiplayer configuration.
 
 No claim is made that those remaining cases passed. The targeted Stormbreaker
 grip and Better Combat fixes are separately verified above.
+
+## Third-person relaxed-carry follow-up
+
+The user rejected the raised-head third-person pose. That earlier acceptance
+criterion was incorrect: the supplied vanilla axe reference shows a relaxed
+arm with the axe head below and ahead of the fist. The client-only correction
+uses that pose for both real items and class manifestations, in either hand.
+First-person display transforms and 0.68 scale are unchanged; the first-person
+manifestation retains its previous separate raised presentation. No geometry
+or texture resize was used.
+
+The targeted client build passed 37 tests, including three grip/orientation
+cases. Native images for this follow-up belong in
+`/workspace/qa-evidence/superheroes/stormbreaker-relaxed-carry/` and supersede
+previous raised-pose images for third-person acceptance. This patch only
+requires replacing FantasyHubClient on a matching 0.2.1 installation.

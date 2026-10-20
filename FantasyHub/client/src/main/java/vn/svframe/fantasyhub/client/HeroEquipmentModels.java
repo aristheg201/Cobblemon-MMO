@@ -44,15 +44,26 @@ public final class HeroEquipmentModels {
     for(var n:mesh.nodes)n.render(matrices,consumer,light);
   }
   static void held(MatrixStack matrices,VertexConsumerProvider vertices,int light,PlayerEntityModel<?> body,LivingEntity player,float age) {
+    held(matrices,vertices,light,body,player,false);
+  }
+  static void heldFirstPerson(MatrixStack matrices,VertexConsumerProvider vertices,int light,PlayerEntityModel<?> body,LivingEntity player) {
+    held(matrices,vertices,light,body,player,true);
+  }
+  private static void held(MatrixStack matrices,VertexConsumerProvider vertices,int light,PlayerEntityModel<?> body,LivingEntity player,boolean firstPerson) {
     if(!overrides(player))return;
     matrices.push();
     (player.getMainArm()==net.minecraft.util.Arm.LEFT?body.leftArm:body.rightArm).rotate(matrices);
-    // Rotate about the fist, not the model origin: the source lies flat along
-    // Z. Raise its head and put the cutting edge towards the player's front.
-    heldFrame(matrices,player.getMainArm()==net.minecraft.util.Arm.LEFT);
+    // Third-person reference is a relaxed downward/forward carry, not a raised
+    // axe beside the shoulder. Preserve the existing first-person presentation.
+    if(firstPerson)heldFirstPersonFrame(matrices,player.getMainArm()==net.minecraft.util.Arm.LEFT);
+    else heldFrame(matrices,player.getMainArm()==net.minecraft.util.Arm.LEFT);
     weapon("stormbreaker",matrices,vertices,light);matrices.pop();
   }
   static void heldFrame(MatrixStack matrices,boolean left){
+    if(left)matrices.translate(2/16d,0,0);
+    matrices.translate(-1/16d,9.5/16d,0);matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(45));matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));matrices.translate(1/16d,-9.5/16d,0);
+  }
+  static void heldFirstPersonFrame(MatrixStack matrices,boolean left){
     if(left)matrices.translate(2/16d,0,0);
     matrices.translate(-1/16d,9.5/16d,0);matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90));matrices.translate(1/16d,-9.5/16d,0);
   }

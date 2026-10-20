@@ -26,11 +26,15 @@ class StormbreakerGripTest {
       var grip=new Vector4f(-1/16f,9.5f/16,0,1).mul(m.peek().getPositionMatrix());
       assertEquals((left?1:-1)/16f,grip.x,.0001);assertEquals(9.5f/16,grip.y,.0001);assertEquals(0,grip.z,.0001);
       // Source haft runs along Z and its cutting edge extends along +Y.
-      // At rest the head must sit above the fist and the edge face forward (-Z).
+      // Reference: relaxed vanilla-style carry. Head below and ahead of the
+      // fist, with the cutting edge facing forward in a vertical plane.
       var head=new Vector4f(0,0,-1,0).mul(m.peek().getPositionMatrix());
       var edge=new Vector4f(0,1,0,0).mul(m.peek().getPositionMatrix());
-      assertEquals(-1,head.y,.0001,"Axe head must stand above the fist");
-      assertEquals(-1,edge.z,.0001,"Cutting edge must point forward, not lie flat");
+      double diagonal=java.lang.Math.sqrt(.5);
+      assertEquals(diagonal,head.y,.0001,"Relaxed carry puts the axe head below the fist");
+      assertEquals(-diagonal,head.z,.0001,"Axe head must extend in front of the player");
+      assertEquals(-diagonal,edge.z,.0001,"Cutting edge must face forward");
+      assertEquals(0,head.x,.0001);assertEquals(0,edge.x,.0001,"Blade plane must remain vertical");
       var virtual=new MatrixStack();HeroEquipmentModels.heldFrame(virtual,left);
       for(var point:new Vector4f[]{new Vector4f(-1/16f,9.5f/16,0,1),new Vector4f(0,0,-1,0),new Vector4f(0,1,0,0)}){
         var actual=new Vector4f(point).mul(m.peek().getPositionMatrix());var fallback=new Vector4f(point).mul(virtual.peek().getPositionMatrix());
@@ -50,6 +54,15 @@ class StormbreakerGripTest {
       var head=new Vector4f(0,0,-1,0).mul(m.peek().getPositionMatrix());var edge=new Vector4f(0,1,0,0).mul(m.peek().getPositionMatrix());
       assertTrue(new Vector3f(head.x,head.y,head.z).normalize().y>.8,"Haft must stand upright");
       assertTrue(new Vector3f(edge.x,edge.y,edge.z).normalize().z<-.8,"Blade must face forward into the scene");
+    }
+  }
+  @Test void firstPersonManifestationRetainsItsExistingPose(){
+    for(boolean left:new boolean[]{false,true}){
+      var m=new MatrixStack();HeroEquipmentModels.heldFirstPersonFrame(m,left);
+      var grip=new Vector4f(-1/16f,9.5f/16,0,1).mul(m.peek().getPositionMatrix());
+      assertEquals((left?1:-1)/16f,grip.x,.0001);assertEquals(9.5f/16,grip.y,.0001);assertEquals(0,grip.z,.0001);
+      var head=new Vector4f(0,0,-1,0).mul(m.peek().getPositionMatrix());var edge=new Vector4f(0,1,0,0).mul(m.peek().getPositionMatrix());
+      assertEquals(-1,head.y,.0001);assertEquals(-1,edge.z,.0001);
     }
   }
   private static Vector3f vector(JsonObject o,String key,float scale){var a=o.getAsJsonArray(key);return new Vector3f(a.get(0).getAsFloat(),a.get(1).getAsFloat(),a.get(2).getAsFloat()).mul(scale);}

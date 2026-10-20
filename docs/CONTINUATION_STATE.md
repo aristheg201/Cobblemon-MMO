@@ -1,5 +1,7 @@
 # Active task update — 2026-10-20
 
+Latest steering: user rejected the raised-head third-person axe. Client-only follow-up now uses a relaxed down/forward carry based on the vanilla axe reference; preserve first-person size/transforms. Targeted client build passes 37 tests, native evidence in `/workspace/qa-evidence/superheroes/stormbreaker-relaxed-carry/`. Matching server remains 0.2.1.
+
 User paused Kamen Rider and prioritized SIX superhero classes and balance. Work locally only; no Actions, no public publishing, no FiskHeroes mod JAR nested in ours. Armor is ordinary stat equipment, NOT Henshin. Branch `feature/superhero-classes-balanced-local`, stable base `e4c0208`; catalog/balance commit `c4c48ca`.
 
 User approved classic Spider-Man and another Thor variant. FiskHeroes 2.4.0 is Forge 1.7.10 only; native Fabric adaptation required. Source JAR `/workspace/references/FiskHeroes-1.7.10-2.4.0.jar`; real Thor source `/workspace/references/jmcthp-v3.1.0.zip` (official CurseForge file4625355), assets `jmctheroes:thor_infinity`. Do not ask again for those skins. Extract only necessary data assets, no Forge classes.
