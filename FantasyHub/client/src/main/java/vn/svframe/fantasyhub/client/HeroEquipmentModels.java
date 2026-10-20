@@ -61,7 +61,7 @@ public final class HeroEquipmentModels {
   }
   static void heldFrame(MatrixStack matrices,boolean left){
     if(left)matrices.translate(2/16d,0,0);
-    matrices.translate(-1/16d,9.5/16d,0);matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(45));matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));matrices.translate(1/16d,-9.5/16d,0);
+    matrices.translate(-1/16d,9.5/16d,0);matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(45));matrices.translate(1/16d,-9.5/16d,0);
   }
   static void heldFirstPersonFrame(MatrixStack matrices,boolean left){
     if(left)matrices.translate(2/16d,0,0);

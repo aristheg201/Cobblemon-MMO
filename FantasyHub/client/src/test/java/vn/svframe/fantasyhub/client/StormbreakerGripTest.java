@@ -27,13 +27,14 @@ class StormbreakerGripTest {
       assertEquals((left?1:-1)/16f,grip.x,.0001);assertEquals(9.5f/16,grip.y,.0001);assertEquals(0,grip.z,.0001);
       // Source haft runs along Z and its cutting edge extends along +Y.
       // Reference: relaxed vanilla-style carry. Head below and ahead of the
-      // fist, with the cutting edge facing forward in a vertical plane.
+      // fist, with the blade BELOW the haft (not inverted above it).
       var head=new Vector4f(0,0,-1,0).mul(m.peek().getPositionMatrix());
       var edge=new Vector4f(0,1,0,0).mul(m.peek().getPositionMatrix());
       double diagonal=java.lang.Math.sqrt(.5);
       assertEquals(diagonal,head.y,.0001,"Relaxed carry puts the axe head below the fist");
       assertEquals(-diagonal,head.z,.0001,"Axe head must extend in front of the player");
-      assertEquals(-diagonal,edge.z,.0001,"Cutting edge must face forward");
+      assertEquals(diagonal,edge.y,.0001,"Cutting edge must sit below the haft");
+      assertEquals(diagonal,edge.z,.0001,"Blade must not be rolled upside down");
       assertEquals(0,head.x,.0001);assertEquals(0,edge.x,.0001,"Blade plane must remain vertical");
       var virtual=new MatrixStack();HeroEquipmentModels.heldFrame(virtual,left);
       for(var point:new Vector4f[]{new Vector4f(-1/16f,9.5f/16,0,1),new Vector4f(0,0,-1,0),new Vector4f(0,1,0,0)}){

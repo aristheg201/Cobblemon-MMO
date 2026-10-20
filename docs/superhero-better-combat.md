@@ -44,8 +44,8 @@ ordinary first-person item renderer adds the player's actual skin/suit arm at
 the weapon's grip, sharing the item swing/equip matrix. Original first-person
 scale is retained. The blade is rolled about the haft so its cutting edge faces
 into the scene; third-person geometry rotates about the fist into a relaxed carry: the head
-sits below and ahead of the hand, with the cutting edge facing forward in a
-vertical plane. Both real and manifested weapons use the
+sits below and ahead of the hand, with the blade below the haft and the
+hammer end above it in a vertical plane. Both real and manifested weapons use the
 same third-person grip and orientation. During playerAnimator's
 third-person-model first-person pass, its own arm remains authoritative and the
 item renderer does not add another arm.

@@ -1,6 +1,6 @@
 # Active task update — 2026-10-20
 
-Latest steering: user rejected the raised-head third-person axe. Client-only follow-up now uses a relaxed down/forward carry based on the vanilla axe reference; preserve first-person size/transforms. Targeted client build passes 37 tests, native evidence in `/workspace/qa-evidence/superheroes/stormbreaker-relaxed-carry/`. Matching server remains 0.2.1.
+Latest steering: user then clarified the BLADE itself must be BELOW the haft; remove the upside-down half-turn while retaining the same relaxed head/haft position. User previously rejected the raised-head third-person axe. Client-only follow-up now uses a relaxed down/forward carry based on the vanilla axe reference; preserve first-person size/transforms. Targeted client build passes 37 tests, native evidence in `/workspace/qa-evidence/superheroes/stormbreaker-relaxed-carry/`. Matching server remains 0.2.1.
 
 User paused Kamen Rider and prioritized SIX superhero classes and balance. Work locally only; no Actions, no public publishing, no FiskHeroes mod JAR nested in ours. Armor is ordinary stat equipment, NOT Henshin. Branch `feature/superhero-classes-balanced-local`, stable base `e4c0208`; catalog/balance commit `c4c48ca`.
 

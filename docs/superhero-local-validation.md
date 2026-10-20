@@ -86,3 +86,16 @@ cases. Native images for this follow-up belong in
 `/workspace/qa-evidence/superheroes/stormbreaker-relaxed-carry/` and supersede
 previous raised-pose images for third-person acceptance. This patch only
 requires replacing FantasyHubClient on a matching 0.2.1 installation.
+
+### Blade-down correction
+
+The user further clarified the cutting blade must be underneath the haft.
+The prior relaxed pose still had a half-turn around the shaft that inverted
+the blade above it. Removed that half-turn for the third-person real item and
+class manifestation, retaining the same head trajectory, grip and first-person
+presentation. The updated test explicitly requires positive model-space Y for
+the cutting-edge direction (Minecraft's body-space downward axis), in both
+hands. All 37 client tests passed. Actual new-JAR observer views for right hand,
+left hand and manifestation were inspected in
+`/workspace/qa-evidence/superheroes/stormbreaker-blade-down/`; they supersede
+the previous upside-down blade images.
