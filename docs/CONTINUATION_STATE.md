@@ -1,3 +1,19 @@
+# Current handoff: hero presentation 0.2.3 (2026-10-20)
+
+Latest implementation commit: 3a6d04b (local only). Client/Bridge/Protocol 0.2.3, asset revision heroes-expansion-v4; wire protocol remains 3. No push or remote CI.
+
+Implemented hero input/gameplay and presentation overhaul: Batman downward-only native Back-cape Elytra glide without cancelling jump ascent; Comics suit and cape override; functional Back item; hero icon model whitelist and no leather tint; no class-inferred Stormbreaker; unbreakable hero gear and join/generation protection; original Soulslike 1.4.8 Mjolnir model/texture/glowmask for outbound/return skill; retained semantic effects and six-class poses; actual EMF suit-part rendering and vanilla-rig condition during external poses. Web Swing and Thunderous Slam use validated target landing points.
+
+Local build candidate: `/workspace/artifacts/heroes-presentation-023`; expected complete delivery `/workspace/artifacts/SVFrame-Heroes-1.21.1-0.2.3-Full.zip`, receipt `/workspace/artifacts/heroes-presentation-023-receipt.json`. Complete folder includes client + separate EMF/ETF, seven server JARs and 13 configs; no nested third-party mod or Xaero dependency. Source model data included separately.
+
+163 unit tests pass; native server accepted 42/42 skills. Two clients verified tracking/rendering. Postchecks passed with one active software renderer: real keyboard Batman jump/glide/removal, Thor/Strange flight/revocation, native gear durability, EMF walk with equipped weapon, actual hero sprites, seven-slot HUD and empty Thor hands. Two competing software renderers can miss short keyboard gesture windows; do not mislabel those stress traces as passing. Detailed QA docs explain coverage and offline personal-cape limitation.
+
+References: four uploaded MP4s, duplicated in user Drive folder `1W1-ElMGFWUttwRpn_r9dNvORN2AFiwGm`; read with Drive connector. Video inventory/hashes and inspected ordered-frame notes are in `docs/superhero-video-reference-notes.md` and `/workspace/references/hero-overhaul/video`.
+
+New geometry stays outside shared geo scans. Preserve startupfix isolation and physical Stormbreaker blade-down frames. Kamen Rider remains paused. Runtime latest server PID is in `/workspace/scratch/hero-server-pid`; use proxy 25577 rather than direct backend. QA files `/workspace/qa-evidence/superheroes/presentation-023`; opt-in helpers `/workspace/scratch/hero_023_*.py`. Do not expose server properties or launch-argument files.
+
+---
+
 # Latest continuation — Client 0.2.2 StartupFix 1
 
 User reported a stuck Mojang screen. Their failing log pinpointed GeckoLib4.9.3/AzureLib3.1.21 globally scanning our five non-Bedrock JSON files in `geo/heroes/`. Exact old-JAR failure and loading screen reproduced locally after adding both libraries. Implementation `c39d6ae` relocates only those payloads to `native_geometry/heroes/`, updates importer/renderer/provenance, and adds a build guard plus three tests. All geometry and PNG bytes unchanged. 154 local tests pass. Exact fixed JAR reaches title menu with both libraries + EMF/ETF, and a second cold start with both builtin packs enabled and no EMF/ETF joins the 0.2.2 server; handshake, actual Stormbreaker rendering and real keyboard cape flight pass. See `superhero-startup-geometry-hotfix.md` and `/workspace/qa-evidence/superheroes/startup-geometry-fix`.

@@ -15,7 +15,7 @@ Keyboard flight checks used one active software-rendered client to avoid competi
 - The actual item renderer resolves `fantasyhub:item/heroes/*` sprites; all seven skill slots are rendered after entering the skill bar.
 - Removing the physical Stormbreaker leaves the hands empty.
 
-A six-class native recording and screenshots show the actual geometric effects, particle bursts, suits and intact player rig. They are not AI-generated previews. The visual references guide the design rather than promising Marvel Future Fight's cinematic camera choreography or pixel-identical animation.
+A six-class native recording and screenshots show the actual geometric effects, particle bursts, suits and intact player rig. They are not AI-generated previews. The X11 capture records video only; it does not contain the native game sound track. The visual references guide the design rather than promising Marvel Future Fight's cinematic camera choreography or pixel-identical animation.
 
 The offline QA accounts do not own live Mojang capes. Personal-cape precedence is verified by selection policy tests and the Batman CapeFeatureRenderer cancellation path; no live-account cape screenshot is claimed.
 
