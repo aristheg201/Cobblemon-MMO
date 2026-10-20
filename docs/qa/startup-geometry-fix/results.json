@@ -1,0 +1,38 @@
+{
+  "implementationCommit": "c39d6ae79a809bc48b3215228fd17c2e8664ff16",
+  "oldClientSha256": "f2f6c2da615a0acc3c6baf7aaccd74b033f65f63aae6e1353599c1ce141461e5",
+  "fixedClientSha256": "792d5058d5d122e4669c6a70b184f4a353aadf825a4a4cac6205ddaf85eba6ae",
+  "unitTests": 154,
+  "nativeChecks": {
+    "newClientConnected": true,
+    "bothBuiltinPacksEnabled": true,
+    "geckolib493Installed": true,
+    "azurelib3121Installed": true,
+    "noEMFETF": true,
+    "noModelParseFailure": true,
+    "nativeWeaponModelReadable": true,
+    "flightStillWorks": true
+  },
+  "geometryChecks": {
+    "cape_default-old-path-absent": true,
+    "cape_default-geometry-identical": true,
+    "cape_batman-old-path-absent": true,
+    "cape_batman-geometry-identical": true,
+    "tao_mandala-old-path-absent": true,
+    "tao_mandala-geometry-identical": true,
+    "mjolnir-old-path-absent": true,
+    "mjolnir-geometry-identical": true,
+    "stormbreaker-old-path-absent": true,
+    "stormbreaker-geometry-identical": true,
+    "all-textures-identical": true,
+    "assets/fantasyhub/geo/hunter/feline.geo.json-bedrock": true,
+    "assets/fantasyhub/geo/hunter/griffin.geo.json-bedrock": true,
+    "assets/fantasyhub/geo/hunter/kaer_morhen.geo.json-bedrock": true,
+    "assets/fantasyhub/geo/hunter/ursine.geo.json-bedrock": true,
+    "assets/fantasyhub/geo/hunter/wolven.geo.json-bedrock": true
+  },
+  "limitations": [
+    "Not all 289 user mods are present in the local runtime; exact GeckoLib 4.9.3 and AzureLib 3.1.21 are included.",
+    "Linux/software rendering; user baseline is Windows/NVIDIA."
+  ]
+}
