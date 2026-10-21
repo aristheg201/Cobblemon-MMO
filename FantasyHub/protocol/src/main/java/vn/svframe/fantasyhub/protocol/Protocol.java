@@ -13,10 +13,11 @@ import net.minecraft.util.Identifier;
 
 /** Versioned requests and immutable server snapshots. No client damage/resource values accepted. */
 public final class Protocol implements ModInitializer {
-  public static Item batmanCape;
+  public static Item batmanCape, classSigil, grapplingHook;
+  public static net.minecraft.entity.EntityType<HeroNpcEntity> heroNpcType;
   private static boolean installed;
   public static final int VERSION = 3;
-  public static final String ASSET_REVISION = "heroes-expansion-v4";
+  public static final String ASSET_REVISION = "heroes-expansion-v5";
 
   public record Handshake(int version, String assets, String clientVersion, String diagnostic)
       implements CustomPayload {
@@ -437,6 +438,10 @@ public final class Protocol implements ModInitializer {
     thorCape=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","thor_cape"),new HeroCapeItem(new Item.Settings().maxCount(1),"fantasyhub.flight.requirements.thor"));
     levitationCloak=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","cloak_of_levitation"),new HeroCapeItem(new Item.Settings().maxCount(1),"fantasyhub.flight.requirements.sorcerer_supreme"));
     batmanCape=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","batman_cape"),new HeroCapeItem(new Item.Settings().maxCount(1),"fantasyhub.glide.requirements.batman"));
+    classSigil=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","class_sigil"),new Item(new Item.Settings()));
+    grapplingHook=Registry.register(Registries.ITEM,Identifier.of("fantasyhub","batman_grappling_hook"),new GrapplingHookItem(new Item.Settings().maxCount(1)));
+    heroNpcType=Registry.register(Registries.ENTITY_TYPE,Identifier.of("fantasyhub","hero_npc"),net.minecraft.entity.EntityType.Builder.create(HeroNpcEntity::new,net.minecraft.entity.SpawnGroup.MONSTER).dimensions(.6f,1.8f).maxTrackingRange(10).trackingTickInterval(1).build("fantasyhub:hero_npc"));
+    net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry.register(heroNpcType,HeroNpcEntity.attributes());
     BeltEquipment.install();
     BackEquipment.install();
     PayloadTypeRegistry.playS2C().register(Kabuto.ID, Kabuto.CODEC);

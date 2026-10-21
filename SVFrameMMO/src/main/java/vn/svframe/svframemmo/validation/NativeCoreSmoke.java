@@ -91,6 +91,14 @@ public final class NativeCoreSmoke {
     vn.svframe.svframemmo.persistence.PersistenceBootstrap.verifyYamlCodec();
     System.out.println(
         "SVFRAMEMMO_PREFERENCE_CODEC=PASS legacy-defaults,immutable-snapshot,yaml-roundtrip");
+    var mutableSkills=new LinkedHashMap<String,Integer>();mutableSkills.put("DASH",2);
+    var mutableBindings=new LinkedHashMap<Integer,String>();mutableBindings.put(1,"DASH");
+    var mutableClasses=new LinkedHashMap<String,SavedClassState>();mutableClasses.put("THOR",state);
+    var snapshot=new vn.svframe.svframemmo.persistence.PlayerDataSnapshot("THOR",7,42,0,1,0,0,0,0,20,80,70,0,Map.of(),mutableSkills,mutableBindings,java.util.Set.of("skill:dash"),Map.of(),Map.of(),Map.of(),Map.of(),Map.of(),mutableClasses,0,Map.of());
+    mutableSkills.clear();mutableBindings.clear();mutableClasses.clear();
+    if(snapshot.skills().size()!=1||snapshot.bindings().size()!=1||snapshot.classSlots().size()!=1)throw new AssertionError("Persistence snapshots must detach live class maps before asynchronous save or rollback");
+    try{snapshot.bindings().put(2,"ILLEGAL");throw new AssertionError("Snapshot bindings mutable");}catch(UnsupportedOperationException expected){}
+    System.out.println("SVFRAMEMMO_SNAPSHOT=PASS detached-maps,immutable-bindings");
     System.out.println("SVFRAMEMMO_NATIVE_CORE=PASS");
   }
 }

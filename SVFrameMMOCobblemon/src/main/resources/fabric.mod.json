@@ -22,7 +22,7 @@
     "minecraft": "1.21.1",
     "java": ">=21",
     "fabric-api": ">=0.116.9+1.21.1",
-    "cobblemon": ">=1.8.0+1.21.1 <1.9.0",
+    "cobblemon": ">=1.8.2+1.21.1 <1.9.0",
     "svframelib": ">=1.7.2-fabric",
     "svframemmo": ">=1.13.3-fabric",
     "polymer-core": ">=0.9.19+1.21.1",

@@ -4,9 +4,9 @@ import com.google.gson.*;
 import org.junit.jupiter.api.Test;
 class HeroCatalogTest {
   @Test void sixClassesHaveSevenDistinctActivesAndCorrectResourceOwners() throws Exception {
-    var c=HeroCatalog.defaults();assertEquals(6,c.heroes().size());assertEquals(42,c.abilities().size());
+    var c=HeroCatalog.defaults();assertEquals(6,c.heroes().size());assertEquals(43,c.abilities().size());
     for(var h:c.heroes().values()) {
-      assertEquals(7,h.abilities().size());
+      assertEquals(h.id().equals("THOR")?8:7,h.abilities().size());
       for(int i=0;i<7;i++)assertEquals(i+1,h.abilities().get(i).slot());
     }
     assertEquals("STAMINA",c.hero("SPIDER_MAN").resource());

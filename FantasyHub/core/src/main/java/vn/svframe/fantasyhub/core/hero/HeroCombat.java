@@ -35,6 +35,7 @@ final class HeroCombat {
       if(HeroControl.stunned(e.getPlayer())){e.setCancelled(true);return;}
       var s=HeroRuntime.session(e.getPlayer());
       if(s!=null&&!e.isCancelled()&&HeroWorld.legal(s.player,e.getEntity())) {
+        if(context==null&&s.active("axe_out")&&!e.getDamage().hasType(DamageType.SKILL)){e.setCancelled(true);return;}
         if(s.active("astral")||HeroControl.stunned(s.player)||context==null&&s.active("busy")){e.setCancelled(true);return;}
         if(context==null&&!e.getDamage().hasType(DamageType.SKILL))HeroPassives.normalAttack(s,e.getEntity(),e.getDamage());
       }

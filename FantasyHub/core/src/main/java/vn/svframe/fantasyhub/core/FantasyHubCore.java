@@ -38,6 +38,7 @@ public final class FantasyHubCore implements ModInitializer {
   @Override
   public void onInitialize() {
     Protocol.install();
+    ClassProgression.install();
     KabutoRuntime.install();
     RiderEquipment.install();
     RiderRuntime.install();
@@ -99,6 +100,7 @@ public final class FantasyHubCore implements ModInitializer {
               throw new IllegalStateException("Cannot load authored class definitions");
             vn.svframe.svframelib.fabric.NativeVisualRuntime.reload();
             ClassSwitchService.reload();
+            ClassProgression.reload();
             if (!vn.svframe.svframeitems.SVFrameItems.reload())
               throw new IllegalStateException(
                   "Cannot load source Dragonborn equipment definitions");
@@ -126,6 +128,8 @@ public final class FantasyHubCore implements ModInitializer {
                     player, request.id(), () -> snapshots.remove(player.getUuid()));
                 return;
               }
+              case "unlock_class" -> {ClassProgression.purchase(player,request.id());snapshots.remove(player.getUuid());return;}
+              case "learn" -> {ClassProgression.learn(player,request.id());snapshots.remove(player.getUuid());return;}
               case "allocate" -> {
                 if (request.slot() != 1) return;
                 data.spendAttributePoints(request.id(), 1);
@@ -480,6 +484,7 @@ public final class FantasyHubCore implements ModInitializer {
       row.put("price", ClassSwitchService.offer(type.getId(), player, classBalances));
       row.put("selectable", ClassSwitchService.selectable(type.getId()));
       row.put("unlocked", ClassSwitchService.unlocked(player, type.getId()));
+      row.put("owned",ClassProgression.owns(data,type.getId()));row.put("unlockCost",ClassProgression.price(type.getId()));
       row.put("current", data.getClassId().equals(type.getId()));
       Map<String, Double> baseStats = new TreeMap<>();
       for (String stat : type.getStats())
@@ -508,6 +513,10 @@ public final class FantasyHubCore implements ModInitializer {
       row.put("id", entry.id());
       row.put("name", skill.getSkill().getName());
       row.put("owned", entry.learned());
+      boolean learned = entry.origin() == PlayerSkillCatalog.Origin.EXTERNAL || data.hasUnlocked(skill.getUnlockNamespacedKey());
+      row.put("learned", learned);
+      row.put("learnCost", ClassProgression.settings().learnCost());
+      row.put("canLearn", entry.origin() == PlayerSkillCatalog.Origin.CLASS && ProgressionPolicy.learnable(data.getLevel(), skill.getUnlockLevel(), data.getSkillPoints(), learned, ClassProgression.settings().learnCost()));
       row.put("level", entry.level());
       row.put("bindable", entry.bindable());
       row.put("slots", PlayerSkillCatalog.allowedSlots(data, entry));

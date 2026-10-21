@@ -10,10 +10,7 @@ final class BatmanSkills {
       case "BATARANG" -> HeroActions.phases(c,(phase,index)->HeroActions.projectile(c,p.getEyePos(),c.target!=null?c.target.getEyePos():HeroWorld.point(p,a.range()),null,1.8,c.recastUsed?a.radius():0,phase,t->{
         HeroControl.slow(s,t,a.effect("slow"),3);if(c.recastUsed)HeroControl.apply(s,t,HeroControl.Kind.SILENCE,.5);
       }));
-      case "BATCLAW" -> {
-        if(c.target!=null){HeroPresentation.cue(c,"BEAM",p.getEyePos(),c.target.getEyePos(),.65);if(HeroCombat.hit(c,c.target,a.phases().get(0))) {HeroActions.pull(c,c.target,p.getPos(),.5);HeroControl.apply(s,c.target,HeroControl.Kind.STUN,a.effect("stun"));HeroActions.debuffs(c,c.target);}}
-        else HeroActions.dash(c,c.point,a.range(),at->{});
-      }
+      case "BATCLAW" -> HeroGrapple.cast(c);
       case "SMOKE_TAKEDOWN" -> {
         HeroActions.effect(p,StatusEffects.INVISIBILITY,a.duration(),0);s.flag("stealth_crit",a.duration());
         for(var t:HeroWorld.near(p,p.getPos(),a.radius(),c.cap())){HeroActions.effect(c,t,StatusEffects.BLINDNESS,a.effect("blindness"),0);HeroControl.apply(s,t,HeroControl.Kind.SILENCE,a.effect("silence"));}

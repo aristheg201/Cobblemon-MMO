@@ -29,7 +29,16 @@ final class HeroAnimations {
     else{m.body.yaw=action*.5f*w;m.rightArm.pitch=(-2.2f+1.4f*t)*w;m.rightArm.roll=-.35f*w;m.leftArm.pitch=-.4f*w;m.leftLeg.pitch=-.25f*w;}
    }
    case "FLASH"->{float run=(float)Math.sin(t*35);m.body.pitch=.4f*w;m.rightArm.pitch=(-.5f+run)*w;m.leftArm.pitch=(-.5f-run)*w;m.rightLeg.pitch=-run*w;m.leftLeg.pitch=run*w;}
-   case "BATMAN"->{float punch=(float)Math.sin(t*20);m.body.yaw=.35f*punch*w;m.body.pitch=.15f*w;m.rightArm.pitch=(-1.5f+.65f*punch)*w;m.leftArm.pitch=(-1.3f-.65f*punch)*w;m.rightLeg.pitch=.35f*w;m.leftLeg.pitch=-.35f*w;}
+   case "BATMAN"->{
+    switch(c.ability()){
+     case "BATARANG"->{m.body.yaw=(-.8f+1.6f*t)*w;m.rightArm.pitch=-1.4f*w;m.rightArm.yaw=(-1.2f+2.4f*t)*w;m.leftArm.pitch=-.6f*w;m.rightLeg.pitch=.3f*w;m.leftLeg.pitch=-.3f*w;}
+     case "BATCLAW"->{m.body.pitch=-.15f*w;m.rightArm.pitch=-1.7f*w;m.leftArm.pitch=-.5f*w;m.rightLeg.pitch=-.4f*w;m.leftLeg.pitch=.5f*w;}
+     case "SMOKE_TAKEDOWN"->{m.body.pitch=.5f*w;m.rightArm.pitch=.7f*w;m.leftArm.pitch=-.5f*w;m.rightLeg.pitch=-.7f*w;m.leftLeg.pitch=-.7f*w;}
+     case "DETECTIVE_VISION"->{m.head.yaw=action*.25f*w;m.rightArm.pitch=-.8f*w;m.rightArm.roll=-.3f*w;m.leftArm.pitch=-.2f*w;}
+     case "DISRUPTOR","BATWING_STRIKE"->{m.body.yaw=-.3f*w;m.rightArm.pitch=-1.65f*w;m.rightArm.yaw=-.1f*w;m.leftArm.pitch=-1f*w;m.leftArm.yaw=.4f*w;}
+     default->{float punch=(float)Math.sin(t*20);m.body.yaw=.6f*punch*w;m.body.pitch=.15f*w;m.rightArm.pitch=(-1.5f+.65f*punch)*w;m.leftArm.pitch=(-1.3f-.65f*punch)*w;m.rightArm.roll=-.8f*w;m.leftArm.roll=.8f*w;m.rightLeg.pitch=.35f*w;m.leftLeg.pitch=-.35f*w;}
+    }
+   }
   }
   sync(m);
  }

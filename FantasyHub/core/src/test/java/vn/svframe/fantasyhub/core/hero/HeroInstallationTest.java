@@ -15,7 +15,8 @@ class HeroInstallationTest {
       var raw=files.get("SVFrameMMO/classes/"+h.id().toLowerCase(Locale.ROOT)+".yml");assertNotNull(raw);
       var config=YamlLite.map(YamlLite.parse(new String(raw,StandardCharsets.UTF_8)));
       var slots=YamlLite.map(config.get("skill-slots"));assertEquals(7,slots.size());
-      for(var a:h.abilities())assertEquals(a.id(),YamlLite.map(slots.get(String.valueOf(a.slot()))).get("hardset"));
+      for(var a:h.abilities()){var skill=YamlLite.map(YamlLite.map(config.get("skills")).get(a.id()));assertEquals(false,skill.get("unlocked-by-default"));}
+      for(var slot:slots.values())assertFalse(YamlLite.map(slot).containsKey("hardset"));
       assertFalse(YamlLite.map(config.get("skills")).keySet().stream().anyMatch(s->s.contains("HENSHIN")));
       var resource=YamlLite.map(config.get("resource"));assertTrue(resource.containsKey(h.resource().toLowerCase(Locale.ROOT)));
     }

@@ -401,5 +401,22 @@
   "fantasyhub.flight.disabled": "Đã tắt bay",
   "fantasyhub.flight.control": "Ô Back · Nhấn đúp Jump để bật/tắt bay",
   "item.fantasyhub.batman_cape": "Áo Choàng Liệng Batman",
-  "fantasyhub.glide.requirements.batman": "Class Batman + cape trong ô Back. Giữ Nhảy khi đang rơi để liệng; thả để dừng."
+  "fantasyhub.glide.requirements.batman": "Class Batman + cape trong ô Back. Giữ Nhảy khi đang rơi để liệng; thả để dừng.",
+  "fantasyhub.learn": "Học",
+  "item.fantasyhub.class_sigil": "Class Sigil",
+  "item.fantasyhub.batman_grappling_hook": "Batman Grappling Hook",
+  "fantasyhub.classes.search": "Tìm class",
+  "fantasyhub.classes.search_hint": "Tìm class / Flash",
+  "fantasyhub.classes.heroes": "Hero",
+  "fantasyhub.classes.all": "Tất cả class",
+  "fantasyhub.classes.owned": "Đã sở hữu vĩnh viễn",
+  "fantasyhub.classes.material_status": "%s Class Sigil (gắn nhân vật) • Còn %s lượt miễn phí",
+  "fantasyhub.classes.unlock_sigil": "Mở khóa: %s Class Sigil",
+  "fantasyhub.classes.confirm_unlock": "Xác nhận mở: %s Class Sigil",
+  "fantasyhub.classes.unlock_help": "Mở quyền sở hữu vĩnh viễn. Chọn class riêng; phí chuyển áp dụng riêng.",
+  "fantasyhub.classes.choose_help": "Chọn class này. Lượt đầu miễn phí, không áp dụng hồi chuyển.",
+  "fantasyhub.classes.locked_sigil": "Thu thập %s Class Sigil từ world boss để mở vĩnh viễn.",
+  "fantasyhub.classes.not_selectable": "Class đã tải nhưng chưa được bật trong roster server.",
+  "fantasyhub.learn.requirements": "Cần class cấp %s và %s điểm học. Học trước khi trang bị hoặc thi triển.",
+  "fantasyhub.learn.learned": "Đã học. Gán ô chiến đấu để sử dụng."
 }

@@ -19,8 +19,8 @@ public final class HeroClassFiles {
       c.put("mana",Map.of("name",h.resourceName(),"char","♦","icon","♦","color",Map.of("full","AQUA","half","DARK_AQUA","empty","GRAY")));
       var skills=new LinkedHashMap<String,Object>();var slots=new LinkedHashMap<String,Object>();
       for(var a:h.abilities()) {
-        skills.put(a.id(),Map.of("level",1,"max-level",1,"unlocked-by-default",true,"upgradable",false));
-        slots.put(String.valueOf(a.slot()),Map.of("name",a.name(),"formula","<ACTIVE>","unlocked-by-default",true,"hardset",a.id()));
+        skills.put(a.id(),Map.of("level",vn.svframe.fantasyhub.core.ProgressionPolicy.requiredLevel(a.slot()),"max-level",1,"unlocked-by-default",false,"upgradable",false));
+        if(a.slot()<=7)slots.put(String.valueOf(a.slot()),Map.of("name","Active "+a.slot(),"formula","<ACTIVE>","unlocked-by-default",true));
       }
       c.put("skills",skills);c.put("skill-slots",slots);
       files.put("SVFrameMMO/classes/"+h.id().toLowerCase(Locale.ROOT)+".yml",new Yaml().dump(c).getBytes(StandardCharsets.UTF_8));

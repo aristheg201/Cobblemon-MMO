@@ -30,6 +30,7 @@ public final class FantasyHubClient implements ClientModInitializer {
     ClientHudPacks.register();
     BetterCombatCompat.install();
     Protocol.install();
+    net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(Protocol.heroNpcType,HeroNpcRenderer::new);
     net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.INSTANCE.register(
         Protocol.stormbreaker,(stack,mode,matrices,vertices,light,overlay)->HeroEquipmentModels.item(mode,matrices,vertices,light));
     net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin.register(

@@ -401,5 +401,22 @@
   "fantasyhub.flight.disabled": "Flight disabled",
   "fantasyhub.flight.control": "Back slot · Double-tap Jump to toggle flight",
   "item.fantasyhub.batman_cape": "Batman Glider Cape",
-  "fantasyhub.glide.requirements.batman": "Batman class + cape in Back. Hold Jump while falling to glide; release to stop."
+  "fantasyhub.glide.requirements.batman": "Batman class + cape in Back. Hold Jump while falling to glide; release to stop.",
+  "fantasyhub.learn": "Learn",
+  "item.fantasyhub.class_sigil": "Class Sigil",
+  "item.fantasyhub.batman_grappling_hook": "Batman Grappling Hook",
+  "fantasyhub.classes.search": "Search classes",
+  "fantasyhub.classes.search_hint": "Search / Flash",
+  "fantasyhub.classes.heroes": "Heroes",
+  "fantasyhub.classes.all": "All classes",
+  "fantasyhub.classes.owned": "Permanently owned",
+  "fantasyhub.classes.material_status": "%s banked Class Sigil • %s free choice remaining",
+  "fantasyhub.classes.unlock_sigil": "Unlock: %s Class Sigil",
+  "fantasyhub.classes.confirm_unlock": "Confirm unlock: %s Class Sigil",
+  "fantasyhub.classes.unlock_help": "Permanently unlock this class. Select it separately; switching fees still apply.",
+  "fantasyhub.classes.choose_help": "Choose this class. Your first free choice has no fee or cooldown.",
+  "fantasyhub.classes.locked_sigil": "Earn %s Class Sigil from world bosses to unlock permanently.",
+  "fantasyhub.classes.not_selectable": "This class is loaded but disabled in the server roster.",
+  "fantasyhub.learn.requirements": "Requires class level %s and %s skill point(s). Learn before binding or casting.",
+  "fantasyhub.learn.learned": "Learned. Bind to a combat slot to use."
 }

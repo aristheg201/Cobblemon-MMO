@@ -34,7 +34,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
     modImplementation "net.fabricmc:fabric-language-kotlin:${fabric_kotlin_version}"
-    modImplementation "maven.modrinth:MdwFAVRL:YgmyyFcs"
+    modImplementation "maven.modrinth:MdwFAVRL:GJ2a1b8O"
     // Legacy CI ownership marker. Mega Showdown is optional at runtime and accessed reflectively.
     // maven.modrinth:SszvX85I:ch7DfnXP
     modImplementation "eu.pb4:polymer-core:0.9.19+1.21.1"
@@ -51,7 +51,7 @@ dependencies {
     modImplementation files('../SVFrameMMO/build/libs/SVFrameMMO-1.13.4-fabric.jar')
 
     productionRuntimeDeps "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
-    productionRuntimeDeps "maven.modrinth:MdwFAVRL:YgmyyFcs"
+    productionRuntimeDeps "maven.modrinth:MdwFAVRL:GJ2a1b8O"
     productionRuntimeDeps "eu.pb4:polymer-core:0.9.19+1.21.1"
     productionRuntimeDeps "eu.pb4:polymer-resource-pack:0.9.19+1.21.1"
     productionRuntimeDeps "dev.architectury:architectury-fabric:13.0.8"

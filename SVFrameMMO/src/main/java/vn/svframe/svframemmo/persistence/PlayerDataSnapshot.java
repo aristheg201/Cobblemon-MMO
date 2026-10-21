@@ -34,6 +34,10 @@ public record PlayerDataSnapshot(
     Map<String, String> preferences) {
 
   public PlayerDataSnapshot {
+    attributes=Map.copyOf(attributes);skills=Map.copyOf(skills);bindings=Map.copyOf(bindings);
+    unlockedItems=Set.copyOf(unlockedItems);claims=Map.copyOf(claims);
+    professionLevels=Map.copyOf(professionLevels);professionExperience=Map.copyOf(professionExperience);
+    skillTreePoints=Map.copyOf(skillTreePoints);skillTreeNodeLevels=Map.copyOf(skillTreeNodeLevels);classSlots=Map.copyOf(classSlots);
     preferences = preferences == null ? Map.of() : Map.copyOf(preferences);
   }
 

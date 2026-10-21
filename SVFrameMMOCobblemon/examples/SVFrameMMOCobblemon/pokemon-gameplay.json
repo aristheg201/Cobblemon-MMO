@@ -1,0 +1,21 @@
+{
+  "pokemon-gameplay": {
+    "experience-enabled": true,
+    "battle": {"base": 20, "perLevel": 5, "maximum": 1000},
+    "overworld": {"base": 10, "perLevel": 2.5, "maximum": 250},
+    "hostility": {
+      "enabled": true,
+      "detect-range": 16,
+      "leash-range": 32,
+      "max-attackers-per-player": 4,
+      "windup-ticks": 16,
+      "cooldown-ticks": 50,
+      "lose-target-ticks": 80,
+      "movement-speed": 1.15,
+      "maximum-damage": 8,
+      "excluded-species": [],
+      "excluded-dimensions": [],
+      "excluded-regions": []
+    }
+  }
+}

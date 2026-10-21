@@ -47,9 +47,15 @@ final class ClassSwitchService {
     }
     private static String text(String key){return Objects.toString(config.get(key),"");}
     private static boolean permission(ServerPlayerEntity player,String key){return SVFrameMMO.permissions().has(player,key);}
-    static boolean selectable(String id){var script=vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.classPolicy();return list("additional-native-classes").contains(id)||(script!=null?script.selectable(id):list("selectable-classes").contains(id));}
+    static boolean busy(PlayerData data) { return pending.contains(data.getUniqueId()); }
+    static boolean selectable(String id){
+        var type=SVFrameMMO.classes().get(id);
+        if(type==null||type.hasOption(vn.svframe.svframemmo.api.player.profess.ClassOption.DEFAULT))return false;
+        var script=vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.classPolicy();return list("additional-native-classes").contains(id)||(script!=null?script.selectable(id):list("selectable-classes").contains(id));}
     static boolean unlocked(ServerPlayerEntity player,String id) {
         if(!selectable(id))return false;
+        var data=SVFrameMMO.playerData().get(player);
+        if(ClassProgression.starter(data)||ClassProgression.owns(data,id))return true;
         if(id.equals("HUNTER"))return permission(player,text("hunter-permission"));
         if(id.equals("DRAGONBORN"))return permission(player,text("dragonborn-permission"))
                 ||list("supporter-permissions").stream().anyMatch(p->permission(player,p))
@@ -59,75 +65,104 @@ final class ClassSwitchService {
     static Map<String,Object> policy(PlayerData data) {
         var price=pricing.price(data.getClassId());var key=CurrencyKey.parse(price.currency());var service=CurrencyService.get();
         Map<String,Object> out=new LinkedHashMap<>();
+        out.put("starter",ClassProgression.starter(data));out.put("sigils",ClassProgression.sigils(data));out.put("sigilStorage","banked");
         out.put("fee",price.amount().toPlainString());out.put("cooldownSeconds",Long.parseLong(text("cooldown-seconds")));
-        out.put("availableAt",data.getClassSwitchAvailableAt());out.put("remainingSeconds",Math.max(0,(data.getClassSwitchAvailableAt()-System.currentTimeMillis()+999)/1000));
-        out.put("currency",price.label());out.put("economyAvailable",service.isAvailable(key));out.put("busy",pending.contains(data.getUniqueId()));
-        var script=vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.classPolicy();if(script!=null&&data.isOnline()) {var legacy=script.details(data.getPlayer());
+        out.put("availableAt",data.getClassSwitchAvailableAt());out.put("remainingSeconds",ClassProgression.starter(data)||!ClassProgression.settings().switchCooldownEnabled()?0L:Math.max(0,(data.getClassSwitchAvailableAt()-System.currentTimeMillis()+999)/1000));
+        out.put("currency",price.label());out.put("economyAvailable",service.isAvailable(key));out.put("busy",pending.contains(data.getUniqueId())||ClassProgression.busy(data));
+        var script=vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.classPolicy();if(script!=null&&data.isOnline()&&!ClassProgression.starter(data)&&ClassProgression.settings().switchCooldownEnabled()) {var legacy=script.details(data.getPlayer());
             for(String field:List.of("availableAt","remainingSeconds"))if(legacy.get(field) instanceof Number value)out.put(field,Math.max(((Number)out.get(field)).longValue(),value.longValue()));
         }
         return out;
     }
     static Map<String,Object> offer(String id,ServerPlayerEntity player) { return offer(id,player,new HashMap<>()); }
     static Map<String,Object> offer(String id,ServerPlayerEntity player,Map<CurrencyKey,BigDecimal> balances) {
+        if(ClassProgression.starter(SVFrameMMO.playerData().get(player))||!ClassProgression.settings().switchFeesEnabled())return Map.of("fee","0","currency",ClassProgression.starter(SVFrameMMO.playerData().get(player))?"Lượt đầu miễn phí":"Miễn phí chuyển","currencyKey","free","economyAvailable",true,"canAfford",true);
         var price=pricing.price(id);var key=CurrencyKey.parse(price.currency());var service=CurrencyService.get();
-        boolean available=service.isAvailable(key);
+        boolean available=price.amount().signum()==0||service.isAvailable(key);
         return Map.of("fee",price.amount().toPlainString(),"currency",price.label(),"currencyKey",key.serialized(),"economyAvailable",available,
-                "canAfford",available&&balances.computeIfAbsent(key,k->service.balance(player,k)).compareTo(price.amount())>=0);
+                "canAfford",price.amount().signum()==0||available&&balances.computeIfAbsent(key,k->service.balance(player,k)).compareTo(price.amount())>=0);
+    }
+    private static ClassSwitchJournal journal(ServerPlayerEntity player) {
+        return new ClassSwitchJournal(Objects.requireNonNull(player.getServer()).getSavePath(net.minecraft.util.WorldSavePath.ROOT),player.getUuid());
+    }
+    private static boolean recover(ServerPlayerEntity player,PlayerData data) throws IOException {
+        var journal=journal(player);var entry=journal.read();
+        if(entry==null)return true;
+        if(entry.transactionId().equals(data.getPreference("fantasyhub:last-paid-switch",""))) {journal.clear();return true;}
+        player.sendMessage(Text.literal("Giao dịch chuyển class đang cần quản trị đối soát. /fantasyprogress status"),false);
+        return false;
+    }
+    static String recoveryStatus(ServerPlayerEntity player) throws IOException {
+        var entry=journal(player).read();return entry==null?"Không có giao dịch cần đối soát.":new com.google.gson.Gson().toJson(entry);
+    }
+    static void reconcile(ServerPlayerEntity player,boolean refund) throws IOException {
+        var journal=journal(player);var entry=journal.read();if(entry==null)return;
+        var data=SVFrameMMO.playerData().get(player);
+        if(!entry.transactionId().equals(data.getPreference("fantasyhub:last-paid-switch",""))&&refund)
+            CurrencyService.get().deposit(player,CurrencyKey.parse(entry.currency()),new BigDecimal(entry.amount()));
+        journal.clear();
     }
     static boolean request(ServerPlayerEntity player,String id,Runnable invalidate) {
-        // Payment always goes through this authoritative transaction. Scripts may still define the roster.
         id=id.toUpperCase(Locale.ROOT);
         PlayerData data=SVFrameMMO.playerData().get(player);PlayerClass target=SVFrameMMO.classes().get(id);
         if(target==null||!selectable(target.getId()))return reject(player,"invalid");
         if(!unlocked(player,target.getId()))return reject(player,"locked");
         if(data.getClassId().equals(target.getId()))return reject(player,"current");
-        if(pending.contains(player.getUuid()))return reject(player,"busy");
-        if(((Number)policy(data).get("remainingSeconds")).longValue()>0)return reject(player,"cooldown");
+        boolean starter=ClassProgression.starter(data);
+        if(busy(data)||ClassProgression.busy(data))return reject(player,"busy");
+        if(!starter&&((Number)policy(data).get("remainingSeconds")).longValue()>0)return reject(player,"cooldown");
         var selectedPrice=pricing.price(target.getId());var currency=CurrencyKey.parse(selectedPrice.currency());var service=CurrencyService.get();
-        if(!service.isAvailable(currency))return reject(player,"economy");
-        BigDecimal fee=selectedPrice.amount();
-        if(!service.has(player,currency,fee))return reject(player,"funds");
-        var before=PlayerDataSnapshot.capture(data);UUID uuid=player.getUuid();pending.add(uuid);
-        boolean charged=false,changed=false;
+        BigDecimal fee=starter||!ClassProgression.settings().switchFeesEnabled()?BigDecimal.ZERO:selectedPrice.amount();
+        boolean paid=fee.signum()>0;
+        if(paid&&!service.isAvailable(currency))return reject(player,"economy");
+        if(paid&&!service.has(player,currency,fee))return reject(player,"funds");
+        UUID uuid=player.getUuid();pending.add(uuid);
+        var before=PlayerDataSnapshot.capture(data);
+        var journal=journal(player);
+        boolean charged=false,prepared=false,committed=false;
         try {
-            if(!service.withdraw(player,currency,fee)){pending.remove(uuid);return reject(player,"funds");}
-            charged=true;
-            if(!data.changeClass(target,PlayerClassChangeEvent.Reason.GUI)) {
-                service.deposit(player,currency,fee);charged=false;pending.remove(uuid);return reject(player,"cancelled");
+            if(!recover(player,data))return false;
+            String transactionId=UUID.randomUUID().toString();
+            if(paid) {
+                journal.prepare(new ClassSwitchJournal.Entry(transactionId,data.getClassId(),target.getId(),currency.serialized(),fee.toPlainString(),service.balance(player,currency).toPlainString()));
+                prepared=true;
+                if(!service.withdraw(player,currency,fee)){journal.clear();prepared=false;return reject(player,"funds");}
+                charged=true;
             }
-            changed=true;
-            data.setClassSwitchAvailableAt(Math.addExact(System.currentTimeMillis(),Math.multiplyExact(Long.parseLong(text("cooldown-seconds")),1000L)));
-            invalidate.run();
-            var server=Objects.requireNonNull(player.getServer());
-            SVFrameMMO.playerData().savePlayerDurably(data).whenComplete((ignored,failure)->server.execute(()->{
-                try {
-                    if(failure==null) {
-                        SVFrameMMO.classSelection().markChosen(data);
-                        if(data.isOnline())data.getPlayer().sendMessage(Text.translatable("fantasyhub.classes.changed",target.getName()),false);
-                    } else {
-                        rollback(data,before);
-                        try { service.deposit(player,currency,fee); }
-                        catch(RuntimeException refundFailure){failure.addSuppressed(refundFailure);LOG.log(Level.SEVERE,"Class-switch refund requires reconciliation: "+uuid,refundFailure);}
-                        SVFrameMMO.playerData().savePlayerDurably(data);
-                        if(data.isOnline())reject(data.getPlayer(),"save_failed");
-                        LOG.log(Level.SEVERE,"Class-switch persistence failed: "+uuid,failure);
-                    }
-                } finally {pending.remove(uuid);invalidate.run();}
-            }));
+            if(!data.changeClass(target,PlayerClassChangeEvent.Reason.GUI)) {
+                if(charged){service.deposit(player,currency,fee);charged=false;}
+                if(prepared){journal.clear();prepared=false;}
+                return reject(player,"cancelled");
+            }
+            if(starter)ClassProgression.consumeStarter(data,target.getId());
+            ClassProgression.initialize(data);
+            // The free initial choice incurs neither the old cooldown nor a new one.
+            data.setClassSwitchAvailableAt(starter||!ClassProgression.settings().switchCooldownEnabled()?0L:
+                    Math.addExact(System.currentTimeMillis(),Math.multiplyExact(Long.parseLong(text("cooldown-seconds")),1000L)));
+            if(paid)data.setPreference("fantasyhub:last-paid-switch",transactionId);
+            data.setPreference("fantasyhub:last-transaction",transactionId);
+            // Native persistence has an independent writer; wait before exposing the changed class to another tick.
+            SVFrameMMO.playerData().savePlayerDurably(data).join();
+            committed=true;
+            if(prepared)try{journal.clear();}catch(IOException cleanupFailure){LOG.log(Level.WARNING,"Committed class journal will be cleaned on next access: "+uuid,cleanupFailure);}
+            try{SVFrameMMO.classSelection().markChosen(data);}catch(RuntimeException flagFailure){LOG.log(Level.WARNING,"Legacy class-selection marker failed; native starter claim is authoritative: "+uuid,flagFailure);}
+            player.sendMessage(Text.translatable("fantasyhub.classes.changed",target.getName()),false);
             return true;
-        } catch(RuntimeException failure) {
-            if(changed)rollback(data,before);
-            if(charged)try{service.deposit(player,currency,fee);}catch(RuntimeException refundFailure){failure.addSuppressed(refundFailure);}
-            pending.remove(uuid);invalidate.run();LOG.log(Level.SEVERE,"Class-switch transaction failed: "+uuid,failure);
+        } catch(IOException|RuntimeException failure) {
+            if(!committed) {
+                ClassProgression.restore(data,before);
+                boolean rollbackSaved=false;
+                try{SVFrameMMO.playerData().savePlayerDurably(data).join();rollbackSaved=true;}
+                catch(RuntimeException rollbackFailure){ClassProgression.quarantine(data);failure.addSuppressed(rollbackFailure);}
+                if(charged&&rollbackSaved)try {
+                    service.deposit(player,currency,fee);charged=false;
+                    if(prepared){journal.clear();prepared=false;}
+                }catch(IOException|RuntimeException refundFailure){failure.addSuppressed(refundFailure);}
+                // Retain uncertain two-store transactions for reconciliation; never guess and debit twice on reconnect.
+            }
+            LOG.log(Level.SEVERE,"Class-switch transaction failed (recovery journal="+prepared+"): "+uuid,failure);
             return reject(player,"save_failed");
-        }
-    }
-    private static void rollback(PlayerData data,PlayerDataSnapshot before) {
-        // The character remains the sole owner of stats. Rebuild native modifiers
-        // through its normal lifecycle rather than restoring cosmetic HUD values.
-        double currentHealth=data.isOnline()?data.getPlayer().getHealth():data.getHealth();
-        data.prepareReload();before.apply(data);data.reloadDefinitions();
-        if(data.isOnline())data.getPlayer().setHealth((float)Math.min(currentHealth,data.getPlayer().getMaxHealth()));
+        } finally {pending.remove(uuid);invalidate.run();}
     }
     private static boolean reject(ServerPlayerEntity player,String reason){player.sendMessage(Text.translatable("fantasyhub.classes.error."+reason),true);return false;}
 }

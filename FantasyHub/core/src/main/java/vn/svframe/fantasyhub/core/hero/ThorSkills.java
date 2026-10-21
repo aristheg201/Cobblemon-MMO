@@ -7,6 +7,7 @@ final class ThorSkills {
   static void cast(HeroRuntime.Cast c) {
     var s=c.owner;var p=s.player;var a=c.ability;
     switch(a.key()) {
+      case "STORMBREAKER_THROW" -> HeroAxeFlight.cast(c);
       case "MJOLNIR_THROW" -> {
         Vec3d origin=p.getEyePos(),end=HeroWorld.rayEnd(p,origin,c.target!=null?c.target.getEyePos():c.point);
         double travel=Math.clamp(origin.distanceTo(end)/24,.25,.55);

@@ -26,7 +26,7 @@ abstract class RiderFirstPersonMixin {
       MatrixStack matrices,
       VertexConsumerProvider vertices,
       int light) {
-    if(HeroEquipmentModels.overrides(p)&&hand==Hand.MAIN_HAND)return ItemStack.EMPTY;
+    if((HeroEquipmentModels.overrides(p)||HeroEquipmentModels.thrown(p))&&hand==Hand.MAIN_HAND)return ItemStack.EMPTY;
     return RiderWeapons.overrides(p.getId()) ? RiderWeapons.projected(p.getId(), hand) : original;
   }
 }

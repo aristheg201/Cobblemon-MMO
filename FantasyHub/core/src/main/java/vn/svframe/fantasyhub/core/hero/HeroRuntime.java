@@ -88,7 +88,7 @@ public final class HeroRuntime {
       attack=Math.max(1,Math.max(s.player.getAttributeValue(net.minecraft.entity.attribute.EntityAttributes.GENERIC_ATTACK_DAMAGE),MMOPlayerData.setup(s.player).getStatMap().getStat("ATTACK_DAMAGE")));
       empowered=s.hero.id().equals("SORCERER_SUPREME")&&s.power.stacks("mystic",tick)>=s.passive("mystic_max");
       double last=a.phases().stream().mapToDouble(p->Math.max(0,p.start())+Math.max(0,p.hits()-1)*p.interval()).max().orElse(0);
-      expires=tick+(long)((Math.max(a.duration(),Math.max(a.recast(),last))+6)*20);
+      expires=tick+(long)((Math.max(a.key().equals("BATCLAW")?10:a.duration(),Math.max(a.recast(),last))+6)*20);
       budget=new HeroCastBudget(catalog.setting(a.ultimate()?"ultimate_cast_hp_cap":"regular_cast_hp_cap"));
     }
     boolean valid(){return HeroRuntime.valid(owner)&&generation==owner.power.generation()&&tick<=expires;}
@@ -122,14 +122,14 @@ public final class HeroRuntime {
       var s=SESSIONS.get(data.getUniqueId());String id=skill.getSkill().getId();
       return s!=null&&valid(s)&&(s.power.canRecast(id,tick)||id.equals("FLASH_SUPER_SPEED")&&s.active("super_speed"));
     });
-    HeroCombat.install();HeroPassives.install();HeroGearIntegrity.install();HeroQa.install();
+    HeroCombat.install();HeroNpcCombat.install();HeroGrapple.install();HeroPassives.install();HeroGearIntegrity.install();HeroQa.install();
     vn.svframe.svframelib.entity.RpgEntityAdapters.register("fantasyhub:heroes",new vn.svframe.svframelib.entity.RpgEntityAdapters.Adapter(){
       public boolean supports(LivingEntity target){return false;}
       public boolean allows(Entity actor,LivingEntity target,vn.svframe.svframelib.entity.RpgEntityAdapters.Effect effect){return true;}
       public boolean allowsFrom(Entity actor,LivingEntity target,vn.svframe.svframelib.entity.RpgEntityAdapters.Effect effect){return effect!=vn.svframe.svframelib.entity.RpgEntityAdapters.Effect.MOVEMENT||!controlImmune(target)&&(actor!=target||!HeroControl.mobilityLocked(target));}
     });
     ServerLifecycleEvents.SERVER_STARTING.register(s->{server=s;tick=0;reload();});
-    ServerTickEvents.END_SERVER_TICK.register(s->{tick++;HeroCombat.tick();HeroControl.tick(tick);HeroBarriers.tick(tick);TIMELINE.tick(tick);
+    ServerTickEvents.END_SERVER_TICK.register(s->{tick++;HeroAxeFlight.tick();HeroGrapple.tick();HeroCombat.tick();HeroControl.tick(tick);HeroBarriers.tick(tick);TIMELINE.tick(tick);
       for(var p:s.getPlayerManager().getPlayerList()) {
         var session=session(p);if(session==null)continue;
         HeroPassives.tick(session);session.casts.values().removeIf(c->!c.valid());
@@ -156,6 +156,7 @@ public final class HeroRuntime {
   static boolean valid(Session s){return s.player.isAlive()&&!s.player.isRemoved()&&!s.player.isSpectator()&&s.player.networkHandler!=null&&s.world==s.player.getWorld()&&SESSIONS.get(s.player.getUuid())==s&&SVFrameMMO.playerData().get(s.player).getClassId().equalsIgnoreCase(s.hero.id());}
   static void resetForQa(ServerPlayerEntity player){var s=SESSIONS.get(player.getUuid());if(s!=null)close(s);}
   private static void close(Session s) {
+    HeroAxeFlight.release(s.player.getUuid());HeroGrapple.release(s.player.getUuid());
     HeroPassives.restoreMovement(s);if(s.skillCooldown!=null)s.skillCooldown.unregister(MMOPlayerData.setup(s.player));s.power.clear();TIMELINE.cancel(s.player.getUuid());
     for(var modifier:s.stats.values())modifier.unregister(MMOPlayerData.setup(s.player));s.stats.clear();s.appliedStats.clear();
     for(var action:s.cleanup)action.run();s.cleanup.clear();s.casts.clear();s.recasts.clear();
@@ -175,9 +176,12 @@ public final class HeroRuntime {
   private static void materializeHandlers(){for(var a:catalog.abilities().values())SVFrameLib.inst().getSkills().replaceSkillHandler(new Handler(a));}
   private static Prepared prepare(ServerPlayerEntity p,HeroCatalog.Ability ability) {
     var s=session(p);boolean ok=s!=null&&valid(s)&&!s.active("busy")&&ability.id().startsWith(s.hero.id()+"_")&&!HeroControl.silenced(p);
+    var nativeData=SVFrameMMO.playerData().get(p);var definition=nativeData.getProfess().getSkill(ability.id());
+    ok=ok&&definition!=null&&nativeData.canUseSkill(definition);
     var existing=s==null?null:s.recasts.get(ability.id());boolean recast=existing!=null&&s.power.canRecast(ability.id(),tick);
     LivingEntity target=recast?existing.target:HeroWorld.aim(p,ability.range());
     Vec3d point=recast?existing.point:HeroWorld.point(p,ability.range());
+    if(ok&&ability.key().equals("STORMBREAKER_THROW")&&!HeroAxeFlight.active(p.getUuid()))ok=p.getMainHandStack().isOf(vn.svframe.fantasyhub.protocol.Protocol.stormbreaker);
     if(ok&&HeroSkillRouter.requiresTarget(ability.id())&&(target==null||!HeroWorld.legal(p,target)))ok=false;
     if(ok&&ability.key().equals("SLING_RING")){point=HeroWorld.landing(p,point);ok=point!=null;}
     if(ok&&ability.key().equals("WEB_BLITZ"))ok=!HeroWorld.near(p,p.getPos(),ability.range(),3).isEmpty();
@@ -213,6 +217,7 @@ public final class HeroRuntime {
     for(String key:List.of("instinct","mystic","static","combo"))info.put(key,s.power.stacks(key,tick));
     info.put("flightEligible",HeroFlight.eligible(s));info.put("backItem",HeroFlight.backItem(s));
     info.put("allowFlying",p.getAbilities().allowFlying);info.put("flying",p.getAbilities().flying);info.put("flySpeed",p.getAbilities().getFlySpeed());info.put("flightLeaseOwned",s.flightLease.owned());
+    info.put("axeOut",HeroAxeFlight.active(p.getUuid()));info.put("axeFlight",HeroAxeFlight.inspect(p.getUuid()));info.put("grapple",HeroGrapple.inspect(p.getUuid()));
     info.put("pendingActions",TIMELINE.pending());return info;
   }
   private static final class Handler extends SkillHandler<Prepared> implements NativeSkillProviders.BackedHandler {

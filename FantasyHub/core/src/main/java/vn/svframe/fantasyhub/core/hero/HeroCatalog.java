@@ -53,12 +53,12 @@ public final class HeroCatalog {
           }
           var effects=new LinkedHashMap<String,Double>();
           for(var e:a.getAsJsonObject("effects").entrySet())effects.put(e.getKey(),number(a.getAsJsonObject("effects"),e.getKey(),0,200));
-          var ability=new Ability(text(a,"id"),text(a,"key"),text(a,"name"),text(a,"name_vi"),integer(a,"slot",1,7),number(a,"cooldown",.05,600),number(a,"cost",0,500),number(a,"range",0,40),number(a,"radius",0,20),number(a,"duration",0,120),number(a,"recast",0,10),number(a,"upkeep",0,100),number(a,"cast_time",0,10),a.get("ultimate").getAsBoolean(),phases,effects);
+          var ability=new Ability(text(a,"id"),text(a,"key"),text(a,"name"),text(a,"name_vi"),integer(a,"slot",1,8),number(a,"cooldown",.05,600),number(a,"cost",0,500),number(a,"range",0,40),number(a,"radius",0,20),number(a,"duration",0,120),number(a,"recast",0,10),number(a,"upkeep",0,100),number(a,"cast_time",0,10),a.get("ultimate").getAsBoolean(),phases,effects);
           if(!ability.id.equals(id+"_"+ability.key)||skills.putIfAbsent(ability.id,ability)!=null)throw new IllegalArgumentException("Duplicate/mismatched hero ability ID");
           list.add(ability);
         }
-        if(list.size()!=7)throw new IllegalArgumentException("Exactly seven active skills required for "+id);
-        for(int i=0;i<7;i++)if(list.get(i).slot!=i+1)throw new IllegalArgumentException("Invalid hero skill slot order");
+        if(list.size()!=(id.equals("THOR")?8:7))throw new IllegalArgumentException("Incomplete active skills for "+id);
+        for(int i=0;i<list.size();i++)if(list.get(i).slot!=i+1)throw new IllegalArgumentException("Invalid hero skill slot order");
         if(list.stream().filter(Ability::ultimate).count()!=1)throw new IllegalArgumentException("Exactly one ultimate required");
         String resource=text(h,"resource");if(!Set.of("MANA","STAMINA").contains(resource))throw new IllegalArgumentException("Unknown native resource");
         var passives=new ArrayList<String>();for(var p:h.getAsJsonArray("passives"))passives.add(p.getAsString());

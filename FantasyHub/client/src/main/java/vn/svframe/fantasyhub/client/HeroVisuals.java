@@ -36,6 +36,7 @@ public final class HeroVisuals {
    int poseTicks=switch(c.ability()){case "AIR_COMBO","LIGHTNING_SPIN"->36;case "UNIBEAM","BRING_ME_THANOS","INFINITE_MASS_PUNCH"->48;default->22;};
    CASTS.put(entity,new Cue(entity,c.hero,c.ability,c.phase,c.from,c.to,c.start,Math.min(c.expires,ticks+poseTicks),c.cast,c.radius));BetterCombatCompat.skillStarted(entity);
   }
+  if(phase.equals("AXE")||phase.equals("TETHER")||phase.equals("AXE_END")||phase.equals("TETHER_END"))EFFECTS.removeIf(old->old.entity()==entity&&old.phase().equals(phase.startsWith("AXE")?"AXE":"TETHER"));
   if(phase.equals("IMPACT")&&c.ability().equals("COCOON_SLAM"))EFFECTS.removeIf(old->old.cast()==c.cast()&&old.phase().equals("ZONE"));
   if(HeroEffectPolicy.retained(phase)){if(EFFECTS.size()>=HeroEffectPolicy.MAX_CUES)EFFECTS.removeFirst();EFFECTS.addLast(c);}
   if(phase.equals("IMPACT"))impact(c);
@@ -46,7 +47,7 @@ public final class HeroVisuals {
   STATES.values().removeIf(s->s.expires<=ticks);CASTS.values().removeIf(c->c.expires<=ticks);EFFECTS.removeIf(c->c.expires<=ticks);
   if(client.player==null||client.world==null)return;
   String id=FantasyHubClient.string("classId");boolean hero=Set.of("SPIDER_MAN","SORCERER_SUPREME","IRON_MAN","THOR","FLASH","BATMAN").contains(id);
-  if(hero){int flags=0;if(client.currentScreen==null){if(client.options.jumpKey.isPressed())flags|=1;if(client.options.forwardKey.isPressed())flags|=2;if(client.options.sneakKey.isPressed())flags|=4;if(client.options.sprintKey.isPressed())flags|=8;}if(flags!=lastFlags||now%4==0){FantasyHubClient.send("hero_input","",flags);lastFlags=flags;}}
+  if(hero){int flags=0;if(client.currentScreen==null){if(client.options.jumpKey.isPressed())flags|=1;if(client.options.forwardKey.isPressed())flags|=2;if(client.options.sneakKey.isPressed())flags|=4;if(client.options.sprintKey.isPressed())flags|=8;if(client.options.useKey.isPressed())flags|=16;}if(flags!=lastFlags||now%4==0){FantasyHubClient.send("hero_input","",flags);lastFlags=flags;}}
   if(!hero)lastFlags=-1;
   if(now%3==0&&density()>0)for(var entry:STATES.entrySet()){
    var e=client.world.getEntityById(entry.getKey());if(e==null||client.player.squaredDistanceTo(e)>1600)continue;
@@ -62,6 +63,6 @@ public final class HeroVisuals {
   int n=quality()==0?10:quality()==1?24:40;for(int i=0;i<n;i++){double a=i*2*Math.PI/n;client.world.addParticle(dust(c.hero),c.from.x,c.from.y+.5,c.from.z,Math.cos(a)*.24,.04,Math.sin(a)*.24);}
   if(c.hero.equals("THOR"))client.world.addParticle(ParticleTypes.FLASH,c.from.x,c.from.y+.7,c.from.z,0,0,0);
  }
- private static void render(WorldRenderContext context){HeroEffects.render(context,EFFECTS,STATES,ticks,quality());}
+ private static void render(WorldRenderContext context){HeroWeaponEffects.render(context,EFFECTS,ticks);HeroEffects.render(context,EFFECTS,STATES,ticks,quality());}
  public static void animate(PlayerEntityModel<?> model,LivingEntity entity,float age){HeroAnimations.animate(model,entity,STATES.get(entity.getId()),cue(entity.getId()),ticks);}
 }

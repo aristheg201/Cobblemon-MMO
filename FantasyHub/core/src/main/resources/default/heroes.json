@@ -939,6 +939,41 @@
           },
           "id": "THOR_BRING_ME_THANOS",
           "slot": 7
+        },
+        {
+          "key": "STORMBREAKER_THROW",
+          "name": "Stormbreaker Throw / Recall",
+          "name_vi": "Ném / Thu Stormbreaker",
+          "cooldown": 12,
+          "cost": 20,
+          "range": 20,
+          "radius": 0.9,
+          "duration": 8,
+          "recast": 8,
+          "upkeep": 0,
+          "cast_time": 0,
+          "ultimate": false,
+          "phases": [
+            {
+              "kind": "PHYSICAL",
+              "scale": 1.5,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            },
+            {
+              "kind": "MAGIC",
+              "scale": 1.5,
+              "hits": 1,
+              "start": 0,
+              "interval": 0
+            }
+          ],
+          "effects": {
+            "speed": 1.5
+          },
+          "id": "THOR_STORMBREAKER_THROW",
+          "slot": 8
         }
       ],
       "passive_values": {

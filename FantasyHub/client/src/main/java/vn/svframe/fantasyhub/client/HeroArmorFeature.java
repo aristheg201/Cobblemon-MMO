@@ -17,6 +17,7 @@ import net.minecraft.util.math.RotationAxis;
 public final class HeroArmorFeature extends FeatureRenderer<AbstractClientPlayerEntity,PlayerEntityModel<AbstractClientPlayerEntity>> {
   static long qaRenders,qaEmfRenders;
   private static final Set<String> HEROES=Set.of("spider_man","sorcerer_supreme","iron_man","thor","flash","batman");
+  private static final Set<String> SEALED_SUITS=Set.of("spider_man","iron_man","flash","batman");
   private static final PlayerEntityModel<LivingEntity> SUIT=new PlayerEntityModel<>(TexturedModelData.of(PlayerEntityModel.getTexturedModelData(new Dilation(.045f),false),64,64).createModel(),false);
   private static final ModelPart[] CAPE=new ModelPart[6];
   static {for(int i=0;i<6;i++)CAPE[i]=new ModelPart(List.of(new ModelPart.Cuboid(0,i*4,-5,0,-.5f,10,4,1,0,0,0,false,64,32,EnumSet.allOf(net.minecraft.util.math.Direction.class))),Map.of());}
@@ -43,7 +44,7 @@ public final class HeroArmorFeature extends FeatureRenderer<AbstractClientPlayer
   public static boolean renderSlot(MatrixStack matrices,VertexConsumerProvider vertices,int light,LivingEntity entity,EquipmentSlot slot,BipedEntityModel<?> source,float age) {
     String hero=suit(entity.getEquippedStack(slot));if(hero.isEmpty())return false;
     if(source instanceof PlayerEntityModel<?> playerModel&&source.rightArm.getClass().getName().startsWith("traben.entity_model_features.")){
-      renderAnimatedSlot(matrices,vertices,light,slot,playerModel,hero);qaEmfRenders++;return true;
+      renderAnimatedSlot(matrices,vertices,light,slot,playerModel,hero);if(hero.equals("batman"))BatmanArmorDetails.render(matrices,vertices,light,source,slot);qaEmfRenders++;return true;
     }
     copy(source);SUIT.setVisible(false);
     switch(slot) {
@@ -57,6 +58,7 @@ public final class HeroArmorFeature extends FeatureRenderer<AbstractClientPlayer
     SUIT.render(matrices,vertices.getBuffer(RenderLayer.getEntityCutoutNoCull(Identifier.of("fantasyhub","textures/armor/heroes/"+hero+"_"+part+".png"))),light,OverlayTexture.DEFAULT_UV,0xffffffff);
     if(hero.equals("batman")&&slot==EquipmentSlot.HEAD)SUIT.render(matrices,vertices.getBuffer(RenderLayer.getEyes(Identifier.of("fantasyhub","textures/armor/heroes/batman_lights.png"))),0xf000f0,OverlayTexture.DEFAULT_UV,0xffffffff);
     if(hero.equals("iron_man"))SUIT.render(matrices,vertices.getBuffer(RenderLayer.getEyes(Identifier.of("fantasyhub","textures/armor/heroes/iron_man_lights_"+(slot==EquipmentSlot.LEGS?"layer2":"layer1")+".png"))),0xf000f0,OverlayTexture.DEFAULT_UV,0xffffffff);
+    if(hero.equals("batman"))BatmanArmorDetails.render(matrices,vertices,light,source,slot);
     return true;
   }
   private static void renderAnimatedSlot(MatrixStack m,VertexConsumerProvider vertices,int light,EquipmentSlot slot,PlayerEntityModel<?> model,String hero){
@@ -107,6 +109,12 @@ public final class HeroArmorFeature extends FeatureRenderer<AbstractClientPlayer
     if(!suit(entity.getEquippedStack(EquipmentSlot.HEAD)).isEmpty())model.head.visible=model.hat.visible=false;
     if(!suit(entity.getEquippedStack(EquipmentSlot.CHEST)).isEmpty())model.jacket.visible=model.rightSleeve.visible=model.leftSleeve.visible=false;
     if(!suit(entity.getEquippedStack(EquipmentSlot.LEGS)).isEmpty())model.leftPants.visible=model.rightPants.visible=false;
+    // A sealed suit replaces the underlying skin. Scaling an EMF arm about the
+    // model origin moves its inner face inside the skin, so depth alone cannot cover it.
+    // The feature temporarily enables these animated bones while drawing the armor.
+    if(SEALED_SUITS.contains(suit(entity.getEquippedStack(EquipmentSlot.CHEST))))model.body.visible=model.leftArm.visible=model.rightArm.visible=false;
+    String legs=suit(entity.getEquippedStack(EquipmentSlot.LEGS));
+    if(SEALED_SUITS.contains(legs)&&legs.equals(suit(entity.getEquippedStack(EquipmentSlot.FEET))))model.leftLeg.visible=model.rightLeg.visible=false;
   }
   public static void firstPerson(AbstractClientPlayerEntity entity,PlayerEntityModel<?> source,MatrixStack matrices,VertexConsumerProvider vertices,int light,boolean left) {
     String hero=suit(entity.getEquippedStack(EquipmentSlot.CHEST));if(hero.isEmpty())return;

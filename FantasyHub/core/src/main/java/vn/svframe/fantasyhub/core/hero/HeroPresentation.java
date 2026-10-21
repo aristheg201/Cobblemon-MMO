@@ -51,9 +51,13 @@ final class HeroPresentation {
     var packet=new Protocol.Hero(data.toString());var players=new java.util.HashSet<>(PlayerLookup.tracking(s.player));players.add(s.player);
     for(var p:players)if(p.squaredDistanceTo(s.player)<4096&&ServerPlayNetworking.canSend(p,Protocol.Hero.ID))ServerPlayNetworking.send(p,packet);
   }
+  static void publishNow(HeroRuntime.Session s){publishState(s);}
   static void publish(HeroRuntime.Session s) {
-    if(HeroRuntime.tick%10!=0)return;var data=base(s);data.addProperty("kind","state");int flags=0;
-    String[] keys={"flight","astral","phase","super_speed","overdrive","awakened","web_shield","mandalas","spin","drones","busy","cape_glide"};
+    if(HeroRuntime.tick%10!=0)return;publishState(s);
+  }
+  private static void publishState(HeroRuntime.Session s){
+    var data=base(s);data.addProperty("kind","state");int flags=0;
+    String[] keys={"flight","astral","phase","super_speed","overdrive","awakened","web_shield","mandalas","spin","drones","busy","cape_glide","axe_out"};
     for(int i=0;i<keys.length;i++)if(s.active(keys[i]))flags|=1<<i;
     data.addProperty("flags",flags);data.addProperty("speed",s.speedLevel);data.addProperty("heat",s.heat);data.addProperty("stacks",s.power.stacks(s.hero.id().equals("SPIDER_MAN")?"instinct":s.hero.id().equals("BATMAN")?"combo":s.hero.id().equals("THOR")?"static":"mystic",HeroRuntime.tick));send(s,data);
   }

@@ -27,6 +27,7 @@ public final class IntegrationConfig {
     public FusionConfig fusion = new FusionConfig();
     public VfxConfig vfx = new VfxConfig();
     public CombatConfig combat = new CombatConfig();
+    @SerializedName("pokemon-gameplay") public vn.svframe.svframemmo.cobblemon.gameplay.PokemonGameplayConfig gameplay = new vn.svframe.svframemmo.cobblemon.gameplay.PokemonGameplayConfig();
     public static final class CombatConfig {
         @SerializedName("allow-owned-pokemon-targets") public boolean allowOwnedPokemonTargets=false;
     }
@@ -163,6 +164,8 @@ public final class IntegrationConfig {
         if (fusion.statConversion == null) fusion.statConversion = new StatConversion();
         if (vfx == null) vfx = new VfxConfig();
         if (combat == null) combat = new CombatConfig();
+        if (gameplay == null) gameplay = new vn.svframe.svframemmo.cobblemon.gameplay.PokemonGameplayConfig();
+        gameplay.validate();
         if (pokemonSkills == null) pokemonSkills = new PokemonSkillShopConfig();
         if (pokemonSkills.prices == null) pokemonSkills.prices = new LinkedHashMap<>();
         if (fusion.potaraActionCooldownSeconds != 10) throw new IllegalArgumentException("potara-action-cooldown-seconds is fixed at 10");

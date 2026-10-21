@@ -137,24 +137,34 @@ public final class HubScreen extends Screen {
               }
             if (id.equals("KABUTO_HENSHIN"))
               details.append("\n").append(Text.translatable("fantasyhub.kabuto.henshin_toggle"));
+            details.append("\n").append(Text.translatable(
+                (row.has("learned") ? row.get("learned") : row.get("owned")).getAsBoolean() ? "fantasyhub.learn.learned" : "fantasyhub.learn.requirements",
+                row.has("requiredLevel") ? row.get("requiredLevel").getAsInt() : 1,
+                row.has("learnCost") ? row.get("learnCost").getAsInt() : 1));
             details.append("\n").append(RiderText.description(id));
             b.setTooltip(net.minecraft.client.gui.tooltip.Tooltip.of(details));
           }
           addDrawableChild(b);
           var upgrade =
               FantasyButton.builder(
-                      Text.translatable("fantasyhub.upgrade"),
-                      button -> FantasyHubClient.send("upgrade", id, 1))
+                      Text.translatable((row.has("learned")?row.get("learned"):row.get("owned")).getAsBoolean()?"fantasyhub.upgrade":"fantasyhub.learn"),
+                      button -> FantasyHubClient.send((row.has("learned")?row.get("learned"):row.get("owned")).getAsBoolean()?"upgrade":"learn", id, 1))
                   .dimensions(left + panelWidth - 84, top + 63 + i * 22, 72, 20)
                   .build();
+          boolean learned=(row.has("learned")?row.get("learned"):row.get("owned")).getAsBoolean();
           upgrade.active =
               (!row.has("available") || row.get("available").getAsBoolean())
-                  && row.get("owned").getAsBoolean()
+                  && (!learned || row.get("owned").getAsBoolean())
                   && FantasyHubClient.number("skillPoints") > 0
-                  && (!row.has("upgradable") || row.get("upgradable").getAsBoolean())
-                  && (!row.has("maxLevel")
+                  && (!learned || !row.has("upgradable") || row.get("upgradable").getAsBoolean())
+                  && (!learned || !row.has("maxLevel")
                       || row.get("maxLevel").getAsInt() == 0
                       || row.get("level").getAsInt() < row.get("maxLevel").getAsInt());
+          var switchPolicy = FantasyHubClient.state().getAsJsonObject("classSwitch");
+          if (switchPolicy != null && switchPolicy.get("busy").getAsBoolean()) upgrade.active = false;
+          if (!learned) upgrade.active = row.has("canLearn") && row.get("canLearn").getAsBoolean()
+              && (!row.has("available") || row.get("available").getAsBoolean())
+              && (switchPolicy == null || !switchPolicy.get("busy").getAsBoolean());
           String reason =
               !row.get("owned").getAsBoolean()
                   ? "locked"
@@ -168,8 +178,9 @@ public final class HubScreen extends Screen {
                               ? "max"
                               : FantasyHubClient.number("skillPoints") <= 0 ? "points" : "cost";
           upgrade.setTooltip(
-              net.minecraft.client.gui.tooltip.Tooltip.of(
-                  Text.translatable("fantasyhub.upgrade." + reason)));
+              net.minecraft.client.gui.tooltip.Tooltip.of(!learned
+                  ? Text.translatable("fantasyhub.learn.requirements", row.get("requiredLevel").getAsInt(), row.has("learnCost") ? row.get("learnCost").getAsInt() : 1)
+                  : Text.translatable("fantasyhub.upgrade." + reason)));
           addDrawableChild(upgrade);
         }
       int bottom = top + panelHeight - 62;

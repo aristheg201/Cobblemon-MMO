@@ -35,6 +35,8 @@ public final class HeroEquipmentModels {
   private static Mesh load(String name){try(var in=HeroEquipmentModels.class.getResourceAsStream("/assets/fantasyhub/native_geometry/heroes/"+name+".json")) {
     if(in==null)throw new IOException("Missing native weapon "+name);var o=JsonParser.parseReader(new InputStreamReader(in,java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();float w=o.get("textureWidth").getAsFloat(),h=o.get("textureHeight").getAsFloat();return new Mesh(w,h,nodes(o.getAsJsonArray("cubes"),w,h));
   }catch(IOException failure){throw new IllegalStateException(failure);}}
+  public static boolean thrown(LivingEntity player){var state=HeroVisuals.state(player.getId());return state!=null&&(state.flags()&4096)!=0&&player.getMainHandStack().isOf(vn.svframe.fantasyhub.protocol.Protocol.stormbreaker);}
+  static void flyingAxe(MatrixStack matrices,VertexConsumerProvider vertices,float age){matrices.push();matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(age*35));matrices.translate(1/16d,-9.5/16d,0);weapon("stormbreaker",matrices,vertices,15728880);matrices.pop();}
   public static boolean overrides(LivingEntity player) {
     // Equipment is rendered by the real item renderer, never inferred from class.
     return false;

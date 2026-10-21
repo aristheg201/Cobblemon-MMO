@@ -62,3 +62,7 @@ manifest=list({entry['target']:entry for entry in manifest}.values())
 models=sorted('fantasyhub:'+str(f.relative_to(out/'models')).replace('.json','') for f in (out/'models/item/heroes').glob('*.json'))
 (out/'heroes-models.json').write_text(json.dumps(models,indent=2)+'\n')
 print('Adapted',len(manifest),'verified source entries;',len(models),'native item models; no executable reference code or nested JARs.')
+
+# Keep the approved original black armored suit when rebuilding imported assets.
+import runpy
+runpy.run_path(str(root/"tools/author_black_batman.py"),run_name="__main__")

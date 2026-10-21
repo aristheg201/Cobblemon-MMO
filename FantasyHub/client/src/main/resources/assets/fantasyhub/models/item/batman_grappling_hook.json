@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "fantasyhub:item/heroes/batman_grappling_hook"
+  }
+}

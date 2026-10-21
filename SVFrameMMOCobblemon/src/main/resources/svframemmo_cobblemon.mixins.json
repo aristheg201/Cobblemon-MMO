@@ -8,7 +8,9 @@
     "FusionStandPokemonEntityMixin",
     "FusionStandEntityMixin",
     "CosmeticServiceEmitterMixin",
-    "CosmeticRendererBackendMixin"
+    "CosmeticRendererBackendMixin",
+    "PokemonHostilityMixin",
+    "FightOrFlightOwnershipMixin"
   ],
   "injectors": {
     "defaultRequire": 1

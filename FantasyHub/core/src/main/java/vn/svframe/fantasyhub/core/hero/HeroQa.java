@@ -39,7 +39,7 @@ public final class HeroQa {
         if(!data.getClassId().equals(id)&&!data.changeClass(profess,PlayerClassChangeEvent.Reason.GUI))throw new IllegalStateException("Class change cancelled");
         p.changeGameMode(net.minecraft.world.GameMode.SURVIVAL);data.setLevel(50);
         for(var slot:net.minecraft.entity.EquipmentSlot.values())p.equipStack(slot,ItemStack.EMPTY);
-        for(var a:HeroRuntime.catalog().hero(id).abilities()){data.setSkillLevel(a.id(),1);PlayerSkillCatalog.bind(data,a.slot(),a.id());}
+        for(var a:HeroRuntime.catalog().hero(id).abilities()){data.unlock("skill:"+a.id().toLowerCase(Locale.ROOT));data.setSkillLevel(a.id(),1);if(a.slot()<=7)PlayerSkillCatalog.bind(data,a.slot(),a.id());}
         data.setMana(data.getMaxResource(PlayerResource.MANA),ResourceUpdateReason.COMMAND);data.setStamina(data.getMaxResource(PlayerResource.STAMINA),ResourceUpdateReason.COMMAND);
         data.getMMOPlayerData().getCooldownMap().clearAllCooldowns();p.setHealth(p.getMaxHealth());report.put("bindings",data.getSkillBindings());
       }
@@ -62,7 +62,9 @@ public final class HeroQa {
         var session=HeroRuntime.session(p);if(session==null||!session.power.canRecast(value.toUpperCase(Locale.ROOT),HeroRuntime.tick))HITS.put(p.getUuid(),new ArrayList<>());report.put("manaBefore",data.getMana());report.put("staminaBefore",data.getStamina());
         var result=SVFrameMMO.skillRuntime().cast(data,value.toUpperCase(Locale.ROOT));report.put("accepted",result!=null&&result.isSuccessful());report.put("manaAfter",data.getMana());report.put("staminaAfter",data.getStamina());
       }
+      case "pvp" -> {p.getServer().setPvpEnabled(Boolean.parseBoolean(value));report.put("pvp",p.getServer().isPvpEnabled());}
       case "input" -> HeroRuntime.input(p,Integer.parseInt(value));
+      case "hook" -> p.equipStack(net.minecraft.entity.EquipmentSlot.MAINHAND,new ItemStack(vn.svframe.fantasyhub.protocol.Protocol.grapplingHook));
       case "weapon" -> p.equipStack(net.minecraft.entity.EquipmentSlot.MAINHAND,vn.svframe.svframeitems.SVFrameItems.generator().generate("hero_thor_stormbreaker",1));
       case "back" -> {
         String id=value.equalsIgnoreCase("batman")?"hero_batman_cape":value.equalsIgnoreCase("thor")?"hero_thor_cape":value.equalsIgnoreCase("strange")?"hero_sorcerer_supreme_cape":"";
@@ -80,6 +82,8 @@ public final class HeroQa {
       default -> throw new IllegalArgumentException("Unknown hero QA action");
     }
     report.put("state",HeroRuntime.inspect(p));report.put("mana",data.getMana());report.put("stamina",data.getStamina());report.put("hits",HITS.getOrDefault(p.getUuid(),List.of()));
+    var aimed=HeroWorld.aim(p,28);var rayEnd=HeroWorld.point(p,28);
+    report.put("aim",Map.of("yaw",p.getYaw(),"pitch",p.getPitch(),"position",List.of(p.getX(),p.getY(),p.getZ()),"target",aimed==null?"":aimed.getUuidAsString(),"movementAllowed",aimed!=null&&vn.svframe.svframelib.entity.RpgEntityAdapters.allows(p,aimed,vn.svframe.svframelib.entity.RpgEntityAdapters.Effect.MOVEMENT),"end",List.of(rayEnd.x,rayEnd.y,rayEnd.z)));
     report.put("health",p.getHealth());report.put("maxHealth",p.getMaxHealth());report.put("effects",p.getStatusEffects().stream().map(e->e.getEffectType().getIdAsString()).toList());
     report.put("gear",java.util.Arrays.stream(net.minecraft.entity.EquipmentSlot.values()).map(slot->{var stack=p.getEquippedStack(slot);return Map.of("slot",slot.name(),"item",net.minecraft.registry.Registries.ITEM.getId(stack.getItem()).toString(),"unbreakable",stack.contains(net.minecraft.component.DataComponentTypes.UNBREAKABLE),"damage",stack.getDamage());}).toList());
     var input=HeroRuntime.session(p);if(input!=null)report.put("input",Map.of("flags",input.inputFlags,"lastJumpAge",HeroRuntime.tick-input.lastJump,"lastInputAge",HeroRuntime.tick-input.lastInput,"onGround",p.isOnGround(),"mobilityLocked",HeroControl.mobilityLocked(p)));

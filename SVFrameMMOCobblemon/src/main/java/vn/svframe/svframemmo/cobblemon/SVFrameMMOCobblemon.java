@@ -64,6 +64,8 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             throw new IllegalStateException("Could not initialize Cobblemon Integration cosmetic definitions", error);
         }
 
+        vn.svframe.svframemmo.cobblemon.gameplay.PokemonProgression.register();
+        vn.svframe.svframemmo.cobblemon.gameplay.PokemonHostility.register();
         SnowstormPackService.install();
         vn.svframe.svframelib.skill.PlayerAbilityShop.install(POKEMON_SKILLS);
         vn.svframe.svframelib.entity.RpgEntityAdapters.register(ID,vn.svframe.svframemmo.cobblemon.integration.CobblemonEntityAdapter.INSTANCE);
@@ -114,6 +116,11 @@ public final class SVFrameMMOCobblemon implements ModInitializer {
             PokemonSkillCommands.register(dispatcher, POKEMON_SKILLS);
             CosmeticCommands.register(dispatcher, COSMETICS);
             if("1".equals(System.getenv("SVFRAME_RUNTIME_QA"))){
+                dispatcher.register(net.minecraft.server.command.CommandManager.literal("pokemongameplayqa").requires(s->s.hasPermissionLevel(2))
+                    .then(net.minecraft.server.command.CommandManager.argument("mode",com.mojang.brigadier.arguments.StringArgumentType.word())
+                        .then(net.minecraft.server.command.CommandManager.argument("player",net.minecraft.command.argument.EntityArgumentType.player())
+                            .executes(ctx->vn.svframe.svframemmo.cobblemon.validation.PokemonGameplayRuntimeQa.run(net.minecraft.command.argument.EntityArgumentType.getPlayer(ctx,"player"),com.mojang.brigadier.arguments.StringArgumentType.getString(ctx,"mode"))))));
+
                 dispatcher.register(net.minecraft.server.command.CommandManager.literal("cobblemonentityqa").requires(s->s.hasPermissionLevel(2)).executes(ctx->vn.svframe.svframemmo.cobblemon.validation.CobblemonEntityRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
                 dispatcher.register(net.minecraft.server.command.CommandManager.literal("cobblemonskriptqa").requires(s->s.hasPermissionLevel(4)).executes(ctx->vn.svframe.svframemmo.cobblemon.validation.CobblemonSkriptRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
                 dispatcher.register(net.minecraft.server.command.CommandManager.literal("cobblemonshopqa").requires(s->s.hasPermissionLevel(2)).executes(ctx->vn.svframe.svframemmo.cobblemon.validation.CobblemonShopRuntimeQa.run(ctx.getSource().getPlayerOrThrow())));
