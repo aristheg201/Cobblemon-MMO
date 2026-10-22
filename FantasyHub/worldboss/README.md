@@ -1,5 +1,7 @@
 # SVFrameWorldBoss
 
+For Cosmic 0.1.1 (Thanos, Collector, Infinity Stones and SNAP), see [INFINITY-README-VI.md](INFINITY-README-VI.md). Its gameplay QA is deferred; historical native probes below cover 0.1.0 only.
+
 Separate Fabric 1.21.1 / Java 21 server encounter mod. Install the built
 SVFrameWorldBoss JAR beside the updated FantasyHubCore, SVFrameLib, SVFrameMMO,
 and native Cobblemon integration. Class NPC visuals require matching FantasyHubClient.
@@ -9,7 +11,7 @@ phase/scheduling mechanics; its All Rights Reserved code is neither copied nor b
 First startup writes `config/svframeworldboss/`:
 
 * `bosses.json`: ordered native Pokemon/class NPC rotation. Defaults: Charizard, Thor and
-  Spider-Man Web Guardian. Pokemon uses species, moveset, scale and native HP (maximum 1024).
+  Spider-Man Web Guardian. Pokemon uses species, moveset, scale and native HP (maximum 1000000).
 * `locations.json`: empty until an operator saves an arena. No blocks change.
 * `schedule.json`: Asia/Ho_Chi_Minh daily 12:00/18:00/21:00; warnings 300/60s,
   setup 60s, fight 600s. HH:mm triggers within that minute; HH:mm:ss triggers at that second. Downtime never backfills.
@@ -216,7 +218,7 @@ RGB digits. `attackSeconds` sets the recovery period, scaled by phase cooldown.
 Class attacks finish their native damage phases before this recovery begins. The
 bossbar shows HP, phase, WINDUP/ATTACK/RECOVERY, attack countdown and encounter time.
 
-Pokemon boss HP stays at the configured native maximum (1..1024); Cobblemon's normal
+Pokemon boss HP stays at the configured native maximum (1..1000000); Cobblemon's normal
 stat updates cannot overwrite that maximum or heal encounter damage. Ordinary
 Pokemon retain their native battle/stat health synchronization.
 

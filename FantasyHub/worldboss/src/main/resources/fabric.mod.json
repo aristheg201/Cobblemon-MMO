@@ -1,6 +1,25 @@
 {
- "schemaVersion":1,"id":"svframe_worldboss","version":"${version}","name":"SVFrameWorldBoss","environment":"*",
- "entrypoints":{"main":["vn.svframe.worldboss.WorldBossMod"]},
- "depends":{"fabricloader":">=0.16.0","minecraft":"1.21.1","java":">=21","fabric-api":"*","fantasyhubcore":"*","svframelib":"*","svframemmo":"*"},
- "description":"Scheduled native Pokemon and player-shaped class boss encounters with durable contribution rewards."
+  "schemaVersion": 1,
+  "id": "svframe_worldboss",
+  "version": "${version}",
+  "name": "SVFrameWorldBoss",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "vn.svframe.worldboss.WorldBossMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "1.21.1",
+    "java": ">=21",
+    "fabric-api": "*",
+    "fantasyhubcore": "*",
+    "svframelib": "*",
+    "svframemmo": "*"
+  },
+  "description": "Scheduled native Pokemon and player-shaped class boss encounters with durable contribution rewards.",
+  "mixins": [
+    "svframe-cosmic.mixins.json"
+  ]
 }

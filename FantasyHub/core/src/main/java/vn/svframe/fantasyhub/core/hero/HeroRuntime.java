@@ -175,7 +175,7 @@ public final class HeroRuntime {
   }
   private static void materializeHandlers(){for(var a:catalog.abilities().values())SVFrameLib.inst().getSkills().replaceSkillHandler(new Handler(a));}
   private static Prepared prepare(ServerPlayerEntity p,HeroCatalog.Ability ability) {
-    var s=session(p);boolean ok=s!=null&&valid(s)&&!s.active("busy")&&ability.id().startsWith(s.hero.id()+"_")&&!HeroControl.silenced(p);
+    var s=session(p);boolean ok=s!=null&&valid(s)&&!p.getCommandTags().contains("svframe_cosmic_frozen")&&!s.active("busy")&&ability.id().startsWith(s.hero.id()+"_")&&!HeroControl.silenced(p);
     var nativeData=SVFrameMMO.playerData().get(p);var definition=nativeData.getProfess().getSkill(ability.id());
     ok=ok&&definition!=null&&nativeData.canUseSkill(definition);
     var existing=s==null?null:s.recasts.get(ability.id());boolean recast=existing!=null&&s.power.canRecast(ability.id(),tick);

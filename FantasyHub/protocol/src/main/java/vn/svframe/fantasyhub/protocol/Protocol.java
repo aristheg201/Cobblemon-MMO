@@ -15,9 +15,10 @@ import net.minecraft.util.Identifier;
 public final class Protocol implements ModInitializer {
   public static Item batmanCape, classSigil, grapplingHook;
   public static net.minecraft.entity.EntityType<HeroNpcEntity> heroNpcType;
+  public static final java.util.Map<String,Item> infinityItems=new java.util.LinkedHashMap<>();
   private static boolean installed;
   public static final int VERSION = 3;
-  public static final String ASSET_REVISION = "heroes-expansion-v5";
+  public static final String ASSET_REVISION = "heroes-infinity-v6";
 
   public record Handshake(int version, String assets, String clientVersion, String diagnostic)
       implements CustomPayload {
@@ -376,6 +377,9 @@ public final class Protocol implements ModInitializer {
 
   public static synchronized void install() {
     if (installed) return;
+    ((HealthAttributeAccess)(Object)net.minecraft.entity.attribute.EntityAttributes.GENERIC_MAX_HEALTH.value()).svframe$maximum(1_000_000);
+    for(String stone:java.util.List.of("space","power","reality","mind","soul","time","gauntlet"))infinityItems.put(stone,Registry.register(Registries.ITEM,Identifier.of("fantasyhub",stone.equals("gauntlet")?"infinity_gauntlet":stone+"_stone"),new InfinityItem(stone)));
+    net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents.modifyEntriesEvent(net.minecraft.item.ItemGroups.COMBAT).register(entries->infinityItems.values().forEach(entries::add));
     visualBone =
         Registry.register(
             Registries.ITEM,

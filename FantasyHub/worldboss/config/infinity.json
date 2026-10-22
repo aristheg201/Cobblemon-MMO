@@ -1,0 +1,10 @@
+{
+  "snapWeights": [1,1,1,1,1,1,1,1,1,1],
+  "snapCooldownSeconds": 1800,
+  "moneyReward": 100000,
+  "moneyCommand": "",
+  "legendarySpecies": ["mewtwo","rayquaza","lugia","giratina"],
+  "rareSpawnMultiplier": 3,
+  "typeSpawnMultiplier": 4,
+  "beamDamage": 35
+}

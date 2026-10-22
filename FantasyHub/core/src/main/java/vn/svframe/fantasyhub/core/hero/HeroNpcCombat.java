@@ -63,9 +63,9 @@ public final class HeroNpcCombat {
   var list=NpcSkillPolicy.resolve(HeroRuntime.catalog(),actor.entity.hero(),ids);if(!list.equals(actor.rotation)){actor.rotation=list;actor.next=0;}
   actor.cooldownMultiplier=cooldownMultiplier;actor.damageMultiplier=damageMultiplier;
  }
- private static boolean legal(HeroNpcEntity actor,ServerPlayerEntity target){return (ACTORS.get(actor.getUuid())==null||target.getPos().squaredDistanceTo(ACTORS.get(actor.getUuid()).home)<=Math.pow(ACTORS.get(actor.getUuid()).arenaRadius,2))&&target.isAlive()&&!target.isCreative()&&!target.isSpectator()&&target.getWorld()==actor.getWorld()&&!actor.isTeammate(target)&&RpgEntityAdapters.allows(actor,target,RpgEntityAdapters.Effect.DAMAGE);}
+ private static boolean legal(HeroNpcEntity actor,ServerPlayerEntity target){return (ACTORS.get(actor.getUuid())==null||target.getPos().squaredDistanceTo(ACTORS.get(actor.getUuid()).home)<=Math.pow(ACTORS.get(actor.getUuid()).arenaRadius,2))&&!target.getCommandTags().contains("svframe_cosmic_peace")&&target.isAlive()&&!target.isCreative()&&!target.isSpectator()&&target.getWorld()==actor.getWorld()&&!actor.isTeammate(target)&&RpgEntityAdapters.allows(actor,target,RpgEntityAdapters.Effect.DAMAGE);}
  private static void tick(Actor a){
-  var e=a.entity;if(e.isRemoved()||!e.isAlive()){ACTORS.remove(e.getUuid());return;}
+  var e=a.entity;if(e.getCommandTags().contains("svframe_cosmic_frozen")){a.ready++;if(a.warningUntil>0)a.warningUntil++;if(a.attackUntil>0)a.attackUntil++;if(a.axeUntil>0)a.axeUntil++;for(int i=0;i<a.pending.size();i++){var p=a.pending.get(i);a.pending.set(i,new Pending(p.at+1,p.run));}return;}if(e.isRemoved()||!e.isAlive()){ACTORS.remove(e.getUuid());return;}
   if(e.getPos().squaredDistanceTo(a.home)>a.arenaRadius*a.arenaRadius){e.getNavigation().startMovingTo(a.home.x,a.home.y,a.home.z,1.3);a.pending.clear();a.warningPoint=null;a.warningUntil=a.attackUntil=0;return;}
   if(a.warningPoint!=null&&ticks<a.warningUntil&&ticks%4==0)warning(a);
   for(var pending:List.copyOf(a.pending))if(pending.at<=ticks){a.pending.remove(pending);pending.run.run();}

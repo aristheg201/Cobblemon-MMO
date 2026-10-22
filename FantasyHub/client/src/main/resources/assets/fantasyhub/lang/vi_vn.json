@@ -418,5 +418,19 @@
   "fantasyhub.classes.locked_sigil": "Thu thập %s Class Sigil từ world boss để mở vĩnh viễn.",
   "fantasyhub.classes.not_selectable": "Class đã tải nhưng chưa được bật trong roster server.",
   "fantasyhub.learn.requirements": "Cần class cấp %s và %s điểm học. Học trước khi trang bị hoặc thi triển.",
-  "fantasyhub.learn.learned": "Đã học. Gán ô chiến đấu để sử dụng."
+  "fantasyhub.learn.learned": "Đã học. Gán ô chiến đấu để sử dụng.",
+  "item.fantasyhub.space_stone": "Space Stone",
+  "item.fantasyhub.space_stone.hint": "Right-click: blink behind a player (15m) or portal forward.",
+  "item.fantasyhub.power_stone": "Power Stone",
+  "item.fantasyhub.power_stone.hint": "Holding/equipped: Strength II + Resistance II. Right-click: 6m cosmic blast.",
+  "item.fantasyhub.reality_stone": "Reality Stone",
+  "item.fantasyhub.reality_stone.hint": "Holding/equipped: instant saplings, Fortune III on ores, rare spawn weight. Right-click: heal/feed allies.",
+  "item.fantasyhub.mind_stone": "Mind Stone",
+  "item.fantasyhub.mind_stone.hint": "Right-click: freeze the target for 3 seconds.",
+  "item.fantasyhub.soul_stone": "Soul Stone",
+  "item.fantasyhub.soul_stone.hint": "Holding/equipped: hostile mobs and Pokémon leave you alone. Right-click: 5 seconds invulnerability.",
+  "item.fantasyhub.time_stone": "Time Stone",
+  "item.fantasyhub.time_stone.hint": "Possessing: revive at 50% HP/hunger. Right-click: freeze enemies in 10m for 5 seconds.",
+  "item.fantasyhub.infinity_gauntlet": "Infinity Gauntlet",
+  "item.fantasyhub.infinity_gauntlet.hint": "Sprint + right-click: cycle stone. Right-click: use selected stone. Sneak + right-click: SNAP (all six stones; 30min cooldown)."
 }

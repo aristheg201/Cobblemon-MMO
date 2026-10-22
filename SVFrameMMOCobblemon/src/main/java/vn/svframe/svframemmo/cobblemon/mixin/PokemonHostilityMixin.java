@@ -15,20 +15,20 @@ import vn.svframe.svframemmo.cobblemon.gameplay.PokemonHostility;
 public abstract class PokemonHostilityMixin {
   @Inject(method = "isUncatchable", at = @At("HEAD"), cancellable = true)
   private void svframe$bossUncatchable(CallbackInfoReturnable<Boolean> cir) {
-    if (((PokemonEntity) (Object) this).getCommandTags().contains("svframe_worldboss"))
+    if (((PokemonEntity) (Object) this).getCommandTags().stream().anyMatch(t->t.equals("svframe_worldboss")||t.equals("svframe_cosmic_minion")))
       cir.setReturnValue(true);
   }
 
   @Inject(method = "canBattle", at = @At("HEAD"), cancellable = true)
   private void svframe$bossNoBattle(PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
-    if (((PokemonEntity) (Object) this).getCommandTags().contains("svframe_worldboss"))
+    if (((PokemonEntity) (Object) this).getCommandTags().stream().anyMatch(t->t.equals("svframe_worldboss")||t.equals("svframe_cosmic_minion")))
       cir.setReturnValue(false);
   }
 
   @Inject(method = "forceBattle", at = @At("HEAD"), cancellable = true)
   private void svframe$bossNoForceBattle(
       ServerPlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
-    if (((PokemonEntity) (Object) this).getCommandTags().contains("svframe_worldboss"))
+    if (((PokemonEntity) (Object) this).getCommandTags().stream().anyMatch(t->t.equals("svframe_worldboss")||t.equals("svframe_cosmic_minion")))
       cir.setReturnValue(false);
   }
 

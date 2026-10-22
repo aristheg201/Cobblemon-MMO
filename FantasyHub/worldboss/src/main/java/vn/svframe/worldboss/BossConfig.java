@@ -18,6 +18,9 @@ public final class BossConfig {
  }
  public static final class Boss {
   public String id,name,type,properties,classId;
+  public double damageMitigation=0,stoneDropChance=.15,gauntletDropChance=0;
+  public Map<String,Double> mechanics=new LinkedHashMap<>();
+  public String bossBarColor="RED";public List<String> stoneDrops=new ArrayList<>();
   public double health=1000,scale=2,cooldownMultiplier=1,damageMultiplier=1;
   public int attackSeconds=5,windupSeconds=2;
   public String telegraphColor="FF7043";
@@ -46,7 +49,10 @@ public final class BossConfig {
    var thor=new Boss("thor","Thor — God of Thunder","class","THOR");thor.scale=1;thor.skillIds=new ArrayList<>(List.of("MJOLNIR_THROW","THUNDEROUS_SLAM","BIFROST"));
    var spider=new Boss("web_guardian","Spider-Man — Web Guardian","class","SPIDER_MAN");spider.health=800;spider.scale=1;spider.skillIds=new ArrayList<>(List.of("WEB_SHOOTER_BARRAGE","WEB_BLITZ","COCOON_SLAM"));spider.cooldownMultiplier=1.2;spider.damageMultiplier=.8;spider.winReward=18;spider.lossReward=4;
    var webPhase=new Phase(.5,.65,1.4);webPhase.skillIds=new ArrayList<>(List.of("WORLD_WEB_TRAP","AIR_COMBO","WEB_BLITZ"));spider.phases=new ArrayList<>(List.of(webPhase));
-   return new ArrayList<>(List.of(pokemon,thor,spider));
+   var list=new ArrayList<>(List.of(pokemon,thor,spider));for(var b:list){b.stoneDropChance=.15;b.stoneDrops=new ArrayList<>(b.id.equals("thor")?List.of("power"):b.id.equals("web_guardian")?List.of("soul"):List.of("space","power","reality","mind","soul","time"));}
+   var extra=new com.google.gson.Gson().fromJson("""
+[{"id": "thanos", "name": "§5§lThanos, The Mad Titan", "type": "cosmic", "classId": "THANOS", "health": 10000, "scale": 1.65, "damageMitigation": 0.85, "bossBarColor": "PURPLE", "stoneDrops": ["space", "power", "reality", "mind", "soul", "time"], "stoneDropChance": 0.15, "gauntletDropChance": 0.2, "windupSeconds": 2, "attackSeconds": 5, "telegraphColor": "A050FF", "phases": [{"healthBelow": 0.5, "cooldownMultiplier": 0.8, "damageMultiplier": 1.2}], "mechanics": {"punchDamage": 45, "beamDamage": 6, "meteorDamage": 30, "sweepDamage": 26}}, {"id": "collector", "name": "The Collector", "type": "cosmic", "classId": "COLLECTOR", "health": 8000, "scale": 1.25, "damageMitigation": 0.65, "stoneDropChance": 0.15, "stoneDrops": ["reality"], "bossBarColor": "PURPLE", "windupSeconds": 2, "attackSeconds": 5, "telegraphColor": "DD66FF", "phases": [{"healthBelow": 0.85}, {"healthBelow": 0.6}, {"healthBelow": 0.3}]}, {"id": "speedster", "name": "Speedster — Space Guardian", "type": "class", "classId": "FLASH", "health": 4000, "scale": 1, "stoneDropChance": 0.15, "stoneDrops": ["space"], "skillIds": [], "phases": []}, {"id": "sorcerer_guardian", "name": "Sorcerer Supreme — Guardian of Time and Mind", "type": "class", "classId": "SORCERER_SUPREME", "health": 6000, "scale": 1, "stoneDropChance": 0.15, "stoneDrops": ["mind", "time"], "skillIds": [], "phases": []}, {"id": "ultimate_trial", "name": "All Classes — The Ultimate Test", "type": "cosmic", "classId": "GAUNTLET_TRIAL", "health": 10000, "scale": 1.3, "damageMitigation": 0.7, "stoneDropChance": 0.15, "stoneDrops": ["soul"], "bossBarColor": "PURPLE", "windupSeconds": 2, "attackSeconds": 4, "phases": []}]
+""",Boss[].class);list.addAll(List.of(extra));return list;
   }
  }
  public static final class Locations {public List<Arena> locations=new ArrayList<>();}
@@ -114,14 +120,16 @@ public final class BossConfig {
    var b=bosses.bosses.get(i);String p="bosses["+i+"]";require(b!=null,p,"must be an object");
    require(identifier(b.id)&&ids.add(b.id),p+".id","must be a unique lowercase ID");
    require(b.name!=null&&!b.name.isBlank()&&b.name.length()<=160,p+".name","required, at most 160 characters");
-   require("pokemon".equals(b.type)||"class".equals(b.type),p+".type","must be pokemon or class");
-   require(between(b.health,1,1024),p+".health","must be 1..1024");require(between(b.scale,.1,16),p+".scale","must be 0.1..16");
+   require("pokemon".equals(b.type)||"class".equals(b.type)||"cosmic".equals(b.type),p+".type","must be pokemon, class or cosmic");
+   require(between(b.health,1,1_000_000),p+".health","must be 1..1000000");require(between(b.scale,.1,16),p+".scale","must be 0.1..16");
    require(b.attackSeconds>=2&&b.attackSeconds<=3600,p+".attackSeconds","must be 2..3600");
    require(b.windupSeconds>=1&&b.windupSeconds<=30,p+".windupSeconds","must be 1..30 seconds");
    require(b.telegraphColor!=null&&b.telegraphColor.matches("[0-9A-Fa-f]{6}"),p+".telegraphColor","must be six hexadecimal RGB digits");
    multiplier(b.cooldownMultiplier,p+".cooldownMultiplier");multiplier(b.damageMultiplier,p+".damageMultiplier");skills(b.skillIds,p+".skillIds");
    require(b.winReward==null||b.winReward>=1&&b.winReward<=4096,p+".winReward","must be 1..4096");require(b.lossReward==null||b.lossReward>=1&&b.lossReward<=4096,p+".lossReward","must be 1..4096");
-   if(b.type.equals("class"))require(b.classId!=null&&b.classId.matches("[A-Z][A-Z0-9_]{0,63}"),p+".classId","required uppercase native class ID");
+   require(b.mechanics!=null&&b.mechanics.values().stream().allMatch(v->v!=null&&between(v,0,10000)),p+".mechanics","values must be finite and 0..10000");require(between(b.damageMitigation,0,.99),p+".damageMitigation","must be 0..0.99");require(between(b.stoneDropChance,0,1)&&between(b.gauntletDropChance,0,1),p+".dropChance","must be 0..1");require(b.stoneDrops!=null&&b.stoneDrops.stream().allMatch(v->java.util.Set.of("space","power","reality","mind","soul","time").contains(v)),p+".stoneDrops","unknown stone");require(java.util.Set.of("RED","PINK","BLUE","GREEN","YELLOW","PURPLE","WHITE").contains(b.bossBarColor),p+".bossBarColor","invalid color");
+   if(b.type.equals("cosmic"))require(java.util.Set.of("THANOS","COLLECTOR","GAUNTLET_TRIAL").contains(b.classId),p+".classId","unknown cosmic encounter");
+   else if(b.type.equals("class"))require(b.classId!=null&&b.classId.matches("[A-Z][A-Z0-9_]{0,63}"),p+".classId","required uppercase native class ID");
    else {require(b.properties!=null&&!b.properties.isBlank()&&b.properties.length()<=900,p+".properties","required native Pokemon properties, at most 900 characters");require(b.skillIds.isEmpty(),p+".skillIds","class-only; configure Pokemon moves through native properties");}
    require(b.phases!=null&&b.phases.size()<=8,p+".phases","must be a list of at most eight phase transitions");double previous=1;
    for(int n=0;n<b.phases.size();n++){

@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "vn.svframe.worldboss.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CosmicDamageMixin",
+    "CosmicTargetMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

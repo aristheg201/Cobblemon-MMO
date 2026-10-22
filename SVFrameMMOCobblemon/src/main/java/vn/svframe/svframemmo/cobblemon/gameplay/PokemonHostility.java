@@ -131,6 +131,7 @@ public final class PokemonHostility {
         && player.isAlive()
         && !player.isCreative()
         && !player.isSpectator()
+        && !player.getCommandTags().contains("svframe_cosmic_peace")
         && BattleRegistry.getBattleByParticipatingPlayer(player) == null;
   }
 

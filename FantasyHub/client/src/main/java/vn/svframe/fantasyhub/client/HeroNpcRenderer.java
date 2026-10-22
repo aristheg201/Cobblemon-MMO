@@ -27,5 +27,5 @@ final class HeroNpcRenderer extends BipedEntityRenderer<HeroNpcEntity,PlayerEnti
    }
   });
  }
- @Override public Identifier getTexture(HeroNpcEntity e){return Identifier.ofVanilla("textures/entity/player/wide/steve.png");}
+ @Override public Identifier getTexture(HeroNpcEntity e){return e.hero().equals("THANOS")?Identifier.of("fantasyhub","textures/entity/thanos.png"):e.hero().equals("COLLECTOR")?Identifier.ofVanilla("textures/entity/illager/evoker.png"):Identifier.ofVanilla("textures/entity/player/wide/steve.png");}
 }

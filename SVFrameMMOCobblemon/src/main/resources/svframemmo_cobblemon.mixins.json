@@ -11,7 +11,8 @@
     "CosmeticRendererBackendMixin",
     "PokemonHostilityMixin",
     "PokemonBossHealthMixin",
-    "FightOrFlightOwnershipMixin"
+    "FightOrFlightOwnershipMixin",
+    "CosmicSpawnWeightMixin"
   ],
   "injectors": {
     "defaultRequire": 1

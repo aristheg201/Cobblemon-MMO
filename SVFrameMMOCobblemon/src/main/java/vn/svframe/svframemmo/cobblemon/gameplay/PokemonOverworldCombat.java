@@ -89,6 +89,7 @@ public final class PokemonOverworldCombat {
         || entity.isBusy()
         || entity.getBeamMode() != 0
         || entity.getPokemon().isFainted()
+        || target.getCommandTags().contains("svframe_cosmic_peace")
         || target.isCreative()
         || target.isSpectator()
         || !target.isAlive()
