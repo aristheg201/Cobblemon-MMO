@@ -1,0 +1,40 @@
+{
+  "source": "https://www.curseforge.com/minecraft/mc-mods/endgame-infinity-gauntlet/files/8256896",
+  "sourceJar": "egm-1.4.5.jar",
+  "sourceJarSha256": "172518d90f978d7febd3e27fa7490167ace6589215540104cd27b9feed039a51",
+  "models": {
+    "infinity_gauntlet": "assets/egm/models/item/gauntlet_variants_3d/infinity_gauntlet_111111.json",
+    "space_stone": "assets/egm/models/item/stone_variants/space_stone_3d.json",
+    "power_stone": "assets/egm/models/item/stone_variants/power_stone_3d.json",
+    "reality_stone": "assets/egm/models/item/stone_variants/reality_stone_3d.json",
+    "mind_stone": "assets/egm/models/item/stone_variants/mind_stone_3d.json",
+    "soul_stone": "assets/egm/models/item/stone_variants/soul_stone_3d.json",
+    "time_stone": "assets/egm/models/item/stone_variants/time_stone_3d.json"
+  },
+  "files": {
+    "assets/egm/models/item/gauntlet_variants_3d/infinity_gauntlet_111111.json": "0f916535c5c34696b39f2b995e9f38b0c1a909dab8011f286c3bc06a9e3f239f",
+    "assets/egm/models/item/stone_variants/mind_stone_3d.json": "e2b8e37a6d977e9acd39ce3eb1d7077bd960f461c291b7b0ff1a9d63433fe24e",
+    "assets/egm/models/item/stone_variants/power_stone_3d.json": "b6713118b411a6d39367444d8931042ddd1c17ee63df007d8593f08395086b5a",
+    "assets/egm/models/item/stone_variants/reality_stone_3d.json": "118bcc44f00d3ae513a1eafe356c37953c0cb673d89ff58fd31cc7d789138fe7",
+    "assets/egm/models/item/stone_variants/soul_stone_3d.json": "d53225ed3dc9839bde753e0ef35e04eb9482656e27668d958bf5c04183e6eeee",
+    "assets/egm/models/item/stone_variants/space_stone_3d.json": "88397cfab2086fb3997a52f43fb46614cbe1fa99fe7bae6195f1e33f7b60bf98",
+    "assets/egm/models/item/stone_variants/time_stone_3d.json": "ca94c822364cd71fd19ec21fecf8c2caf5ec3fb321a96811b1dc1bec70b3d1a5",
+    "assets/egm/textures/item/infinity_gauntlet_assets/infinity_gauntlet_cosmic_ruler_vfx_e.png": "267e46ddf9d0cb92896b6f4f36caa866e55c5b2e5046c2aa918d0dd06c7b40dc",
+    "assets/egm/textures/item/infinity_gauntlet_assets/infinity_gauntlet_cosmic_ruler_vfx_e.png.mcmeta": "1b7fc59bb8b3e2b2438cef0bae57838abf5b9e2ada3a2cb5a186d41f4910d40a",
+    "assets/egm/textures/item/infinity_gauntlet_assets/infinity_gauntlet_texture.png": "e19a365a882f946373a5243ed36de9b7b25dfe8b7f69a08aa6c3a016c33cbff2",
+    "assets/egm/textures/item/stone_assets/mind_texture_3d.png": "a278857005ca7cddfebd973ef83cc2d2779a3560dfb2862f0a0ba93135571651",
+    "assets/egm/textures/item/stone_assets/mind_texture_3d.png.mcmeta": "77259cdf09fe827c6d23896cd8b2d6cdf5da1d2ab8d3efcdccd7641cca9a4898",
+    "assets/egm/textures/item/stone_assets/power_texture_3d.png": "afc5661905d3be1ce1c9141b9637d9f2881736614de41ddb0554249d3887acae",
+    "assets/egm/textures/item/stone_assets/power_texture_3d.png.mcmeta": "77259cdf09fe827c6d23896cd8b2d6cdf5da1d2ab8d3efcdccd7641cca9a4898",
+    "assets/egm/textures/item/stone_assets/reality_texture_3d.png": "cebe9eafbbf8e0803ec59933212eee60d758c1638138a952855ef97af3c5b088",
+    "assets/egm/textures/item/stone_assets/reality_texture_3d.png.mcmeta": "77259cdf09fe827c6d23896cd8b2d6cdf5da1d2ab8d3efcdccd7641cca9a4898",
+    "assets/egm/textures/item/stone_assets/soul_texture_3d.png": "13ec0b5521083fc97f10e3fd460bc9a9ed013496192d8611f78e789bf5f16c95",
+    "assets/egm/textures/item/stone_assets/soul_texture_3d.png.mcmeta": "77259cdf09fe827c6d23896cd8b2d6cdf5da1d2ab8d3efcdccd7641cca9a4898",
+    "assets/egm/textures/item/stone_assets/space_texture_3d.png": "e30e7052248bd8be755543b660de2f10ba8f4fb8418e427d3d426484a040087e",
+    "assets/egm/textures/item/stone_assets/space_texture_3d.png.mcmeta": "77259cdf09fe827c6d23896cd8b2d6cdf5da1d2ab8d3efcdccd7641cca9a4898",
+    "assets/egm/textures/item/stone_assets/time_texture_3d.png": "96bc524756d781e74dff4a974d9f60faff4904b226f7e1dbad03971249cffea6",
+    "assets/egm/textures/item/stone_assets/time_texture_3d.png.mcmeta": "77259cdf09fe827c6d23896cd8b2d6cdf5da1d2ab8d3efcdccd7641cca9a4898"
+  },
+  "thanosSkinSource": "https://www.minecraftskins.com/uploads/skins/2022/09/23/thanos-minecraft-skin-20876321.png",
+  "notes": "Only referenced resource files copied unchanged; no original mod Java code or Forge runtime bundled. Existing gameplay handled by SVFrame WorldBoss. Gauntlet uses fully assembled variant."
+}

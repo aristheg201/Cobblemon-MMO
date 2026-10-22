@@ -1,1 +1,3 @@
-{"parent": "minecraft:item/generated", "textures": {"layer0": "fantasyhub:item/time_stone"}}
+{
+  "parent": "egm:item/stone_variants/time_stone_3d"
+}

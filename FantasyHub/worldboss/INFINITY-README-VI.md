@@ -2,7 +2,7 @@
 
 Bản giao trước QA gameplay theo yêu cầu. Build và test tự động được chạy; chưa xác nhận animation, cân bằng hoặc gameplay mới trong Minecraft.
 
-Cài trên bộ class 0.2.4 đã giao. Server: thay Bridge 0.2.4, Integration 0.1.19 và WorldBoss cũ bằng đúng JAR trong gói; chỉ giữ một bản mỗi mod ID. Client: thay FantasyHubClient 0.2.4 trong gói. Hai bên dùng asset revision `heroes-infinity-v6`; không dùng client cũ. Giữ các dependency của bộ class/Cobblemon 1.8.2. ShadowCrates-2.3.jar do người dùng cung cấp được giữ nguyên trong server/mods để gọi animation CSGO của chính mod đó; cần Fabric Language Kotlin. Không cài WorldBoss/ShadowCrates lên client multiplayer.
+Cài trên bộ class 0.2.4 đã giao. Server: thay Bridge 0.2.4, Integration 0.1.19 và WorldBoss cũ bằng đúng JAR trong gói; chỉ giữ một bản mỗi mod ID. Client: thay FantasyHubClient 0.2.4 trong gói. Hai bên dùng asset revision `heroes-infinity-v7`; không dùng client cũ. Giữ các dependency của bộ class/Cobblemon 1.8.2. ShadowCrates-2.3.jar do người dùng cung cấp được giữ nguyên trong server/mods để gọi animation CSGO của chính mod đó; cần Fabric Language Kotlin. Không cài WorldBoss/ShadowCrates lên client multiplayer.
 
 Merge config, không chép đè arena tùy chỉnh. `cosmic-bosses-merge.json.example` chứa 5 boss mới để thêm vào mảng bosses đang có. `bosses.json` là bộ mặc định đầy đủ. `infinity.json` tự sinh nếu thiếu; không xóa `infinity-state.json` để reset cooldown.
 
@@ -52,7 +52,7 @@ Cooldown 30 phút lưu theo UUID trước khi animation bắt đầu; reconnect/
 ## Nguồn và QA
 
 Skin: https://www.minecraftskins.com/skin/20876321/thanos-minecraft-skin/
-Gauntlet reference: https://www.curseforge.com/minecraft/mc-mods/endgame-infinity-gauntlet — dùng model/item native trong gói, không nhúng JAR Forge/NeoForge của mod reference.
+Gauntlet reference: https://www.curseforge.com/minecraft/mc-mods/endgame-infinity-gauntlet — model 3D và texture trích nguyên bản từ egm-1.4.5.jar (CurseForge file 8256896), đóng gói asset để renderer Fabric sử dụng; không cài JAR Forge gốc. Gauntlet hiển thị biến thể đủ sáu viên đá.
 ShadowCrates: JAR người dùng đính kèm; gọi API animation, không sao chép/decompile thành source của addon.
 
 Các lượt QA 0.2.4/WorldBoss 0.1.0 trước đây không phải bằng chứng runtime cho bản Cosmic này. Cần QA sau: skin/held gauntlet, cả bốn đòn Thanos và cover, bốn phase Collector, khả năng giải stasis, restore team, AI/freeze/peace với modpack, cả 10 SNAP, animation ShadowCrates và persistence party/PC/Pokédex trên bản sao dữ liệu.

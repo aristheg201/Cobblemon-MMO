@@ -18,7 +18,7 @@ public final class Protocol implements ModInitializer {
   public static final java.util.Map<String,Item> infinityItems=new java.util.LinkedHashMap<>();
   private static boolean installed;
   public static final int VERSION = 3;
-  public static final String ASSET_REVISION = "heroes-infinity-v6";
+  public static final String ASSET_REVISION = "heroes-infinity-v7";
 
   public record Handshake(int version, String assets, String clientVersion, String diagnostic)
       implements CustomPayload {

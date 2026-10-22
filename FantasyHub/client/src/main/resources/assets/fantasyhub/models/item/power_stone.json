@@ -1,1 +1,3 @@
-{"parent": "minecraft:item/generated", "textures": {"layer0": "fantasyhub:item/power_stone"}}
+{
+  "parent": "egm:item/stone_variants/power_stone_3d"
+}
