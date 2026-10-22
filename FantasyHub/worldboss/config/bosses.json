@@ -1,0 +1,95 @@
+{
+  "bosses": [
+    {
+      "id": "charizard",
+      "name": "Charizard — Inferno Lord",
+      "type": "pokemon",
+      "properties": "charizard level=80 uncatchable=true unbattleable=true",
+      "health": 1000,
+      "scale": 2,
+      "attackSeconds": 5,
+      "skillIds": [],
+      "cooldownMultiplier": 1,
+      "damageMultiplier": 1,
+      "phases": [
+        {
+          "healthBelow": 0.6,
+          "cooldownMultiplier": 0.85,
+          "damageMultiplier": 1.15,
+          "skillIds": []
+        },
+        {
+          "healthBelow": 0.25,
+          "cooldownMultiplier": 0.7,
+          "damageMultiplier": 1.3,
+          "skillIds": []
+        }
+      ],
+      "windupSeconds": 2,
+      "telegraphColor": "FF7043"
+    },
+    {
+      "id": "thor",
+      "name": "Thor — God of Thunder",
+      "type": "class",
+      "classId": "THOR",
+      "health": 1000,
+      "scale": 1,
+      "attackSeconds": 5,
+      "skillIds": [
+        "MJOLNIR_THROW",
+        "THUNDEROUS_SLAM",
+        "BIFROST"
+      ],
+      "cooldownMultiplier": 1,
+      "damageMultiplier": 1,
+      "phases": [
+        {
+          "healthBelow": 0.6,
+          "cooldownMultiplier": 0.85,
+          "damageMultiplier": 1.15,
+          "skillIds": []
+        },
+        {
+          "healthBelow": 0.25,
+          "cooldownMultiplier": 0.7,
+          "damageMultiplier": 1.3,
+          "skillIds": []
+        }
+      ],
+      "windupSeconds": 2,
+      "telegraphColor": "FF7043"
+    },
+    {
+      "id": "web_guardian",
+      "name": "Spider-Man — Web Guardian",
+      "type": "class",
+      "classId": "SPIDER_MAN",
+      "health": 800,
+      "scale": 1,
+      "skillIds": [
+        "WEB_SHOOTER_BARRAGE",
+        "WEB_BLITZ",
+        "COCOON_SLAM"
+      ],
+      "cooldownMultiplier": 1.2,
+      "damageMultiplier": 0.8,
+      "winReward": 18,
+      "lossReward": 4,
+      "phases": [
+        {
+          "healthBelow": 0.5,
+          "skillIds": [
+            "WORLD_WEB_TRAP",
+            "AIR_COMBO",
+            "WEB_BLITZ"
+          ],
+          "cooldownMultiplier": 0.65,
+          "damageMultiplier": 1.4
+        }
+      ],
+      "windupSeconds": 2,
+      "telegraphColor": "FF7043"
+    }
+  ]
+}

@@ -83,8 +83,11 @@ public final class PokemonHostility {
     ServerEntityEvents.ENTITY_UNLOAD.register(
         (entity, world) -> {
           if (entity instanceof PokemonEntity pokemon) {
-            var state = STATES.remove(pokemon);
-            if (state != null) release(pokemon, state);
+            STATES.remove(pokemon);
+            SLOTS.release(pokemon.getUuid());
+            // OmniPathNavigation.stop queries blocks. During chunk unload that can
+            // reload the same chunk recursively and register its entities twice.
+            // The unloaded actor needs only bookkeeping cleanup, not navigation.
           }
         });
     ServerLifecycleEvents.SERVER_STOPPED.register(
@@ -149,7 +152,8 @@ public final class PokemonHostility {
         release(pokemon, state);
         STATES.remove(pokemon);
       }
-      return false;
+      // Scheduled bosses own their brain while native navigation and physics keep running.
+      return pokemon.getCommandTags().contains("svframe_worldboss");
     }
     if (state == null) {
       state = new State();

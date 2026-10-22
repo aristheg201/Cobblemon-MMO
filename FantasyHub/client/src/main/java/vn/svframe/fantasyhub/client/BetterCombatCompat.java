@@ -61,7 +61,7 @@ public final class BetterCombatCompat {
   }
   static void skillStarted(int entityId) {
     var client=MinecraftClient.getInstance();var entity=client.world==null?null:client.world.getEntityById(entityId);
-    if(stop==null||entity==null)return;
+    if(stop==null||entity==null||!stop.getDeclaringClass().isInstance(entity))return;
     try{stop.invoke(entity,2f);skillStops++;}catch(ReflectiveOperationException error){fail(error);}
   }
   private static boolean ownsAnimation(Object candidate) {

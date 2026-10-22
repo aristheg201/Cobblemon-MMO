@@ -1,0 +1,15 @@
+{
+  "timezone": "Asia/Ho_Chi_Minh",
+  "times": [
+    "12:00",
+    "18:00",
+    "21:00"
+  ],
+  "setupSeconds": 60,
+  "fightSeconds": 600,
+  "warningsSeconds": [
+    300,
+    60
+  ],
+  "entries": []
+}

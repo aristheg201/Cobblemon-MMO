@@ -1,0 +1,6 @@
+{
+  "win": 12,
+  "loss": 3,
+  "minimumDamageFraction": 0.005,
+  "minimumParticipationSeconds": 30
+}

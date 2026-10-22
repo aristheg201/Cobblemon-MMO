@@ -10,6 +10,7 @@
     "CosmeticServiceEmitterMixin",
     "CosmeticRendererBackendMixin",
     "PokemonHostilityMixin",
+    "PokemonBossHealthMixin",
     "FightOrFlightOwnershipMixin"
   ],
   "injectors": {
