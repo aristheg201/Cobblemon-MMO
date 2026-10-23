@@ -32,6 +32,7 @@ public final class CommerceRuntime {
  private static final Set<UUID> BUSY=new HashSet<>();
  private static final Map<UUID,Map<String,Quote>> QUOTES=new HashMap<>();
  private static Config config=new Config();
+ private static final Set<String> INVALID_GEAR_LOGGED=new HashSet<>();
  public static final class Prices {public BigDecimal beast,hunter;public Prices(){}public Prices(int b,int h){beast=BigDecimal.valueOf(b);hunter=BigDecimal.valueOf(h);}BigDecimal get(int method){CommercePolicy.currency(method);return method==1?beast:hunter;}void validate(){CommercePolicy.positiveWhole(beast);CommercePolicy.positiveWhole(hunter);}}
  public static final class Tier {public Prices classPrice,bundlePrice,equipmentPrice;}
  public static final class Offer {public String id,name,category,description,icon="minecraft:paper",effect="items",classId="";public boolean enabled=true;public Prices price;public List<Reward> items=new ArrayList<>();public int limit=0;public String permission="";}
@@ -58,19 +59,19 @@ public final class CommerceRuntime {
   next.tiers.forEach((k,v)->{v.classPrice.validate();v.bundlePrice.validate();v.equipmentPrice.validate();});
   for(var entry:next.classTiers.entrySet())if(SVFrameMMO.classes().get(entry.getKey())==null||!next.tiers.containsKey(entry.getValue()))throw new IllegalArgumentException("Unknown class/tier "+entry);
   for(var type:SVFrameMMO.classes().getAll())if(ClassSwitchService.selectable(type.getId())&&!next.classTiers.containsKey(type.getId()))LOG.error("Class {} has no explicit tier: purchase disabled",type.getId());
-  Set<String> ids=new HashSet<>();for(var o:next.offers)try{if(o.id==null||!o.id.matches("[a-z0-9_-]{1,48}")||!ids.add(o.id))throw new IllegalArgumentException("Invalid/duplicate offer ID");o.price.validate();if("items".equals(o.category))CommercePolicy.validateItemPrices(o.price.beast,o.price.hunter);if(!Set.of("items","exp","title").contains(o.effect))throw new IllegalArgumentException("Unsupported reward "+o.effect);if("items".equals(o.effect)&&o.items.isEmpty())throw new IllegalArgumentException("Missing rewards");for(var reward:o.items)validateReward(reward);if(o.limit<0)throw new IllegalArgumentException("Negative limit");}catch(RuntimeException bad){o.enabled=false;LOG.error("Rejected shop offer {}: {}",o.id,bad.getMessage());}
-  config=next;QUOTES.clear();
+  Set<String> ids=new HashSet<>();for(var o:next.offers)try{if(o.id==null||!o.id.matches("[a-z0-9_-]{1,48}")||!ids.add(o.id))throw new IllegalArgumentException("Invalid/duplicate offer ID");o.price.validate();if("items".equals(o.category))CommercePolicy.validateItemPrices(o.price.beast,o.price.hunter);if(!Set.of("items","exp","title").contains(o.effect))throw new IllegalArgumentException("Unsupported reward "+o.effect);if("items".equals(o.effect)&&o.items.isEmpty())throw new IllegalArgumentException("Missing rewards");for(var reward:o.items)validateReward(reward);validateReward(new Reward(o.icon,1));if(o.limit<0)throw new IllegalArgumentException("Negative limit");}catch(RuntimeException bad){o.enabled=false;LOG.error("Rejected shop offer {}: {}",o.id,bad.getMessage());}
+  config=next;QUOTES.clear();INVALID_GEAR_LOGGED.clear();for(String id:config.equipment.keySet())gearValid(id);
  }
  private static void validateReward(Reward r){if(r.count<1||r.count>64)throw new IllegalArgumentException("Invalid reward quantity");if(r.item.startsWith("rpg:")){if(SVFrameItems.registry().item(r.item.substring(4))==null)throw new IllegalArgumentException("Missing RPG item "+r.item);}else if(!Registries.ITEM.containsId(Identifier.of(r.item)))throw new IllegalArgumentException("Missing item "+r.item);}
  private static ItemStack stack(Reward r){validateReward(r);var st=r.item.startsWith("rpg:")?SVFrameItems.generator().generate(r.item.substring(4),new ItemGenerator.GenerationContext(1,0)):new ItemStack(Registries.ITEM.get(Identifier.of(r.item)));st.setCount(r.count);return st;}
- private static boolean gearValid(String id){var list=config.equipment.get(id);if(list==null||list.size()<4)return false;try{for(var r:list)validateReward(r);return true;}catch(RuntimeException e){return false;}}
+ private static boolean gearValid(String id){var list=config.equipment.get(id);if(list==null||list.size()<4)return false;try{for(var r:list)validateReward(r);return true;}catch(RuntimeException e){if(INVALID_GEAR_LOGGED.add(id))LOG.error("Disabled bundle {}: {}",id,e.getMessage());return false;}}
  public static Map<String,Object> view(ServerPlayerEntity p){
   var d=SVFrameMMO.playerData().get(p);var service=CurrencyService.get();var out=new LinkedHashMap<String,Object>();
   for(int method=1;method<=2;method++){var key=CurrencyKey.parse(CommercePolicy.currency(method));boolean ready=service.isAvailable(key);out.put(method==1?"beastAvailable":"hunterAvailable",ready);out.put(method==1?"beastBalance":"hunterBalance",ready?service.balance(p,key).toPlainString():"Unavailable");}
-  out.put("bypassBeast",config.bypassBeast);out.put("mailCount",mail(d).size());var rows=new ArrayList<Map<String,Object>>();var quotes=QUOTES.computeIfAbsent(p.getUuid(),k->new HashMap<>());quotes.entrySet().removeIf(e->e.getValue().expires<System.currentTimeMillis());
+  out.put("switchRemainingSeconds",ClassSwitchService.policy(d).get("remainingSeconds"));out.put("switchAvailableAt",((Number)ClassSwitchService.policy(d).get("remainingSeconds")).longValue()>0?d.getClassSwitchAvailableAt():0L);out.put("activeClass",d.getClassId());out.put("freeChoice",ClassProgression.starter(d));out.put("bypassBeast",config.bypassBeast);out.put("mailCount",mail(d).size());var rows=new ArrayList<Map<String,Object>>();var quotes=QUOTES.computeIfAbsent(p.getUuid(),k->new HashMap<>());quotes.entrySet().removeIf(e->e.getValue().expires<System.currentTimeMillis());
   for(var type:SVFrameMMO.classes().getAll()){
    String id=type.getId(),tierId=config.classTiers.get(id);if(tierId==null||!ClassSwitchService.selectable(id))continue;var tier=config.tiers.get(tierId);boolean owned=ClassProgression.owns(d,id)||d.getClassId().equals(id);
-   if(!owned&&!ClassProgression.starter(d))rows.add(row(p,quotes,"class:"+id,id,tierId,false,type.getName(),"classes","Permanent class ownership / Mở khóa class vĩnh viễn",tier.classPrice,List.of(),"minecraft:nether_star"));
+   var classRow=row(p,quotes,"class:"+id,id,tierId,false,type.getName(),"classes","",tier.classPrice,List.of(),"minecraft:nether_star");classRow.put("owned",owned);classRow.put("active",d.getClassId().equals(id));rows.add(classRow);
    if(gearValid(id))rows.add(row(p,quotes,"bundle:"+id,id,tierId,owned,type.getName()+(owned?" — Equipment":" — Class + Equipment"),"bundles",owned?"Equipment only; ownership is already yours":"Class entitlement + listed equipment; does not activate class",owned?tier.equipmentPrice:tier.bundlePrice,config.equipment.get(id),"minecraft:diamond_chestplate"));
   }
   for(var o:config.offers)if(o.enabled&&(o.permission.isBlank()||SVFrameMMO.permissions().has(p,o.permission))){var row=row(p,quotes,o.id,o.classId,"",false,o.name,o.category,o.description,o.price,o.items,o.icon);int bought=d.getClaimCount("fantasyhub:purchases:"+o.id);row.put("limit",o.limit);row.put("bought",bought);row.put("available",o.limit==0||bought<o.limit);rows.add(row);}
@@ -79,23 +80,23 @@ public final class CommerceRuntime {
  private static Map<String,Object> row(ServerPlayerEntity p,Map<String,Quote> quotes,String offer,String cl,String tier,boolean gear,String name,String category,String desc,Prices price,List<Reward> rewards,String icon){
   var found=quotes.entrySet().stream().filter(e->e.getValue().offer.equals(offer)&&e.getValue().equipmentOnly==gear).findFirst();String token=found.map(Map.Entry::getKey).orElseGet(()->{String nonce=UUID.randomUUID().toString();quotes.put(nonce,new Quote(offer,cl,tier,gear,System.currentTimeMillis()+120_000));return nonce;});
   var out=new LinkedHashMap<String,Object>();out.put("id",token);out.put("product",offer);out.put("name",name);out.put("category",category);out.put("description",desc);out.put("beast",price.beast.toPlainString());out.put("hunter",price.hunter.toPlainString());out.put("available",true);out.put("limit",0);out.put("bought",0);out.put("classId",cl);out.put("equipmentOnly",gear);
-  var contents=new ArrayList<String>();for(var r:rewards){String display=stack(r).getName().getString();if(r.item.equals("fantasyhub:rpg_upgrade_catalyst"))display="RPG Upgrade Catalyst";if(r.item.equals("fantasyhub:personal_boss_ticket_standard"))display="Personal Boss Ticket — Standard";if(r.item.equals("fantasyhub:personal_boss_ticket_elite"))display="Personal Boss Ticket — Elite";contents.add(r.count+" × "+display);}out.put("contents",contents);
+  var items=new ArrayList<String>();for(var reward:rewards)items.add(stack(reward).encode(p.getRegistryManager()).toString());out.put("items",items);
   ItemStack preview=rewards.isEmpty()?(!cl.isBlank()&&SVFrameMMO.classes().get(cl)!=null?SVFrameMMO.classes().get(cl).getRawIcon().toItemStack():new ItemStack(Registries.ITEM.get(Identifier.of(icon)))):stack(rewards.getFirst());out.put("icon",preview.encode(p.getRegistryManager()).toString());return out;
  }
  public static boolean purchase(ServerPlayerEntity p,String token,int method){
   try{
-   CommercePolicy.currency(method);var q=QUOTES.getOrDefault(p.getUuid(),Map.of()).get(token);if(q==null||q.expires<System.currentTimeMillis())return reject(p,"Offer expired. Refresh the shop / Làm mới cửa hàng.");
-   var d=SVFrameMMO.playerData().get(p);if(d.getClaimCount("fantasyhub:receipt:"+token)>0)return reject(p,"Already purchased / Đã xử lý giao dịch.");
+   CommercePolicy.currency(method);var q=QUOTES.getOrDefault(p.getUuid(),Map.of()).get(token);if(q==null||q.expires<System.currentTimeMillis())return reject(p,"expired");
+   var d=SVFrameMMO.playerData().get(p);if(d.getClaimCount("fantasyhub:receipt:"+token)>0)return reject(p,"duplicate");
    Prices price;List<Reward> rewards;String effect="items",grant="",offerId=q.offer;
    boolean owned=!q.classId.isBlank()&&ClassProgression.owns(d,q.classId);
    if(q.offer.startsWith("class:")||q.offer.startsWith("bundle:")){
-    if(!ClassSwitchService.selectable(q.classId)||!Objects.equals(config.classTiers.get(q.classId),q.tier))return reject(p,"Class offer changed");var tier=config.tiers.get(q.tier);
-    if(q.offer.startsWith("class:")){if(owned||ClassProgression.starter(d))return reject(p,"Use your free first choice / Class đã sở hữu hoặc còn lượt đầu miễn phí");price=tier.classPrice;rewards=List.of();grant=q.classId;}
-    else{if(owned!=q.equipmentOnly)return reject(p,"Ownership changed; refresh for equipment-only price");if(!gearValid(q.classId))return reject(p,"Equipment unavailable");price=owned?tier.equipmentPrice:tier.bundlePrice;rewards=config.equipment.get(q.classId);if(!owned)grant=q.classId;}
+    if(!ClassSwitchService.selectable(q.classId)||!Objects.equals(config.classTiers.get(q.classId),q.tier))return reject(p,"changed");var tier=config.tiers.get(q.tier);
+    if(q.offer.startsWith("class:")){if(owned||ClassProgression.starter(d))return reject(p,"owned_or_free");price=tier.classPrice;rewards=List.of();grant=q.classId;}
+    else{if(owned!=q.equipmentOnly)return reject(p,"ownership_changed");if(!gearValid(q.classId))return reject(p,"equipment_unavailable");price=owned?tier.equipmentPrice:tier.bundlePrice;rewards=config.equipment.get(q.classId);if(!owned)grant=q.classId;}
    }else{
     var o=config.offers.stream().filter(v->v.id.equals(q.offer)&&v.enabled).findFirst().orElseThrow(()->new IllegalArgumentException("Offer disabled"));
     if("items".equals(o.category))CommercePolicy.validateItemPrices(o.price.beast,o.price.hunter);
-    if(!o.permission.isBlank()&&!SVFrameMMO.permissions().has(p,o.permission))return reject(p,"Requirement not met");if(o.limit>0&&d.getClaimCount("fantasyhub:purchases:"+o.id)>=o.limit)return reject(p,"Purchase limit reached");price=o.price;rewards=o.items;effect=o.effect;
+    if(!o.permission.isBlank()&&!SVFrameMMO.permissions().has(p,o.permission))return reject(p,"requirement");if(o.limit>0&&d.getClaimCount("fantasyhub:purchases:"+o.id)>=o.limit)return reject(p,"limit");price=o.price;rewards=o.items;effect=o.effect;
    }
    var generated=new ArrayList<String>();for(var r:rewards){var st=stack(r);generated.add(st.encode(p.getRegistryManager()).toString());}
    var amount=price.get(method);CommercePolicy.positiveWhole(amount);String entitlement=grant,fx=effect;
@@ -107,17 +108,17 @@ public final class CommerceRuntime {
     d.setClaimCount("fantasyhub:purchases:"+offerId,d.getClaimCount("fantasyhub:purchases:"+offerId)+1);
     d.setClaimCount("fantasyhub:receipt:"+token,1);
    });
-   if(result){QUOTES.remove(p.getUuid());p.sendMessage(Text.literal("Purchase complete / Mua thành công. Items: /fantasyshop claim"),false);claim(p);}return result;
-  }catch(Exception e){LOG.warn("Purchase rejected for {}: {}",p.getUuid(),e.toString());return reject(p,"Purchase rejected / Giao dịch bị từ chối: "+e.getMessage());}
+   if(result){QUOTES.remove(p.getUuid());p.sendMessage(Text.translatable("fantasyhub.commerce.success"),false);claim(p);}return result;
+  }catch(Exception e){LOG.warn("Purchase rejected for {}: {}",p.getUuid(),e.toString());return reject(p,"rejected");}
  }
  static boolean paid(ServerPlayerEntity p,String token,String product,CurrencyKey currency,BigDecimal amount,Runnable grant)throws Exception{
-  var d=SVFrameMMO.playerData().get(p);if(BUSY.contains(p.getUuid())||ClassProgression.busy(d)||ClassSwitchService.busy(d))return reject(p,"Transaction busy");
-  var service=CurrencyService.get();if(!service.isAvailable(currency)||!service.has(p,currency,amount))return reject(p,"BEconomy unavailable or insufficient balance / Không đủ tiền");
-  var journal=new ClassSwitchJournal(p.getServer().getSavePath(WorldSavePath.ROOT),p.getUuid());var previous=journal.read();if(previous!=null){if(previous.transactionId().equals(d.getPreference(RECEIPT,"")))journal.clear();else return reject(p,"Transaction requires reconciliation /fantasyprogress status");}
+  var d=SVFrameMMO.playerData().get(p);if(BUSY.contains(p.getUuid())||ClassProgression.busy(d)||ClassSwitchService.busy(d))return reject(p,"busy");
+  var service=CurrencyService.get();if(!service.isAvailable(currency)||!service.has(p,currency,amount))return reject(p,"balance");
+  var journal=new ClassSwitchJournal(p.getServer().getSavePath(WorldSavePath.ROOT),p.getUuid());var previous=journal.read();if(previous!=null){if(previous.transactionId().equals(d.getPreference(RECEIPT,"")))journal.clear();else return reject(p,"reconcile");}
   BUSY.add(p.getUuid());var before=PlayerDataSnapshot.capture(d);boolean charged=false,committed=false,withdrawalUncertain=false;
   try{
    journal.prepare(new ClassSwitchJournal.Entry(token,d.getClassId(),"SHOP:"+product,currency.serialized(),amount.toPlainString(),service.balance(p,currency).toPlainString()));
-   withdrawalUncertain=true;boolean withdrawn=service.withdraw(p,currency,amount);withdrawalUncertain=false;if(!withdrawn){journal.clear();return reject(p,"Insufficient balance");}charged=true;
+   withdrawalUncertain=true;boolean withdrawn=service.withdraw(p,currency,amount);withdrawalUncertain=false;if(!withdrawn){journal.clear();return reject(p,"balance");}charged=true;
    grant.run();d.setPreference(RECEIPT,token);SVFrameMMO.playerData().savePlayerDurably(d).join();committed=true;
    try{journal.clear();}catch(Exception cleanup){LOG.warn("Committed transaction journal retained: {}",token);}return true;
   }catch(Exception error){
@@ -138,5 +139,5 @@ public final class CommerceRuntime {
   if(delivered>0){var before=d.getPreference(MAIL,"[]");d.setPreference(MAIL,JSON.toJson(retained));try{SVFrameMMO.playerData().savePlayerDurably(d).join();}catch(RuntimeException failure){d.setPreference(MAIL,before);ClassProgression.quarantine(d);throw failure;}}
   return delivered;
  }
- private static boolean reject(ServerPlayerEntity p,String s){p.sendMessage(Text.literal(s),false);return false;}
+ private static boolean reject(ServerPlayerEntity p,String s){p.sendMessage(Text.translatable("fantasyhub.commerce.error."+s),false);return false;}
 }

@@ -279,6 +279,7 @@ public final class FantasyHubClient implements ClientModInitializer {
             JsonObject o = new JsonObject();
             o.addProperty("clientHealth", client.player.getHealth());
             o.addProperty("heldItem",net.minecraft.registry.Registries.ITEM.getId(client.player.getMainHandStack().getItem()).toString());o.addProperty("heldItemClass",client.player.getMainHandStack().getItem().getClass().getName());o.addProperty("usingItem",client.player.isUsingItem());o.addProperty("screen",client.currentScreen==null?"":client.currentScreen.getClass().getSimpleName());
+            if(client.currentScreen instanceof FantasyShopScreen shopScreen)o.add("shop",shopScreen.observation());
             o.add("kabutoEffects", KabutoEffects.observation());
             o.add("riderEffects", RiderEffects.observation());
             o.add("clientHudPacks",ClientHudPacks.observation());

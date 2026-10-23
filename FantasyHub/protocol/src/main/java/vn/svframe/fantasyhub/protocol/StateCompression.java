@@ -8,7 +8,7 @@ import java.util.zip.*;
 /** Bounded catalog transport. Item-component previews compress without losing their data. */
 public final class StateCompression {
   public static final int MAX_WIRE_BYTES = 262144;
-  public static final int MAX_JSON_BYTES = 1048576;
+  public static final int MAX_JSON_BYTES = 4194304;
 
   private StateCompression() {}
 

@@ -18,7 +18,8 @@
     "RiderFirstPersonMixin",
     "RiderFirstPersonArmorMixin",
     "BatmanSkinCapeMixin",
-    "HeroItemColorMixin"
+    "HeroItemColorMixin",
+    "ShopToastMixin"
   ],
   "injectors": {
     "defaultRequire": 1
