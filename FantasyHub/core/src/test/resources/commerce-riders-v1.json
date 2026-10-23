@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "equipment": {
+    "AGITO": [
+      {
+        "item": "rpg:AGITO_GROUND_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:AGITO_GROUND_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:AGITO_GROUND_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:AGITO_GROUND_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "KABUTO": [
+      {
+        "item": "rpg:KABUTO_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:KABUTO_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:KABUTO_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:KABUTO_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:KABUTO_KUNAI_GUN",
+        "count": 1
+      },
+      {
+        "item": "rpg:KABUTO_ZECTER_BELT",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "DECADE": [
+      {
+        "item": "rpg:DECADE_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:DECADE_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:DECADE_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:DECADE_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:DECADE_BELT",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "RYUKI": [
+      {
+        "item": "rpg:RYUKI_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:RYUKI_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:RYUKI_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:RYUKI_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:RYUKI_BELT",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "KNIGHT": [
+      {
+        "item": "rpg:KNIGHT_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:KNIGHT_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:KNIGHT_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:KNIGHT_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:KNIGHT_BELT",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "ZOLDA": [
+      {
+        "item": "rpg:ZOLDA_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:ZOLDA_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:ZOLDA_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:ZOLDA_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:ZOLDA_BELT",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ]
+  }
+}

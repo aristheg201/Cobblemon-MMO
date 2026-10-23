@@ -564,5 +564,7 @@
   "fantasyhub.commerce.upgrade_status.MAX_LEVEL": "Max level",
   "fantasyhub.commerce.upgrade_status.INSUFFICIENT_COST": "Insufficient cost",
   "fantasyhub.commerce.class.arcane-mage": "Arcane Mage",
-  "fantasyhub.commerce.class.mage": "Mage"
+  "fantasyhub.commerce.class.mage": "Mage",
+  "svframeitems.stat.attack_damage": "Attack damage",
+  "svframeitems.stat.mana_regeneration": "Mana regeneration"
 }

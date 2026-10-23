@@ -564,5 +564,7 @@
   "fantasyhub.commerce.upgrade_status.MAX_LEVEL": "Đã đạt cấp tối đa",
   "fantasyhub.commerce.upgrade_status.INSUFFICIENT_COST": "Chưa đủ nguyên liệu",
   "fantasyhub.commerce.class.arcane-mage": "Pháp Sư Bí Thuật",
-  "fantasyhub.commerce.class.mage": "Pháp Sư"
+  "fantasyhub.commerce.class.mage": "Pháp Sư",
+  "svframeitems.stat.attack_damage": "Sát thương tấn công",
+  "svframeitems.stat.mana_regeneration": "Hồi năng lượng"
 }
