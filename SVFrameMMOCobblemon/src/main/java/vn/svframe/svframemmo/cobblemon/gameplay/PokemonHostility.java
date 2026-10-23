@@ -25,7 +25,7 @@ public final class PokemonHostility {
   private static final PursuitSlots SLOTS = new PursuitSlots();
 
   private static final class State {
-    UUID target;
+    UUID target,provokedBy;long angerUntil;
     Vec3d home, bolt, direction;
     MoveTemplate move;
     long nextAttack, ready, pauseUntil, reacquire;
@@ -35,6 +35,8 @@ public final class PokemonHostility {
   private PokemonHostility() {}
 
   public static void register() {
+    WildRpgHealth.install();
+    net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DAMAGE.register((entity,source,base,amount,blocked)->{if(entity instanceof PokemonEntity pokemon&&claims(pokemon)&&source.getAttacker() instanceof ServerPlayerEntity p&&amount>0&&validPlayer(p)){var state=STATES.computeIfAbsent(pokemon,k->new State());if(temperament(pokemon)==TemperamentRules.Kind.NEUTRAL&&state.target!=null&&!state.target.equals(p.getUuid()))release(pokemon,state);state.provokedBy=p.getUuid();state.angerUntil=pokemon.getWorld().getTime()+SVFrameMMOCobblemon.config().gameplay.temperament.neutralTimeoutTicks;}});
     CobblemonEvents.LOOT_DROPPED.subscribe(
         event -> {
           if (event.getEntity().getCommandTags().contains("svframe_worldboss")) event.cancel();
@@ -112,6 +114,7 @@ public final class PokemonHostility {
             || h.excludedSpecies.contains(pokemon.getSpecies().getName().toLowerCase(Locale.ROOT))
             || entity.getCommandTags().contains("svframe_qa")
             || entity.getCommandTags().contains("svframe_no_hostility")
+            || entity.getCommandTags().contains("svframe_cosmic_minion")
             || entity.isAiDisabled();
     for (var region : h.excludedRegions)
       if (region.contains(dimension, entity.getX(), entity.getY(), entity.getZ())) {
@@ -126,6 +129,9 @@ public final class PokemonHostility {
         excluded);
   }
 
+  private static State stateFor(PokemonEntity p){return STATES.get(p);}
+  private static TemperamentRules.Kind temperament(PokemonEntity e){var p=e.getPokemon();return SVFrameMMOCobblemon.config().gameplay.temperament.resolve(p.getSpecies().getResourceIdentifier().toString(),p.getForm().getName(),p.getLevel(),p.getNature().getName().toString().replace("cobblemon:",""),e.getWorld().getRegistryKey().getValue().toString(),p.isAlpha(),e.getX(),e.getY(),e.getZ());}
+  private static boolean minionTick(PokemonEntity e){if(e.getWorld().isClient())return false;var world=(ServerWorld)e.getWorld();long tick=world.getTime();if(tick%10!=Math.floorMod(e.getId(),10))return true;String owner=e.getCommandTags().stream().filter(t->t.startsWith("svframe_minion_owner:")).map(t->t.substring("svframe_minion_owner:".length())).findFirst().orElse("");var target=world.getPlayers(p->validPlayer(p)&&(owner.isBlank()||owner.equals(p.getUuidAsString()))&&e.squaredDistanceTo(p)<900).stream().min(Comparator.comparingDouble(e::squaredDistanceTo)).orElse(null);if(target==null){e.getNavigation().stop();return true;}e.getLookControl().lookAt(target,30,30);if(e.squaredDistanceTo(target)>9)e.getNavigation().startMovingTo(target,1.2);else{e.getNavigation().stop();if(tick%40<10)PokemonOverworldCombat.strike(e,target,1);}return true;}
   public static boolean validPlayer(ServerPlayerEntity player) {
     return player != null
         && player.isAlive()
@@ -147,6 +153,7 @@ public final class PokemonHostility {
 
   /** Called at mobTick HEAD. true means the ordinary/FoF brain must not run this tick. */
   public static boolean tick(PokemonEntity pokemon) {
+    if(pokemon.getCommandTags().contains("svframe_cosmic_minion"))return minionTick(pokemon);
     State state = STATES.get(pokemon);
     if (!claims(pokemon)) {
       if (state != null) {
@@ -176,6 +183,8 @@ public final class PokemonHostility {
       release(pokemon, state);
       return true;
     }
+    var kind=temperament(pokemon);
+    if(kind==TemperamentRules.Kind.FRIENDLY||kind==TemperamentRules.Kind.NEUTRAL&&(state.provokedBy==null||now>=state.angerUntil)){release(pokemon,state);return true;}
     ServerPlayerEntity player =
         state.target == null ? null : world.getServer().getPlayerManager().getPlayer(state.target);
     if (state.target != null
@@ -193,7 +202,7 @@ public final class PokemonHostility {
       var candidates =
           world.getPlayers(
               p ->
-                  validPlayer(p)
+                  (kind==TemperamentRules.Kind.HOSTILE||p.getUuid().equals(stateFor(pokemon).provokedBy))&&validPlayer(p)
                       && pokemon.squaredDistanceTo(p) <= h.detectRange * h.detectRange
                       && pokemon.getVisibilityCache().canSee(p));
       candidates.sort(Comparator.comparingDouble(pokemon::squaredDistanceTo));

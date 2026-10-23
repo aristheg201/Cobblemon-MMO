@@ -78,9 +78,14 @@ public final class HeroQa {
         else p.damage(p.getServerWorld().getDamageSources().mobAttack(target),value.isBlank()?2:Float.parseFloat(value));
       }
       case "health" -> p.setHealth(Math.clamp(Float.parseFloat(value),1,p.getMaxHealth()));
+      case "allocate" -> {var parts=value.split(":");data.giveAttributePoints(100);report.put("allocated",data.spendAttributePoints(parts[0],Integer.parseInt(parts[1])));SVFrameMMO.playerData().savePlayerDurably(data).join();}
+      case "lock" -> report.put("locked",data.lock("skill:"+value.toLowerCase(Locale.ROOT)));
+      case "unlock" -> report.put("unlocked",data.unlock("skill:"+value.toLowerCase(Locale.ROOT)));
       case "inspect" -> {}
       default -> throw new IllegalArgumentException("Unknown hero QA action");
     }
+    report.put("maxMana",data.getMaxResource(PlayerResource.MANA));report.put("maxStamina",data.getMaxResource(PlayerResource.STAMINA));report.put("allocations",data.getAttributes().mapPoints());
+    var session=HeroRuntime.session(p);if(session!=null)report.put("casts",session.casts.values().stream().map(c->Map.of("ability",c.ability.key(),"point",List.of(c.point.x,c.point.y,c.point.z),"lifetime",c.expires-c.created)).toList());
     report.put("state",HeroRuntime.inspect(p));report.put("mana",data.getMana());report.put("stamina",data.getStamina());report.put("hits",HITS.getOrDefault(p.getUuid(),List.of()));
     var aimed=HeroWorld.aim(p,28);var rayEnd=HeroWorld.point(p,28);
     report.put("aim",Map.of("yaw",p.getYaw(),"pitch",p.getPitch(),"position",List.of(p.getX(),p.getY(),p.getZ()),"target",aimed==null?"":aimed.getUuidAsString(),"movementAllowed",aimed!=null&&vn.svframe.svframelib.entity.RpgEntityAdapters.allows(p,aimed,vn.svframe.svframelib.entity.RpgEntityAdapters.Effect.MOVEMENT),"end",List.of(rayEnd.x,rayEnd.y,rayEnd.z)));

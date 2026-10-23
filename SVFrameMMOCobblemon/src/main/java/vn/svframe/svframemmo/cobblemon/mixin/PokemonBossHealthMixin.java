@@ -28,6 +28,6 @@ public abstract class PokemonBossHealthMixin {
 
   @Inject(method = "updateHealth", at = @At("HEAD"), cancellable = true)
   private void svframe$preserveEncounterDamage(Pokemon pokemon, CallbackInfo ci) {
-    if (getEntity().getCommandTags().contains("svframe_worldboss")) ci.cancel();
+    if (getEntity().getCommandTags().contains("svframe_worldboss")||vn.svframe.svframemmo.cobblemon.gameplay.WildRpgHealth.active(getEntity())) ci.cancel();
   }
 }

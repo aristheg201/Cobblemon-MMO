@@ -23,6 +23,7 @@ public final class NativeCoreSmoke {
     if (PlayerResource.MANA.getOffCombatRegen() != ClassOption.OFF_COMBAT_MANA_REGEN)
       throw new AssertionError("mana class option");
 
+    if(vn.svframe.svframemmo.api.player.PreferenceLimits.maximum("fantasyhub:mail")<1_048_576||vn.svframe.svframemmo.api.player.PreferenceLimits.maximum("untrusted:mail")!=160)throw new AssertionError("bounded recovery mail");
     Map<String, Object> buffs = new LinkedHashMap<>();
     buffs.put("weapon_damage", 2);
     buffs.put("max_health", "1%");

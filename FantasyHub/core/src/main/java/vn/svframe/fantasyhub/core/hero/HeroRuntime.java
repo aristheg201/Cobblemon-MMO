@@ -34,6 +34,9 @@ public final class HeroRuntime {
   static long tick,sequence;
   private static boolean installed;
   public static HeroCatalog catalog(){return catalog;}
+  /** Collector may steal temporary hero buffs without changing identity, gear or skill ownership. */
+  public static int stripPositiveBuffs(ServerPlayerEntity player){var s=SESSIONS.get(player.getUuid());if(s==null)return 0;int count=0;for(String key:List.of("awakened","overdrive","super_speed","stealth_crit","web_shield","mandalas","escape","phase","dash_shield","siphon","spin","control_immune"))if(s.active(key)){s.power.unset(key);count++;}if(count>0){HeroBarriers.release(player.getUuid());HeroPassives.refresh(s);}return count;}
+
   public static HeroFlightRules flightRules(){return flightRules;}
   public static void saveFlightBaseline(ServerPlayerEntity p,net.minecraft.nbt.NbtCompound nbt){var s=SESSIONS.get(p.getUuid());if(s!=null&&s.player==p)HeroFlight.saveBaseline(s,nbt);}
 
@@ -183,7 +186,7 @@ public final class HeroRuntime {
     Vec3d point=recast?existing.point:HeroWorld.point(p,ability.range());
     if(ok&&ability.key().equals("STORMBREAKER_THROW")&&!HeroAxeFlight.active(p.getUuid()))ok=p.getMainHandStack().isOf(vn.svframe.fantasyhub.protocol.Protocol.stormbreaker);
     if(ok&&HeroSkillRouter.requiresTarget(ability.id())&&(target==null||!HeroWorld.legal(p,target)))ok=false;
-    if(ok&&ability.key().equals("SLING_RING")){point=HeroWorld.landing(p,point);ok=point!=null;}
+    if(ok&&ability.key().equals("SLING_RING")){point=HeroWorld.portalDestination(p,Math.min(15,ability.range()));ok=point!=null;}
     if(ok&&ability.key().equals("WEB_BLITZ"))ok=!HeroWorld.near(p,p.getPos(),ability.range(),3).isEmpty();
     if(ok&&HeroControl.mobilityLocked(p)&&HeroSkillRouter.mobility(ability.id()))ok=false;
     return new Prepared(ok,s,ability,target,point,existing);

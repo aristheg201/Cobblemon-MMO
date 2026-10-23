@@ -7,6 +7,10 @@ import net.minecraft.text.Text;
 /** Pixel aligned panel primitives with consistent scales and clipped labels. */
 public final class FantasyPanel {
     private FantasyPanel(){}
+    // Screen.render applies background blur in 1.21.1. Our panels already drew it.
+    static void widgets(net.minecraft.client.gui.screen.Screen screen,DrawContext c,int mx,int my,float delta){
+        for(var child:screen.children())if(child instanceof net.minecraft.client.gui.Drawable drawable)drawable.render(c,mx,my,delta);
+    }
     static void frame(DrawContext c,int x,int y,int w,int h){
         c.fill(x,y,x+w,y+h,0xf21a1414);c.fill(x+2,y+2,x+w-2,y+h-2,0xe52b2020);
         c.fill(x+4,y+4,x+w-4,y+h-4,0xef171516);

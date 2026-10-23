@@ -38,7 +38,7 @@ public final class BossConfig {
   public int loss(Rewards defaults){return lossReward==null?defaults.loss:lossReward;}
  }
  public static final class Arena {
-  public String id,dimension;public double x,y,z,radius=32;
+  public String id,dimension;public boolean personal=false;public double x,y,z,radius=32;
   public Arena(){}
   public Arena(String id,String dimension,double x,double y,double z,double radius){this.id=id;this.dimension=dimension;this.x=x;this.y=y;this.z=z;this.radius=radius;}
  }
@@ -52,7 +52,7 @@ public final class BossConfig {
    var list=new ArrayList<>(List.of(pokemon,thor,spider));for(var b:list){b.stoneDropChance=.15;b.stoneDrops=new ArrayList<>(b.id.equals("thor")?List.of("power"):b.id.equals("web_guardian")?List.of("soul"):List.of("space","power","reality","mind","soul","time"));}
    var extra=new com.google.gson.Gson().fromJson("""
 [{"id": "thanos", "name": "§5§lThanos, The Mad Titan", "type": "cosmic", "classId": "THANOS", "health": 10000, "scale": 1.65, "damageMitigation": 0.85, "bossBarColor": "PURPLE", "stoneDrops": ["space", "power", "reality", "mind", "soul", "time"], "stoneDropChance": 0.15, "gauntletDropChance": 0.2, "windupSeconds": 2, "attackSeconds": 5, "telegraphColor": "A050FF", "phases": [{"healthBelow": 0.5, "cooldownMultiplier": 0.8, "damageMultiplier": 1.2}], "mechanics": {"punchDamage": 45, "beamDamage": 6, "meteorDamage": 30, "sweepDamage": 26}}, {"id": "collector", "name": "The Collector", "type": "cosmic", "classId": "COLLECTOR", "health": 8000, "scale": 1.25, "damageMitigation": 0.65, "stoneDropChance": 0.15, "stoneDrops": ["reality"], "bossBarColor": "PURPLE", "windupSeconds": 2, "attackSeconds": 5, "telegraphColor": "DD66FF", "phases": [{"healthBelow": 0.85}, {"healthBelow": 0.6}, {"healthBelow": 0.3}]}, {"id": "speedster", "name": "Speedster — Space Guardian", "type": "class", "classId": "FLASH", "health": 4000, "scale": 1, "stoneDropChance": 0.15, "stoneDrops": ["space"], "skillIds": [], "phases": []}, {"id": "sorcerer_guardian", "name": "Sorcerer Supreme — Guardian of Time and Mind", "type": "class", "classId": "SORCERER_SUPREME", "health": 6000, "scale": 1, "stoneDropChance": 0.15, "stoneDrops": ["mind", "time"], "skillIds": [], "phases": []}, {"id": "ultimate_trial", "name": "All Classes — The Ultimate Test", "type": "cosmic", "classId": "GAUNTLET_TRIAL", "health": 10000, "scale": 1.3, "damageMitigation": 0.7, "stoneDropChance": 0.15, "stoneDrops": ["soul"], "bossBarColor": "PURPLE", "windupSeconds": 2, "attackSeconds": 4, "phases": []}]
-""",Boss[].class);list.addAll(List.of(extra));return list;
+""",Boss[].class);list.addAll(List.of(extra));for(var b:list)b.damageMultiplier=java.math.BigDecimal.valueOf(b.damageMultiplier).multiply(java.math.BigDecimal.valueOf(1.15)).doubleValue();return list;
   }
  }
  public static final class Locations {public List<Arena> locations=new ArrayList<>();}
@@ -93,11 +93,11 @@ public final class BossConfig {
   var out=new LinkedHashMap<String,Assignment>();
   if(schedule.entries.isEmpty()){
    String boss=bosses.bosses.get(Math.floorMod(rotation,bosses.bosses.size())).id;
-   for(var arena:locations.locations)out.put(arena.id,new Assignment(boss,arena.id));
+   for(var arena:locations.locations)if(!arena.personal)out.put(arena.id,new Assignment(boss,arena.id));
   }else for(var entry:schedule.entries)if(LocalTime.parse(entry.time).equals(LocalTime.parse(time))){
    var ids=entry.bossIds.isEmpty()?bosses.bosses.stream().map(b->b.id).toList():entry.bossIds;
-   var arenas=entry.arenaIds.isEmpty()?locations.locations.stream().map(a->a.id).toList():entry.arenaIds;
-   String boss=ids.get(Math.floorMod(rotation,ids.size()));for(var arena:arenas)out.put(arena,new Assignment(boss,arena));
+   var arenas=entry.arenaIds.isEmpty()?locations.locations.stream().filter(a->!a.personal).map(a->a.id).toList():entry.arenaIds;
+   String boss=ids.get(Math.floorMod(rotation,ids.size()));for(var arena:arenas)if(!arena(arena).personal)out.put(arena,new Assignment(boss,arena));
   }
   return List.copyOf(out.values());
  }
@@ -141,6 +141,7 @@ public final class BossConfig {
   for(int i=0;i<locations.locations.size();i++){
    var a=locations.locations.get(i);String p="locations["+i+"]";require(a!=null,p,"must be an object");require(identifier(a.id)&&arenas.add(a.id),p+".id","must be a unique lowercase ID");require(a.dimension!=null&&a.dimension.matches("[a-z0-9_.-]+:[a-z0-9_./-]+"),p+".dimension","required namespace:path");require(Double.isFinite(a.x)&&Double.isFinite(a.y)&&Double.isFinite(a.z),p,"coordinates must be finite");require(between(a.radius,8,128),p+".radius","must be 8..128");
   }
+  for(int i=0;i<locations.locations.size();i++)for(int j=i+1;j<locations.locations.size();j++){var a=locations.locations.get(i);var b=locations.locations.get(j);if(a.dimension.equals(b.dimension)&&Math.sqrt(Math.pow(a.x-b.x,2)+Math.pow(a.y-b.y,2)+Math.pow(a.z-b.z,2))<a.radius+b.radius+16)throw invalid("locations","arena reservation zones overlap: "+a.id+" / "+b.id);}
   require(schedule.entries!=null,"schedule.entries","must be a list");require(schedule.times!=null,"schedule.times","must be a list");
   for(int i=0;i<schedule.entries.size();i++){
    var e=schedule.entries.get(i);String p="schedule.entries["+i+"]";require(e!=null,p,"must be an object");time(e.time,p+".time");require(e.bossIds!=null&&e.arenaIds!=null,p,"bossIds and arenaIds must be lists");

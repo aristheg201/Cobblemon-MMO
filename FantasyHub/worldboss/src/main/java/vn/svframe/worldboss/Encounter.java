@@ -3,7 +3,7 @@ import java.util.*;
 /** Persisted encounter state. Damage is supplied only after server health has changed. */
 public final class Encounter {
  public enum State { SETUP,FIGHT,WON,LOST,SETTLEMENT,ABORTED,CLOSED }
- public String id,boss,arena,actor;public long setupAt,fightAt,deadline,finishAt;public double maximumHealth;public State state,outcome;public boolean forcedChunk;
+ public String id,boss,arena,actor;public UUID owner;public String ticketId,returnDimension;public double returnX,returnY,returnZ;public boolean personal,ticketConsumed,returnPending,returnComplete,lootRolled,lootDelivered;public UUID lootRecipient;public java.util.List<String> loot=new java.util.ArrayList<>();public long disconnectedAt;public long setupAt,fightAt,deadline,finishAt;public double maximumHealth;public State state,outcome;public boolean forcedChunk;
  public Map<UUID,Contribution> contributions=new LinkedHashMap<>();
  public static final class Contribution { public double damage;public long seconds;public long firstDamageAt=-1; }
  public Encounter(String id,String boss,String arena,long start,double hp,int setup,int fight){this.id=id;this.boss=boss;this.arena=arena;setupAt=start;fightAt=start+setup;deadline=fightAt+fight;maximumHealth=hp;state=State.SETUP;}

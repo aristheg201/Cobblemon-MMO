@@ -14,7 +14,7 @@ public final class HeroEquipmentFiles {
       for(String part:parts) {
         String id="HERO_"+hero.id()+"_"+part;double weight=switch(part){case "HELMET"->1d/7;case "CHESTPLATE"->unmasked?4d/7:3d/7;case "LEGGINGS"->2d/7;default->1d/7;};
         var stats=new LinkedHashMap<String,Object>();stats.put("armor",Map.of("value",switch(part){case "HELMET"->2;case "CHESTPLATE"->unmasked?8:6;case "LEGGINGS"->4;default->2;},"decimals",1));stats.put("max-health",Map.of("value",switch(part){case "HELMET"->2;case "CHESTPLATE"->unmasked?7:5;case "LEGGINGS"->3;default->2;},"decimals",1));stats.put("attack-damage",Map.of("value",switch(part){case "HELMET"->.25;case "CHESTPLATE"->unmasked?1:.75;default->.5;},"decimals",2));
-        items.put(id,Map.of("type","armor","material","minecraft:leather_"+part.toLowerCase(Locale.ROOT),"name",hero.name()+" "+part.charAt(0)+part.substring(1).toLowerCase(Locale.ROOT),"rarity","common","stats",stats));
+        items.put(id,Map.of("type","armor","material","minecraft:leather_"+part.toLowerCase(Locale.ROOT),"name",hero.name()+" "+part.charAt(0)+part.substring(1).toLowerCase(Locale.ROOT),"rarity","common","upgrade-template","standard","stats",stats));
         rules.put(id,Map.of("armor-texture","fantasyhub:heroes/"+hero.id().toLowerCase(Locale.ROOT),"item-model","fantasyhub:item/heroes/"+id.toLowerCase(Locale.ROOT),"unbreakable",true,"disable-enchanting",false));
       }
     }

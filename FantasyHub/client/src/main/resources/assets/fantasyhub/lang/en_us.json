@@ -432,5 +432,8 @@
   "item.fantasyhub.time_stone": "Time Stone",
   "item.fantasyhub.time_stone.hint": "Possessing: revive at 50% HP/hunger. Right-click: freeze enemies in 10m for 5 seconds.",
   "item.fantasyhub.infinity_gauntlet": "Infinity Gauntlet",
-  "item.fantasyhub.infinity_gauntlet.hint": "Sprint + right-click: cycle stone. Right-click: use selected stone. Sneak + right-click: SNAP (all six stones; 30min cooldown)."
+  "item.fantasyhub.infinity_gauntlet.hint": "Sprint + right-click: cycle stone. Right-click: use selected stone. Sneak + right-click: SNAP (all six stones; 30min cooldown).",
+  "item.fantasyhub.rpg_upgrade_catalyst": "RPG Upgrade Catalyst",
+  "item.fantasyhub.personal_boss_ticket_standard": "Personal Boss Ticket — Standard",
+  "item.fantasyhub.personal_boss_ticket_elite": "Personal Boss Ticket — Elite"
 }

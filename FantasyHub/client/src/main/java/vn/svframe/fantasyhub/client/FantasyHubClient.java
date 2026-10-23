@@ -27,6 +27,10 @@ public final class FantasyHubClient implements ClientModInitializer {
 
   @Override
   public void onInitializeClient() {
+    net.fabricmc.fabric.api.client.screen.v1.ScreenEvents.AFTER_INIT.register((client,screen,width,height)->{
+      if(screen instanceof net.minecraft.client.gui.screen.ingame.GenericContainerScreen chest&&!(screen instanceof InfinitySnapScreen)&&screen.getTitle().getString().contains("INFINITY SNAP"))client.setScreen(new InfinitySnapScreen(chest.getScreenHandler(),client.player.getInventory(),screen.getTitle()));
+    });
+
     ClientHudPacks.register();
     BetterCombatCompat.install();
     Protocol.install();
@@ -207,6 +211,7 @@ public final class FantasyHubClient implements ClientModInitializer {
           observed = false;
           if (context.client().currentScreen instanceof HubScreen screen) screen.refresh();
           if (context.client().currentScreen instanceof PokemonShopScreen screen) screen.refresh();
+          if (context.client().currentScreen instanceof FantasyShopScreen screen) screen.refresh();
           if (context.client().currentScreen instanceof ClassSelectionScreen screen)
             screen.refresh();
         });
@@ -227,6 +232,7 @@ public final class FantasyHubClient implements ClientModInitializer {
                 || screen instanceof PokemonShopScreen) context.client().setScreen(null);
           } else if (payload.screen().equals("classes"))
             context.client().setScreen(new ClassSelectionScreen());
+          else if (payload.screen().equals("fantasy_shop")) context.client().setScreen(new FantasyShopScreen());
           else if (payload.screen().equals("pokemon_shop"))
             context.client().setScreen(new PokemonShopScreen());
           else
@@ -272,6 +278,7 @@ public final class FantasyHubClient implements ClientModInitializer {
               && "1".equals(System.getenv("SVFRAME_RUNTIME_QA"))) {
             JsonObject o = new JsonObject();
             o.addProperty("clientHealth", client.player.getHealth());
+            o.addProperty("heldItem",net.minecraft.registry.Registries.ITEM.getId(client.player.getMainHandStack().getItem()).toString());o.addProperty("heldItemClass",client.player.getMainHandStack().getItem().getClass().getName());o.addProperty("usingItem",client.player.isUsingItem());o.addProperty("screen",client.currentScreen==null?"":client.currentScreen.getClass().getSimpleName());
             o.add("kabutoEffects", KabutoEffects.observation());
             o.add("riderEffects", RiderEffects.observation());
             o.add("clientHudPacks",ClientHudPacks.observation());

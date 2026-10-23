@@ -49,7 +49,10 @@ public final class BackEquipment {
     for(Item item:new Item[]{Protocol.batmanCape,Protocol.thorCape,Protocol.levitationCloak}){var stack=equipped(entity,item);if(!stack.isEmpty())return stack;}
     return ItemStack.EMPTY;
   }
-  public static ItemStack equipped(LivingEntity entity,Item item){
+  public static ItemStack equipped(LivingEntity entity,Item item){return findEquipped(entity,item,true);}
+  /** Functional accessory slots only; cosmetic display slots never grant powers. */
+  public static ItemStack functionalEquipped(LivingEntity entity,Item item){return findEquipped(entity,item,false);}
+  private static ItemStack findEquipped(LivingEntity entity,Item item,boolean backOnly){
     if(item==null)return ItemStack.EMPTY;
     try{
       for(var b:BACKENDS){
@@ -58,7 +61,8 @@ public final class BackEquipment {
         if(component==null)continue;
         for(Object row:(List<?>)b.equipped.invoke(component,item)){
           Object ref=b.accessories?b.reference.invoke(row):((Pair<?,?>)row).getLeft();
-          if(isBackSlot((String)b.slot.invoke(ref)))return b.accessories?(ItemStack)b.stack.invoke(row):(ItemStack)((Pair<?,?>)row).getRight();
+          var path=(String)b.slot.invoke(ref);
+          if(backOnly?isBackSlot(path):!path.startsWith("cosmetic")&&!path.contains("/cosmetic/"))return b.accessories?(ItemStack)b.stack.invoke(row):(ItemStack)((Pair<?,?>)row).getRight();
         }
       }
       return ItemStack.EMPTY;

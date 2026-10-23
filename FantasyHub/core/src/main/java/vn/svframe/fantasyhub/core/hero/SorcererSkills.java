@@ -19,13 +19,13 @@ final class SorcererSkills {
         HeroActions.phases(c,(phase,index)->HeroActions.area(c,center,a.radius(),phase,t->{}));
       }
       case "ASTRAL_PROJECTION" -> {
-        s.returnAnchor=p.getPos();s.flag("astral",a.duration());s.flag("busy",a.duration());HeroActions.actor(c,s.returnAnchor,a.duration());
+        s.returnAnchor=p.getPos();s.flag("astral",a.duration());s.flag("busy",a.duration());HeroPresentation.cue(c,"ZONE",s.returnAnchor,p.getPos(),a.duration());
         HeroActions.effect(p,StatusEffects.INVISIBILITY,a.duration(),0);HeroFlight.claim(s,.12f);
       }
       case "SLING_RING" -> HeroActions.portal(c);
       case "IMAGES_OF_IKONN" -> {
-        var center=c.target!=null?c.target.getPos():c.point;
-        for(int i=0;i<(int)a.effect("clones");i++){double angle=2*Math.PI*i/a.effect("clones");HeroActions.actor(c,center.add(Math.cos(angle)*a.radius(),0,Math.sin(angle)*a.radius()),2.5);}
+        var center=c.target!=null?c.target.getPos():p.getPos();
+        HeroPresentation.cue(c,"ZONE",p.getPos(),center,2.5);
         HeroActions.area(c,center,a.radius(),a.phases().get(0),t->{HeroControl.apply(s,t,HeroControl.Kind.SILENCE,a.effect("silence"));HeroControl.apply(s,t,HeroControl.Kind.ROOT,a.effect("root"));});
       }
       case "EYE_OF_AGAMOTTO" -> {

@@ -17,4 +17,9 @@ class HeroEquipmentTest {
     }
     assertFalse(new String(files.get("SVFrameItems/rules/heroes.yml")).toLowerCase(Locale.ROOT).contains("henshin"));
   }
+  @Test void purchasedHeroArmorSupportsNativeUpgrades() throws Exception {
+    var files=HeroEquipmentFiles.generate(HeroCatalog.defaults());
+    Map<String,Map<String,Object>> armor=new Yaml().load(new String(files.get("SVFrameItems/items/heroes.yml"),java.nio.charset.StandardCharsets.UTF_8));
+    for(var entry:armor.entrySet())assertEquals("standard",entry.getValue().get("upgrade-template"),entry.getKey());
+  }
 }

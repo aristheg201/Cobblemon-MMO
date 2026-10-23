@@ -10,7 +10,7 @@ class HeroInstallationTest {
   @TempDir Path root;
   @Test void generatedClassesUseNativeResourcesAndExactlySevenHardsetSkills() throws Exception {
     var catalog=HeroCatalog.defaults();var files=HeroClassFiles.generate(catalog);
-    assertEquals(6,files.size());
+    assertEquals(6,files.keySet().stream().filter(p->p.startsWith("SVFrameMMO/classes/")).count());
     for(var h:catalog.heroes().values()) {
       var raw=files.get("SVFrameMMO/classes/"+h.id().toLowerCase(Locale.ROOT)+".yml");assertNotNull(raw);
       var config=YamlLite.map(YamlLite.parse(new String(raw,StandardCharsets.UTF_8)));

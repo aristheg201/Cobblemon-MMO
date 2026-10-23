@@ -125,7 +125,25 @@ final class HeroEffects {
     }
    }
   }
-  states(m,context,states,camera,now,quality);HeroMotionEchoes.render(m,context,states,now,quality);m.pop();
+  states(m,context,states,camera,now,quality);playerEchoes(m,context,effects,now,quality);HeroMotionEchoes.render(m,context,states,now,quality);m.pop();
+ }
+
+ private static void playerEchoes(MatrixStack m,WorldRenderContext ctx,Iterable<HeroVisuals.Cue> cues,double now,int quality){
+  var mc=MinecraftClient.getInstance();if(mc.world==null)return;int rendered=0;
+  var seen=new HashSet<Long>();
+  for(var c:cues){
+   if(!c.hero().equals("SORCERER_SUPREME")||!c.phase().equals("ZONE")||!seen.add(c.cast())||c.from().squaredDistanceTo(ctx.camera().getPos())>1600)continue;
+   if(!(mc.world.getEntityById(c.entity()) instanceof net.minecraft.client.network.AbstractClientPlayerEntity player))continue;
+   double fade=Math.clamp((c.expires()-now)/10,0,1);float yaw=MathHelper.lerpAngleDegrees(ctx.tickCounter().getTickDelta(false),player.prevBodyYaw,player.bodyYaw);
+   if(c.ability().equals("ASTRAL_PROJECTION")){
+    HeroPlayerEcho.render(m,ctx,player,c.from(),yaw,fade*.85,0xffffff);
+    HeroPlayerEcho.render(m,ctx,player,player.getLerpedPos(ctx.tickCounter().getTickDelta(false)),yaw,fade*.42,0xc5f5ff);
+   }
+   if(c.ability().equals("IMAGES_OF_IKONN"))for(int i=0;i<4&&rendered<16;i++,rendered++){
+    double a=i*Math.PI/2;Vec3d at=c.to().add(Math.cos(a)*Math.max(1.5,c.radius()),0,Math.sin(a)*Math.max(1.5,c.radius()));
+    HeroPlayerEcho.render(m,ctx,player,at,yaw,fade*.65,0xffffff);
+   }
+  }
  }
 
  /** Stage-specific solid surfaces make wind-up, sustained action and contact read differently. */
@@ -152,8 +170,7 @@ final class HeroEffects {
      else if(c.ability().equals("TAO_MANDALAS")){star(m,v,actor.add(0,1.3,0),camera,.85,now,color,fade*.35,q);}
      else{annulus(m,v,p.add(0,.13,0),X,Z,r*.25,r,now*.03,color,fade*.11,q);for(int i=0;i<(q==0?4:8);i++){double a=i*Math.PI/4+now*.02;Vec3d b=p.add(Math.cos(a)*r*.85,0,Math.sin(a)*r*.85);beam(m,v,b,b.add(0,.7+Math.sin(now*.15+i)*.4,0),camera,.035,color,fade*.7);}}
      if(c.ability().equals("EYE_OF_AGAMOTTO")){for(int i=0;i<4;i++)annulus(m,v,p.add(0,.4+i*.65,0),X,Z,r*.6,r*.66,now*.04+i,color,fade*.3,q);}
-     if(c.ability().equals("IMAGES_OF_IKONN")){for(int i=0;i<4;i++){double a=i*Math.PI/2+now*.01;Vec3d at=p.add(Math.cos(a)*r,0,Math.sin(a)*r);astral(m,v,at,camera,0xffbf62,fade*.28);}}
-     if(c.ability().equals("ASTRAL_PROJECTION"))astral(m,v,actor.add(Math.sin(now*.05)*.6,.4,0),camera,0xa9f4ff,fade*.4);
+
     }
    }
    case "SPIDER_MAN"->{
@@ -188,7 +205,7 @@ final class HeroEffects {
  }
  private static void flock(MatrixStack m,VertexConsumer v,Vec3d p,Vec3d camera,double time,double fade,int q){for(int i=0;i<(q==0?4:10);i++){double a=i*2.399+time*.035;var at=p.add(Math.cos(a)*(1+i*.12),.7+(i%4)*.5+Math.sin(time*.15+i)*.3,Math.sin(a)*(1+i*.12));bat(m,v,at,billboard(at,camera),UP,.22+Math.sin(time*.7+i)*.07,0x111b25,fade);}}
  private static void portal(MatrixStack m,VertexConsumer v,Vec3d p,Vec3d camera,double time,double fade,int q){Vec3d x=billboard(p,camera);annulus(m,v,p,x,UP,1.12,1.27,time*.04,0xffae39,fade*.65,q);disc(m,v,p,x,UP,1.1,0x31203b,fade*.42,q==0?20:32);for(int i=0;i<(q==0?12:24);i++){double a=i*6.283/(q==0?12:24)+time*.07;var dir=x.multiply(Math.cos(a)).add(UP.multiply(Math.sin(a)));var start=p.add(dir.multiply(1.23));stroke(m,v,start,start.add(dir.multiply(.1+(i%3)*.07)).add(0,-.15,0),x.crossProduct(UP),.016,0xffcf6f,fade);}}
- private static void astral(MatrixStack m,VertexConsumer v,Vec3d p,Vec3d camera,int color,double fade){Vec3d x=billboard(p,camera);disc(m,v,p.add(0,1.65,0),x,UP,.2,color,fade,10);quad(m,v,p.add(x.multiply(-.28)).add(0,1.4,0),p.add(x.multiply(.28)).add(0,1.4,0),p.add(x.multiply(.2)).add(0,.6,0),p.add(x.multiply(-.2)).add(0,.6,0),alpha(color,fade));for(int sign:new int[]{-1,1}){stroke(m,v,p.add(x.multiply(sign*.25)).add(0,1.3,0),p.add(x.multiply(sign*.75)).add(0,.95,0),camera.subtract(p).normalize(),.095,color,fade);stroke(m,v,p.add(x.multiply(sign*.13)).add(0,.65,0),p.add(x.multiply(sign*.2)),camera.subtract(p).normalize(),.11,color,fade);}}
+
  private static void batarang(MatrixStack m,VertexConsumer v,Vec3d p,Vec3d dir,Vec3d side,double time,double fade){double a=time*.7;Vec3d x=side.multiply(Math.cos(a)).add(UP.multiply(Math.sin(a))),y=UP.multiply(Math.cos(a)).subtract(side.multiply(Math.sin(a)));bat(m,v,p.add(dir.multiply(.035)),x,y,.47,0xb3c3cf,fade);bat(m,v,p.subtract(dir.multiply(.035)),x,y,.47,0x25313b,fade);for(int edge=0;edge<BAT_POINTS.length;edge++){var aa=BAT_POINTS[edge];var bb=BAT_POINTS[(edge+1)%BAT_POINTS.length];var from=p.add(x.multiply(aa[0]*.47)).add(y.multiply(aa[1]*.47));var to=p.add(x.multiply(bb[0]*.47)).add(y.multiply(bb[1]*.47));var depth=dir.multiply(.035);quad(m,v,from.add(depth),from.subtract(depth),to.subtract(depth),to.add(depth),alpha(0x516b80,fade));}for(int i=0;i<3;i++)bat(m,v,p.subtract(dir.multiply(.18+i*.15)),x,y,.47,0x91c8e5,fade*(.22-i*.06));stroke(m,v,p.subtract(x.multiply(.47)),p.add(x.multiply(.47)),dir,.04,0x303c46,fade);}
  private static void batwing(MatrixStack m,VertexConsumer v,Vec3d p,double time,double fade){bat(m,v,p,X,Z,4.4,0x101923,fade);quad(m,v,p.add(-.28,0,-2.2),p.add(.28,0,-2.2),p.add(.45,.12,1.7),p.add(-.45,.12,1.7),alpha(0x263543,fade));for(int sign:new int[]{-1,1})stroke(m,v,p.add(sign*.5,.03,1),p.add(sign*3.8,.03,0),UP,.045,0x566d80,fade*.65);}
  private static Vec3d actor(HeroVisuals.Cue c,WorldRenderContext context){var mc=MinecraftClient.getInstance();var e=mc.world==null?null:mc.world.getEntityById(c.entity());return e==null?c.from():e.getLerpedPos(context.tickCounter().getTickDelta(false));}

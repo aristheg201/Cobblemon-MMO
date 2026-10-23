@@ -1,1 +1,12 @@
-{"required":true,"package":"vn.svframe.fantasyhub.protocol","compatibilityLevel":"JAVA_21","mixins":["HealthAttributeAccess"],"injectors":{"defaultRequire":1}}
+{
+  "required": true,
+  "package": "vn.svframe.fantasyhub.protocol.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "HealthAttributeAccess",
+    "PlayerSaveAccess"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

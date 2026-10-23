@@ -88,6 +88,17 @@ public final class HeroArmorFeature extends FeatureRenderer<AbstractClientPlayer
     for(int i=0;i<6;i++){matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float)(2+Math.sin(age*.12-i*.6)*1.6)));CAPE[i].render(matrices,consumer,light,OverlayTexture.DEFAULT_UV,0xffffffff);matrices.translate(0,.25,0);}
     matrices.pop();
   }
+  static void echoCape(MatrixStack matrices,VertexConsumerProvider vertices,PlayerEntityModel<?> source,AbstractClientPlayerEntity player,float age,int color){
+    String chest=suit(player.getEquippedStack(EquipmentSlot.CHEST));var back=vn.svframe.fantasyhub.protocol.BackEquipment.equippedAny(player);
+    String hero=HeroCapePresentation.select(player.getSkinTextures().capeTexture()!=null&&player.isPartVisible(net.minecraft.entity.player.PlayerModelPart.CAPE),back.isOf(vn.svframe.fantasyhub.protocol.Protocol.batmanCape),back.isOf(vn.svframe.fantasyhub.protocol.Protocol.thorCape),back.isOf(vn.svframe.fantasyhub.protocol.Protocol.levitationCloak),chest);
+    if(hero.isEmpty())return;
+    var v=vertices.getBuffer(RenderLayer.getEntityTranslucent(Identifier.of("fantasyhub","textures/armor/heroes/"+hero+"_cape.png")));
+    matrices.push();source.body.rotate(matrices);matrices.translate(0,0,.155);
+    double speed=player.getVelocity().horizontalLength();boolean glide=!player.isOnGround()&&player.getVelocity().y<0;
+    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float)(8+Math.min(45,speed*70)+(glide?30:0))));
+    for(int i=0;i<6;i++){matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((float)(2+Math.sin(age*.12-i*.6)*1.6)));CAPE[i].render(matrices,v,0xf000f0,OverlayTexture.DEFAULT_UV,color);matrices.translate(0,.25,0);}
+    matrices.pop();
+  }
   private static void batGlider(MatrixStack m,VertexConsumerProvider vertices,int light,PlayerEntityModel<?> body,float age){
     var v=vertices.getBuffer(RenderLayer.getEntityCutoutNoCull(Identifier.of("fantasyhub","textures/armor/heroes/batman_glider.png")));
     m.push();body.body.rotate(m);m.translate(0,0,.18);

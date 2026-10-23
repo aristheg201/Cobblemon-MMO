@@ -29,4 +29,10 @@ class BossConfigTest {
   var json=new com.google.gson.Gson().toJsonTree(new BossConfig(p).boss("new_web")).getAsJsonObject();assertEquals(4,json.get("windupSeconds").getAsInt());assertEquals("44AAFF",json.get("telegraphColor").getAsString());
   bosses(p,boss().replace("\"id\":\"new_web\"","\"id\":\"new_web\",\"windupSeconds\":0"));assertThrows(IllegalArgumentException.class,()->new BossConfig(p));
  }
+ @Test void explicitScheduleCannotReservePersonalArena()throws Exception{
+  var p=config();bosses(p,boss());new BossConfig(p);
+  Files.writeString(p.resolve("locations.json"),"{\"locations\":[{\"id\":\"private\",\"personal\":true,\"dimension\":\"minecraft:overworld\",\"x\":0,\"y\":80,\"z\":0}]}");
+  Files.writeString(p.resolve("schedule.json"),"{\"entries\":[{\"time\":\"18:00\",\"bossIds\":[\"new_web\"],\"arenaIds\":[\"private\"]}]}");
+  assertTrue(new BossConfig(p).assignments("18:00",0).isEmpty());
+ }
 }

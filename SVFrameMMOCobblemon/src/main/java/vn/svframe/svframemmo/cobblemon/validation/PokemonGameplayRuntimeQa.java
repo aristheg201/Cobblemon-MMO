@@ -44,6 +44,8 @@ public final class PokemonGameplayRuntimeQa {
     switch (mode) {
       case "experience" -> experience(player, report);
       case "hostility" -> hostility(player, report);
+      case "rpg" -> rpg(player,report);
+      case "temperament" -> temperament(player,report);
       case "battle" -> battle(player, report);
       default -> throw new IllegalArgumentException("Use experience, hostility or battle");
     }
@@ -110,12 +112,12 @@ public final class PokemonGameplayRuntimeQa {
   private static void battle(ServerPlayerEntity player, Map<String, Object> report) {
     primeLevel(player, report);
     var party = Cobblemon.INSTANCE.getStorage().getParty(player);
-    var starter = PokemonProperties.Companion.parse("charizard level=100").create();
+    var starter = PokemonProperties.Companion.parse("charmander level=10 moves=ember").create();
     if (!party.add(starter))
       throw new IllegalStateException("Leave one free party slot for battle QA");
     var opponent = spawn(player, "rattata level=10", 4);
     opponent.addCommandTag("svframe_no_hostility");
-    report.put("battleStarted", opponent.forceBattle(player));
+    SVFrameLibFabricMod.schedule(30,()->{report.put("canBattle",opponent.canBattle(player));report.put("wildBusy",opponent.isBusy());report.put("wildAlive",opponent.isAlive());report.put("partyBusy",com.cobblemon.mod.common.util.PlayerExtensionsKt.isPartyBusy(player));var start=com.cobblemon.mod.common.battles.BattleBuilder.INSTANCE.pve(player,opponent);report.put("battleStarted",start instanceof com.cobblemon.mod.common.battles.SuccessfulBattleStart);start.ifErrored(error->{var errors=new java.util.ArrayList<String>();for(var item:error.getErrors())errors.add(item.getClass().getSimpleName()+": "+item.getMessageFor(player).getString());report.put("nativeBattleErrors",errors);return kotlin.Unit.INSTANCE;});});
     SVFrameLibFabricMod.schedule(
         60,
         () -> {
@@ -171,7 +173,7 @@ public final class PokemonGameplayRuntimeQa {
     player.changeGameMode(GameMode.SURVIVAL);
     float originalHealth = player.getHealth();
     player.setHealth(player.getMaxHealth());
-    var attacker = spawn(player, "rattata level=30 moves=tackle", 8);
+    var attacker = spawn(player, "houndoom level=30 moves=tackle", 8);
     var start = attacker.getPos();
     float[] minimum = {player.getHealth()};
     int[] windups = {0};
@@ -249,6 +251,35 @@ public final class PokemonGameplayRuntimeQa {
             }
           });
     }
+  }
+
+  private static void rpg(ServerPlayerEntity player,Map<String,Object> report){
+    var old=player.getMainHandStack().copy();
+    var gear=new net.minecraft.item.ItemStack(net.minecraft.item.Items.IRON_SWORD);
+    var tag=new net.minecraft.nbt.NbtCompound();tag.putBoolean("SVFrameItems",true);gear.set(net.minecraft.component.DataComponentTypes.CUSTOM_DATA,net.minecraft.component.type.NbtComponent.of(tag));player.setStackInHand(net.minecraft.util.Hand.MAIN_HAND,gear);
+    var entity=spawn(player,"rattata level=30",5);entity.setAiDisabled(true);
+    int hp=entity.getPokemon().getCurrentHealth(),max=entity.getPokemon().getMaxHealth();
+    try{
+      report.put("nativeHpBefore",hp);report.put("nativeMaxBefore",max);report.put("entityMaxBefore",entity.getMaxHealth());
+      entity.damage(entity.getDamageSources().playerAttack(player),1);
+      report.put("rpgActive",WildRpgHealth.active(entity));report.put("rpgMax",entity.getMaxHealth());report.put("rpgHealth",entity.getHealth());
+      report.put("nativeHpAfterHit",entity.getPokemon().getCurrentHealth());report.put("nativeMaxAfterHit",entity.getPokemon().getMaxHealth());
+      WildRpgHealth.suspend(entity);report.put("battleSuspended",!WildRpgHealth.active(entity));report.put("entityMaxSuspended",entity.getMaxHealth());
+      report.put("nativeStatsUnchanged",hp==entity.getPokemon().getCurrentHealth()&&max==entity.getPokemon().getMaxHealth());
+      SVFrameLibFabricMod.schedule(4,()->{report.put("restoredAfterBattle",WildRpgHealth.active(entity));report.put("restoredMax",entity.getMaxHealth());entity.discard();save("rpg",report);});
+    }finally{player.setStackInHand(net.minecraft.util.Hand.MAIN_HAND,old);}
+  }
+  private static void temperament(ServerPlayerEntity player,Map<String,Object> report){
+    player.changeGameMode(GameMode.SURVIVAL);player.clearStatusEffects();
+    var previous=SVFrameMMOCobblemon.config().gameplay.temperament;SVFrameMMOCobblemon.config().gameplay.temperament=new TemperamentRules();
+    report.put("policy","Fresh release defaults; existing admin overrides restored after probe");
+    var friendly=spawn(player,"chansey level=30 moves=tackle",4);var neutral=spawn(player,"rattata level=30 moves=tackle",5);var hostile=spawn(player,"houndoom level=30 moves=tackle",6);var alpha=spawn(player,"rattata level=30 alpha=true moves=tackle",7);
+    var entities=List.of(friendly,neutral,hostile,alpha);
+    SVFrameLibFabricMod.schedule(30,()->{
+      report.put("friendlyBefore",PokemonHostility.state(friendly));report.put("neutralBefore",PokemonHostility.state(neutral));report.put("hostileBefore",PokemonHostility.state(hostile));report.put("alphaBefore",PokemonHostility.state(alpha));
+      friendly.damage(friendly.getDamageSources().playerAttack(player),1);neutral.damage(neutral.getDamageSources().playerAttack(player),1);
+      SVFrameLibFabricMod.schedule(30,()->{report.put("friendlyProvoked",PokemonHostility.state(friendly));report.put("neutralProvoked",PokemonHostility.state(neutral));entities.forEach(Entity::discard);SVFrameMMOCobblemon.config().gameplay.temperament=previous;save("temperament",report);});
+    });
   }
 
   private static void restoreLevel(ServerPlayerEntity player, Map<String, Object> report) {

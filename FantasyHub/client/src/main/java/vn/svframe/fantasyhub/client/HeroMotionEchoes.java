@@ -14,8 +14,6 @@ import net.minecraft.util.math.*;
 /** Full native biped echoes at measured movement samples, with limb-attached multistrand lightning. */
 final class HeroMotionEchoes {
  private static final Map<Integer,HeroMotionHistory> HISTORY=new LinkedHashMap<>();
- private static final PlayerEntityModel<LivingEntity> MODEL=new PlayerEntityModel<>(TexturedModelData.of(PlayerEntityModel.getTexturedModelData(Dilation.NONE,false),64,64).createModel(),false);
- private static final String[] SUIT_PARTS={"head","chest","legs","feet"};
  private static long frames;
  static void clear(){HISTORY.clear();frames=0;}
  static long frames(){return frames;}
@@ -44,24 +42,9 @@ final class HeroMotionEchoes {
      Vec3d offset=right.multiply((lane%2==0?-1:1)*(.18+lane*.08)).add(0,.25+lane*.4,0);
      HeroEffects.motionLightning(m,ctx,previous.add(offset),sample.at().add(offset),now+lane, lane%2==0?0xffd33d:0xff6029,.02+lane*.005);
     }
-    if(ghosts<max&&index++%2==0&&opacity>.03){ghost(m,ctx,sample,opacity);ghosts++;frames++;}
+    if(ghosts<max&&index++%2==0&&opacity>.03){if(e instanceof net.minecraft.client.network.AbstractClientPlayerEntity player)HeroPlayerEcho.render(m,ctx,player,sample.at(),sample.yaw(),opacity,0xffffff);ghosts++;frames++;}
     previous=sample.at();
    }
   }
- }
- private static void ghost(MatrixStack m,WorldRenderContext ctx,HeroMotionHistory.Sample s,double opacity){
-  float run=(float)Math.sin(s.tick()*1.5);MODEL.setVisible(false);MODEL.head.visible=MODEL.body.visible=MODEL.rightArm.visible=MODEL.leftArm.visible=MODEL.rightLeg.visible=MODEL.leftLeg.visible=true;
-  MODEL.head.pitch=-.1f;MODEL.head.yaw=0;MODEL.body.pitch=.25f;MODEL.body.yaw=0;MODEL.rightArm.pitch=-run*1.2f;MODEL.leftArm.pitch=run*1.2f;MODEL.rightArm.roll=-.12f;MODEL.leftArm.roll=.12f;MODEL.rightLeg.pitch=run;MODEL.leftLeg.pitch=-run;
-  m.push();m.translate(s.at().x,s.at().y,s.at().z);m.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180-s.yaw()));m.scale(-1,-1,1);m.translate(0,-1.501,0);
-  int color=((int)(opacity*255)<<24)|0xffc35b;
-  // The split chest atlas has transparent head/leg UVs. Render each armor region
-  // with its own atlas so an echo includes the runner's head and both legs.
-  for(String part:SUIT_PARTS){
-   MODEL.setVisible(false);
-   switch(part){case "head"->MODEL.head.visible=true;case "chest"->MODEL.body.visible=MODEL.rightArm.visible=MODEL.leftArm.visible=true;default->MODEL.rightLeg.visible=MODEL.leftLeg.visible=true;}
-   var texture=Identifier.of("fantasyhub","textures/armor/heroes/flash_"+part+".png");
-   MODEL.render(m,ctx.consumers().getBuffer(RenderLayer.getEntityTranslucent(texture)),0xf000f0,OverlayTexture.DEFAULT_UV,color);
-  }
-  m.pop();
  }
 }

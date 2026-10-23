@@ -18,7 +18,7 @@ public final class Protocol implements ModInitializer {
   public static final java.util.Map<String,Item> infinityItems=new java.util.LinkedHashMap<>();
   private static boolean installed;
   public static final int VERSION = 3;
-  public static final String ASSET_REVISION = "heroes-infinity-v7";
+  public static final String ASSET_REVISION = "heroes-commerce-v9";
 
   public record Handshake(int version, String assets, String clientVersion, String diagnostic)
       implements CustomPayload {
@@ -377,7 +377,17 @@ public final class Protocol implements ModInitializer {
 
   public static synchronized void install() {
     if (installed) return;
-    ((HealthAttributeAccess)(Object)net.minecraft.entity.attribute.EntityAttributes.GENERIC_MAX_HEALTH.value()).svframe$maximum(1_000_000);
+    ((vn.svframe.fantasyhub.protocol.mixin.HealthAttributeAccess)(Object)net.minecraft.entity.attribute.EntityAttributes.GENERIC_MAX_HEALTH.value()).svframe$maximum(1_000_000);
+    // Native active items must run before optional accessory auto-equip callbacks.
+    var itemUsePhase=Identifier.of("fantasyhub","native_item_use");
+    net.fabricmc.fabric.api.event.player.UseItemCallback.EVENT.addPhaseOrdering(itemUsePhase,net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE);
+    net.fabricmc.fabric.api.event.player.UseItemCallback.EVENT.register(itemUsePhase,(player,world,hand)->{
+      var stack=player.getStackInHand(hand);
+      if(!(stack.getItem() instanceof InfinityItem)&&!(stack.getItem() instanceof CommerceItem))return net.minecraft.util.TypedActionResult.pass(stack);
+      if(player.isSpectator()||player.getCommandTags().contains("svframe_cosmic_frozen"))return net.minecraft.util.TypedActionResult.fail(stack);
+      return stack.use(world,player,hand);
+    });
+    for(String kind:java.util.List.of("rpg_upgrade_catalyst","personal_boss_ticket_standard","personal_boss_ticket_elite"))Registry.register(Registries.ITEM,Identifier.of("fantasyhub",kind),new CommerceItem(kind));
     for(String stone:java.util.List.of("space","power","reality","mind","soul","time","gauntlet"))infinityItems.put(stone,Registry.register(Registries.ITEM,Identifier.of("fantasyhub",stone.equals("gauntlet")?"infinity_gauntlet":stone+"_stone"),new InfinityItem(stone)));
     net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents.modifyEntriesEvent(net.minecraft.item.ItemGroups.COMBAT).register(entries->infinityItems.values().forEach(entries::add));
     visualBone =

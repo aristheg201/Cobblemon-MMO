@@ -70,6 +70,14 @@ final class HeroWorld {
     if(!safe(p,to,true))return;
     p.networkHandler.requestTeleport(to.x,to.y,to.z,p.getYaw(),p.getPitch());p.fallDistance=0;
   }
+  static Vec3d portalDestination(ServerPlayerEntity p,double range) {
+    // Eye ray resolves cover; the destination uses the same eye-to-feet offset.
+    // Back off along the ray if the player's full body does not fit. Air is valid.
+    Vec3d end=point(p,range).subtract(0,p.getStandingEyeHeight(),0),from=p.getPos();
+    Vec3d delta=end.subtract(from);double length=delta.length();if(length<1)return null;
+    for(double distance=length;distance>=1;distance-=.25){Vec3d at=from.add(delta.multiply(distance/length));if(safe(p,at,true))return at;}
+    return null;
+  }
   static Vec3d landing(ServerPlayerEntity p,Vec3d desired) {
     // Search only a small neighborhood of the actual ray hit; never force-load a destination.
     for(int dy=1;dy>=-3;dy--) {

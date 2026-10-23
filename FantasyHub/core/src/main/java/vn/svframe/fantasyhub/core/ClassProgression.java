@@ -66,7 +66,7 @@ public final class ClassProgression {
 
   private static void migrate(PlayerData data) {
     if (busy(data) || ClassSwitchService.busy(data)) return;
-    boolean ownership = data.getClaimCount("fantasyhub:ownership-migrated") == 0;
+    boolean ownership = data.getClaimCount("fantasyhub:ownership-v3") == 0;
     boolean points = HEROES.contains(data.getClassId()) && data.getClaimCount("fantasyhub:points:" + data.getClassId()) == 0;
     if (ownership || points) try { transact(data, () -> initialize(data)); }
     catch (RuntimeException failure) { LOG.log(Level.SEVERE, "Cannot migrate class progression for " + data.getUniqueId(), failure); }
@@ -81,6 +81,7 @@ public final class ClassProgression {
       }
       data.setClaimCount("fantasyhub:ownership-migrated", 1);
     }
+    if(data.isOnline()&&data.getClaimCount("fantasyhub:ownership-v3")==0){for(var type:SVFrameMMO.classes().getAll())if(ClassSwitchService.selectable(type.getId())&&ClassSwitchService.legacyPermission(data.getPlayer(),type.getId()))own(data,type.getId());data.setClaimCount("fantasyhub:ownership-v3",1);}
     if (!data.getProfess().hasOption(ClassOption.DEFAULT)) own(data, data.getClassId());
     String key = "fantasyhub:points:" + data.getClassId();
     if (HEROES.contains(data.getClassId()) && data.getClaimCount(key) == 0) {

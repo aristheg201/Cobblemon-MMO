@@ -15,3 +15,6 @@
 
 # Local task execution ledgers and private review scratch
 .superpowers/
+
+# Reproducible release build output
+/release-build-logs/

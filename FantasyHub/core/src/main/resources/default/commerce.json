@@ -1,0 +1,1382 @@
+{
+  "version": 1,
+  "bypassBeast": 500,
+  "classTiers": {
+    "ACE": "advanced",
+    "AGITO": "elite",
+    "ANTI_MAGE_KNIGHT": "elite",
+    "ARCHER": "standard",
+    "ARCHMAGE": "advanced",
+    "ARCTIC_KNIGHT": "advanced",
+    "ASSASSIN": "standard",
+    "AWAKENED_GUNSLINGER": "advanced",
+    "AWAKENED_MAGE": "advanced",
+    "BARD": "standard",
+    "BATMAN": "elite",
+    "BLADE": "standard",
+    "BLOODMOON_VAMPIRE": "advanced",
+    "COMPANION": "standard",
+    "DARK_BROTHERHOOD": "advanced",
+    "DAWNGUARD": "advanced",
+    "DEATH_KNIGHT": "elite",
+    "DECADE": "elite",
+    "DRAGONBORN": "elite",
+    "DRUID": "standard",
+    "ENTREPRENEUR": "standard",
+    "FLASH": "elite",
+    "GUNNER": "standard",
+    "HUNTER": "standard",
+    "IRON_MAN": "elite",
+    "KABUTO": "elite",
+    "KNIGHT": "elite",
+    "ARCANE-MAGE": "standard",
+    "MAGE": "standard",
+    "MARKSMAN": "standard",
+    "NECROMANCER": "advanced",
+    "NIGHTINGALE": "advanced",
+    "NINJA_SAMURAI": "advanced",
+    "PALADIN": "standard",
+    "RABBIT": "standard",
+    "ROGUE": "standard",
+    "RPG_ITEMS_2": "standard",
+    "RYUKI": "elite",
+    "SORCERER_SUPREME": "elite",
+    "SPIDER_MAN": "elite",
+    "SUMMONER": "advanced",
+    "THIEVES_GUILD": "standard",
+    "THOR": "elite",
+    "UNHOLY_ONES": "advanced",
+    "VOLKIHAR": "advanced",
+    "WARRIOR": "standard",
+    "WATER_SAMURAI": "advanced",
+    "ZOLDA": "elite"
+  },
+  "tiers": {
+    "standard": {
+      "classPrice": {
+        "beast": 4500,
+        "hunter": 1
+      },
+      "bundlePrice": {
+        "beast": 6500,
+        "hunter": 2
+      },
+      "equipmentPrice": {
+        "beast": 2000,
+        "hunter": 1
+      }
+    },
+    "advanced": {
+      "classPrice": {
+        "beast": 8500,
+        "hunter": 2
+      },
+      "bundlePrice": {
+        "beast": 11000,
+        "hunter": 3
+      },
+      "equipmentPrice": {
+        "beast": 2500,
+        "hunter": 1
+      }
+    },
+    "elite": {
+      "classPrice": {
+        "beast": 12000,
+        "hunter": 3
+      },
+      "bundlePrice": {
+        "beast": 16000,
+        "hunter": 4
+      },
+      "equipmentPrice": {
+        "beast": 4000,
+        "hunter": 1
+      }
+    }
+  },
+  "equipment": {
+    "ACE": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "AGITO": [
+      {
+        "item": "rpg:AGITO_GROUND_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:AGITO_GROUND_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:AGITO_GROUND_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:AGITO_GROUND_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "ANTI_MAGE_KNIGHT": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "ARCHER": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "ARCHMAGE": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "ARCTIC_KNIGHT": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "ASSASSIN": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "AWAKENED_GUNSLINGER": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "AWAKENED_MAGE": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "BARD": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "BATMAN": [
+      {
+        "item": "rpg:HERO_BATMAN_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_BATMAN_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_BATMAN_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_BATMAN_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_BATMAN_CAPE",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_BATMAN_GRAPPLING_HOOK",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "BLADE": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "BLOODMOON_VAMPIRE": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "COMPANION": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "DARK_BROTHERHOOD": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "DAWNGUARD": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "DEATH_KNIGHT": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "DECADE": [
+      {
+        "item": "rpg:DECADE_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:DECADE_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:DECADE_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:DECADE_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:DECADE_BELT",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "DRAGONBORN": [
+      {
+        "item": "rpg:SVFRAME_DRAGONBORN_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_DRAGONBORN_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_DRAGONBORN_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_DRAGONBORN_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "DRUID": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "ENTREPRENEUR": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "FLASH": [
+      {
+        "item": "rpg:HERO_FLASH_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_FLASH_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_FLASH_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_FLASH_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "GUNNER": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "HUNTER": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "IRON_MAN": [
+      {
+        "item": "rpg:HERO_IRON_MAN_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_IRON_MAN_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_IRON_MAN_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_IRON_MAN_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "KABUTO": [
+      {
+        "item": "rpg:KABUTO_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:KABUTO_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:KABUTO_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:KABUTO_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:KABUTO_KUNAI_GUN",
+        "count": 1
+      },
+      {
+        "item": "rpg:KABUTO_ZECTER_BELT",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "KNIGHT": [
+      {
+        "item": "rpg:KNIGHT_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:KNIGHT_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:KNIGHT_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:KNIGHT_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:KNIGHT_BELT",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "ARCANE-MAGE": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "MAGE": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "MARKSMAN": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "NECROMANCER": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "NIGHTINGALE": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "NINJA_SAMURAI": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "PALADIN": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "RABBIT": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "ROGUE": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "RPG_ITEMS_2": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "RYUKI": [
+      {
+        "item": "rpg:RYUKI_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:RYUKI_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:RYUKI_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:RYUKI_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:RYUKI_BELT",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "SORCERER_SUPREME": [
+      {
+        "item": "rpg:HERO_SORCERER_SUPREME_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_SORCERER_SUPREME_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_SORCERER_SUPREME_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_SORCERER_SUPREME_CAPE",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "SPIDER_MAN": [
+      {
+        "item": "rpg:HERO_SPIDER_MAN_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_SPIDER_MAN_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_SPIDER_MAN_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_SPIDER_MAN_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "SUMMONER": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "THIEVES_GUILD": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "THOR": [
+      {
+        "item": "rpg:HERO_THOR_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_THOR_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_THOR_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_THOR_CAPE",
+        "count": 1
+      },
+      {
+        "item": "rpg:HERO_THOR_STORMBREAKER",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "UNHOLY_ONES": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "VOLKIHAR": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "WARRIOR": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "WATER_SAMURAI": [
+      {
+        "item": "rpg:SVFRAME_HUNTER_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:SVFRAME_HUNTER_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ],
+    "ZOLDA": [
+      {
+        "item": "rpg:ZOLDA_HELMET",
+        "count": 1
+      },
+      {
+        "item": "rpg:ZOLDA_CHESTPLATE",
+        "count": 1
+      },
+      {
+        "item": "rpg:ZOLDA_LEGGINGS",
+        "count": 1
+      },
+      {
+        "item": "rpg:ZOLDA_BOOTS",
+        "count": 1
+      },
+      {
+        "item": "rpg:ZOLDA_BELT",
+        "count": 1
+      },
+      {
+        "item": "rpg:trailblazer_blade",
+        "count": 1
+      }
+    ]
+  },
+  "offers": [
+    {
+      "id": "exp_boost",
+      "name": "EXP Booster — 30 minutes (+100%)",
+      "category": "items",
+      "description": "Personal class EXP x2 for 30 minutes; persists through reconnect/restart. Durations stack.",
+      "icon": "minecraft:experience_bottle",
+      "effect": "exp",
+      "classId": "",
+      "enabled": true,
+      "price": {
+        "beast": 500,
+        "hunter": 2
+      },
+      "items": [],
+      "limit": 0,
+      "permission": ""
+    },
+    {
+      "id": "basic_materials",
+      "name": "Basic RPG Material Pack",
+      "category": "items",
+      "description": "2 native SVFrameItems upgrade attempts. Hold RPG equipment offhand and right-click catalyst. Existing success chances apply.",
+      "icon": "minecraft:paper",
+      "effect": "items",
+      "classId": "",
+      "enabled": true,
+      "price": {
+        "beast": 750,
+        "hunter": 2
+      },
+      "items": [
+        {
+          "item": "fantasyhub:rpg_upgrade_catalyst",
+          "count": 2
+        }
+      ],
+      "limit": 0,
+      "permission": ""
+    },
+    {
+      "id": "class_materials",
+      "name": "Class Equipment Upgrade Materials",
+      "category": "items",
+      "description": "3 native SVFrameItems upgrade attempts. Hold RPG equipment offhand and right-click catalyst. Existing success chances apply.",
+      "icon": "minecraft:paper",
+      "effect": "items",
+      "classId": "",
+      "enabled": true,
+      "price": {
+        "beast": 1000,
+        "hunter": 2
+      },
+      "items": [
+        {
+          "item": "fantasyhub:rpg_upgrade_catalyst",
+          "count": 3
+        }
+      ],
+      "limit": 0,
+      "permission": ""
+    },
+    {
+      "id": "rare_materials",
+      "name": "Rare Upgrade Materials",
+      "category": "items",
+      "description": "5 native SVFrameItems upgrade attempts. Hold RPG equipment offhand and right-click catalyst. Existing success chances apply.",
+      "icon": "minecraft:paper",
+      "effect": "items",
+      "classId": "",
+      "enabled": true,
+      "price": {
+        "beast": 1500,
+        "hunter": 2
+      },
+      "items": [
+        {
+          "item": "fantasyhub:rpg_upgrade_catalyst",
+          "count": 5
+        }
+      ],
+      "limit": 0,
+      "permission": ""
+    },
+    {
+      "id": "special_catalyst",
+      "name": "Special Upgrade Catalyst",
+      "category": "items",
+      "description": "6 native SVFrameItems upgrade attempts. Hold RPG equipment offhand and right-click catalyst. Existing success chances apply.",
+      "icon": "minecraft:paper",
+      "effect": "items",
+      "classId": "",
+      "enabled": true,
+      "price": {
+        "beast": 1750,
+        "hunter": 2
+      },
+      "items": [
+        {
+          "item": "fantasyhub:rpg_upgrade_catalyst",
+          "count": 6
+        }
+      ],
+      "limit": 0,
+      "permission": ""
+    },
+    {
+      "id": "cosmic_title",
+      "name": "Cosmic Hunter — permanent HUD title",
+      "category": "items",
+      "description": "Permanent Cosmic Hunter title shown in the Fantasy HUD.",
+      "icon": "minecraft:name_tag",
+      "effect": "title",
+      "classId": "",
+      "enabled": true,
+      "price": {
+        "beast": 2000,
+        "hunter": 2
+      },
+      "items": [],
+      "limit": 1,
+      "permission": ""
+    },
+    {
+      "id": "personal_standard",
+      "name": "Personal Boss Ticket — Standard",
+      "category": "items",
+      "description": "Right-click in a registered personal arena to start a separate solo encounter; consumed only after initialization.",
+      "icon": "minecraft:paper",
+      "effect": "items",
+      "classId": "",
+      "enabled": true,
+      "price": {
+        "beast": 2500,
+        "hunter": 3
+      },
+      "items": [
+        {
+          "item": "fantasyhub:personal_boss_ticket_standard",
+          "count": 1
+        }
+      ],
+      "limit": 0,
+      "permission": ""
+    },
+    {
+      "id": "personal_elite",
+      "name": "Personal Boss Ticket — Elite",
+      "category": "items",
+      "description": "Right-click in a registered personal arena to start a separate solo encounter; consumed only after initialization.",
+      "icon": "minecraft:paper",
+      "effect": "items",
+      "classId": "",
+      "enabled": true,
+      "price": {
+        "beast": 3000,
+        "hunter": 3
+      },
+      "items": [
+        {
+          "item": "fantasyhub:personal_boss_ticket_elite",
+          "count": 1
+        }
+      ],
+      "limit": 0,
+      "permission": ""
+    },
+    {
+      "id": "seasonal_cosmic_apple",
+      "name": "Seasonal Exclusive — Cosmic Golden Apple",
+      "category": "items",
+      "description": "One enchanted golden apple. Native consumption effects. Limit 3 per player.",
+      "icon": "minecraft:paper",
+      "effect": "items",
+      "classId": "",
+      "enabled": true,
+      "price": {
+        "beast": 3000,
+        "hunter": 3
+      },
+      "items": [
+        {
+          "item": "minecraft:enchanted_golden_apple",
+          "count": 1
+        }
+      ],
+      "limit": 3,
+      "permission": ""
+    }
+  ]
+}

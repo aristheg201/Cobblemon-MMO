@@ -12,6 +12,9 @@ public final class PokemonGameplayConfig {
   public Reward battle = new Reward(20, 5, 1000);
   public Reward overworld = new Reward(10, 2.5, 250);
   public Hostility hostility = new Hostility();
+  public TemperamentRules temperament=new TemperamentRules();
+  public RpgHealth rpgHealth=new RpgHealth();
+  public static final class RpgHealth {public boolean enabled=true;public double cap=1200,alphaMultiplier=1.5;public int combatTimeoutTicks=600;}
 
   public static final class Reward {
     public double base, perLevel, maximum;
@@ -93,6 +96,8 @@ public final class PokemonGameplayConfig {
   public void validate() {
     if (battle == null || overworld == null || hostility == null)
       throw new IllegalArgumentException("Pokemon gameplay sections cannot be null");
+    temperament.validate();
+    RpgHealthRules.maximum(50,1,true,rpgHealth.alphaMultiplier,rpgHealth.cap);if(rpgHealth.combatTimeoutTicks<20||rpgHealth.combatTimeoutTicks>72000)throw new IllegalArgumentException("Invalid RPG HP timeout");
     battle.validate();
     overworld.validate();
     var h = hostility;

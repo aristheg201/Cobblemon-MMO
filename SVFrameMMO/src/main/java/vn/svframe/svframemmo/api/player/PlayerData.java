@@ -158,7 +158,7 @@ public final class PlayerData {
   }
 
   public void setPreference(String key, String value) {
-    if (key == null || !key.matches("[a-z0-9_.:-]{1,80}") || value != null && value.length() > 160)
+    if (key == null || !key.matches("[a-z0-9_.:-]{1,80}") || value != null && value.length() > PreferenceLimits.maximum(key))
       throw new IllegalArgumentException("Invalid player preference");
     if (value == null) {
       if (preferences.remove(key) == null) return;
@@ -181,7 +181,7 @@ public final class PlayerData {
               && key != null
               && key.matches("[a-z0-9_.:-]{1,80}")
               && value != null
-              && value.length() <= 160) preferences.put(key, value);
+              && value.length() <= PreferenceLimits.maximum(key)) preferences.put(key, value);
         });
   }
 

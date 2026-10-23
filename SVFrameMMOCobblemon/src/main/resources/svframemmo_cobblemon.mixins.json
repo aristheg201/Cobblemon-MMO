@@ -12,7 +12,10 @@
     "PokemonHostilityMixin",
     "PokemonBossHealthMixin",
     "FightOrFlightOwnershipMixin",
-    "CosmicSpawnWeightMixin"
+    "CosmicSpawnWeightMixin",
+    "PokemonStoreAccess",
+    "PokemonFileStoreAccess",
+    "PokedexRescanMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -3,6 +3,7 @@ import com.google.gson.*;import java.nio.file.*;import java.nio.channels.FileCha
 /** Atomic, fsynced intent journal. Native player claim markers protect delivery after crash. */
 public final class BossLedger {
  private static final Gson JSON=new GsonBuilder().setPrettyPrinting().create();private transient Path path;
+ public Set<String> consumedTickets=new LinkedHashSet<>();
  public Set<String> occurrences=new LinkedHashSet<>();public Map<String,Encounter> encounters=new LinkedHashMap<>();public Map<String,Reward> rewards=new LinkedHashMap<>();public int rotation;
  public static final class Reward {public String encounter;public UUID player;public int amount;public boolean delivered;Reward(String e,UUID p,int a){encounter=e;player=p;amount=a;}}
  public static BossLedger load(Path path)throws IOException{BossLedger ledger=Files.exists(path)?JSON.fromJson(Files.readString(path),BossLedger.class):new BossLedger();if(ledger==null)throw new IOException("Empty boss ledger");ledger.path=path;return ledger;}

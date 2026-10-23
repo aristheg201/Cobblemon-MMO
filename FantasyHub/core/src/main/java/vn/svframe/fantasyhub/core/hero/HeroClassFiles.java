@@ -25,6 +25,9 @@ public final class HeroClassFiles {
       c.put("skills",skills);c.put("skill-slots",slots);
       files.put("SVFrameMMO/classes/"+h.id().toLowerCase(Locale.ROOT)+".yml",new Yaml().dump(c).getBytes(StandardCharsets.UTF_8));
     }
+    var resources=new LinkedHashMap<String,Object>();
+    for(String resource:List.of("mana","stamina"))resources.put(resource,Map.of("name",resource.equals("mana")?"Mana / Năng lượng":"Stamina / Thể lực","max-points",50,"buff",Map.of("max_"+resource,5)));
+    files.put("SVFrameMMO/attributes/hero-resources.yml",new Yaml().dump(resources).getBytes(StandardCharsets.UTF_8));
     return Collections.unmodifiableMap(files);
   }
 }

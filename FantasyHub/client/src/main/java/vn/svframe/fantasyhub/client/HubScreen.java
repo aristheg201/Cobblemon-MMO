@@ -314,12 +314,11 @@ public final class HubScreen extends Screen {
               .dimensions(left + 12, top + panelHeight - 53, panelWidth - 112, 20)
               .build());
     if (view == View.PROFILE
-        && FantasyHubClient.state().has("pokemonShop")
-        && !FantasyHubClient.state().getAsJsonArray("pokemonShop").isEmpty())
+        && FantasyHubClient.state().has("fantasyShop"))
       addDrawableChild(
           FantasyButton.builder(
-                  Text.translatable("fantasyhub.shop.title"),
-                  b -> client.setScreen(new PokemonShopScreen()))
+                  Text.literal("Fantasy Shop"),
+                  b -> client.setScreen(new FantasyShopScreen()))
               .dimensions(left + 12, top + panelHeight - 29, panelWidth - 112, 20)
               .build());
     addDrawableChild(
@@ -353,6 +352,7 @@ public final class HubScreen extends Screen {
   @Override
   public void render(DrawContext context, int mouseX, int mouseY, float delta) {
     renderBackground(context, mouseX, mouseY, delta);
+    context.draw();
     FantasyPanel.frame(context, left, top, panelWidth, panelHeight);
     context.drawCenteredTextWithShadow(
         textRenderer, title, left + panelWidth / 2, top + 12, 0xffe7c37d);
@@ -360,7 +360,7 @@ public final class HubScreen extends Screen {
     if (view == View.PROFILE) {
       context.drawText(
           textRenderer,
-          FantasyHubClient.name(FantasyHubClient.string("className")),
+          FantasyHubClient.name(FantasyHubClient.string("className")+(FantasyHubClient.string("playerTitle").isBlank()?"":" — "+FantasyHubClient.string("playerTitle"))),
           left + 16,
           top + 65,
           0xffe7c37d,

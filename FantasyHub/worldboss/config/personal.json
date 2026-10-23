@@ -1,0 +1,19 @@
+{
+  "hp": 0.55,
+  "damage": 0.7,
+  "mitigation": 0.75,
+  "heavyCooldown": 1.3,
+  "telegraph": 1.35,
+  "reconnectGraceSeconds": 90,
+  "standardBosses": [
+    "thor",
+    "web_guardian",
+    "speedster"
+  ],
+  "eliteBosses": [
+    "thanos",
+    "collector",
+    "sorcerer_guardian",
+    "ultimate_trial"
+  ]
+}

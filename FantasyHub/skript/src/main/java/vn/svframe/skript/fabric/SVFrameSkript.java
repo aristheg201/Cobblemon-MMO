@@ -110,6 +110,8 @@ public final class SVFrameSkript implements ModInitializer {
         });
     }
     private static int execute(String name,ServerCommandSource sender,String raw){
+        if(raw.isBlank()&&java.util.Set.of("classes","doiclass","svclass").contains(name)&&sender.getEntity() instanceof ServerPlayerEntity&&FabricLoader.getInstance().isModLoaded("fantasyhubcore")){server.getCommandManager().executeWithPrefix(sender,"fantasyhub classes");return 1;}
+
         for(var file:ENGINE.program().files.values())if(file.valid())for(var command:file.commands())if(command.name().equals(name)||command.aliases().contains(name)){
             List<String> parts=raw.isBlank()?List.of():List.of(raw.split(" +"));List<Object> arguments=new ArrayList<>();int index=0;
             for(int i=0;i<command.arguments().size()&&index<parts.size();i++){

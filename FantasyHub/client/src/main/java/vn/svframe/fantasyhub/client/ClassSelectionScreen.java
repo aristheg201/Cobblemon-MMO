@@ -134,7 +134,8 @@ public final class ClassSelectionScreen extends Screen {
                     confirming = true;
                     clearAndInit();
                   } else {
-                    FantasyHubClient.send(row!=null&&!row.get("unlocked").getAsBoolean()?"unlock_class":"switch_class", selected, 0);
+                    if(row!=null&&!row.get("unlocked").getAsBoolean()){client.setScreen(new FantasyShopScreen("classes",selected));return;}
+                    FantasyHubClient.send(policy!=null&&policy.get("remainingSeconds").getAsLong()>0?"switch_bypass":"switch_class", selected, 0);
                     confirming = false;
                     clearAndInit();
                   }
@@ -143,19 +144,22 @@ public final class ClassSelectionScreen extends Screen {
                 left + listWidth + 12, top + panelHeight - 52, panelWidth - listWidth - 24, 20)
             .build();
     boolean locked=row!=null&&!row.get("unlocked").getAsBoolean();
-    if(locked)choose.setMessage(Text.translatable(confirming ? "fantasyhub.classes.confirm_unlock" : "fantasyhub.classes.unlock_sigil", row.get("unlockCost").getAsInt()));
+    if(locked)choose.setMessage(Text.literal("Mua class / Buy class"));
+    else if(policy!=null&&policy.get("remainingSeconds").getAsLong()>0)choose.setMessage(Text.literal((confirming?"Xác nhận / Confirm: ":"Bypass: ")+policy.get("bypassFee").getAsString()+" BeastCoin"));
     if(row!=null)choose.setTooltip(Tooltip.of(Text.translatable(locked ? "fantasyhub.classes.unlock_help" : "fantasyhub.classes.choose_help")));
+    if(!locked&&policy!=null&&policy.get("remainingSeconds").getAsLong()>0)choose.setTooltip(Tooltip.of(Text.literal("Wait "+policy.get("remainingSeconds").getAsLong()+"s or bypass for "+policy.get("bypassFee").getAsString()+" BeastCoin. Balance: "+policy.get("beastBalance").getAsString())));
     choose.active =
         row != null
             && row.get("selectable").getAsBoolean()
-            && (locked ? policy!=null&&policy.has("sigils")&&policy.get("sigils").getAsInt()>=row.get("unlockCost").getAsInt() : row.get("unlocked").getAsBoolean())
+            && (locked || row.get("unlocked").getAsBoolean())
             && !row.get("current").getAsBoolean()
             && policy != null
             && (locked || row.getAsJsonObject("price").get("economyAvailable").getAsBoolean())
             && (locked || row.getAsJsonObject("price").get("canAfford").getAsBoolean())
             && !policy.get("busy").getAsBoolean()
-            && (locked || policy.get("remainingSeconds").getAsLong() == 0);
+            ;
     addDrawableChild(choose);
+    if(!locked&&policy!=null&&policy.get("remainingSeconds").getAsLong()>0)addDrawableChild(FantasyButton.builder(Text.literal("Wait / Đợi "+policy.get("remainingSeconds").getAsLong()+"s"),b->close()).dimensions(left+72,top+panelHeight-52,Math.max(70,listWidth-78),20).build());
     addDrawableChild(
         FantasyButton.builder(Text.translatable("gui.done"), b -> close())
             .dimensions(left + panelWidth - 84, top + panelHeight - 27, 72, 20)
@@ -165,6 +169,7 @@ public final class ClassSelectionScreen extends Screen {
   @Override
   public void render(DrawContext context, int mouseX, int mouseY, float delta) {
     renderBackground(context, mouseX, mouseY, delta);
+    context.draw();
     FantasyPanel.frame(context, left, top, panelWidth, panelHeight);
     context.drawCenteredTextWithShadow(
         textRenderer, title, left + panelWidth / 2, top + 12, 0xffe7c37d);
@@ -201,9 +206,11 @@ public final class ClassSelectionScreen extends Screen {
           0xffd8bd8b,
           false);
       y += 16;
+      if(row.has("state")){context.drawText(textRenderer,Text.literal(row.get("state").getAsString()),x,y,0xff96ceaa,false);y+=13;}
+      var timing=FantasyHubClient.state().getAsJsonObject("classSwitch");
+      if(timing!=null&&timing.get("remainingSeconds").getAsLong()>0){for(var line:textRenderer.wrapLines(Text.literal("Wait "+timing.get("remainingSeconds").getAsLong()+"s | Bypass "+timing.get("bypassFee").getAsString()+" BeastCoin | Balance "+timing.get("beastBalance").getAsString()),w)){context.drawText(textRenderer,line,x,y,0xffeecc88,false);y+=11;}}
       if (!row.get("unlocked").getAsBoolean()) {
-        for (var line : textRenderer.wrapLines(Text.translatable(row.get("selectable").getAsBoolean()
-            ? "fantasyhub.classes.locked_sigil" : "fantasyhub.classes.not_selectable", row.get("unlockCost").getAsInt()), w)) {
+        for (var line : textRenderer.wrapLines(Text.literal(row.get("selectable").getAsBoolean()?"Purchase with BeastCoin or HunterCoin in the Class Shop.":"Unavailable"), w)) {
           context.drawText(textRenderer, line, x, y, 0xffd8bd8b, false); y += 11;
         }
         y += 4;

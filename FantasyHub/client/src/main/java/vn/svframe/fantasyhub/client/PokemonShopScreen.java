@@ -295,6 +295,7 @@ public final class PokemonShopScreen extends Screen {
 
    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
       this.renderBackground(context, mouseX, mouseY, delta);
+    context.draw();
       FantasyPanel.frame(context, this.left, this.top, this.w, this.h);
       context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.left + this.w / 2, this.top + 12, -1588355);
       JsonObject row = this.selection();

@@ -117,6 +117,7 @@ final class HeroActions {
   }
   static void portal(HeroRuntime.Cast c) {
     var a=c.origin;var b=c.point;var cooldown=new HashMap<UUID,Long>();
+    HeroPresentation.cue(c,"ZONE",a,b,c.ability.duration());
     class Portal implements Runnable {int ticks;public void run(){
       if(ticks++>=c.ability.duration()*10)return;HeroPresentation.ring(c,a,1);HeroPresentation.ring(c,b,1);
       for(var center:List.of(a,b))for(var t:c.owner.world.getEntitiesByClass(LivingEntity.class,new Box(center,center).expand(1,2,1),e->e.isAlive()&&!e.isSpectator()&&!(e instanceof ArmorStandEntity)).stream().limit(c.cap()).toList()) {

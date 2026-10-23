@@ -31,7 +31,7 @@ public final class HeroNpcCombat {
   Actor(HeroNpcEntity e){entity=e;home=e.getPos();rotation=NpcSkillPolicy.resolve(HeroRuntime.catalog(),e.hero(),List.of());defaultRotation=rotation;ready=ticks+40;}
  }
  private HeroNpcCombat(){}
- public static void install(){if(installed)return;installed=true;ServerTickEvents.END_SERVER_TICK.register(server->{ticks++;for(var a:List.copyOf(ACTORS.values()))tick(a);});ServerLifecycleEvents.SERVER_STOPPING.register(server->{for(var a:ACTORS.values())a.entity.discard();ACTORS.clear();});}
+ public static void install(){if(installed)return;installed=true;ServerTickEvents.END_SERVER_TICK.register(server->{ticks++;for(var a:List.copyOf(ACTORS.values()))try{tick(a);}catch(Exception error){org.slf4j.LoggerFactory.getLogger("HeroNpcCombat").error("Boss actor failed; removing only this actor {}",a.entity.getUuid(),error);ACTORS.remove(a.entity.getUuid());a.entity.discard();}});ServerLifecycleEvents.SERVER_STOPPING.register(server->{for(var a:ACTORS.values())a.entity.discard();ACTORS.clear();});}
  public static net.minecraft.entity.mob.MobEntity spawn(ServerWorld world,Vec3d at,String classId,String displayName,double maxHealth){
   install();classId=classId.toUpperCase(Locale.ROOT);HeroRuntime.catalog().hero(classId);
   if(!Double.isFinite(maxHealth)||maxHealth<1||maxHealth>1_000_000)throw new IllegalArgumentException("Boss health outside bounds");
@@ -41,7 +41,7 @@ public final class HeroNpcCombat {
   for(var slot:List.of(EquipmentSlot.HEAD,EquipmentSlot.CHEST,EquipmentSlot.LEGS,EquipmentSlot.FEET)){
    if(slot==EquipmentSlot.HEAD&&Set.of("THOR","SORCERER_SUPREME").contains(classId))continue;
    String part=switch(slot){case HEAD->"helmet";case CHEST->"chestplate";case LEGS->"leggings";default->"boots";};
-   e.equipStack(slot,vn.svframe.svframeitems.SVFrameItems.generator().generate("hero_"+classId.toLowerCase(Locale.ROOT)+"_"+part,1));
+   String equipment="hero_"+classId.toLowerCase(Locale.ROOT)+"_"+part;if(vn.svframe.svframeitems.SVFrameItems.registry().item(equipment)!=null)e.equipStack(slot,vn.svframe.svframeitems.SVFrameItems.generator().generate(equipment,1));
   }
   if(classId.equals("THOR"))e.equipStack(EquipmentSlot.MAINHAND,new net.minecraft.item.ItemStack(Protocol.stormbreaker));
   for(var slot:EquipmentSlot.values())e.setEquipmentDropChance(slot,0);
@@ -63,7 +63,7 @@ public final class HeroNpcCombat {
   var list=NpcSkillPolicy.resolve(HeroRuntime.catalog(),actor.entity.hero(),ids);if(!list.equals(actor.rotation)){actor.rotation=list;actor.next=0;}
   actor.cooldownMultiplier=cooldownMultiplier;actor.damageMultiplier=damageMultiplier;
  }
- private static boolean legal(HeroNpcEntity actor,ServerPlayerEntity target){return (ACTORS.get(actor.getUuid())==null||target.getPos().squaredDistanceTo(ACTORS.get(actor.getUuid()).home)<=Math.pow(ACTORS.get(actor.getUuid()).arenaRadius,2))&&!target.getCommandTags().contains("svframe_cosmic_peace")&&target.isAlive()&&!target.isCreative()&&!target.isSpectator()&&target.getWorld()==actor.getWorld()&&!actor.isTeammate(target)&&RpgEntityAdapters.allows(actor,target,RpgEntityAdapters.Effect.DAMAGE);}
+ private static boolean legal(HeroNpcEntity actor,ServerPlayerEntity target){return actor.getCommandTags().stream().filter(t->t.startsWith("svframe_personal_owner:")).allMatch(t->t.equals("svframe_personal_owner:"+target.getUuidAsString()))&&(ACTORS.get(actor.getUuid())==null||target.getPos().squaredDistanceTo(ACTORS.get(actor.getUuid()).home)<=Math.pow(ACTORS.get(actor.getUuid()).arenaRadius,2))&&!target.getCommandTags().contains("svframe_cosmic_peace")&&!target.isRemoved()&&!target.isDisconnected()&&target.isAlive()&&!target.isCreative()&&!target.isSpectator()&&target.getWorld()==actor.getWorld()&&!actor.isTeammate(target)&&RpgEntityAdapters.allows(actor,target,RpgEntityAdapters.Effect.DAMAGE);}
  private static void tick(Actor a){
   var e=a.entity;if(e.getCommandTags().contains("svframe_cosmic_frozen")){a.ready++;if(a.warningUntil>0)a.warningUntil++;if(a.attackUntil>0)a.attackUntil++;if(a.axeUntil>0)a.axeUntil++;for(int i=0;i<a.pending.size();i++){var p=a.pending.get(i);a.pending.set(i,new Pending(p.at+1,p.run));}return;}if(e.isRemoved()||!e.isAlive()){ACTORS.remove(e.getUuid());return;}
   if(e.getPos().squaredDistanceTo(a.home)>a.arenaRadius*a.arenaRadius){e.getNavigation().startMovingTo(a.home.x,a.home.y,a.home.z,1.3);a.pending.clear();a.warningPoint=null;a.warningUntil=a.attackUntil=0;return;}

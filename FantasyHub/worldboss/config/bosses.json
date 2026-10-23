@@ -10,7 +10,7 @@
       "attackSeconds": 5,
       "skillIds": [],
       "cooldownMultiplier": 1,
-      "damageMultiplier": 1,
+      "damageMultiplier": 1.15,
       "phases": [
         {
           "healthBelow": 0.6,
@@ -51,7 +51,7 @@
         "BIFROST"
       ],
       "cooldownMultiplier": 1,
-      "damageMultiplier": 1,
+      "damageMultiplier": 1.15,
       "phases": [
         {
           "healthBelow": 0.6,
@@ -86,7 +86,7 @@
         "COCOON_SLAM"
       ],
       "cooldownMultiplier": 1.2,
-      "damageMultiplier": 0.8,
+      "damageMultiplier": 0.92,
       "winReward": 18,
       "lossReward": 4,
       "phases": [
@@ -142,7 +142,8 @@
         "beamDamage": 6,
         "meteorDamage": 30,
         "sweepDamage": 26
-      }
+      },
+      "damageMultiplier": 1.15
     },
     {
       "id": "collector",
@@ -170,7 +171,8 @@
         {
           "healthBelow": 0.3
         }
-      ]
+      ],
+      "damageMultiplier": 1.15
     },
     {
       "id": "speedster",
@@ -184,7 +186,8 @@
         "space"
       ],
       "skillIds": [],
-      "phases": []
+      "phases": [],
+      "damageMultiplier": 1.15
     },
     {
       "id": "sorcerer_guardian",
@@ -199,7 +202,8 @@
         "time"
       ],
       "skillIds": [],
-      "phases": []
+      "phases": [],
+      "damageMultiplier": 1.15
     },
     {
       "id": "ultimate_trial",
@@ -216,7 +220,8 @@
       "bossBarColor": "PURPLE",
       "windupSeconds": 2,
       "attackSeconds": 4,
-      "phases": []
+      "phases": [],
+      "damageMultiplier": 1.15
     }
   ]
 }

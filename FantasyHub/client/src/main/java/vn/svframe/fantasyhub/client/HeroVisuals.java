@@ -30,7 +30,7 @@ public final class HeroVisuals {
   if(STATES.size()>=128&&!STATES.containsKey(entity))return;
   if(kind.equals("state")){STATES.put(entity,new State(hero,d.get("flags").getAsInt(),d.get("stacks").getAsInt(),d.get("speed").getAsInt(),d.get("heat").getAsInt(),ticks+40));return;}
   if(!kind.equals("cue"))return;
-  String phase=d.get("phase").getAsString();long duration=Math.clamp((int)(d.get("duration").getAsDouble()*20),2,240);
+  String phase=d.get("phase").getAsString();long duration=Math.clamp((int)(d.get("duration").getAsDouble()*20),2,1200);
   var c=new Cue(entity,hero,d.get("ability").getAsString(),phase,point(d,"from"),point(d,"to"),ticks,ticks+duration,d.has("cast")?d.get("cast").getAsLong():0,d.has("radius")?Math.clamp(d.get("radius").getAsDouble(),0,16):0);
   if(phase.equals("CAST")){
    int poseTicks=switch(c.ability()){case "AIR_COMBO","LIGHTNING_SPIN"->36;case "UNIBEAM","BRING_ME_THANOS","INFINITE_MASS_PUNCH"->48;default->22;};

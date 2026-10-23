@@ -39,6 +39,7 @@ public final class FantasyHubCore implements ModInitializer {
   public void onInitialize() {
     Protocol.install();
     ClassProgression.install();
+    CommerceRuntime.install();
     KabutoRuntime.install();
     RiderEquipment.install();
     RiderRuntime.install();
@@ -128,7 +129,10 @@ public final class FantasyHubCore implements ModInitializer {
                     player, request.id(), () -> snapshots.remove(player.getUuid()));
                 return;
               }
-              case "unlock_class" -> {ClassProgression.purchase(player,request.id());snapshots.remove(player.getUuid());return;}
+              case "shop_buy" -> {CommerceRuntime.purchase(player,request.id(),request.slot());snapshots.remove(player.getUuid());return;}
+              case "shop_claim" -> {CommerceRuntime.claim(player);snapshots.remove(player.getUuid());return;}
+              case "switch_bypass" -> {ClassSwitchService.request(player,request.id(),true,()->snapshots.remove(player.getUuid()));return;}
+              case "unlock_class" -> {player.sendMessage(Text.literal("Choose BeastCoin or HunterCoin in /fantasyshop"),false);return;}
               case "learn" -> {ClassProgression.learn(player,request.id());snapshots.remove(player.getUuid());return;}
               case "allocate" -> {
                 if (request.slot() != 1) return;
@@ -286,6 +290,9 @@ public final class FantasyHubCore implements ModInitializer {
                           ServerPlayNetworking.send(player, new Protocol.Open("classes"));
                           return 1;
                         }));
+          dispatcher.register(literal("fantasyshop").executes(c->{var p=c.getSource().getPlayerOrThrow();snapshots.remove(p.getUuid());ServerPlayNetworking.send(p,new Protocol.Open("fantasy_shop"));return 1;})
+            .then(literal("claim").executes(c->CommerceRuntime.claim(c.getSource().getPlayerOrThrow())))
+            .then(literal("reload").requires(c->c.hasPermissionLevel(2)).executes(c->{try{CommerceRuntime.reload();snapshots.clear();return 1;}catch(Exception e){c.getSource().sendError(Text.literal(e.getMessage()));return 0;}})));
           dispatcher.register(
               literal("svclass")
                   .then(
@@ -439,6 +446,7 @@ public final class FantasyHubCore implements ModInitializer {
     Map<String, Object> out = new LinkedHashMap<>();
     out.put("schema", Protocol.VERSION);
     out.put("classId", data.getClassId());
+    out.put("playerTitle",data.getPreference("fantasyhub:title",""));
     out.put("className", data.getProfess().getName());
     out.put(
         "experienceDisplay",
@@ -486,6 +494,7 @@ public final class FantasyHubCore implements ModInitializer {
       row.put("unlocked", ClassSwitchService.unlocked(player, type.getId()));
       row.put("owned",ClassProgression.owns(data,type.getId()));row.put("unlockCost",ClassProgression.price(type.getId()));
       row.put("current", data.getClassId().equals(type.getId()));
+      row.put("state",data.getClassId().equals(type.getId())?"ACTIVE":ClassProgression.owns(data,type.getId())?data.getClassSwitchAvailableAt()>System.currentTimeMillis()?"OWNED — COOLDOWN":"OWNED — READY":"LOCKED — PURCHASE AVAILABLE");
       Map<String, Double> baseStats = new TreeMap<>();
       for (String stat : type.getStats())
         baseStats.put(stat, type.calculateBaseStat(stat, 1, data));
@@ -548,6 +557,7 @@ public final class FantasyHubCore implements ModInitializer {
     out.put("casting", castingState(player));
     var shop = vn.svframe.svframelib.skill.PlayerAbilityShop.get();
     out.put("pokemonShop", shop == null ? List.of() : shop.catalog(player));
+    out.put("fantasyShop",CommerceRuntime.view(player));
     Map<Integer, String> loadout = new TreeMap<>();
     PlayerSkillCatalog.bindings(data).forEach((slot, entry) -> loadout.put(slot, entry.id()));
     out.put("loadout", loadout);

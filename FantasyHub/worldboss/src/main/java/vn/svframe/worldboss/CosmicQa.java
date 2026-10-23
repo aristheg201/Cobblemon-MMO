@@ -1,0 +1,12 @@
+package vn.svframe.worldboss;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;import net.minecraft.text.Text;import java.util.*;import static net.minecraft.server.command.CommandManager.*;import static com.mojang.brigadier.arguments.StringArgumentType.*;
+/** Only enabled by the private runtime harness. Never exposes forced outcomes on a production server. */
+final class CosmicQa {
+ static void install(){if(!"1".equals(System.getenv("SVFRAME_RUNTIME_QA")))return;CommandRegistrationCallback.EVENT.register((dispatcher,a,e)->dispatcher.register(literal("cosmicqa").requires(s->s.hasPermissionLevel(4)).then(argument("action",word()).then(argument("value",com.mojang.brigadier.arguments.IntegerArgumentType.integer(0,10)).executes(c->{var p=c.getSource().getPlayerOrThrow();String action=getString(c,"action");int value=com.mojang.brigadier.arguments.IntegerArgumentType.getInteger(c,"value");
+  if(action.equals("snap")){if(value<1)throw new IllegalArgumentException("Outcome 1..10");var entry=InfinityRuntime.ledger.computeIfAbsent(p.getUuidAsString(),k->new InfinityRuntime.Entry());entry.nextSnap=System.currentTimeMillis()+1800000;entry.outcome=value-1;entry.token=UUID.randomUUID().toString();entry.state="PENDING";InfinityRuntime.save();String ticket=entry.token;SnapAnimation.start(p,entry.outcome,()->InfinityRuntime.resolve(p.getUuidAsString(),ticket));}
+  else if(action.equals("use")){var stack=p.getMainHandStack();var result=p.interactionManager.interactItem(p,p.getServerWorld(),stack,net.minecraft.util.Hand.MAIN_HAND);c.getSource().sendFeedback(()->Text.literal("ITEM_USE_QA class="+stack.getItem().getClass().getName()+" result="+result),false);}
+  else if(action.equals("reset")){var entry=InfinityRuntime.ledger.computeIfAbsent(p.getUuidAsString(),k->new InfinityRuntime.Entry());entry.cooldowns.clear();entry.nextSnap=0;entry.state="DONE";InfinityRuntime.save();}
+  else if(action.equals("fixture")||action.equals("storage")){try{String report=String.valueOf(Class.forName("vn.svframe.svframemmo.cobblemon.gameplay.CosmicPokemonQa").getMethod(action,net.minecraft.server.network.ServerPlayerEntity.class).invoke(null,p));c.getSource().sendFeedback(()->Text.literal(report),false);}catch(Exception ex){throw new IllegalStateException(ex);}}
+  var entry=InfinityRuntime.ledger.get(p.getUuidAsString());c.getSource().sendFeedback(()->Text.literal("COSMIC_QA "+InfinityRuntime.JSON.toJson(entry)),false);return 1;
+ })))));}
+}

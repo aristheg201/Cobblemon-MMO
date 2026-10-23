@@ -1,0 +1,1734 @@
+[
+  {
+    "class": "ACE",
+    "tier": "advanced",
+    "source": "ace.yml",
+    "sha256": "d06ad69ae18c7288ef2f9e75b603d712bb4208cad3fc3bd7eb039daa9d330b69",
+    "skillCount": 6,
+    "attributes": {
+      "max-health": {
+        "base": 24,
+        "per-level": 0.1
+      },
+      "skill-damage": {
+        "base": 4.5,
+        "per-level": 0.055
+      },
+      "max-mana": {
+        "base": 55,
+        "per-level": 0.22
+      },
+      "mana-regeneration": {
+        "base": 0.38,
+        "per-level": 0.004
+      },
+      "cooldown-reduction": {
+        "base": 4.0,
+        "per-level": 0.025
+      },
+      "movement-speed": {
+        "base": 0.01,
+        "per-level": 0.0002
+      },
+      "chance": {
+        "base": 12,
+        "per-level": 0.02
+      }
+    },
+    "role": [
+      "&7Một con bạc đủ tự tin để gọi xác suất là kỹ năng.",
+      "&7Lăn xúc xắc để gom xu, ném xu để gây sát thương,",
+      "&7và dùng máy kéo thưởng để biến may mắn thành buff.",
+      "&8Vai trò: burst / utility / random buff / rất đáng ngờ về mặt tài chính."
+    ]
+  },
+  {
+    "class": "AGITO",
+    "tier": "elite",
+    "source": "agito.yml",
+    "sha256": "1730ba339d901777d415e112b48421ccbd65e9b3d027defae4f5f5698e3cd0bc",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 30,
+        "per-level": 0.2
+      },
+      "max-mana": {
+        "base": 60,
+        "per-level": 0.3
+      },
+      "max-stamina": {
+        "base": 45,
+        "per-level": 0.2
+      },
+      "armor": {
+        "base": 3,
+        "per-level": 0.02
+      }
+    },
+    "role": [
+      "&7Ground • Storm • Flame • Trinity • Shining"
+    ]
+  },
+  {
+    "class": "ANTI_MAGE_KNIGHT",
+    "tier": "elite",
+    "source": "anti_mage_knight.yml",
+    "sha256": "cc154230b449bb1e8abb992e3fa095229cfa1721c7b62b559b719a9f485e4b5a",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 38,
+        "per-level": 0.18
+      },
+      "armor": {
+        "base": 9,
+        "per-level": 0.06
+      },
+      "armor-toughness": {
+        "base": 4,
+        "per-level": 0.03
+      },
+      "damage-reduction": {
+        "base": 5,
+        "per-level": 0.04
+      },
+      "magic-damage": {
+        "base": 5.5,
+        "per-level": 0.055
+      },
+      "skill-damage": {
+        "base": 5,
+        "per-level": 0.05
+      },
+      "attack-damage": {
+        "base": 3.5,
+        "per-level": 0.035
+      },
+      "movement-speed": {
+        "base": 0,
+        "per-level": 0
+      },
+      "cooldown-reduction": {
+        "base": 1.5,
+        "per-level": 0.015
+      },
+      "max-mana": {
+        "base": 65,
+        "per-level": 0.2
+      }
+    },
+    "role": [
+      "&7Một pho tượng Kháng Ma Thạch tỉnh dậy mỗi khi ma thuật trỗi lên.",
+      "&7Tank kháng phép, mở giao tranh, gồng chịu rồi phản lại cả bãi.",
+      "&8Vai trò: tank / anti-mage / crowd control / counter-engage."
+    ]
+  },
+  {
+    "class": "ARCHER",
+    "tier": "standard",
+    "source": "archer.yml",
+    "sha256": "348c7fb4e68acac960dc04cca445150fd12bdd68f77eb506295f1f3d6de4c214",
+    "skillCount": 6,
+    "attributes": {
+      "max-health": {
+        "base": 25,
+        "per-level": 0.12,
+        "min": 25,
+        "max": 25
+      },
+      "attack-damage": {
+        "base": 1.8,
+        "per-level": 0.025,
+        "min": 1.8,
+        "max": 1.8
+      },
+      "skill-damage": {
+        "base": 5.4,
+        "per-level": 0.07,
+        "min": 5.4,
+        "max": 5.4
+      },
+      "speed": {
+        "base": 0.015,
+        "per-level": 0,
+        "min": 0.015,
+        "max": 0.015
+      },
+      "max-stamina": {
+        "base": 40,
+        "per-level": 0.12,
+        "min": 40,
+        "max": 40
+      },
+      "stamina-regeneration": {
+        "base": 0.16,
+        "per-level": 0.003,
+        "min": 0.16,
+        "max": 0.16
+      }
+    },
+    "role": [
+      "&7Cung thủ giữ khoảng cách, bắn nhanh và lùi đúng lúc để người khác ăn bụi.",
+      "&7Sát thương ổn, cơ động tốt; mạnh khi giữ được nhịp, yếu khi bị áp sát quá nhiệt tình.",
+      "&8Vai trò: ranged physical / poke / kite."
+    ]
+  },
+  {
+    "class": "ARCHMAGE",
+    "tier": "advanced",
+    "source": "archmage.yml",
+    "sha256": "8f0f7cd02556f39e80046849da50363bf08a4099608b4f18c5b9bc997073c301",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 22,
+        "per-level": 0.09
+      },
+      "skill-damage": {
+        "base": 7.0,
+        "per-level": 0.085
+      },
+      "max-mana": {
+        "base": 55,
+        "per-level": 0.23
+      },
+      "mana-regeneration": {
+        "base": 0.45,
+        "per-level": 0.005
+      },
+      "cooldown-reduction": {
+        "base": 4.5,
+        "per-level": 0.03
+      }
+    },
+    "role": [
+      "&7Pháp sư tối cao, chuyên biến chiến trường thành bài kiểm tra chịu đựng của người khác.",
+      "&7AoE mạnh, khống chế tốt, nhưng bị áp sát thì vẫn biết đau như người thường.",
+      "&8Vai trò: ranged mage / AoE / ward / blink."
+    ]
+  },
+  {
+    "class": "ARCTIC_KNIGHT",
+    "tier": "advanced",
+    "source": "arctic_knight.yml",
+    "sha256": "07eb2a2faad069ba30de917e9156fdbc616ea563fcda87266fae7170c39576a9",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 32,
+        "per-level": 0.16,
+        "min": 32,
+        "max": 32
+      },
+      "armor": {
+        "base": 4.4,
+        "per-level": 0.03,
+        "min": 4.4,
+        "max": 4.4
+      },
+      "armor-toughness": {
+        "base": 1.8,
+        "per-level": 0.015,
+        "min": 1.8,
+        "max": 1.8
+      },
+      "knockback-resistance": {
+        "base": 0.1,
+        "per-level": 0,
+        "min": 0.1,
+        "max": 0.1
+      },
+      "skill-damage": {
+        "base": 5.2,
+        "per-level": 0.055,
+        "min": 5.2,
+        "max": 5.2
+      },
+      "max-stamina": {
+        "base": 34,
+        "per-level": 0.1,
+        "min": 34,
+        "max": 34
+      }
+    },
+    "role": [
+      "&7Hiệp sĩ băng giá, càng lạnh càng lì, càng chậm càng khó chịu.",
+      "&7Khống chế tốt, chống chịu ổn; sát thương không phải số một vì đã có băng khóa người ta rồi.",
+      "&8Vai trò: control bruiser / slow / frost zone."
+    ]
+  },
+  {
+    "class": "ASSASSIN",
+    "tier": "standard",
+    "source": "assassin.yml",
+    "sha256": "60bb8e4f25455cf5edec9e5a483ebe6aaf222a4327978d807487b53f4da92c7f",
+    "skillCount": 6,
+    "attributes": {
+      "max-health": {
+        "base": 23,
+        "per-level": 0.1,
+        "min": 23,
+        "max": 23
+      },
+      "attack-damage": {
+        "base": 2.4,
+        "per-level": 0.035,
+        "min": 2.4,
+        "max": 2.4
+      },
+      "critical-strike-chance": {
+        "base": 8,
+        "per-level": 0.03,
+        "min": 8,
+        "max": 8
+      },
+      "speed": {
+        "base": 0.025,
+        "per-level": 0,
+        "min": 0.025,
+        "max": 0.025
+      },
+      "max-stamina": {
+        "base": 42,
+        "per-level": 0.14,
+        "min": 42,
+        "max": 42
+      },
+      "stamina-regeneration": {
+        "base": 0.17,
+        "per-level": 0.004,
+        "min": 0.17,
+        "max": 0.17
+      }
+    },
+    "role": [
+      "&7Sát thủ cổ điển: vào nhanh, chém đau, rồi biến mất trước khi hóa đơn y tế tới.",
+      "&7Burst cao, máu mỏng; đánh lỗi vị trí là được tiễn đi rất lịch sự.",
+      "&8Vai trò: melee assassin / dash / burst."
+    ]
+  },
+  {
+    "class": "AWAKENED_GUNSLINGER",
+    "tier": "advanced",
+    "source": "awakened_gunslinger.yml",
+    "sha256": "ee1d634d121b33b6e76a550b8da46edd23b3e8149c6387983290545ba597f23e",
+    "skillCount": 7,
+    "attributes": {},
+    "role": [
+      "&7Xạ thủ thức tỉnh, đánh dấu mục tiêu rồi xử lý như biên bản đã ký.",
+      "&8Vai trò: xạ kích / burst / truy sát mục tiêu."
+    ]
+  },
+  {
+    "class": "AWAKENED_MAGE",
+    "tier": "advanced",
+    "source": "awakened_mage.yml",
+    "sha256": "0f1e03f63d899c24a752665a4c5b48b51e073d706b54c161b87c952a523ed60d",
+    "skillCount": 7,
+    "attributes": {},
+    "role": [
+      "&7Pháp sư đã thức tỉnh, băng lửa đủ cả, thiếu mỗi bảo hiểm cháy nổ.",
+      "&8Vai trò: burst phép / khống chế / combo tầm xa."
+    ]
+  },
+  {
+    "class": "BARD",
+    "tier": "standard",
+    "source": "bard.yml",
+    "sha256": "4a9941f1fa671de9a24d9450451164230eb8d1a664346cc1103a9cdae6296b71",
+    "skillCount": 6,
+    "attributes": {
+      "max-health": {
+        "base": 27,
+        "per-level": 0.12,
+        "min": 27,
+        "max": 27
+      },
+      "skill-damage": {
+        "base": 4.4,
+        "per-level": 0.05,
+        "min": 4.4,
+        "max": 4.4
+      },
+      "max-mana": {
+        "base": 46,
+        "per-level": 0.16,
+        "min": 46,
+        "max": 46
+      },
+      "mana-regeneration": {
+        "base": 0.32,
+        "per-level": 0.004,
+        "min": 0.32,
+        "max": 0.32
+      },
+      "cooldown-reduction": {
+        "base": 3,
+        "per-level": 0.02,
+        "min": 3,
+        "max": 3
+      },
+      "armor": {
+        "base": 2.0,
+        "per-level": 0.015,
+        "min": 2.0,
+        "max": 2.0
+      }
+    },
+    "role": [
+      "&7Nhạc công chiến trường, dùng âm thanh để chữa lành bạn bè và làm đối thủ muốn tắt loa.",
+      "&7Hỗ trợ tốt, khống chế vừa phải, sát thương không phải nghề chính.",
+      "&8Vai trò: support / aura / soft control."
+    ]
+  },
+  {
+    "class": "BATMAN",
+    "tier": "elite",
+    "source": "batman.yml",
+    "sha256": "03c3d1e43aa7991750cdf571419ac7118d8d397eac3340c90aefa0c1163bcd9c",
+    "skillCount": 7,
+    "attributes": {
+      "attack-damage": {
+        "per-level": 0.12,
+        "base": 6
+      },
+      "max-health": {
+        "per-level": 0.3,
+        "base": 30
+      },
+      "max-mana": {
+        "base": 0.0
+      },
+      "armor": {
+        "per-level": 0.02,
+        "base": 3
+      },
+      "max-stamina": {
+        "base": 100.0
+      }
+    },
+    "role": [
+      "Freeflow Combat & Counter Instinct",
+      "Glider Cape & Smoke Escape"
+    ]
+  },
+  {
+    "class": "BLADE",
+    "tier": "standard",
+    "source": "blade.yml",
+    "sha256": "8e6972643f8c0e90dc5d0d66f0ad0271a27f13b5928ceb0b8f5fdf1eb76a8607",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 27,
+        "per-level": 0.13
+      },
+      "armor": {
+        "base": 3.2,
+        "per-level": 0.025
+      },
+      "attack-damage": {
+        "base": 2.1,
+        "per-level": 0.035
+      },
+      "skill-damage": {
+        "base": 4.8,
+        "per-level": 0.055
+      },
+      "max-stamina": {
+        "base": 38,
+        "per-level": 0.14
+      },
+      "stamina-regeneration": {
+        "base": 0.19,
+        "per-level": 0.004
+      }
+    },
+    "role": [
+      "&7Kỷ luật Akaviri, kiếm nhanh, đầu lạnh và ghét rồng theo cách rất chuyên nghiệp.",
+      "&7Duelist/anti-boss, chọn một mục tiêu rồi cắt cho gọn.",
+      "&8Vai trò: single target / parry / dragonbane mark."
+    ]
+  },
+  {
+    "class": "BLOODMOON_VAMPIRE",
+    "tier": "advanced",
+    "source": "bloodmoon_vampire.yml",
+    "sha256": "e253c710b605d496588aaca273ad09deb37c6163cf63e781981e743e30cc0552",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 26,
+        "per-level": 0.12,
+        "min": 26,
+        "max": 26
+      },
+      "attack-damage": {
+        "base": 1.8,
+        "per-level": 0.025,
+        "min": 1.8,
+        "max": 1.8
+      },
+      "skill-damage": {
+        "base": 6.0,
+        "per-level": 0.07,
+        "min": 6.0,
+        "max": 6.0
+      },
+      "max-mana": {
+        "base": 42,
+        "per-level": 0.14,
+        "min": 42,
+        "max": 42
+      },
+      "mana-regeneration": {
+        "base": 0.24,
+        "per-level": 0.004,
+        "min": 0.24,
+        "max": 0.24
+      },
+      "health-regeneration": {
+        "base": 0.1,
+        "per-level": 0.003,
+        "min": 0.1,
+        "max": 0.1
+      }
+    },
+    "role": [
+      "&7Ma cà rồng Huyết Nguyệt, đánh bằng máu, múa bằng máu, và nói chung là rất tốn khăn lau.",
+      "&7Sát thương theo form vũ khí, hút máu vừa phải; mạnh nếu giữ được nhịp combo.",
+      "&8Vai trò: blood caster / stance weapon / sustain."
+    ]
+  },
+  {
+    "class": "COMPANION",
+    "tier": "standard",
+    "source": "companion.yml",
+    "sha256": "4b8d5584580201dd383fbe8b73864eda2fcaeb293e17d61164ca00fcfa3d42e2",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 30,
+        "per-level": 0.18
+      },
+      "armor": {
+        "base": 4.2,
+        "per-level": 0.03
+      },
+      "armor-toughness": {
+        "base": 1.6,
+        "per-level": 0.015
+      },
+      "knockback-resistance": {
+        "base": 0.14,
+        "per-level": 0
+      },
+      "attack-damage": {
+        "base": 2.0,
+        "per-level": 0.035
+      },
+      "max-stamina": {
+        "base": 34,
+        "per-level": 0.14
+      },
+      "stamina-regeneration": {
+        "base": 0.18,
+        "per-level": 0.004
+      }
+    },
+    "role": [
+      "&7Chiến binh của Circle, dùng thép, máu nóng và vài quyết định rất thiếu bảo hiểm.",
+      "&7Không bóng bẩy, không triết lý. Đứng trước mặt địch và bắt nó hối hận.",
+      "&8Vai trò: melee bruiser / sustain / Beast Form giả lập."
+    ]
+  },
+  {
+    "class": "DARK_BROTHERHOOD",
+    "tier": "advanced",
+    "source": "dark_brotherhood.yml",
+    "sha256": "e45234d261637be141648e1607ac1f6d70c2ae0242d7936497bd8bf0547ba828",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 22,
+        "per-level": 0.1
+      },
+      "attack-damage": {
+        "base": 2.1,
+        "per-level": 0.035
+      },
+      "skill-damage": {
+        "base": 4.8,
+        "per-level": 0.06
+      },
+      "cooldown-reduction": {
+        "base": 4.0,
+        "per-level": 0.025
+      },
+      "max-stamina": {
+        "base": 34,
+        "per-level": 0.14
+      },
+      "stamina-regeneration": {
+        "base": 0.18,
+        "per-level": 0.004
+      }
+    },
+    "role": [
+      "&7Sát thủ trong bóng tối, chuyên giải quyết vấn đề bằng dao và sự im lặng.",
+      "&7Burst cao, mỏng, khó chịu, và hoàn toàn không hề xin lỗi.",
+      "&8Vai trò: assassin / poison / execute."
+    ]
+  },
+  {
+    "class": "DAWNGUARD",
+    "tier": "advanced",
+    "source": "dawnguard.yml",
+    "sha256": "c21a43ec3f62253cf89e90cdc07c8b0828eaec226c7a639e1c91cabb623f2720",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 26,
+        "per-level": 0.14
+      },
+      "armor": {
+        "base": 3.0,
+        "per-level": 0.025
+      },
+      "attack-damage": {
+        "base": 1.6,
+        "per-level": 0.03
+      },
+      "skill-damage": {
+        "base": 4.2,
+        "per-level": 0.055
+      },
+      "max-stamina": {
+        "base": 32,
+        "per-level": 0.13
+      },
+      "stamina-regeneration": {
+        "base": 0.16,
+        "per-level": 0.003
+      }
+    },
+    "role": [
+      "&7Thợ săn ma cà rồng, ghét bóng tối bằng cả đức tin và một cây nỏ tốt.",
+      "&7Ánh sáng, bạc, ward và thái độ rất thiếu thiện cảm với Volkihar.",
+      "&8Vai trò: ranged counter / anti-heal / zone control."
+    ]
+  },
+  {
+    "class": "DEATH_KNIGHT",
+    "tier": "elite",
+    "source": "death_knight.yml",
+    "sha256": "afef9bb33fba6fb4bc011985955ca8b754613a8c3fbc51bfe8c6ecbb432979a7",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 28,
+        "per-level": 0.15
+      },
+      "armor": {
+        "base": 4.5,
+        "per-level": 0.03
+      },
+      "armor-toughness": {
+        "base": 2.0,
+        "per-level": 0.015
+      },
+      "knockback-resistance": {
+        "base": 0.12,
+        "per-level": 0
+      },
+      "attack-damage": {
+        "base": 1.4,
+        "per-level": 0.025
+      },
+      "skill-damage": {
+        "base": 3.8,
+        "per-level": 0.045
+      }
+    },
+    "role": [
+      "&7Kỵ sĩ tử khí, không vội giết ngay; trước hết là trói, kéo, làm chậm rồi mới hỏi thăm.",
+      "&7Khống chế mạnh, chống chịu tốt; sát thương giữ vừa phải vì khóa người ta lâu quá là mất vui.",
+      "&8Vai trò: tank control / debuff / soul barrier."
+    ]
+  },
+  {
+    "class": "DECADE",
+    "tier": "elite",
+    "source": "decade.yml",
+    "sha256": "d7abd22f3789260d4eabe5baaf9c597da962653ef8580f5ed209df557e2cde3f",
+    "skillCount": 8,
+    "attributes": {
+      "max-health": {
+        "base": 30,
+        "per-level": 0.2
+      },
+      "max-mana": {
+        "base": 60,
+        "per-level": 0.3
+      },
+      "max-stamina": {
+        "base": 45,
+        "per-level": 0.2
+      },
+      "armor": {
+        "base": 3,
+        "per-level": 0.02
+      }
+    },
+    "role": [
+      "&7Attack Ride • K-Touch • Dimension Kick"
+    ]
+  },
+  {
+    "class": "DRAGONBORN",
+    "tier": "elite",
+    "source": "dragonborn.yml",
+    "sha256": "cc9754e1c3584fe10b69b006e1a2df0d5947a5f7c7662c3acf91ab49cbfa4638",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 24,
+        "per-level": 0.15
+      },
+      "attack-damage": {
+        "base": 3,
+        "per-level": 0.06
+      },
+      "skill-damage": {
+        "base": 10,
+        "per-level": 0.12
+      },
+      "cooldown-reduction": {
+        "base": 5,
+        "per-level": 0.03
+      },
+      "chance": {
+        "base": 10,
+        "per-level": 0
+      }
+    },
+    "role": [
+      "&7Kẻ sống sót sau đủ loại định mệnh mà người thường gọi là xui xẻo.",
+      "&7Không phải ai cũng hét một câu là lịch sử phải đổi hướng.",
+      "&7Dragonborn thì có. Và thường thì vẫn giả vờ đó là kế hoạch.",
+      "&8Unlock: hoàn thành 100% quest chính + phụ của Skyrim."
+    ]
+  },
+  {
+    "class": "DRUID",
+    "tier": "standard",
+    "source": "druid.yml",
+    "sha256": "8ae8b0804a53571c67f36bbf84edef28e8aae9c02db265482c64fc5cadf6845e",
+    "skillCount": 6,
+    "attributes": {
+      "max-health": {
+        "base": 28,
+        "per-level": 0.13,
+        "min": 28,
+        "max": 28
+      },
+      "armor": {
+        "base": 2.8,
+        "per-level": 0.02,
+        "min": 2.8,
+        "max": 2.8
+      },
+      "skill-damage": {
+        "base": 4.8,
+        "per-level": 0.055,
+        "min": 4.8,
+        "max": 4.8
+      },
+      "max-mana": {
+        "base": 50,
+        "per-level": 0.16,
+        "min": 50,
+        "max": 50
+      },
+      "mana-regeneration": {
+        "base": 0.34,
+        "per-level": 0.004,
+        "min": 0.34,
+        "max": 0.34
+      },
+      "health-regeneration": {
+        "base": 0.16,
+        "per-level": 0.003,
+        "min": 0.16,
+        "max": 0.16
+      }
+    },
+    "role": [
+      "&7Druid gọi cây, gọi thú, gọi gió; thiếu mỗi gọi người yêu cũ quay lại, cái đó quá tà thuật.",
+      "&7Thiên về hồi phục, độc, biến hình và giữ nhịp giao tranh lâu dài.",
+      "&8Vai trò: nature support / poison / shapeshift."
+    ]
+  },
+  {
+    "class": "ENTREPRENEUR",
+    "tier": "standard",
+    "source": "entrepreneur.yml",
+    "sha256": "34d4d6f3f20961499b504a8aab4ebdc416cb379357116e6e67c5170377b22e13",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 25,
+        "per-level": 0.11
+      },
+      "armor": {
+        "base": 2.8,
+        "per-level": 0.02
+      },
+      "skill-damage": {
+        "base": 3.8,
+        "per-level": 0.045
+      },
+      "max-mana": {
+        "base": 42,
+        "per-level": 0.16
+      },
+      "mana-regeneration": {
+        "base": 0.28,
+        "per-level": 0.003
+      },
+      "cooldown-reduction": {
+        "base": 3.0,
+        "per-level": 0.02
+      }
+    },
+    "role": [
+      "&7Tiền không mua được hạnh phúc, nhưng mua được vệ sĩ, mưa kim cương và vài vụ kiện tụng.",
+      "&7Class donate thiên về control/utility, không phải nút xóa người chơi.",
+      "&8Vai trò: utility / control / summon / top donate."
+    ]
+  },
+  {
+    "class": "FLASH",
+    "tier": "elite",
+    "source": "flash.yml",
+    "sha256": "e45790733fd2df8c0c05a0e8a873ec61a06315a9f9be44a1563022d431d5b256",
+    "skillCount": 7,
+    "attributes": {
+      "attack-damage": {
+        "per-level": 0.12,
+        "base": 6
+      },
+      "max-health": {
+        "per-level": 0.3,
+        "base": 30
+      },
+      "max-mana": {
+        "base": 100.0
+      },
+      "armor": {
+        "per-level": 0.02,
+        "base": 3
+      },
+      "max-stamina": {
+        "base": 40.0
+      }
+    },
+    "role": [
+      "Speed Force Levels & Regeneration",
+      "Arrow & Projectile Catching"
+    ]
+  },
+  {
+    "class": "GUNNER",
+    "tier": "standard",
+    "source": "gunner.yml",
+    "sha256": "6ec38ded1ea90f0ae713f870dcc54c2339d2f094dc2d2d7afe0342cd6bc0d0a7",
+    "skillCount": 6,
+    "attributes": {
+      "max-health": {
+        "base": 24,
+        "per-level": 0.1,
+        "min": 24,
+        "max": 24
+      },
+      "attack-damage": {
+        "base": 2.0,
+        "per-level": 0.025,
+        "min": 2.0,
+        "max": 2.0
+      },
+      "skill-damage": {
+        "base": 6.2,
+        "per-level": 0.07,
+        "min": 6.2,
+        "max": 6.2
+      },
+      "critical-strike-chance": {
+        "base": 6,
+        "per-level": 0.025,
+        "min": 6,
+        "max": 6
+      },
+      "max-stamina": {
+        "base": 36,
+        "per-level": 0.12,
+        "min": 36,
+        "max": 36
+      },
+      "stamina-regeneration": {
+        "base": 0.14,
+        "per-level": 0.003,
+        "min": 0.14,
+        "max": 0.14
+      }
+    },
+    "role": [
+      "&7Người mang súng đến một trận kiếm phép, nghe sai luật nhưng lại khá thuyết phục.",
+      "&7Sát thương tầm xa tốt, burst theo nhịp; đứng yên lâu thì thành bia tập bắn ngược.",
+      "&8Vai trò: ranged burst / firearm / artillery."
+    ]
+  },
+  {
+    "class": "HUNTER",
+    "tier": "standard",
+    "source": "hunter.yml",
+    "sha256": "7151d09765fda38322061f7d6708c601eeb5249c14952d0906e95ce30738b5d0",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 32,
+        "per-level": 0.2
+      },
+      "armor": {
+        "base": 4,
+        "per-level": 0.03
+      },
+      "armor-toughness": {
+        "base": 2,
+        "per-level": 0.02
+      },
+      "knockback-resistance": {
+        "base": 0.18,
+        "per-level": 0
+      },
+      "health-regeneration": {
+        "base": 0.28,
+        "per-level": 0.006
+      },
+      "max-stamina": {
+        "base": 30,
+        "per-level": 0.15
+      },
+      "stamina-regeneration": {
+        "base": 0.24,
+        "per-level": 0.004
+      }
+    },
+    "role": [
+      "&7Thợ săn của những thứ đáng lẽ không nên tồn tại, nhưng lại rất thích xuất hiện.",
+      "&7Biết vài dấu ấn, uống vài thứ nguy hiểm, và vẫn nói: ổn, kiểm soát được.",
+      "&7Không phải anh hùng sáng bóng. Chỉ là người còn đứng sau khi mọi thứ kết thúc.",
+      "&8Vai trò: control / semi-tank / burst / sống dai bằng sự lì lợm rất thiếu lành mạnh."
+    ]
+  },
+  {
+    "class": "IRON_MAN",
+    "tier": "elite",
+    "source": "iron_man.yml",
+    "sha256": "4dcb8e6cdb71b0fcfdf7790a514c848870693ca57fc8490aa43b63aa1e3a9a03",
+    "skillCount": 7,
+    "attributes": {
+      "attack-damage": {
+        "per-level": 0.12,
+        "base": 6
+      },
+      "max-health": {
+        "per-level": 0.3,
+        "base": 30
+      },
+      "max-mana": {
+        "base": 100.0
+      },
+      "armor": {
+        "per-level": 0.02,
+        "base": 3
+      },
+      "max-stamina": {
+        "base": 40.0
+      }
+    },
+    "role": [
+      "Thruster Flight",
+      "Arc Reactor Overdrive"
+    ]
+  },
+  {
+    "class": "KABUTO",
+    "tier": "elite",
+    "source": "kabuto.yml",
+    "sha256": "6742f47017ac9e50b454566e2272ac13a05c093fe02a23cf0523a99b4ae04dea",
+    "skillCount": 8,
+    "attributes": {
+      "max-health": {
+        "base": 30,
+        "per-level": 0.2
+      },
+      "max-mana": {
+        "base": 40,
+        "per-level": 0.3
+      },
+      "max-stamina": {
+        "base": 40,
+        "per-level": 0.2
+      },
+      "armor": {
+        "base": 3,
+        "per-level": 0.02
+      }
+    },
+    "role": [
+      "&7Masked Form → Cast Off → Rider Form → Clock Up",
+      "&7Zecter Bond • Rider Kick • Hyper Zecter"
+    ]
+  },
+  {
+    "class": "KNIGHT",
+    "tier": "elite",
+    "source": "knight.yml",
+    "sha256": "052c1e2159339435252261988474e4a8ad9ef537e4ecb765fc7e15b8d7c5d819",
+    "skillCount": 8,
+    "attributes": {
+      "max-health": {
+        "base": 30,
+        "per-level": 0.2
+      },
+      "max-mana": {
+        "base": 60,
+        "per-level": 0.3
+      },
+      "max-stamina": {
+        "base": 45,
+        "per-level": 0.2
+      },
+      "armor": {
+        "base": 3,
+        "per-level": 0.02
+      }
+    },
+    "role": [
+      "&7Darkwing • Shippu Survive"
+    ]
+  },
+  {
+    "class": "ARCANE-MAGE",
+    "tier": "standard",
+    "source": "mage/arcane-mage.yml",
+    "sha256": "051b45489d20c9b0bc4ffc98994e4a248eb7a01da7aa43e1e43687ea480eb0dc",
+    "skillCount": 9,
+    "attributes": {
+      "max-health": {
+        "base": 18,
+        "per-level": 0
+      },
+      "max-mana": {
+        "base": 30,
+        "per-level": 1.3
+      },
+      "mana-regeneration": {
+        "base": 0.2,
+        "per-level": 0.04
+      },
+      "health-regeneration": {
+        "base": 0.13,
+        "per-level": 0
+      }
+    },
+    "role": [
+      "The Mage has mastered the power of the",
+      "Arcanes, taking down any enemy on his path",
+      "using powerful magic & ranged abilities."
+    ]
+  },
+  {
+    "class": "MAGE",
+    "tier": "standard",
+    "source": "mage/mage.yml",
+    "sha256": "ad342c8e143eecdee4f665ef9918547e99849d9f5a3e9976e8cdc6d777cf6cbf",
+    "skillCount": 6,
+    "attributes": {},
+    "role": [
+      "&7Pháp sư nguyên tố, chuyên biến mana thành hóa đơn viện phí cho quái.",
+      "&8Vai trò: phép thuật / khống chế / sát thương diện rộng."
+    ]
+  },
+  {
+    "class": "MARKSMAN",
+    "tier": "standard",
+    "source": "marksman.yml",
+    "sha256": "717864fd1617f12f5b2984fef208fc028a63a364fcce88e6031a62a17daf3eba",
+    "skillCount": 6,
+    "attributes": {
+      "knockback-resistance": {
+        "base": 0.15,
+        "per-level": 0.01
+      },
+      "speed-malus-reduction": {
+        "base": 10,
+        "per-level": 2
+      },
+      "max-health": {
+        "base": 18,
+        "per-level": 0
+      },
+      "movement-speed": {
+        "base": 0.105,
+        "per-level": 0
+      },
+      "safe-fall-distance": {
+        "base": 4.0,
+        "per-level": 0
+      }
+    },
+    "role": [
+      "The marksman is a swift and accurate",
+      "ranged fighter, never missing any arrow."
+    ]
+  },
+  {
+    "class": "NECROMANCER",
+    "tier": "advanced",
+    "source": "necromancer.yml",
+    "sha256": "47aa9d6a2fc2b11824da68bff099dd417b0b97ab8ad44878e033b1c56c540598",
+    "skillCount": 6,
+    "attributes": {},
+    "role": [
+      "&7Triệu hồi sư bóng tối, gọi đệ đi làm thay còn mình đứng cười nhẹ.",
+      "&8Vai trò: triệu hồi / cường hóa minion / kiểm soát giao tranh."
+    ]
+  },
+  {
+    "class": "NIGHTINGALE",
+    "tier": "advanced",
+    "source": "nightingale.yml",
+    "sha256": "0bc334bf5bb9c1aab44a9edc2bea9599aa3ff7a0f64743adf0196c4082e71d3c",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 24,
+        "per-level": 0.11
+      },
+      "attack-damage": {
+        "base": 1.9,
+        "per-level": 0.032
+      },
+      "skill-damage": {
+        "base": 5.4,
+        "per-level": 0.065
+      },
+      "cooldown-reduction": {
+        "base": 5.0,
+        "per-level": 0.03
+      },
+      "knockback-resistance": {
+        "base": 0.08,
+        "per-level": 0
+      },
+      "max-stamina": {
+        "base": 38,
+        "per-level": 0.15
+      },
+      "stamina-regeneration": {
+        "base": 0.24,
+        "per-level": 0.004
+      }
+    },
+    "role": [
+      "&7Awaken của Thieves Guild: bóng tối được Nocturnal ký giấy bảo lãnh.",
+      "&7Không còn là chạy trốn. Đây là biến mất rồi quay lại đòi nợ.",
+      "&8Vai trò: prestige rogue / shadow control / burst."
+    ]
+  },
+  {
+    "class": "NINJA_SAMURAI",
+    "tier": "advanced",
+    "source": "ninja_samurai.yml",
+    "sha256": "c8d12b1fa8cd55e8036e11604202cc47947f9a5f658abd4b170be9aa84401270",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 24,
+        "per-level": 0.1,
+        "min": 24,
+        "max": 24
+      },
+      "attack-damage": {
+        "base": 2.3,
+        "per-level": 0.035,
+        "min": 2.3,
+        "max": 2.3
+      },
+      "skill-damage": {
+        "base": 5.6,
+        "per-level": 0.065,
+        "min": 5.6,
+        "max": 5.6
+      },
+      "speed": {
+        "base": 0.03,
+        "per-level": 0,
+        "min": 0.03,
+        "max": 0.03
+      },
+      "max-stamina": {
+        "base": 42,
+        "per-level": 0.14,
+        "min": 42,
+        "max": 42
+      },
+      "stamina-regeneration": {
+        "base": 0.18,
+        "per-level": 0.004,
+        "min": 0.18,
+        "max": 0.18
+      }
+    },
+    "role": [
+      "&7Nửa ninja, nửa samurai, toàn phần khó chịu nếu để nó tự do chạy nhảy.",
+      "&7Combo nhanh, dash liên tục, gây áp lực bằng bleed và tốc độ.",
+      "&8Vai trò: melee combo / bleed / mobility."
+    ]
+  },
+  {
+    "class": "PALADIN",
+    "tier": "standard",
+    "source": "paladin.yml",
+    "sha256": "d0470781d55214e1cf01074a5f1ae705b1b42e67408c7187e3ec5cf31b9dcd7f",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 32,
+        "per-level": 0.16,
+        "min": 32,
+        "max": 32
+      },
+      "armor": {
+        "base": 5.0,
+        "per-level": 0.035,
+        "min": 5.0,
+        "max": 5.0
+      },
+      "armor-toughness": {
+        "base": 2.0,
+        "per-level": 0.016,
+        "min": 2.0,
+        "max": 2.0
+      },
+      "knockback-resistance": {
+        "base": 0.12,
+        "per-level": 0,
+        "min": 0.12,
+        "max": 0.12
+      },
+      "attack-damage": {
+        "base": 1.6,
+        "per-level": 0.02,
+        "min": 1.6,
+        "max": 1.6
+      },
+      "skill-damage": {
+        "base": 4.2,
+        "per-level": 0.045,
+        "min": 4.2,
+        "max": 4.2
+      }
+    },
+    "role": [
+      "&7Paladin lấy ánh sáng làm khiên, lấy búa làm lý lẽ, và lấy niềm tin làm bảo hiểm.",
+      "&7Chống chịu, bảo vệ, hồi phục vừa phải; sát thương ổn nhưng không phải máy xay.",
+      "&8Vai trò: tank support / holy control / shield."
+    ]
+  },
+  {
+    "class": "RABBIT",
+    "tier": "standard",
+    "source": "rabbit.yml",
+    "sha256": "b66631a9ca0f6aeacc730143ee39998a5c3abf809319e90e32b1882582f40f65",
+    "skillCount": 5,
+    "attributes": {},
+    "role": [
+      "&7Nhanh, lắt léo và thích ném trứng vào mặt kẻ địch.",
+      "&8Vai trò: cơ động / áp sát / sát thương vui mà đau."
+    ]
+  },
+  {
+    "class": "ROGUE",
+    "tier": "standard",
+    "source": "rogue.yml",
+    "sha256": "48e8a81691278553f7f1ba22e0280050926439200f90d9bcc6fda13e268d3f8c",
+    "skillCount": 8,
+    "attributes": {
+      "attack-speed": {
+        "base": 4.2,
+        "per-level": 0.05
+      },
+      "max-health": {
+        "base": 18,
+        "per-level": 0
+      },
+      "movement-speed": {
+        "base": 0.105,
+        "per-level": 0
+      },
+      "safe-fall-distance": {
+        "base": 5.0,
+        "per-level": 0
+      },
+      "sneaking-speed": {
+        "base": 0.5,
+        "per-level": 0
+      },
+      "JUMP_STRENGTH": {
+        "base": 0.5,
+        "per-level": 0
+      }
+    },
+    "role": [
+      "His important damage burst potential and",
+      "his lack of health forces him to one",
+      "shot his targets before being taken down."
+    ]
+  },
+  {
+    "class": "RPG_ITEMS_2",
+    "tier": "standard",
+    "source": "rpg_items_2.yml",
+    "sha256": "389514a3249ff96891cfacc17fd1639f81eb4b2de16783813b5078d57a1793f4",
+    "skillCount": 11,
+    "attributes": {},
+    "role": [
+      "&bChoose the RPG Items II Class"
+    ]
+  },
+  {
+    "class": "RYUKI",
+    "tier": "elite",
+    "source": "ryuki.yml",
+    "sha256": "e34b9854efce2d58eeac1ec270b858bf24682c5fe613fa571cfee859fe80776f",
+    "skillCount": 8,
+    "attributes": {
+      "max-health": {
+        "base": 30,
+        "per-level": 0.2
+      },
+      "max-mana": {
+        "base": 60,
+        "per-level": 0.3
+      },
+      "max-stamina": {
+        "base": 45,
+        "per-level": 0.2
+      },
+      "armor": {
+        "base": 3,
+        "per-level": 0.02
+      }
+    },
+    "role": [
+      "&7Dragreder • Rekka Survive"
+    ]
+  },
+  {
+    "class": "SORCERER_SUPREME",
+    "tier": "elite",
+    "source": "sorcerer_supreme.yml",
+    "sha256": "0550be1b521932bf2ba8d76cf1e4a56448ff7e62e3832e4c17bd2dc6082f11ac",
+    "skillCount": 7,
+    "attributes": {
+      "attack-damage": {
+        "per-level": 0.12,
+        "base": 6
+      },
+      "max-health": {
+        "per-level": 0.3,
+        "base": 30
+      },
+      "max-mana": {
+        "base": 500.0
+      },
+      "armor": {
+        "per-level": 0.02,
+        "base": 3
+      },
+      "max-stamina": {
+        "base": 40.0
+      }
+    },
+    "role": [
+      "Cloak of Levitation",
+      "Astral Intuition"
+    ]
+  },
+  {
+    "class": "SPIDER_MAN",
+    "tier": "elite",
+    "source": "spider_man.yml",
+    "sha256": "394d7cf93b2b19280a9d2b597151d9e39db37d7d0d1a4e41842bdf0cd053b9d6",
+    "skillCount": 7,
+    "attributes": {
+      "attack-damage": {
+        "per-level": 0.12,
+        "base": 6
+      },
+      "max-health": {
+        "per-level": 0.3,
+        "base": 30
+      },
+      "max-mana": {
+        "base": 0.0
+      },
+      "armor": {
+        "per-level": 0.02,
+        "base": 3
+      },
+      "max-stamina": {
+        "base": 100.0
+      }
+    },
+    "role": [
+      "Brand New Reflexes",
+      "Wall Crawl"
+    ]
+  },
+  {
+    "class": "SUMMONER",
+    "tier": "advanced",
+    "source": "summoner.yml",
+    "sha256": "f32f9606ad456de24f9a5587df0adb93b11e5033a3f9c80b3dca48f446b4c214",
+    "skillCount": 6,
+    "attributes": {
+      "max-health": {
+        "base": 24,
+        "per-level": 0.1,
+        "min": 24,
+        "max": 24
+      },
+      "skill-damage": {
+        "base": 4.6,
+        "per-level": 0.05,
+        "min": 4.6,
+        "max": 4.6
+      },
+      "max-mana": {
+        "base": 54,
+        "per-level": 0.18,
+        "min": 54,
+        "max": 54
+      },
+      "mana-regeneration": {
+        "base": 0.38,
+        "per-level": 0.004,
+        "min": 0.38,
+        "max": 0.38
+      },
+      "cooldown-reduction": {
+        "base": 3,
+        "per-level": 0.015,
+        "min": 3,
+        "max": 3
+      },
+      "armor": {
+        "base": 1.5,
+        "per-level": 0.01,
+        "min": 1.5,
+        "max": 1.5
+      }
+    },
+    "role": [
+      "&7Summoner không đánh một mình, vì thuê ngoài luôn là giải pháp quản trị rất hiện đại.",
+      "&7Gọi linh thú, buff đệ, kiểm soát mục tiêu; bản thân nên đứng sau cho sang.",
+      "&8Vai trò: minion master / summon / support damage."
+    ]
+  },
+  {
+    "class": "THIEVES_GUILD",
+    "tier": "standard",
+    "source": "thieves_guild.yml",
+    "sha256": "4e2a520480b57ca7406761eb1f0fa928081221d2fcda86e655f633e73321db7a",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 24,
+        "per-level": 0.11
+      },
+      "attack-damage": {
+        "base": 1.3,
+        "per-level": 0.025
+      },
+      "skill-damage": {
+        "base": 3.4,
+        "per-level": 0.04
+      },
+      "cooldown-reduction": {
+        "base": 4.0,
+        "per-level": 0.025
+      },
+      "knockback-resistance": {
+        "base": 0.06,
+        "per-level": 0
+      },
+      "max-stamina": {
+        "base": 36,
+        "per-level": 0.15
+      },
+      "stamina-regeneration": {
+        "base": 0.22,
+        "per-level": 0.004
+      }
+    },
+    "role": [
+      "&7Không phải sát thủ. Chỉ là người lấy ví của đời rồi chạy rất nhanh.",
+      "&7Khống chế, smoke, lừa vị trí và thoát giao tranh trước khi ai đó kịp nổi nóng.",
+      "&8Vai trò: evasive rogue / disruption / escape."
+    ]
+  },
+  {
+    "class": "THOR",
+    "tier": "elite",
+    "source": "thor.yml",
+    "sha256": "0311a2a3739dda121636888d66b9f706d0573574e6f33983f900c4f0ea60d124",
+    "skillCount": 8,
+    "attributes": {
+      "attack-damage": {
+        "per-level": 0.12,
+        "base": 6
+      },
+      "max-health": {
+        "per-level": 0.3,
+        "base": 30
+      },
+      "max-mana": {
+        "base": 100.0
+      },
+      "armor": {
+        "per-level": 0.02,
+        "base": 3
+      },
+      "max-stamina": {
+        "base": 40.0
+      }
+    },
+    "role": [
+      "Asgardian Flight & Worthy Return",
+      "Lightning Armor"
+    ]
+  },
+  {
+    "class": "UNHOLY_ONES",
+    "tier": "advanced",
+    "source": "unholy_ones.yml",
+    "sha256": "dd8794865fb3ee1e235fe5767c0d36070e1b044c4649b8a89dc9fe99bf60a65d",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 22,
+        "per-level": 0.08,
+        "min": 22,
+        "max": 22
+      },
+      "skill-damage": {
+        "base": 3.6,
+        "per-level": 0.035,
+        "min": 3.6,
+        "max": 3.6
+      },
+      "max-mana": {
+        "base": 50,
+        "per-level": 0.16,
+        "min": 50,
+        "max": 50
+      },
+      "mana-regeneration": {
+        "base": 0.34,
+        "per-level": 0.004,
+        "min": 0.34,
+        "max": 0.34
+      },
+      "cooldown-reduction": {
+        "base": 2,
+        "per-level": 0.01,
+        "min": 2,
+        "max": 2
+      },
+      "armor": {
+        "base": 1.0,
+        "per-level": 0.008,
+        "min": 1.0,
+        "max": 1.0
+      }
+    },
+    "role": [
+      "&7Một kẻ không thắng nhờ nắm đấm, mà nhờ gọi đúng người sai thời điểm.",
+      "&7Tay yếu, tim lạnh, danh bạ thì toàn thứ đáng lẽ nên bị chôn sâu hơn.",
+      "&7Không đi một mình. Chỉ là đám đi cùng hơi khó giới thiệu với gia đình.",
+      "&8Luật class: chỉ giữ một nhóm summon chiến đấu cùng lúc."
+    ]
+  },
+  {
+    "class": "VOLKIHAR",
+    "tier": "advanced",
+    "source": "volkihar.yml",
+    "sha256": "03fd4f0a35bd14683ad81f3105ef2e260b77d6a01364a7e6ddfd35f57ee9b714",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 24.5,
+        "per-level": 0.12
+      },
+      "skill-damage": {
+        "base": 5.2,
+        "per-level": 0.065
+      },
+      "cooldown-reduction": {
+        "base": 2.0,
+        "per-level": 0.025
+      },
+      "max-mana": {
+        "base": 42,
+        "per-level": 0.18
+      },
+      "mana-regeneration": {
+        "base": 0.32,
+        "per-level": 0.004
+      }
+    },
+    "role": [
+      "&7Quý tộc ma cà rồng: lịch sự, sang trọng, và uống máu như người khác uống trà.",
+      "&7Sống nhờ hút máu, nguyền rủa và làm đối thủ tự hỏi sao máu mình ít thế.",
+      "&8Vai trò: drain mage / sustain / Vampire Lord giả lập."
+    ]
+  },
+  {
+    "class": "WARRIOR",
+    "tier": "standard",
+    "source": "warrior.yml",
+    "sha256": "4b2bfeee574c84f7dd5b764a69e1841ce38f07e0d8c9cf9aab959cfe4de6901f",
+    "skillCount": 6,
+    "attributes": {
+      "mana-regeneration": {
+        "base": -0.5,
+        "per-level": 0
+      },
+      "speed-malus-reduction": {
+        "base": 50,
+        "per-level": 2
+      },
+      "max-mana": {
+        "base": 20,
+        "per-level": 1
+      },
+      "max-health": {
+        "base": 24,
+        "per-level": 0.5
+      },
+      "movement-speed": {
+        "base": 0.12,
+        "per-level": 0
+      },
+      "attack-damage": {
+        "base": 2,
+        "per-level": 0.1
+      },
+      "attack-speed": {
+        "base": 4.2,
+        "per-level": 0.05
+      }
+    },
+    "role": [
+      "The warrior has extraordinary fighting and",
+      "evolving capabilities, which grant him much",
+      "higher per-level stats than other classes.",
+      "",
+      "The warrior collects rage when casting skills,",
+      "temporarily increasing his base damage."
+    ]
+  },
+  {
+    "class": "WATER_SAMURAI",
+    "tier": "advanced",
+    "source": "water_samurai.yml",
+    "sha256": "3f33f9d1e7823d9cbd6a117f2539653080d522e4d48cb672b6b456534cd7dc66",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 27,
+        "per-level": 0.12,
+        "min": 27,
+        "max": 27
+      },
+      "attack-damage": {
+        "base": 2.1,
+        "per-level": 0.03,
+        "min": 2.1,
+        "max": 2.1
+      },
+      "skill-damage": {
+        "base": 5.5,
+        "per-level": 0.06,
+        "min": 5.5,
+        "max": 5.5
+      },
+      "speed": {
+        "base": 0.018,
+        "per-level": 0,
+        "min": 0.018,
+        "max": 0.018
+      },
+      "max-stamina": {
+        "base": 44,
+        "per-level": 0.14,
+        "min": 44,
+        "max": 44
+      },
+      "stamina-regeneration": {
+        "base": 0.18,
+        "per-level": 0.004,
+        "min": 0.18,
+        "max": 0.18
+      }
+    },
+    "role": [
+      "&7Samurai dùng hơi thở của nước để cắt, xoay, lướt và làm đối thủ ướt cả sĩ diện.",
+      "&7Combo liên hoàn, sát thương vừa-cao, khống chế nhẹ theo nhịp.",
+      "&8Vai trò: melee combo / water breathing / mobility."
+    ]
+  },
+  {
+    "class": "ZOLDA",
+    "tier": "elite",
+    "source": "zolda.yml",
+    "sha256": "dd6d13d5e40f84a23cc41b0648f0be8955c7ae790b7874622c68286d912f5314",
+    "skillCount": 7,
+    "attributes": {
+      "max-health": {
+        "base": 30,
+        "per-level": 0.2
+      },
+      "max-mana": {
+        "base": 60,
+        "per-level": 0.3
+      },
+      "max-stamina": {
+        "base": 45,
+        "per-level": 0.2
+      },
+      "armor": {
+        "base": 3,
+        "per-level": 0.02
+      }
+    },
+    "role": [
+      "&7Card Vent • Heavy Artillery • Magnugiga"
+    ]
+  }
+]
