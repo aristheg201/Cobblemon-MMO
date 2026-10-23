@@ -71,8 +71,8 @@ public final class ItemGenerator {
 
     private double upgradeMultiplier(ItemInstance instance) {
         ItemDefinition definition = registry.item(instance.definitionId());
-        if (definition == null || definition.upgradeTemplateId() == null) return 0d;
-        UpgradeTemplate template = registry.upgrade(definition.upgradeTemplateId());
+        if (definition == null) return 0d;
+        UpgradeTemplate template = registry.upgrade(definition.upgradeTemplateId() == null ? "standard" : definition.upgradeTemplateId());
         return template == null ? 0d : template.statMultiplierPerLevel();
     }
 

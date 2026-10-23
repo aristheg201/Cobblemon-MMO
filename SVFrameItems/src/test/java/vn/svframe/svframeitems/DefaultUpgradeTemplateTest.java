@@ -1,0 +1,5 @@
+package vn.svframe.svframeitems;
+import org.junit.jupiter.api.Test;import vn.svframe.svframeitems.item.*;import vn.svframe.svframeitems.model.*;import vn.svframe.svframeitems.registry.*;import java.util.*;import static org.junit.jupiter.api.Assertions.*;
+class DefaultUpgradeTemplateTest {
+ @Test void everyRegisteredDefinitionGetsStandardUnlessItHasAnExplicitTemplate(){var r=new SVFrameItemsRegistry();var standard=new UpgradeTemplate("standard",10,1,.9,false,.05,Map.of());var own=new UpgradeTemplate("custom",3,.8,.5,true,.1,Map.of());r.registerExternal(standard);r.registerExternal(own);var service=new UpgradeService(r,new ItemGenerator(r,new ItemFormatter()));for(String type:List.of("sword","armor","accessory","material","consumable","gem")){var d=new ItemDefinition("item_"+type,type,"minecraft:stone",type,1,1,1,100,Map.of(),List.of(),List.of(),null,null,List.of(),null);assertSame(standard,service.template(d));}var explicit=new ItemDefinition("owned","sword","minecraft:stone","Custom",1,1,1,100,Map.of(),List.of(),List.of(),null,"custom",List.of(),null);assertSame(own,service.template(explicit));}
+}

@@ -36,6 +36,7 @@ public final class UpgradeService {
         registerBuiltIn(new CurrencyUpgradeCostProvider("beconomy"));
         registerBuiltIn(new CurrencyUpgradeCostProvider("cobbledollars"));
     }
+    public UpgradeTemplate template(ItemDefinition definition){return registry.upgrade(definition.upgradeTemplateId()==null?"standard":definition.upgradeTemplateId());}
     public Result attempt(ItemStack stack) { return attempt(stack, ThreadLocalRandom.current()); }
     public Result attempt(ItemStack stack, RandomGenerator random) { return attemptInternal(null, stack, random); }
     public Result attempt(ServerPlayerEntity player, ItemStack stack) { return attempt(player, stack, ThreadLocalRandom.current()); }
@@ -56,8 +57,7 @@ public final class UpgradeService {
         if(stack.getCount()>1)return new Result(Status.TARGET_STACKED,stack.copy(),instance.upgradeLevel(),instance.upgradeLevel(),0);
         ItemDefinition definition=registry.item(instance.definitionId());
         if(definition==null)return new Result(Status.INVALID_DEFINITION,stack.copy(),instance.upgradeLevel(),instance.upgradeLevel(),0);
-        if(definition.upgradeTemplateId()==null)return new Result(Status.NOT_UPGRADABLE,stack.copy(),instance.upgradeLevel(),instance.upgradeLevel(),0);
-        UpgradeTemplate template=registry.upgrade(definition.upgradeTemplateId()); if(template==null)return new Result(Status.INVALID_DEFINITION,stack.copy(),instance.upgradeLevel(),instance.upgradeLevel(),0);
+        UpgradeTemplate template=template(definition); if(template==null)return new Result(Status.INVALID_DEFINITION,stack.copy(),instance.upgradeLevel(),instance.upgradeLevel(),0);
         if(instance.upgradeLevel()>=template.maxLevel())return new Result(Status.MAX_LEVEL,stack.copy(),instance.upgradeLevel(),instance.upgradeLevel(),0);
         int nextLevel=instance.upgradeLevel()+1; double chance=template.chanceForNextLevel(instance.upgradeLevel());
         List<Reservation> reservations=new ArrayList<>();
@@ -108,8 +108,8 @@ public final class UpgradeService {
         return outcome;
     }
     public double statMultiplier(ItemInstance instance) {
-        ItemDefinition definition=registry.item(instance.definitionId()); if(definition==null||definition.upgradeTemplateId()==null)return 0d;
-        UpgradeTemplate template=registry.upgrade(definition.upgradeTemplateId()); return template==null?0d:template.statMultiplierPerLevel();
+        ItemDefinition definition=registry.item(instance.definitionId()); if(definition==null)return 0d;
+        UpgradeTemplate template=template(definition); return template==null?0d:template.statMultiplierPerLevel();
     }
     public double statMultiplier(EmbeddedGem gem) { return statMultiplier(gem.toItemInstance()); }
     private void registerBuiltIn(CostProvider provider){costProviders.put(ItemType.normalize(provider.id()),provider);}

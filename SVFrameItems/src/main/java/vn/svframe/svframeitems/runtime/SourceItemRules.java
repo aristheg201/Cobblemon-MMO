@@ -45,7 +45,7 @@ public final class SourceItemRules {
     public static void present(ItemStack stack,ItemDefinition definition,ItemInstance instance) {
         var rule=rule(definition.id());if(rule.isEmpty())return;
         if(Boolean.TRUE.equals(rule.get("unbreakable")))stack.set(DataComponentTypes.UNBREAKABLE,new UnbreakableComponent(false));
-        stack.set(DataComponentTypes.CUSTOM_NAME,legacy(definition.displayName()));
+        stack.set(DataComponentTypes.CUSTOM_NAME,legacy(definition.displayName()+(instance.upgradeLevel()>0?" +"+instance.upgradeLevel():"")));
         stack.set(DataComponentTypes.ATTRIBUTE_MODIFIERS,AttributeModifiersComponent.DEFAULT.withShowInTooltip(false));
         if(rule.get("custom-model-data") instanceof Number n)stack.set(DataComponentTypes.CUSTOM_MODEL_DATA,new CustomModelDataComponent(n.intValue()));
         if(rule.get("dye-color") instanceof Number n)stack.set(DataComponentTypes.DYED_COLOR,new DyedColorComponent(n.intValue(),!Boolean.TRUE.equals(rule.get("hide-dye"))));
@@ -56,8 +56,9 @@ public final class SourceItemRules {
         });
         List<Text> lore=new ArrayList<>();if(rule.get("lore") instanceof List<?> lines)for(Object line:lines)lore.add(legacy(String.valueOf(line)));
         lore.add(Text.translatable("svframeitems.item.level",instance.itemLevel()).formatted(net.minecraft.util.Formatting.GRAY).styled(s->s.withItalic(false)));
+        if(instance.upgradeLevel()>0)lore.add(Text.translatable("svframeitems.item.upgrade",instance.upgradeLevel()).formatted(net.minecraft.util.Formatting.GOLD).styled(style->style.withItalic(false)));
         if(definition.setId()!=null)lore.add(Text.translatable("svframeitems.item.set",SVFrameItems.registry().set(definition.setId())==null?definition.setId():legacy(SVFrameItems.registry().set(definition.setId()).displayName())).formatted(net.minecraft.util.Formatting.LIGHT_PURPLE).styled(s->s.withItalic(false)));
-        for(var stat:upgrades(instance,instance.stats()))lore.add(Text.translatable("svframeitems.item.stat",Text.translatable("svframeitems.stat."+stat.stat().toLowerCase(java.util.Locale.ROOT)),java.math.BigDecimal.valueOf(stat.value()).stripTrailingZeros().toPlainString()).formatted(net.minecraft.util.Formatting.GREEN).styled(s->s.withItalic(false)));
+        for(var stat:upgrades(instance,instance.effectiveStats(SVFrameItems.upgrades().statMultiplier(instance),SVFrameItems.upgrades()::statMultiplier)))lore.add(Text.translatable("svframeitems.item.stat",Text.translatable("svframeitems.stat."+stat.stat().toLowerCase(java.util.Locale.ROOT)),java.math.BigDecimal.valueOf(stat.value()).stripTrailingZeros().toPlainString()).formatted(net.minecraft.util.Formatting.GREEN).styled(s->s.withItalic(false)));
         stack.set(DataComponentTypes.LORE,new LoreComponent(lore));
     }
     private static Text legacy(String value){
