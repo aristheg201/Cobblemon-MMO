@@ -27,6 +27,7 @@ public final class FantasyHubClient implements ClientModInitializer {
 
   @Override
   public void onInitializeClient() {
+    vn.svframe.fantasyhub.protocol.FlashMovement.client=p->{var mc=net.minecraft.client.MinecraftClient.getInstance();if(p==mc.player)return string("classId").equalsIgnoreCase("FLASH");var visual=HeroVisuals.state(p.getId());return visual!=null&&visual.hero().equals("FLASH");};
     net.fabricmc.fabric.api.client.screen.v1.ScreenEvents.AFTER_INIT.register((client,screen,width,height)->{
       if(screen instanceof net.minecraft.client.gui.screen.ingame.GenericContainerScreen chest&&!(screen instanceof InfinitySnapScreen)&&screen.getTitle().getString().contains("INFINITY SNAP"))client.setScreen(new InfinitySnapScreen(chest.getScreenHandler(),client.player.getInventory(),screen.getTitle()));
     });
@@ -212,6 +213,7 @@ public final class FantasyHubClient implements ClientModInitializer {
           if (context.client().currentScreen instanceof HubScreen screen) screen.refresh();
           if (context.client().currentScreen instanceof PokemonShopScreen screen) screen.refresh();
           if (context.client().currentScreen instanceof FantasyShopScreen screen) screen.refresh();
+          if (context.client().currentScreen instanceof ItemUpgradeScreen screen) screen.refresh();
           if (context.client().currentScreen instanceof ClassSelectionScreen screen)
             screen.refresh();
         });

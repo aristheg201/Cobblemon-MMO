@@ -134,7 +134,7 @@ public final class ClassSelectionScreen extends Screen {
                     confirming = true;
                     clearAndInit();
                   } else {
-                    if(row!=null&&!row.get("unlocked").getAsBoolean()){client.setScreen(new FantasyShopScreen("classes",selected));return;}
+                    if(row!=null&&!row.get("unlocked").getAsBoolean()){client.setScreen(new FantasyShopScreen(this,"classes",selected));return;}
                     FantasyHubClient.send(policy!=null&&policy.get("remainingSeconds").getAsLong()>0?"switch_bypass":"switch_class", selected, 0);
                     confirming = false;
                     clearAndInit();

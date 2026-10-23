@@ -100,6 +100,8 @@ final class HeroPassives {
     if(p.isOnGround()||HeroWorld.safe(p,p.getPos(),true))s.lastSafe=p.getPos();
     if(HeroControl.mobilityLocked(p)){if(s.active("flight"))flight(s,false);}
     HeroFlight.tick(s);
+    var step=p.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT);var stepId=Identifier.of("fantasyhub","flash_step");
+    if(step!=null&&s.hero.id().equals("FLASH")&&step.getModifier(stepId)==null)step.addTemporaryModifier(new EntityAttributeModifier(stepId,.4,EntityAttributeModifier.Operation.ADD_VALUE));
     if(s.hero.id().equals("FLASH")) {
       if(moved>.025&&moved<.7){s.movementTicks++;s.standingTicks=0;}else if(++s.standingTicks>40)s.movementTicks=Math.max(0,s.movementTicks-2);
       s.speedLevel=Math.min((int)s.passive("speed_max"),(int)(s.movementTicks/(s.passive("speed_level_seconds")*20)));
@@ -181,6 +183,7 @@ final class HeroPassives {
     if(s.player.noClip&&!s.priorNoClip&&!HeroWorld.safe(s.player,s.player.getPos(),true))HeroWorld.teleport(s.player,s.lastSafe);
     if(s.active("cape_glide")){s.player.stopFallFlying();s.power.unset("cape_glide");}
     s.player.noClip=s.priorNoClip;HeroFlight.release(s);
+    var step=s.player.getAttributeInstance(EntityAttributes.GENERIC_STEP_HEIGHT);if(step!=null)step.removeModifier(Identifier.of("fantasyhub","flash_step"));
     attribute(s.player,EntityAttributes.GENERIC_MOVEMENT_SPEED,"speed",0);attribute(s.player,EntityAttributes.GENERIC_ATTACK_SPEED,"attack_speed",0);attribute(s.player,EntityAttributes.GENERIC_ARMOR,"armor",0);
   }
   static boolean spend(HeroRuntime.Session s,double amount) {

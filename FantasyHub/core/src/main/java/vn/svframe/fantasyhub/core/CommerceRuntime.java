@@ -41,7 +41,7 @@ public final class CommerceRuntime {
  private record Quote(String offer,String classId,String tier,boolean equipmentOnly,long expires){}
  public static BigDecimal bypassPrice(){return config.bypassBeast;}
  public static void install(){
-  CommerceQa.install();
+  CommerceQa.install();ItemUpgradeRuntime.install();
   vn.svframe.fantasyhub.protocol.CommerceItem.handlers.put("rpg_upgrade_catalyst",(player,kind,hand)->{
    if(!(player instanceof ServerPlayerEntity p)||hand!=net.minecraft.util.Hand.MAIN_HAND)return false;
    var gear=p.getOffHandStack();var result=vn.svframe.svframeitems.api.SVFrameItemsApi.upgrade(p,gear);
@@ -68,8 +68,8 @@ public final class CommerceRuntime {
  private static boolean gearValid(String id){var list=config.equipment.get(id);if(list==null||list.size()<4)return false;try{for(var r:list)validateReward(r);return true;}catch(RuntimeException e){if(INVALID_GEAR_LOGGED.add(id))LOG.error("Disabled bundle {}: {}",id,e.getMessage());return false;}}
  public static Map<String,Object> view(ServerPlayerEntity p){
   var d=SVFrameMMO.playerData().get(p);var service=CurrencyService.get();var out=new LinkedHashMap<String,Object>();
-  for(int method=1;method<=2;method++){var key=CurrencyKey.parse(CommercePolicy.currency(method));boolean ready=service.isAvailable(key);out.put(method==1?"beastAvailable":"hunterAvailable",ready);out.put(method==1?"beastBalance":"hunterBalance",ready?service.balance(p,key).toPlainString():"Unavailable");}
-  out.put("switchRemainingSeconds",ClassSwitchService.policy(d).get("remainingSeconds"));out.put("switchAvailableAt",((Number)ClassSwitchService.policy(d).get("remainingSeconds")).longValue()>0?d.getClassSwitchAvailableAt():0L);out.put("activeClass",d.getClassId());out.put("freeChoice",ClassProgression.starter(d));out.put("bypassBeast",config.bypassBeast);out.put("mailCount",mail(d).size());var rows=new ArrayList<Map<String,Object>>();var quotes=QUOTES.computeIfAbsent(p.getUuid(),k->new HashMap<>());quotes.entrySet().removeIf(e->e.getValue().expires<System.currentTimeMillis());
+  for(int method=1;method<=2;method++){var key=CommerceCurrencies.payment(method);boolean ready=service.isAvailable(key);out.put(method==1?"beastAvailable":"hunterAvailable",ready);out.put(method==1?"beastBalance":"hunterBalance",ready?service.balance(p,key).toPlainString():"Unavailable");}
+  out.put("switchRemainingSeconds",ClassSwitchService.policy(d).get("remainingSeconds"));out.put("switchAvailableAt",((Number)ClassSwitchService.policy(d).get("remainingSeconds")).longValue()>0?d.getClassSwitchAvailableAt():0L);out.put("activeClass",d.getClassId());out.put("freeChoice",ClassProgression.starter(d));out.put("bypassBeast",config.bypassBeast);try{out.put("mailCount",mail(p).size());out.put("mailAvailable",true);}catch(RuntimeException failure){out.put("mailCount",0);out.put("mailAvailable",false);LOG.error("Cannot read mailbox for {}; item purchases remain blocked",p.getUuid(),failure);}var rows=new ArrayList<Map<String,Object>>();var quotes=QUOTES.computeIfAbsent(p.getUuid(),k->new HashMap<>());quotes.entrySet().removeIf(e->e.getValue().expires<System.currentTimeMillis());
   for(var type:SVFrameMMO.classes().getAll()){
    String id=type.getId(),tierId=config.classTiers.get(id);if(tierId==null||!ClassSwitchService.selectable(id))continue;var tier=config.tiers.get(tierId);boolean owned=ClassProgression.owns(d,id)||d.getClassId().equals(id);
    var classRow=row(p,quotes,"class:"+id,id,tierId,false,type.getName(),"classes","",tier.classPrice,List.of(),"minecraft:nether_star");classRow.put("owned",owned);classRow.put("active",d.getClassId().equals(id));rows.add(classRow);
@@ -101,16 +101,17 @@ public final class CommerceRuntime {
    }
    var generated=new ArrayList<String>();for(var r:rewards){var st=stack(r);generated.add(st.encode(p.getRegistryManager()).toString());}
    var amount=price.get(method);CommercePolicy.positiveWhole(amount);String entitlement=grant,fx=effect;
-   boolean result=paid(p,token,offerId,CurrencyKey.parse(CommercePolicy.currency(method)),amount,()->{
+   String preparedMail=generated.isEmpty()?null:prepareMail(p,token,generated);
+   boolean result=paid(p,token,offerId,CommerceCurrencies.payment(method),amount,()->{
     if(!entitlement.isBlank())ClassProgression.own(d,entitlement);
-    var box=mail(d);for(int i=0;i<generated.size();i++){var e=new JsonObject();e.addProperty("id",token+":"+i);e.addProperty("stack",generated.get(i));box.add(e);}d.setPreference(MAIL,JSON.toJson(box));
+    if(preparedMail!=null)d.setPreference(MAIL,preparedMail);
     if(fx.equals("exp")){long prior=Long.parseLong(d.getPreference("fantasyhub:exp-boost-until","0"));d.setPreference("fantasyhub:exp-boost-until",Long.toString(Math.max(prior,System.currentTimeMillis())+1_800_000));}
     if(fx.equals("title"))d.setPreference("fantasyhub:title","Cosmic Hunter");
     d.setClaimCount("fantasyhub:purchases:"+offerId,d.getClaimCount("fantasyhub:purchases:"+offerId)+1);
     d.setClaimCount("fantasyhub:receipt:"+token,1);
    });
-   if(result){QUOTES.remove(p.getUuid());p.sendMessage(Text.translatable("fantasyhub.commerce.success"),false);claim(p);}return result;
-  }catch(Exception e){LOG.warn("Purchase rejected for {}: {}",p.getUuid(),e.toString());return reject(p,"rejected");}
+   if(result){QUOTES.remove(p.getUuid());p.sendMessage(Text.translatable("fantasyhub.commerce.success"),false);try{claim(p);}catch(RuntimeException delivery){LOG.error("Purchase {} committed for {}; mailbox delivery remains pending",token,p.getUuid(),delivery);p.sendMessage(Text.translatable("fantasyhub.commerce.delivery_pending"),false);}}return result;
+  }catch(Exception e){LOG.warn("Purchase {} rejected for {} before commit; see transaction recovery if refund failed",token,p.getUuid(),e);return reject(p,"rejected");}
  }
  static boolean paid(ServerPlayerEntity p,String token,String product,CurrencyKey currency,BigDecimal amount,Runnable grant)throws Exception{
   var d=SVFrameMMO.playerData().get(p);if(BUSY.contains(p.getUuid())||ClassProgression.busy(d)||ClassSwitchService.busy(d))return reject(p,"busy");
@@ -127,17 +128,26 @@ public final class CommerceRuntime {
    throw error;
   }finally{BUSY.remove(p.getUuid());}
  }
- public static void awardItemsOnce(ServerPlayerEntity p,String settlement,List<Reward> rewards){var d=SVFrameMMO.playerData().get(p);String marker="fantasyhub:item-settlement:"+settlement;if(d.getClaimCount(marker)>0)return;var generated=new ArrayList<String>();for(var r:rewards)generated.add(stack(r).encode(p.getRegistryManager()).toString());ClassProgression.transact(d,()->{var box=mail(d);for(int i=0;i<generated.size();i++){var e=new JsonObject();e.addProperty("id",settlement+":"+i);e.addProperty("stack",generated.get(i));box.add(e);}d.setPreference(MAIL,JSON.toJson(box));d.setClaimCount(marker,1);});}
- private static JsonArray mail(PlayerData d){return JsonParser.parseString(d.getPreference(MAIL,"[]")).getAsJsonArray();}
+ public static void awardItemsOnce(ServerPlayerEntity p,String settlement,List<Reward> rewards){
+  var d=SVFrameMMO.playerData().get(p);String marker="fantasyhub:item-settlement:"+settlement;if(d.getClaimCount(marker)>0)return;
+  var generated=new ArrayList<String>();for(var r:rewards)generated.add(stack(r).encode(p.getRegistryManager()).toString());
+  String preparedMail=prepareMail(p,settlement,generated);ClassProgression.transact(d,()->{d.setPreference(MAIL,preparedMail);d.setClaimCount(marker,1);});
+ }
+ private static MailboxStore mailbox(ServerPlayerEntity p){return new MailboxStore(p.getServer().getSavePath(WorldSavePath.ROOT).resolve("fantasyhub-mail"));}
+ private static JsonArray mail(ServerPlayerEntity p){try{return JsonParser.parseString(mailbox(p).read(p.getUuid(),SVFrameMMO.playerData().get(p).getPreference(MAIL,"[]"))).getAsJsonArray();}catch(java.io.IOException error){throw new java.io.UncheckedIOException(error);}}
+ private static String saveMail(ServerPlayerEntity p,JsonArray entries){try{return mailbox(p).write(p.getUuid(),JSON.toJson(entries));}catch(java.io.IOException error){throw new java.io.UncheckedIOException(error);}}
+ private static String prepareMail(ServerPlayerEntity p,String receipt,List<String> generated){
+  var box=mail(p);for(int i=0;i<generated.size();i++){var e=new JsonObject();e.addProperty("id",receipt+":"+i);e.addProperty("stack",generated.get(i));box.add(e);}return saveMail(p,box);
+ }
  public static int claim(ServerPlayerEntity p){
   var d=SVFrameMMO.playerData().get(p);if(BUSY.contains(p.getUuid())||ClassProgression.busy(d)||ClassSwitchService.busy(d))return 0;
-  var entries=mail(d);if(entries.isEmpty())return 0;var retained=new JsonArray();int delivered=0;
+  var entries=mail(p);if(entries.isEmpty())return 0;var retained=new JsonArray();int delivered=0;
   for(var raw:entries){var e=raw.getAsJsonObject();String id=e.get("id").getAsString();boolean found=false;for(int i=0;i<p.getInventory().size();i++){var c=p.getInventory().getStack(i).get(DataComponentTypes.CUSTOM_DATA);if(c!=null&&id.equals(c.copyNbt().getString("fantasy_delivery"))){found=true;break;}}
    if(found){delivered++;continue;}
    if(p.getInventory().getEmptySlot()<0){retained.add(raw);continue;}
    try{var st=ItemStack.fromNbt(p.getRegistryManager(),StringNbtReader.parse(e.get("stack").getAsString())).orElseThrow();var n=st.getOrDefault(DataComponentTypes.CUSTOM_DATA,NbtComponent.DEFAULT).copyNbt();n.putString("fantasy_delivery",id);st.set(DataComponentTypes.CUSTOM_DATA,NbtComponent.of(n));p.getInventory().setStack(p.getInventory().getEmptySlot(),st);((vn.svframe.fantasyhub.protocol.mixin.PlayerSaveAccess)p.getServer().getPlayerManager()).svframe$savePlayer(p);delivered++;}catch(Exception error){retained.add(raw);LOG.error("Mailbox item retained for {}",p.getUuid(),error);}
   }
-  if(delivered>0){var before=d.getPreference(MAIL,"[]");d.setPreference(MAIL,JSON.toJson(retained));try{SVFrameMMO.playerData().savePlayerDurably(d).join();}catch(RuntimeException failure){d.setPreference(MAIL,before);ClassProgression.quarantine(d);throw failure;}}
+  if(delivered>0){var before=d.getPreference(MAIL,"[]");try{d.setPreference(MAIL,saveMail(p,retained));SVFrameMMO.playerData().savePlayerDurably(d).join();}catch(RuntimeException failure){d.setPreference(MAIL,before);ClassProgression.quarantine(d);throw failure;}}
   return delivered;
  }
  private static boolean reject(ServerPlayerEntity p,String s){p.sendMessage(Text.translatable("fantasyhub.commerce.error."+s),false);return false;}

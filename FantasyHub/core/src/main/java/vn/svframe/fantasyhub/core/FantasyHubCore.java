@@ -130,6 +130,7 @@ public final class FantasyHubCore implements ModInitializer {
                 return;
               }
               case "shop_buy" -> {CommerceRuntime.purchase(player,request.id(),request.slot());snapshots.remove(player.getUuid());return;}
+              case "gear_upgrade" -> {ItemUpgradeRuntime.request(player,request.id());snapshots.remove(player.getUuid());return;}
               case "shop_claim" -> {CommerceRuntime.claim(player);snapshots.remove(player.getUuid());return;}
               case "switch_bypass" -> {ClassSwitchService.request(player,request.id(),true,()->snapshots.remove(player.getUuid()));return;}
               case "unlock_class" -> {player.sendMessage(Text.literal("Choose BeastCoin or HunterCoin in /fantasyshop"),false);return;}
@@ -558,6 +559,7 @@ public final class FantasyHubCore implements ModInitializer {
     var shop = vn.svframe.svframelib.skill.PlayerAbilityShop.get();
     out.put("pokemonShop", shop == null ? List.of() : shop.catalog(player));
     out.put("fantasyShop",CommerceRuntime.view(player));
+    out.put("itemUpgrades",ItemUpgradeRuntime.view(player));
     Map<Integer, String> loadout = new TreeMap<>();
     PlayerSkillCatalog.bindings(data).forEach((slot, entry) -> loadout.put(slot, entry.id()));
     out.put("loadout", loadout);

@@ -125,6 +125,7 @@ public final class HeroRuntime {
       var s=SESSIONS.get(data.getUniqueId());String id=skill.getSkill().getId();
       return s!=null&&valid(s)&&(s.power.canRecast(id,tick)||id.equals("FLASH_SUPER_SPEED")&&s.active("super_speed"));
     });
+    vn.svframe.fantasyhub.protocol.FlashMovement.server=p->p instanceof ServerPlayerEntity sp&&SVFrameMMO.playerData().get(sp).getClassId().equalsIgnoreCase("FLASH");
     HeroCombat.install();HeroNpcCombat.install();HeroGrapple.install();HeroPassives.install();HeroGearIntegrity.install();HeroQa.install();
     vn.svframe.svframelib.entity.RpgEntityAdapters.register("fantasyhub:heroes",new vn.svframe.svframelib.entity.RpgEntityAdapters.Adapter(){
       public boolean supports(LivingEntity target){return false;}

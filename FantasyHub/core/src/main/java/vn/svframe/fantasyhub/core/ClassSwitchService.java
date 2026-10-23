@@ -59,9 +59,9 @@ final class ClassSwitchService {
         return permission(player,text("permission-prefix")+id.toLowerCase(Locale.ROOT));
     }
     static Map<String,Object> policy(PlayerData data) {
-        var price=new ClassPricing.Price(BigDecimal.ZERO,"beconomy:secondary");var key=CurrencyKey.parse(price.currency());var service=CurrencyService.get();
+        var price=new ClassPricing.Price(BigDecimal.ZERO,"beconomy:secondary");var key=CommerceCurrencies.beast();var service=CurrencyService.get();
         Map<String,Object> out=new LinkedHashMap<>();
-        out.put("beastBalance",service.isAvailable(CurrencyKey.parse("beconomy:secondary"))?service.balance(data.getPlayer(),CurrencyKey.parse("beconomy:secondary")).toPlainString():"Unavailable");
+        out.put("beastBalance",service.isAvailable(CommerceCurrencies.beast())?service.balance(data.getPlayer(),CommerceCurrencies.beast()).toPlainString():"Unavailable");
         out.put("bypassFee",CommerceRuntime.bypassPrice().toPlainString());out.put("bypassCurrency","BeastCoin");
         out.put("starter",ClassProgression.starter(data));out.put("sigils",ClassProgression.sigils(data));out.put("sigilStorage","banked");
         out.put("fee",price.amount().toPlainString());out.put("cooldownSeconds",Long.parseLong(text("cooldown-seconds")));
@@ -104,7 +104,7 @@ final class ClassSwitchService {
         if(busy(data)||ClassProgression.busy(data))return reject(player,"busy");
         boolean cooling=!starter&&((Number)policy(data).get("remainingSeconds")).longValue()>0;
         if(cooling&&!bypass)return reject(player,"cooldown");
-        var currency=CurrencyKey.parse("beconomy:secondary");var service=CurrencyService.get();
+        var currency=CommerceCurrencies.beast();var service=CurrencyService.get();
         BigDecimal fee=cooling?CommerceRuntime.bypassPrice():BigDecimal.ZERO;
         boolean paid=fee.signum()>0;
         if(paid&&!service.isAvailable(currency))return reject(player,"economy");

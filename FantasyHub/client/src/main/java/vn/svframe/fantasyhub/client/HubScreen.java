@@ -69,7 +69,8 @@ public final class HubScreen extends Screen {
                       button -> FantasyHubClient.send("allocate", id, 1))
                   .dimensions(left + panelWidth - 80, top + 70 + i * 24, 68, 20)
                   .build();
-          b.active = FantasyHubClient.number("attributePoints") > 0;
+          b.active = FantasyHubClient.number("attributePoints") > 0
+              && (!row.has("max") || row.get("max").getAsInt() < 0 || row.get("base").getAsInt() < row.get("max").getAsInt());
           addDrawableChild(b);
         }
       ButtonWidget b =
@@ -317,10 +318,13 @@ public final class HubScreen extends Screen {
         && FantasyHubClient.state().has("fantasyShop"))
       addDrawableChild(
           FantasyButton.builder(
-                  Text.literal("Fantasy Shop"),
-                  b -> client.setScreen(new FantasyShopScreen()))
-              .dimensions(left + 12, top + panelHeight - 29, panelWidth - 112, 20)
+                  Text.translatable("fantasyhub.commerce.title"),
+                  b -> client.setScreen(new FantasyShopScreen(this)))
+              .dimensions(left + 12, top + panelHeight - 29, (panelWidth - 116)/2, 20)
               .build());
+    if (view == View.PROFILE)
+      addDrawableChild(FantasyButton.builder(Text.translatable("fantasyhub.item_upgrade.title"), b -> client.setScreen(new ItemUpgradeScreen(this)))
+          .dimensions(left + 16 + (panelWidth - 116)/2, top + panelHeight - 29, (panelWidth - 116)/2, 20).build());
     addDrawableChild(
         FantasyButton.builder(Text.translatable("gui.done"), b -> close())
             .dimensions(left + panelWidth - 84, top + panelHeight - 28, 72, 20)
@@ -393,19 +397,14 @@ public final class HubScreen extends Screen {
       if (rows != null)
         for (int i = 0; i < visible && page * visible + i < rows.size(); i++) {
           var r = rows.get(page * visible + i).getAsJsonObject();
-          String label =
-              FantasyHubClient.name(r.get("name").getAsString()).getString()
-                  + "  "
-                  + r.get("base").getAsInt()
-                  + " / "
-                  + r.get("total").getAsInt();
-          context.drawText(
-              textRenderer,
-              textRenderer.trimToWidth(label, panelWidth - 108),
-              left + 14,
-              top + 76 + i * 24,
-              0xffeee2c8,
-              false);
+          String id=r.get("id").getAsString();
+          Text attributeName=java.util.Set.of("mana","stamina").contains(id)?Text.translatable("fantasyhub.attribute."+id):FantasyHubClient.name(r.get("name").getAsString());
+          int base=r.get("base").getAsInt(),total=r.get("total").getAsInt(),max=r.has("max")?r.get("max").getAsInt():-1;
+          Text label=Text.translatable(max>=0?"fantasyhub.attribute.capped":"fantasyhub.attribute.total",attributeName,base,max>=0?max:total);
+          int y=top+76+i*24;
+          context.drawText(textRenderer,ShopView.fit(label.getString(),panelWidth-108,textRenderer::getWidth),left+14,y,0xffeee2c8,false);
+          if(mouseX>=left+14&&mouseX<left+panelWidth-90&&mouseY>=y-3&&mouseY<y+16)
+            context.drawTooltip(textRenderer,java.util.List.of(label,Text.translatable("fantasyhub.attribute.effective",total)),mouseX,mouseY);
         }
       context.drawText(
           textRenderer,

@@ -19,6 +19,7 @@ import net.minecraft.component.DataComponentTypes;
 public final class FantasyShopScreen extends Screen {
  private static final String KEY="fantasyhub.commerce.";
  private static final org.slf4j.Logger LOG=org.slf4j.LoggerFactory.getLogger("FantasyHub/Shop");
+ private final Screen parent;
  private ShopView.Tab tab=ShopView.Tab.CLASS;
  private String selected="",classFilter="",confirmation="";
  private int page,detailScroll,maxScroll,previewIndex;
@@ -30,8 +31,11 @@ public final class FantasyShopScreen extends Screen {
  private Text hoveredText;
  private record Visual(ItemStack stack,boolean valid){}
  private record GearHit(ShopView.Box box,int index){}
- public FantasyShopScreen(){super(Text.translatable(KEY+"title"));}
- public FantasyShopScreen(String category,String id){this();tab=category.equals("bundles")?ShopView.Tab.BUNDLE:category.equals("classes")?ShopView.Tab.CLASS:ShopView.Tab.SHOP;classFilter=id;}
+ public FantasyShopScreen(){this(new HubScreen(HubScreen.View.PROFILE));}
+ public FantasyShopScreen(Screen parent){super(Text.translatable(KEY+"title"));this.parent=parent;}
+ @Override public void close(){client.setScreen(parent);}
+ public FantasyShopScreen(String category,String id){this(new HubScreen(HubScreen.View.PROFILE),category,id);}
+ public FantasyShopScreen(Screen parent,String category,String id){this(parent);tab=category.equals("bundles")?ShopView.Tab.BUNDLE:category.equals("classes")?ShopView.Tab.CLASS:ShopView.Tab.SHOP;classFilter=id;}
  private static Text tr(String key,Object... args){return Text.translatable(KEY+key,args);}
  private static String string(JsonObject row,String key,String fallback){return row.has(key)?row.get(key).getAsString():fallback;}
  private static boolean flag(JsonObject row,String key){return row.has(key)&&row.get(key).getAsBoolean();}
@@ -70,12 +74,12 @@ public final class FantasyShopScreen extends Screen {
     if(confirmation.equals(signature(row,m)))label=tr("confirm",label);
     if(!(tab==ShopView.Tab.CLASS&&(flag(row,"owned")||flag(shop(),"freeChoice"))))enabled&=valid(row);
    }
-   var b=button(m==1?layout.beast():layout.hunter(),label,()->activate(m),false);b.active=enabled;b.setTooltip(Tooltip.of(label));
+   var b=button(m==1?layout.beast():layout.hunter(),label,()->activate(m),false);b.active=enabled;b.setTooltip(Tooltip.of(!enabled&&row!=null&&m==2&&flag(row,"owned")&&remaining()>0&&!flag(shop(),"beastAvailable")?tr("beast_unavailable"):label));
   }
   var f=layout.footer();int left=layout.list().w(),right=layout.preview().w(),rx=layout.preview().x();
   button(new ShopView.Box(f.x(),f.y(),left,f.h()),tr("mailbox",string(shop(),"mailCount","0")),()->FantasyHubClient.send("shop_claim","",0),false);
   button(new ShopView.Box(rx,f.y(),(right-4)/2,f.h()),tr("refresh"),()->{confirmation="";FantasyHubClient.send("refresh","",0);},false);
-  button(new ShopView.Box(rx+(right-4)/2+4,f.y(),right-(right-4)/2-4,f.h()),Text.translatable("gui.done"),this::close,false);
+  button(new ShopView.Box(rx+(right-4)/2+4,f.y(),right-(right-4)/2-4,f.h()),Text.translatable("gui.back"),this::close,false);
  }
  private long remaining(){if(shop().has("switchAvailableAt"))return Math.max(0,(shop().get("switchAvailableAt").getAsLong()-System.currentTimeMillis()+999)/1000);return shop().has("switchRemainingSeconds")?shop().get("switchRemainingSeconds").getAsLong():0;}
  private void activate(int method){var row=selection();if(row==null||(!(tab==ShopView.Tab.CLASS&&(flag(row,"owned")||flag(shop(),"freeChoice"))))&&!valid(row))return;String signature=signature(row,method);if(!confirmation.equals(signature)){confirmation=signature;clearAndInit();return;}confirmation="";
