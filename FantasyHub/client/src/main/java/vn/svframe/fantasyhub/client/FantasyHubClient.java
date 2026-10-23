@@ -208,7 +208,7 @@ public final class FantasyHubClient implements ClientModInitializer {
           JsonObject next = JsonParser.parseString(payload.json()).getAsJsonObject();
           if (next.get("schema").getAsInt() != Protocol.VERSION) return;
           castingState.mergeInto(next);
-          state = next;
+          next.entrySet().forEach(entry->state.add(entry.getKey(),entry.getValue()));
           observed = false;
           if (context.client().currentScreen instanceof HubScreen screen) screen.refresh();
           if (context.client().currentScreen instanceof PokemonShopScreen screen) screen.refresh();
@@ -222,6 +222,7 @@ public final class FantasyHubClient implements ClientModInitializer {
         (payload, context) -> {
           castingState.accept(JsonParser.parseString(payload.json()).getAsJsonObject());
           castingState.mergeInto(state);
+          if(state.has("shopStatus")&&state.has("fantasyShop")){var delta=state.getAsJsonObject("shopStatus");var shop=state.getAsJsonObject("fantasyShop");delta.entrySet().forEach(e->shop.add(e.getKey(),e.getValue()));if(context.client().currentScreen instanceof FantasyShopScreen screen)screen.refresh();}
           observed = false;
         });
     ClientPlayNetworking.registerGlobalReceiver(
@@ -274,6 +275,7 @@ public final class FantasyHubClient implements ClientModInitializer {
           while (menu.wasPressed())
             if (client.player != null && state.has("schema"))
               client.setScreen(new HubScreen(HubScreen.View.PROFILE));
+          if(ticks%40==0&&client.player!=null&&(client.currentScreen instanceof HubScreen||client.currentScreen instanceof ClassSelectionScreen||client.currentScreen instanceof FantasyShopScreen||client.currentScreen instanceof ItemUpgradeScreen||client.currentScreen instanceof PokemonShopScreen))send("ui_keepalive","",0);
           if (ticks % 10 == 0
               && client.player != null
               && state.has("schema")

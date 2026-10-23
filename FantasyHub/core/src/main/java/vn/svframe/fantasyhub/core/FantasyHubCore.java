@@ -34,6 +34,19 @@ public final class FantasyHubCore implements ModInitializer {
   private final Map<UUID, Long> nextObservation = new HashMap<>();
   private ExecutorService qaWriter;
   private long tick;
+  private final UiSyncGate uiSync=new UiSyncGate();
+  private final Map<UUID,String> identities=new HashMap<>();
+  private final Map<UUID,Object> uiContexts=new HashMap<>();
+  private final Map<UUID,Map<String,Object>> shopStatus=new HashMap<>();
+  private final Map<UUID,Map<String,CachedUi>> uiCache=new HashMap<>();
+  private record CachedUi(Object context,String json){}
+  private void invalidate(UUID id){snapshots.remove(id);uiCache.remove(id);uiContexts.remove(id);uiSync.dirty(id);}
+  private void invalidateAll(){for(var id:List.copyOf(identities.keySet()))invalidate(id);}
+  private Object uiContext(ServerPlayerEntity p,String scope){
+    var d=SVFrameMMO.playerData().get(p);var attributes=new ArrayList<Integer>();for(var a:SVFrameMMO.attributes().getAll())attributes.add(d.getAttributes().getInstance(a).getBase());
+    return List.of(scope,d.getClassId(),System.identityHashCode(d.getProfess()),d.getLevel(),d.getAttributePoints(),d.getSkillPoints(),d.getAttributeReallocationPoints(),d.getClaimCounts(),d.getUnlockedItems(),attributes,p.getInventory().getChangeCount(),vn.svframe.svframeitems.SVFrameItems.registry().revision(),CommerceRuntime.revision(),System.identityHashCode(ClassProgression.settings()),scope.equals("pokemon")?tick/200:0L,scope.equals("classes")?List.of(ClassSwitchService.policy(d).get("beastBalance"),ClassSwitchService.policy(d).get("remainingSeconds").equals(0L)):List.of());
+  }
+
 
   @Override
   public void onInitialize() {
@@ -47,7 +60,7 @@ public final class FantasyHubCore implements ModInitializer {
     vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.registerMenu(
         "svframe_class_switch",
         player -> {
-          snapshots.remove(player.getUuid());
+          invalidate(player.getUuid());
           ServerPlayNetworking.send(player, new Protocol.Open("classes"));
         });
     vn.svframe.svframelib.fabric.ScriptCompatibilityHooks.registerMenu(
@@ -116,6 +129,9 @@ public final class FantasyHubCore implements ModInitializer {
         (request, context) -> {
           var player = context.player();
           if(request.action().equals("hero_input")){vn.svframe.fantasyhub.core.hero.HeroRuntime.input(player,request.slot());return;}
+          if(request.action().equals("ui_open")){uiSync.open(player.getUuid(),request.id(),tick);if(request.id().equals("shop"))CommerceRuntime.keepAlive(player);if(request.id().equals("upgrades"))ItemUpgradeRuntime.keepAlive(player);return;}
+          if(request.action().equals("ui_close")){uiSync.close(player.getUuid(),request.id());shopStatus.remove(player.getUuid());return;}
+          if(request.action().equals("ui_keepalive")){uiSync.touch(player.getUuid(),tick);if("shop".equals(uiSync.scope(player.getUuid(),tick)))CommerceRuntime.keepAlive(player);if("upgrades".equals(uiSync.scope(player.getUuid(),tick)))ItemUpgradeRuntime.keepAlive(player);return;}
           long now = tick;
           if (now < nextAction.getOrDefault(player.getUuid(), -1L)) return;
           nextAction.put(player.getUuid(), now + 2);
@@ -126,15 +142,15 @@ public final class FantasyHubCore implements ModInitializer {
             switch (request.action()) {
               case "switch_class" -> {
                 ClassSwitchService.request(
-                    player, request.id(), () -> snapshots.remove(player.getUuid()));
+                    player, request.id(), () -> invalidate(player.getUuid()));
                 return;
               }
-              case "shop_buy" -> {CommerceRuntime.purchase(player,request.id(),request.slot());snapshots.remove(player.getUuid());return;}
-              case "gear_upgrade" -> {ItemUpgradeRuntime.request(player,request.id());snapshots.remove(player.getUuid());return;}
-              case "shop_claim" -> {CommerceRuntime.claim(player);snapshots.remove(player.getUuid());return;}
-              case "switch_bypass" -> {ClassSwitchService.request(player,request.id(),true,()->snapshots.remove(player.getUuid()));return;}
+              case "shop_buy" -> {CommerceRuntime.purchase(player,request.id(),request.slot());invalidate(player.getUuid());return;}
+              case "gear_upgrade" -> {ItemUpgradeRuntime.request(player,request.id());invalidate(player.getUuid());return;}
+              case "shop_claim" -> {CommerceRuntime.claim(player);invalidate(player.getUuid());return;}
+              case "switch_bypass" -> {ClassSwitchService.request(player,request.id(),true,()->invalidate(player.getUuid()));return;}
               case "unlock_class" -> {player.sendMessage(Text.literal("Choose BeastCoin or HunterCoin in /fantasyshop"),false);return;}
-              case "learn" -> {ClassProgression.learn(player,request.id());snapshots.remove(player.getUuid());return;}
+              case "learn" -> {ClassProgression.learn(player,request.id());invalidate(player.getUuid());return;}
               case "allocate" -> {
                 if (request.slot() != 1) return;
                 data.spendAttributePoints(request.id(), 1);
@@ -162,14 +178,14 @@ public final class FantasyHubCore implements ModInitializer {
                 if (shop == null) return;
                 shop.purchaseUsing(player, request.id(), request.slot());
               }
-              case "refresh" -> snapshots.remove(player.getUuid());
+              case "refresh" -> invalidate(player.getUuid());
               default -> {
                 return;
               }
             }
             if (!Set.of("cast", "cast_id", "purchase", "refresh").contains(request.action()))
               SVFrameMMO.playerData().savePlayer(data);
-            snapshots.remove(player.getUuid());
+            if(!Set.of("cast","cast_id").contains(request.action()))invalidate(player.getUuid());
           } catch (IllegalArgumentException | IllegalStateException rejected) {
             player.sendMessage(Text.translatable("fantasyhub.action.rejected"), true);
           }
@@ -231,7 +247,7 @@ public final class FantasyHubCore implements ModInitializer {
         });
     ServerLifecycleEvents.SERVER_STOPPING.register(
         server -> {
-          snapshots.clear();
+          invalidateAll();
           castingModes.clear();
           hudSnapshots.clear();
           nextAction.clear();
@@ -253,6 +269,7 @@ public final class FantasyHubCore implements ModInitializer {
     ServerPlayConnectionEvents.DISCONNECT.register(
         (handler, server) -> {
           snapshots.remove(handler.player.getUuid());
+          uiSync.remove(handler.player.getUuid());identities.remove(handler.player.getUuid());uiContexts.remove(handler.player.getUuid());uiCache.remove(handler.player.getUuid());shopStatus.remove(handler.player.getUuid());
           castingModes.remove(handler.player.getUuid());
           hudSnapshots.remove(handler.player.getUuid());
           nextAction.remove(handler.player.getUuid());
@@ -268,17 +285,28 @@ public final class FantasyHubCore implements ModInitializer {
                 Objects.requireNonNullElse(SVFrameMMO.skillBar().mode(player.getUuid()), "");
             if (tick % 5 != 0 && mode.equals(castingModes.get(player.getUuid()))) continue;
             castingModes.put(player.getUuid(), mode);
-            String hud = GSON.toJson(hudState(player));
-            if (ServerPlayNetworking.canSend(player, Protocol.Casting.ID)
-                && !hud.equals(hudSnapshots.put(player.getUuid(), hud)))
-              ServerPlayNetworking.send(player, new Protocol.Casting(hud));
-            String state = state(player);
-            if (!state.equals(snapshots.put(player.getUuid(), state)))
-              ServerPlayNetworking.send(player, new Protocol.State(state));
+            String identity=SVFrameMMO.playerData().get(player).getClassId()+":"+SVFrameMMO.playerData().get(player).getLevel();
+            if(!identity.equals(identities.put(player.getUuid(),identity)))invalidate(player.getUuid());
+            String scope=uiSync.scope(player.getUuid(),tick);
+            if(tick%20==0&&scope!=null){
+              Object context=uiContext(player,scope);if(!context.equals(uiContexts.put(player.getUuid(),context)))uiSync.dirty(player.getUuid());
+              if(scope.equals("shop"))shopStatus.put(player.getUuid(),CommerceRuntime.status(player));
+            }
+            if(scope==null)shopStatus.remove(player.getUuid());
+            long start=System.nanoTime();var dynamic=hudState(player);var status=shopStatus.get(player.getUuid());if(status!=null)dynamic.put("shopStatus",status);String hud=GSON.toJson(dynamic);
+            long elapsed=System.nanoTime()-start;HudSyncMetrics.hud++;HudSyncMetrics.hudNanos+=elapsed;HudSyncMetrics.maxHudNanos=Math.max(HudSyncMetrics.maxHudNanos,elapsed);
+            if (ServerPlayNetworking.canSend(player, Protocol.Casting.ID)&&!hud.equals(hudSnapshots.put(player.getUuid(),hud))){ServerPlayNetworking.send(player,new Protocol.Casting(hud));HudSyncMetrics.hudBytes+=hud.length();}
           }
+          var dispatch=uiSync.next(tick);
+          if(dispatch!=null){var p=server.getPlayerManager().getPlayer(dispatch.player());if(p!=null&&ServerPlayNetworking.canSend(p,Protocol.State.ID)){
+            Object context=uiContext(p,dispatch.scope());var cache=uiCache.computeIfAbsent(p.getUuid(),id->new HashMap<>());var saved=cache.get(dispatch.scope());String full;
+            if(saved!=null&&saved.context().equals(context))full=saved.json();else{full=state(p,dispatch.scope());cache.put(dispatch.scope(),new CachedUi(context,full));}
+            uiContexts.put(p.getUuid(),context);if(!full.equals(snapshots.put(p.getUuid(),full))){ServerPlayNetworking.send(p,new Protocol.State(full));HudSyncMetrics.stateBytes+=full.length();}
+          }}
         });
     CommandRegistrationCallback.EVENT.register(
         (dispatcher, access, environment) -> {
+          dispatcher.register(literal("fantasyhubperf").requires(c->c.hasPermissionLevel(2)).executes(c->{c.getSource().sendFeedback(()->Text.literal(GSON.toJson(HudSyncMetrics.snapshot())),false);return 1;}).then(literal("reset").executes(c->{HudSyncMetrics.reset();return 1;})));
           RpgLifecycleQa.register(dispatcher);
           EconomyPolicyQa.register(dispatcher);
           for (String alias : List.of("classmenu", "classes", "doiclass"))
@@ -287,13 +315,13 @@ public final class FantasyHubCore implements ModInitializer {
                     .executes(
                         ctx -> {
                           var player = ctx.getSource().getPlayerOrThrow();
-                          snapshots.remove(player.getUuid());
+                          invalidate(player.getUuid());
                           ServerPlayNetworking.send(player, new Protocol.Open("classes"));
                           return 1;
                         }));
-          dispatcher.register(literal("fantasyshop").executes(c->{var p=c.getSource().getPlayerOrThrow();snapshots.remove(p.getUuid());ServerPlayNetworking.send(p,new Protocol.Open("fantasy_shop"));return 1;})
+          dispatcher.register(literal("fantasyshop").executes(c->{var p=c.getSource().getPlayerOrThrow();invalidate(p.getUuid());ServerPlayNetworking.send(p,new Protocol.Open("fantasy_shop"));return 1;})
             .then(literal("claim").executes(c->CommerceRuntime.claim(c.getSource().getPlayerOrThrow())))
-            .then(literal("reload").requires(c->c.hasPermissionLevel(2)).executes(c->{try{CommerceRuntime.reload();snapshots.clear();return 1;}catch(Exception e){c.getSource().sendError(Text.literal(e.getMessage()));return 0;}})));
+            .then(literal("reload").requires(c->c.hasPermissionLevel(2)).executes(c->{try{CommerceRuntime.reload();invalidateAll();return 1;}catch(Exception e){c.getSource().sendError(Text.literal(e.getMessage()));return 0;}})));
           dispatcher.register(
               literal("svclass")
                   .then(
@@ -312,7 +340,7 @@ public final class FantasyHubCore implements ModInitializer {
                                         return ClassSwitchService.request(
                                                 player,
                                                 id,
-                                                () -> snapshots.remove(player.getUuid()))
+                                                () -> invalidate(player.getUuid()))
                                             ? 1
                                             : 0;
                                       }))));
@@ -321,7 +349,7 @@ public final class FantasyHubCore implements ModInitializer {
                   .executes(
                       ctx -> {
                         var player = ctx.getSource().getPlayerOrThrow();
-                        snapshots.remove(player.getUuid());
+                        invalidate(player.getUuid());
                         ServerPlayNetworking.send(player, new Protocol.Open("profile"));
                         return 1;
                       })
@@ -356,7 +384,7 @@ public final class FantasyHubCore implements ModInitializer {
                                                         com.mojang.brigadier.arguments
                                                             .StringArgumentType.getString(
                                                             ctx, "class"),
-                                                        () -> snapshots.remove(target.getUuid()))
+                                                        () -> invalidate(target.getUuid()))
                                                     ? 1
                                                     : 0;
                                               }))))
@@ -436,13 +464,15 @@ public final class FantasyHubCore implements ModInitializer {
                               ctx -> {
                                 var player = ctx.getSource().getPlayerOrThrow();
                                 SVFrameMMO.playerData().get(player).refreshClassStats();
-                                snapshots.remove(player.getUuid());
+                                invalidate(player.getUuid());
                                 return 1;
                               })));
         });
   }
 
-  private static String state(ServerPlayerEntity player) {
+  private static String state(ServerPlayerEntity player){return state(player,"all");}
+  private static String state(ServerPlayerEntity player,String scope) {
+    long started=System.nanoTime();HudSyncMetrics.states++;
     var data = SVFrameMMO.playerData().get(player);
     Map<String, Object> out = new LinkedHashMap<>();
     out.put("schema", Protocol.VERSION);
@@ -480,6 +510,7 @@ public final class FantasyHubCore implements ModInitializer {
     }
     out.put("attributes", attributes);
     out.put("classSwitch", ClassSwitchService.policy(data));
+    if(scope.equals("classes")||scope.equals("all")){
     List<Map<String, Object>> roster = new ArrayList<>();
     Map<vn.svframe.svframelib.api.economy.CurrencyKey, java.math.BigDecimal> classBalances =
         new HashMap<>();
@@ -515,6 +546,7 @@ public final class FantasyHubCore implements ModInitializer {
     }
     out.put("classRoster", roster);
     out.put("classPreviews", ClassEquipmentPreviews.snapshots(player));
+    }
     List<Map<String, Object>> skills = new ArrayList<>();
     for (var entry : PlayerSkillCatalog.entries(data)) {
       var skill = entry.skill();
@@ -557,9 +589,9 @@ public final class FantasyHubCore implements ModInitializer {
     out.put("loadoutSlots", PlayerSkillCatalog.slots(data));
     out.put("casting", castingState(player));
     var shop = vn.svframe.svframelib.skill.PlayerAbilityShop.get();
-    out.put("pokemonShop", shop == null ? List.of() : shop.catalog(player));
-    out.put("fantasyShop",CommerceRuntime.view(player));
-    out.put("itemUpgrades",ItemUpgradeRuntime.view(player));
+    if(scope.equals("pokemon")||scope.equals("all")){HudSyncMetrics.pokemon++;out.put("pokemonShop",shop==null?List.of():shop.catalog(player));}
+    if(scope.equals("shop")||scope.equals("all"))out.put("fantasyShop",CommerceRuntime.view(player));
+    if(scope.equals("upgrades")||scope.equals("all"))out.put("itemUpgrades",ItemUpgradeRuntime.view(player));
     Map<Integer, String> loadout = new TreeMap<>();
     PlayerSkillCatalog.bindings(data).forEach((slot, entry) -> loadout.put(slot, entry.id()));
     out.put("loadout", loadout);
@@ -573,7 +605,7 @@ public final class FantasyHubCore implements ModInitializer {
             "SKILL_DAMAGE",
             "MOVEMENT_SPEED")) stats.put(id, MMOPlayerData.setup(player).getStatMap().getStat(id));
     out.put("stats", stats);
-    return GSON.toJson(out);
+    String json=GSON.toJson(out);long elapsed=System.nanoTime()-started;HudSyncMetrics.stateNanos+=elapsed;HudSyncMetrics.maxStateNanos=Math.max(HudSyncMetrics.maxStateNanos,elapsed);return json;
   }
 
   private static Map<String, Object> castingState(ServerPlayerEntity player) {
@@ -622,6 +654,7 @@ public final class FantasyHubCore implements ModInitializer {
     Map<String, Object> out = new LinkedHashMap<>();
     out.put("schema", Protocol.VERSION);
     out.put("casting", castingState(player));
+    out.put("classId",data.getClassId());out.put("className",data.getProfess().getName());out.put("playerTitle",data.getPreference("fantasyhub:title",""));out.put("attributePoints",data.getAttributePoints());out.put("skillPoints",data.getSkillPoints());
     out.put("riderStatus", RiderRuntime.uiState(player));
     out.put("heroStatus",vn.svframe.fantasyhub.core.hero.HeroRuntime.inspect(player));
     out.put(

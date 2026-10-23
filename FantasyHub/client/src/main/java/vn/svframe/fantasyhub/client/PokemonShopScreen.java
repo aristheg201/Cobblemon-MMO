@@ -19,6 +19,7 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 public final class PokemonShopScreen extends Screen {
+ @Override public void removed(){requested=false;FantasyHubClient.send("ui_close","pokemon",0);}
    private int left;
    private int top;
    private int w;
@@ -140,7 +141,7 @@ public final class PokemonShopScreen extends Screen {
       this.top = (this.height - this.h) / 2;
       if (!this.requested) {
          this.requested = true;
-         FantasyHubClient.send("refresh", "", 0);
+         FantasyHubClient.send("ui_open", "pokemon", 0);
       }
 
       int filter = (this.w - 28) / 3;

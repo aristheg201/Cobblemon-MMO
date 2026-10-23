@@ -17,6 +17,7 @@ import net.minecraft.component.DataComponentTypes;
 
 /** Native item previews only. Navigation, tooltips and confirmations never spend currency. */
 public final class FantasyShopScreen extends Screen {
+ @Override public void removed(){requested=false;FantasyHubClient.send("ui_close","shop",0);}
  private static final String KEY="fantasyhub.commerce.";
  private static final org.slf4j.Logger LOG=org.slf4j.LoggerFactory.getLogger("FantasyHub/Shop");
  private final Screen parent;
@@ -24,6 +25,8 @@ public final class FantasyShopScreen extends Screen {
  private String selected="",classFilter="",confirmation="";
  private int page,detailScroll,maxScroll,previewIndex;
  private boolean requested;
+ private long lastCountdown=-1;
+ @Override public void tick(){super.tick();long next=remaining();if(next!=lastCountdown){lastCountdown=next;refresh();}}
  private ShopView.Layout layout;
  private final Map<String,Visual> visuals=new HashMap<>();
  private final List<GearHit> gearHits=new ArrayList<>();
@@ -54,7 +57,7 @@ public final class FantasyShopScreen extends Screen {
  private void switchTab(ShopView.Tab next){if(next==tab)return;tab=next;classFilter="";selected="";confirmation="";page=0;detailScroll=0;previewIndex=0;clearAndInit();}
  @Override protected void init(){
   layout=ShopView.layout(width,height);
-  if(!requested){requested=true;FantasyHubClient.send("refresh","",0);}
+  if(!requested){requested=true;FantasyHubClient.send("ui_open","shop",0);}
   if(selection()==null){selected="";detailScroll=0;previewIndex=0;confirmation="";}
   var tabs=layout.tabs();int tw=(tabs.w()-8)/3;
   for(var t:ShopView.Tab.values()){var button=button(new ShopView.Box(tabs.x()+t.ordinal()*(tw+4),tabs.y(),t==ShopView.Tab.BUNDLE?tabs.w()-2*(tw+4):tw,tabs.h()),tr("tab_label."+t.name().toLowerCase(Locale.ROOT)),()->switchTab(t),t==tab);button.setTooltip(Tooltip.of(tr("tab."+t.name().toLowerCase(Locale.ROOT))));}

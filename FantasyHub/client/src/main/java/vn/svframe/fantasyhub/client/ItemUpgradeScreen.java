@@ -11,6 +11,7 @@ import net.minecraft.text.Text;
 
 /** Existing RPG items, server-quoted rules and native upgrade results inside Fantasy HUD. */
 public final class ItemUpgradeScreen extends Screen {
+ @Override public void removed(){requested=false;FantasyHubClient.send("ui_close","upgrades",0);}
  private static final String KEY="fantasyhub.item_upgrade.";
  private static final org.slf4j.Logger LOG=org.slf4j.LoggerFactory.getLogger("FantasyHub/UpgradePreview");
  private final Screen parent;
@@ -30,7 +31,7 @@ public final class ItemUpgradeScreen extends Screen {
  private int count(){return Math.max(1,layout.list().h()/28);}
  private net.minecraft.client.gui.widget.ButtonWidget button(ShopView.Box box,Text text,Runnable action){return addDrawableChild(FantasyButton.builder(text,b->action.run()).dimensions(box.x(),box.y(),box.w(),box.h()).build());}
  @Override protected void init(){
-  layout=ShopView.layout(width,height);if(!requested){requested=true;FantasyHubClient.send("refresh","",0);}
+  layout=ShopView.layout(width,height);if(!requested){requested=true;FantasyHubClient.send("ui_open","upgrades",0);}
   var rows=rows();page=Math.min(page,Math.max(0,(rows.size()-1)/count()));
   for(int i=0;i<count()&&page*count()+i<rows.size();i++){
    var row=rows.get(page*count()+i);var item=stack(row.get("item").getAsString());int y=layout.list().y()+i*28;

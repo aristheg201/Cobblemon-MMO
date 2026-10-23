@@ -32,6 +32,15 @@ public final class CommerceRuntime {
  private static final Set<UUID> BUSY=new HashSet<>();
  private static final Map<UUID,Map<String,Quote>> QUOTES=new HashMap<>();
  private static Config config=new Config();
+ private static long revision;
+ private static final PreviewCache<String,String> PREVIEWS=new PreviewCache<>(4096);
+ private static final Map<UUID,Long> QUOTE_LEASES=new HashMap<>();
+ private static final Map<UUID,Map.Entry<String,Integer>> MAIL_COUNTS=new HashMap<>();
+ static long revision(){return revision;}
+ static void keepAlive(ServerPlayerEntity p){QUOTE_LEASES.put(p.getUuid(),System.currentTimeMillis()+120_000);}
+ private static int mailCount(ServerPlayerEntity p){String ref=SVFrameMMO.playerData().get(p).getPreference(MAIL,"[]");var cached=MAIL_COUNTS.get(p.getUuid());if(cached!=null&&cached.getKey().equals(ref))return cached.getValue();int count=mail(p).size();MAIL_COUNTS.put(p.getUuid(),Map.entry(ref,count));return count;}
+ public static Map<String,Object> status(ServerPlayerEntity p){var d=SVFrameMMO.playerData().get(p);var service=CurrencyService.get();var out=new LinkedHashMap<String,Object>();for(int m=1;m<=2;m++){var key=CommerceCurrencies.payment(m);boolean ready=service.isAvailable(key);out.put(m==1?"beastAvailable":"hunterAvailable",ready);out.put(m==1?"beastBalance":"hunterBalance",ready?service.balance(p,key).toPlainString():"Unavailable");}out.put("activeClass",d.getClassId());out.put("switchAvailableAt",d.getClassSwitchAvailableAt());out.put("freeChoice",ClassProgression.starter(d));out.put("bypassBeast",config.bypassBeast);try{out.put("mailCount",mailCount(p));out.put("mailAvailable",true);}catch(RuntimeException failed){out.put("mailAvailable",false);}return out;}
+ private static String preview(ServerPlayerEntity p,String key,java.util.function.Supplier<ItemStack> create){return PREVIEWS.get(vn.svframe.svframeitems.SVFrameItems.registry().revision(),key,()->{HudSyncMetrics.previews++;var st=create.get();HudSyncMetrics.encodes++;return st.encode(p.getRegistryManager()).toString();});}
  private static final Set<String> INVALID_GEAR_LOGGED=new HashSet<>();
  public static final class Prices {public BigDecimal beast,hunter;public Prices(){}public Prices(int b,int h){beast=BigDecimal.valueOf(b);hunter=BigDecimal.valueOf(h);}BigDecimal get(int method){CommercePolicy.currency(method);return method==1?beast:hunter;}void validate(){CommercePolicy.positiveWhole(beast);CommercePolicy.positiveWhole(hunter);}}
  public static final class Tier {public Prices classPrice,bundlePrice,equipmentPrice;}
@@ -42,6 +51,7 @@ public final class CommerceRuntime {
  public static BigDecimal bypassPrice(){return config.bypassBeast;}
  public static void install(){
   CommerceQa.install();ItemUpgradeRuntime.install();
+  ServerLifecycleEvents.SERVER_STOPPED.register(server->{PREVIEWS.clear();MAIL_COUNTS.clear();QUOTE_LEASES.clear();QUOTES.clear();});
   vn.svframe.fantasyhub.protocol.CommerceItem.handlers.put("rpg_upgrade_catalyst",(player,kind,hand)->{
    if(!(player instanceof ServerPlayerEntity p)||hand!=net.minecraft.util.Hand.MAIN_HAND)return false;
    var gear=p.getOffHandStack();var result=vn.svframe.svframeitems.api.SVFrameItemsApi.upgrade(p,gear);
@@ -50,7 +60,7 @@ public final class CommerceRuntime {
   });
   ServerLifecycleEvents.SERVER_STARTED.register(s->{try{reload();}catch(Exception e){LOG.error("Commerce disabled: invalid configuration",e);config=new Config();}});
   ServerPlayConnectionEvents.JOIN.register((h,sender,s)->{QUOTES.remove(h.player.getUuid());});
-  ServerPlayConnectionEvents.DISCONNECT.register((h,s)->QUOTES.remove(h.player.getUuid()));
+  ServerPlayConnectionEvents.DISCONNECT.register((h,s)->{QUOTES.remove(h.player.getUuid());QUOTE_LEASES.remove(h.player.getUuid());MAIL_COUNTS.remove(h.player.getUuid());});
   vn.svframe.svframemmo.api.event.PlayerExperienceGainEvent.EVENT.register(e->{try{long expiry=Long.parseLong(e.getData().getPreference("fantasyhub:exp-boost-until","0"));if(e.isMainExperience()&&expiry>System.currentTimeMillis())e.setExperience(e.getExperience()*2);}catch(NumberFormatException ignored){}});
  }
  public static void reload() throws Exception {
@@ -61,15 +71,14 @@ public final class CommerceRuntime {
   for(var type:SVFrameMMO.classes().getAll())if(ClassSwitchService.selectable(type.getId())&&!next.classTiers.containsKey(type.getId()))LOG.error("Class {} has no explicit tier: purchase disabled",type.getId());
   Set<String> ids=new HashSet<>();for(var o:next.offers)try{if(o.id==null||!o.id.matches("[a-z0-9_-]{1,48}")||!ids.add(o.id))throw new IllegalArgumentException("Invalid/duplicate offer ID");o.price.validate();if("items".equals(o.category))CommercePolicy.validateItemPrices(o.price.beast,o.price.hunter);if(!Set.of("items","exp","title").contains(o.effect))throw new IllegalArgumentException("Unsupported reward "+o.effect);if("items".equals(o.effect)&&o.items.isEmpty())throw new IllegalArgumentException("Missing rewards");for(var reward:o.items)validateReward(reward);validateReward(new Reward(o.icon,1));if(o.limit<0)throw new IllegalArgumentException("Negative limit");}catch(RuntimeException bad){o.enabled=false;LOG.error("Rejected shop offer {}: {}",o.id,bad.getMessage());}
   if(migrated){var backup=FILE.resolveSibling("commerce.json.pre-v2.bak");if(!Files.exists(backup))Files.copy(FILE,backup);var temporary=FILE.resolveSibling("commerce.json.migration.tmp");Files.writeString(temporary,JSON.toJson(catalog)+"\n");Files.move(temporary,FILE,StandardCopyOption.REPLACE_EXISTING,StandardCopyOption.ATOMIC_MOVE);LOG.info("Upgraded shipped Rider bundles with their authored belts and weapons; previous catalog saved to {}",backup);}
-  config=next;QUOTES.clear();INVALID_GEAR_LOGGED.clear();for(String id:config.equipment.keySet())gearValid(id);
+  config=next;revision++;PREVIEWS.clear();QUOTES.clear();QUOTE_LEASES.clear();INVALID_GEAR_LOGGED.clear();for(String id:config.equipment.keySet())gearValid(id);
  }
  private static void validateReward(Reward r){if(r.count<1||r.count>64)throw new IllegalArgumentException("Invalid reward quantity");if(r.item.startsWith("rpg:")){if(SVFrameItems.registry().item(r.item.substring(4))==null)throw new IllegalArgumentException("Missing RPG item "+r.item);}else if(!Registries.ITEM.containsId(Identifier.of(r.item)))throw new IllegalArgumentException("Missing item "+r.item);}
  private static ItemStack stack(Reward r){validateReward(r);var st=r.item.startsWith("rpg:")?SVFrameItems.generator().generate(r.item.substring(4),new ItemGenerator.GenerationContext(1,0)):new ItemStack(Registries.ITEM.get(Identifier.of(r.item)));st.setCount(r.count);return st;}
  private static boolean gearValid(String id){var list=config.equipment.get(id);if(list==null||list.size()<4)return false;try{for(var r:list)validateReward(r);return true;}catch(RuntimeException e){if(INVALID_GEAR_LOGGED.add(id))LOG.error("Disabled bundle {}: {}",id,e.getMessage());return false;}}
  public static Map<String,Object> view(ServerPlayerEntity p){
-  var d=SVFrameMMO.playerData().get(p);var service=CurrencyService.get();var out=new LinkedHashMap<String,Object>();
-  for(int method=1;method<=2;method++){var key=CommerceCurrencies.payment(method);boolean ready=service.isAvailable(key);out.put(method==1?"beastAvailable":"hunterAvailable",ready);out.put(method==1?"beastBalance":"hunterBalance",ready?service.balance(p,key).toPlainString():"Unavailable");}
-  out.put("switchRemainingSeconds",ClassSwitchService.policy(d).get("remainingSeconds"));out.put("switchAvailableAt",((Number)ClassSwitchService.policy(d).get("remainingSeconds")).longValue()>0?d.getClassSwitchAvailableAt():0L);out.put("activeClass",d.getClassId());out.put("freeChoice",ClassProgression.starter(d));out.put("bypassBeast",config.bypassBeast);try{out.put("mailCount",mail(p).size());out.put("mailAvailable",true);}catch(RuntimeException failure){out.put("mailCount",0);out.put("mailAvailable",false);LOG.error("Cannot read mailbox for {}; item purchases remain blocked",p.getUuid(),failure);}var rows=new ArrayList<Map<String,Object>>();var quotes=QUOTES.computeIfAbsent(p.getUuid(),k->new HashMap<>());quotes.entrySet().removeIf(e->e.getValue().expires<System.currentTimeMillis());
+  HudSyncMetrics.shops++;var d=SVFrameMMO.playerData().get(p);var out=new LinkedHashMap<String,Object>(status(p));keepAlive(p);
+  out.put("switchRemainingSeconds",ClassSwitchService.policy(d).get("remainingSeconds"));var rows=new ArrayList<Map<String,Object>>();var quotes=QUOTES.computeIfAbsent(p.getUuid(),k->new HashMap<>());long lease=QUOTE_LEASES.getOrDefault(p.getUuid(),0L);quotes.entrySet().removeIf(e->Math.max(e.getValue().expires,lease)<System.currentTimeMillis());
   for(var type:SVFrameMMO.classes().getAll()){
    String id=type.getId(),tierId=config.classTiers.get(id);if(tierId==null||!ClassSwitchService.selectable(id))continue;var tier=config.tiers.get(tierId);boolean owned=ClassProgression.owns(d,id)||d.getClassId().equals(id);
    var classRow=row(p,quotes,"class:"+id,id,tierId,false,type.getName(),"classes","",tier.classPrice,List.of(),"minecraft:nether_star");classRow.put("owned",owned);classRow.put("active",d.getClassId().equals(id));rows.add(classRow);
@@ -81,12 +90,12 @@ public final class CommerceRuntime {
  private static Map<String,Object> row(ServerPlayerEntity p,Map<String,Quote> quotes,String offer,String cl,String tier,boolean gear,String name,String category,String desc,Prices price,List<Reward> rewards,String icon){
   var found=quotes.entrySet().stream().filter(e->e.getValue().offer.equals(offer)&&e.getValue().equipmentOnly==gear).findFirst();String token=found.map(Map.Entry::getKey).orElseGet(()->{String nonce=UUID.randomUUID().toString();quotes.put(nonce,new Quote(offer,cl,tier,gear,System.currentTimeMillis()+120_000));return nonce;});
   var out=new LinkedHashMap<String,Object>();out.put("id",token);out.put("product",offer);out.put("name",name);out.put("category",category);out.put("description",desc);out.put("beast",price.beast.toPlainString());out.put("hunter",price.hunter.toPlainString());out.put("available",true);out.put("limit",0);out.put("bought",0);out.put("classId",cl);out.put("equipmentOnly",gear);
-  var items=new ArrayList<String>();for(var reward:rewards)items.add(stack(reward).encode(p.getRegistryManager()).toString());out.put("items",items);
-  ItemStack preview=rewards.isEmpty()?(!cl.isBlank()&&SVFrameMMO.classes().get(cl)!=null?SVFrameMMO.classes().get(cl).getRawIcon().toItemStack():new ItemStack(Registries.ITEM.get(Identifier.of(icon)))):stack(rewards.getFirst());out.put("icon",preview.encode(p.getRegistryManager()).toString());return out;
+  var items=new ArrayList<String>();for(var reward:rewards)items.add(preview(p,"reward:"+reward.item+":"+reward.count,()->stack(reward)));out.put("items",items);
+  String encoded;if(!rewards.isEmpty())encoded=items.getFirst();else encoded=preview(p,"icon:"+cl+":"+icon+":"+System.identityHashCode(cl.isBlank()?null:SVFrameMMO.classes().get(cl)),()->!cl.isBlank()&&SVFrameMMO.classes().get(cl)!=null?SVFrameMMO.classes().get(cl).getRawIcon().toItemStack():new ItemStack(Registries.ITEM.get(Identifier.of(icon))));out.put("icon",encoded);return out;
  }
  public static boolean purchase(ServerPlayerEntity p,String token,int method){
   try{
-   CommercePolicy.currency(method);var q=QUOTES.getOrDefault(p.getUuid(),Map.of()).get(token);if(q==null||q.expires<System.currentTimeMillis())return reject(p,"expired");
+   CommercePolicy.currency(method);var q=QUOTES.getOrDefault(p.getUuid(),Map.of()).get(token);if(q==null||Math.max(q.expires,QUOTE_LEASES.getOrDefault(p.getUuid(),0L))<System.currentTimeMillis())return reject(p,"expired");
    var d=SVFrameMMO.playerData().get(p);if(d.getClaimCount("fantasyhub:receipt:"+token)>0)return reject(p,"duplicate");
    Prices price;List<Reward> rewards;String effect="items",grant="",offerId=q.offer;
    boolean owned=!q.classId.isBlank()&&ClassProgression.owns(d,q.classId);

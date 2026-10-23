@@ -8,6 +8,7 @@ import net.minecraft.text.Text;
 
 /** Actual attribute allocations and loadout edits go through the authoritative core API. */
 public final class HubScreen extends Screen {
+ @Override public void removed(){requested=false;FantasyHubClient.send("ui_close","profile",0);}
   public enum View {
     PROFILE,
     ATTRIBUTES,
@@ -53,7 +54,7 @@ public final class HubScreen extends Screen {
     }
     if (!requested) {
       requested = true;
-      FantasyHubClient.send("refresh", "", 0);
+      FantasyHubClient.send("ui_open", "profile", 0);
     }
     if (view == View.ATTRIBUTES) {
       var rows = FantasyHubClient.state().getAsJsonArray("attributes");
@@ -314,8 +315,7 @@ public final class HubScreen extends Screen {
                   b -> client.setScreen(new ClassSelectionScreen()))
               .dimensions(left + 12, top + panelHeight - 53, panelWidth - 112, 20)
               .build());
-    if (view == View.PROFILE
-        && FantasyHubClient.state().has("fantasyShop"))
+    if (view == View.PROFILE)
       addDrawableChild(
           FantasyButton.builder(
                   Text.translatable("fantasyhub.commerce.title"),

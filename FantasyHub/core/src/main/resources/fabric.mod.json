@@ -23,7 +23,7 @@
     "fantasyhubprotocol": "${version}",
     "svframelib": ">=1.7.2-fabric",
     "svframemmo": ">=1.13.4-fabric",
-    "svframeitems": ">=0.1.2-fabric",
+    "svframeitems": ">=0.1.3-fabric",
     "svframemobs": ">=0.1.2-fabric"
   },
   "mixins": [
