@@ -1,6 +1,15 @@
 package vn.svframe.fantasyhub.core.sync;
 import static org.junit.jupiter.api.Assertions.*;import org.junit.jupiter.api.Test;import java.util.*;
 class CatalogStreamTest {
+ @Test void acknowledgedCatalogReopenDoesNotRetransmitAndInvalidationRestarts(){
+  var stream=new CatalogStream();CatalogStream.Source source=(start,limit)->Map.of("revision",1L,"total",1,"next",1,"rows",List.of(Map.of("id","one")));
+  stream.next(source,8);stream.delivered();stream.reopen();assertFalse(stream.next((a,b)->{throw new AssertionError("unchanged catalog recaptured");},8).containsKey("pokemonShopPage"));
+  stream.invalidate();assertTrue(stream.next(source,8).containsKey("pokemonShopPage"));
+ }
+ @Test void cancelledFinalPageMustReplayOnReopen(){
+  var stream=new CatalogStream();CatalogStream.Source source=(start,limit)->Map.of("revision",1L,"total",1,"next",1,"rows",List.of(Map.of("id","one")));
+  stream.next(source,8);stream.reopen();assertTrue(stream.next(source,8).containsKey("pokemonShopPage"));
+ }
  @Test void slicesAreBoundedCachedAndReopenStartsAtZero(){
   var s=new CatalogStream();var calls=new java.util.concurrent.atomic.AtomicInteger();
   CatalogStream.Source source=(at,limit)->{calls.incrementAndGet();return Map.of("revision",1L,"total",3,"next",Math.min(3,at+limit),"rows",List.of(Map.of("id","r"+at)));};

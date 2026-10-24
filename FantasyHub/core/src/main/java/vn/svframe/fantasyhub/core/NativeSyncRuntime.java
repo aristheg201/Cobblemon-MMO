@@ -28,7 +28,7 @@ final class NativeSyncRuntime {
         maxCapturesPerTick = 16,
         maxGuiCapturesPerTick = 2,
         mainBudgetMicros = 1500,
-        catalogPageSize = 16,
+        catalogPageSize = 8,
         maxPacketsPerTick = 32,
         maxDispatchBytesPerTick = 131072,
         vitalsIntervalTicks = 5,
@@ -638,7 +638,9 @@ final class NativeSyncRuntime {
         case COMMERCE -> s.lastBalance = s.capturedBalance;
         default -> {}
       }
-      if(tag.domain()==Domain.GUI&&s.guiContinues&&"pokemon".equals(views.scope(tag.player(),tick)))engine.dirty(tag.player(),Domain.GUI);
+      if(tag.domain()==Domain.GUI&&"pokemon".equals(views.scope(tag.player(),tick))){
+        if(s.guiContinues)engine.dirty(tag.player(),Domain.GUI);else s.pokemon.delivered();
+      }
       if (tag.domain() == Domain.BUNDLES) {
         if (result.json().contains("\"catalogLoading\":true")) {
           s.loadingNoticeSent = true;

@@ -25,7 +25,7 @@ for src,_,_ in artifacts[:2]:
 assert embedded[0]==embedded[1],'Mismatched protocol components'
 shutil.copytree(root/'docs/perf-031',out/'docs',dirs_exist_ok=True)
 config=out/'config-reference';config.mkdir(exist_ok=True)
-(config/'sync.json').write_text(json.dumps(dict(workers=2,queueCapacity=64,maxCapturesPerTick=16,maxGuiCapturesPerTick=2,mainBudgetMicros=1500,catalogPageSize=16,maxPacketsPerTick=32,maxDispatchBytesPerTick=131072,vitalsIntervalTicks=5,combatIntervalTicks=5,extensionIntervalTicks=5,balanceRefreshTicks=20),indent=2)+'\n')
+(config/'sync.json').write_text(json.dumps(dict(workers=2,queueCapacity=64,maxCapturesPerTick=16,maxGuiCapturesPerTick=2,mainBudgetMicros=1500,catalogPageSize=8,maxPacketsPerTick=32,maxDispatchBytesPerTick=131072,vitalsIntervalTicks=5,combatIntervalTicks=5,extensionIntervalTicks=5,balanceRefreshTicks=20),indent=2)+'\n')
 sourcezip=out/(prefix+'-source.zip');qazip=out/(prefix+'-QA.zip')
 modules={name:root/name for name in ['FantasyHub','SVFrameLib','SVFrameMMO','SVFrameItems','SVFrameMobs','SVFrameMMOCobblemon']}
 for name,base in [('SVFrameItems','items'),('SVFrameMobs','mobs')]:

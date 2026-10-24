@@ -4,11 +4,13 @@ import java.util.*;
 public final class CatalogStream {
  @FunctionalInterface public interface Source{Map<String,Object> page(int start,int limit);}
  private final List<FrozenValues.Shared> cached=new ArrayList<>();
- private long revision=-1;private int cursor,total;private boolean complete;
- public void invalidate(){cached.clear();cursor=total=0;revision=-1;complete=false;}
- public void reopen(){cursor=0;if(!complete)invalidate();}
+ private long revision=-1;private int cursor,total;private boolean complete,published;
+ public void invalidate(){cached.clear();cursor=total=0;revision=-1;complete=published=false;}
+ public void reopen(){if(published)return;cursor=0;if(!complete)invalidate();}
+ public void delivered(){if(complete&&cursor==total)published=true;}
  public Map<String,Object> next(Source source,int limit){
   if(limit<1||limit>32)throw new IllegalArgumentException("Invalid catalog page size");
+  if(published)return Map.of("pokemonCatalogLoading",false,"pokemonCatalogTotal",total);
   int start=cursor;List<FrozenValues.Shared> rows;
   if(complete){int end=Math.min(total,start+limit);rows=List.copyOf(cached.subList(start,end));cursor=end;}
   else {
