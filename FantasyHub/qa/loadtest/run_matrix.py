@@ -12,6 +12,15 @@ def cmd(c):
  except Exception as e:r=str(e)
  with (root/'commands.jsonl').open('a') as f:f.write(json.dumps({'at':time.time(),'command':c,'result':r})+'\n')
  return r
+def await_profile(previous):
+ deadline=time.monotonic()+45
+ while time.monotonic()<deadline:
+  files=[p for p in (runtime/'config/spark').glob('*.sparkprofile') if p not in previous]
+  if files:
+   latest=max(files,key=lambda p:p.stat().st_mtime)
+   if latest.stat().st_size>0:return latest
+  time.sleep(.25)
+ raise RuntimeError('Spark did not finish writing a fresh profile within 45 seconds')
 window=int(os.environ.get("FANTASY_WINDOW","60"));warmup=int(os.environ.get("FANTASY_WARMUP","30"));assert window>=30 and window%5==0 and warmup>=20
 for count in map(int,os.environ.get("FANTASY_COUNTS","1,5,10,20,40").split(",")):
  path=root/str(count);path.mkdir(exist_ok=True);env=dict(os.environ,BOT_PREFIX='Bench')
@@ -34,6 +43,7 @@ for count in map(int,os.environ.get("FANTASY_COUNTS","1,5,10,20,40").split(","))
  if 'error' in result.lower():raise RuntimeError('WorldBoss fixture failed: '+result)
  time.sleep(warmup)
  cmd('fantasyhubperf reset');cmd('loadprobe start');cmd('spark profiler cancel');time.sleep(.5)
+ previous_profiles=set((runtime/'config/spark').glob('*.sparkprofile'))
  cmd(f'spark profiler start --timeout {window} --save-to-file')
  at=time.monotonic();samples=[];pid=int((root/'server.pid').read_text())
  for step in range(window//5):
@@ -50,10 +60,10 @@ for count in map(int,os.environ.get("FANTASY_COUNTS","1,5,10,20,40").split(","))
  cmd(f'loadprobe stop {phase}-{count}');time.sleep(3);cmd('spark tps')
  import shutil
  shutil.copy2(runtime/f'config/FantasyHubLoadProbe/{phase}-{count}.json',path/'ticks.json')
- files=list((runtime/'config/spark').glob('*.sparkprofile'));latest=max(files,key=lambda x:x.stat().st_mtime);import shutil;shutil.copy2(latest,path/'cpu.sparkprofile')
  (path/'samples.json').write_text(json.dumps(samples,indent=2))
+ shutil.copy2(await_profile(previous_profiles),path/'cpu.sparkprofile')
  if count==20:
-  cmd('spark profiler cancel');time.sleep(.5);cmd('loadprobe start');cmd(f'spark profiler start --alloc --timeout {window} --save-to-file');time.sleep(window);cmd(f'loadprobe stop {phase}-20alloc');time.sleep(3);files=list((runtime/'config/spark').glob('*.sparkprofile'));latest=max(files,key=lambda x:x.stat().st_mtime);shutil.copy2(latest,path/'alloc.sparkprofile')
+  cmd('spark profiler cancel');time.sleep(.5);cmd('loadprobe start');previous_profiles=set((runtime/'config/spark').glob('*.sparkprofile'));cmd(f'spark profiler start --alloc --timeout {window} --save-to-file');time.sleep(window);cmd(f'loadprobe stop {phase}-20alloc');time.sleep(3);shutil.copy2(await_profile(previous_profiles),path/'alloc.sparkprofile')
  cmd('worldboss abort');cmd('kill @e[type=cobblemon:pokemon]')
  proc.terminate();proc.wait(timeout=15);cmd('kick @a[name=!QAClass024] matrix phase completed');time.sleep(2)
  cleanup=cmd('fantasyhubperf');(path/'cleanup.json').write_text(cleanup)

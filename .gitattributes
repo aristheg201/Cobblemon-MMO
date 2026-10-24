@@ -8,3 +8,6 @@ gradlew text eol=lf
 *.zip binary
 *.bin binary
 FantasyHub/**/src/imported/resources/** -text
+
+# Preserve canonical authored asset bytes and generated asset-index hashes across CI checkouts.
+FantasyHub/**/src/main/resources/** -text
