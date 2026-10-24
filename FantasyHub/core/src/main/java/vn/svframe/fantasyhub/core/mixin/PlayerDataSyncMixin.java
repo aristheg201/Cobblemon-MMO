@@ -10,6 +10,11 @@ import vn.svframe.svframemmo.api.player.PlayerData;
 /** Observe native mutations; no replacement player data or persistence format. */
 @Mixin(value = PlayerData.class, remap = false)
 public abstract class PlayerDataSyncMixin {
+  @Inject(method="setResource",at=@At("RETURN"),require=0,remap=false)
+  private void fantasyhub$resourceDirty(CallbackInfoReturnable<Boolean> ci){
+    if(Boolean.TRUE.equals(ci.getReturnValue()))SyncSignals.changed(((PlayerData)(Object)this).getUniqueId(),Domain.VITALS);
+  }
+
   @Inject(
       method = {
         "setClassId",

@@ -17,7 +17,7 @@ public final class Protocol implements ModInitializer {
   public static net.minecraft.entity.EntityType<HeroNpcEntity> heroNpcType;
   public static final java.util.Map<String,Item> infinityItems=new java.util.LinkedHashMap<>();
   private static boolean installed;
-  public static final int VERSION = 4;
+  public static final int VERSION = 5;
   public static final String ASSET_REVISION = "heroes-commerce-v10";
 
   public record Handshake(int version, String assets, String clientVersion, String diagnostic)
@@ -302,7 +302,7 @@ public final class Protocol implements ModInitializer {
   }
   /** Detached domain patch. Ordering is per session/domain, not dependent on executor completion order. */
   public record Sync(String player,long generation,long revision,long sequence,String domain,long sentAt,byte[] encoded) implements CustomPayload {
-    public static final Id<Sync> ID=new Id<>(Identifier.of("fantasyhub","sync_v4"));
+    public static final Id<Sync> ID=new Id<>(Identifier.of("fantasyhub","sync_v5"));
     public static final PacketCodec<RegistryByteBuf,Sync> CODEC=PacketCodec.of((p,b)->{b.writeString(p.player,40);b.writeLong(p.generation);b.writeLong(p.revision);b.writeLong(p.sequence);b.writeString(p.domain,32);b.writeLong(p.sentAt);b.writeByteArray(p.encoded);},b->new Sync(b.readString(40),b.readLong(),b.readLong(),b.readLong(),b.readString(32),b.readLong(),b.readByteArray(StateCompression.MAX_WIRE_BYTES+1)));
     public String json(){return SnapshotEncoding.decode(encoded);}
     @Override public Id<? extends CustomPayload> getId(){return ID;}

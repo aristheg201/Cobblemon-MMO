@@ -6,6 +6,8 @@ import java.util.*;
 /** Rejects obsolete domain patches before parsing. A reconnect resets the generation fence. */
 final class SyncInbox {
   private long generation = -1;
+  private boolean resync;
+  boolean resyncRequested(){boolean needed=resync;resync=false;return needed;}
 
   private record Version(long revision, long sequence) {}
 
@@ -30,8 +32,14 @@ final class SyncInbox {
       domains.clear();
       state.entrySet().clear();
     }
+    if(patch.has("pokemonShopPage")) {
+      var page=patch.remove("pokemonShopPage").getAsJsonObject();int start=page.get("start").getAsInt();
+      var rows=page.getAsJsonArray("rows");var previousRows=state.getAsJsonArray("pokemonShop");
+      if(start!=0&&(previousRows==null||previousRows.size()!=start)){resync=true;return false;}
+      var combined=new JsonArray();if(start!=0)combined.addAll(previousRows);combined.addAll(rows);patch.add("pokemonShop",combined);
+    }
     domains.put(domain, new Version(revision, sequence));
-    state.addProperty("schema", 4);
+    state.addProperty("schema", 5);
     state.addProperty("_syncClockOffset", now - sentAt);
     ClientSyncClock.offset = now - sentAt;
     patch.entrySet().forEach(e -> state.add(e.getKey(), e.getValue()));
@@ -78,6 +86,7 @@ final class SyncInbox {
 
   void reset() {
     generation = -1;
+    resync=false;
     domains.clear();
     ClientSyncClock.offset = 0;
   }

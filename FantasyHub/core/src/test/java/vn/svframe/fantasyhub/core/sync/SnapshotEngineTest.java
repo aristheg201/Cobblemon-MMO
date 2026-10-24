@@ -45,6 +45,49 @@ class SnapshotEngineTest {
   }
 
   @Test
+  void queuedBulkNeverOccupiesRealtimeWorker() {
+    var realtime=new Manual();var bulk=new Manual();try(var engine=new SnapshotEngine(realtime,bulk,8)){
+      var id=UUID.randomUUID();engine.join(id);engine.dirty(id,Domain.GUI);engine.submit(engine.poll(),Map.of("catalog",List.of(1,2,3)));
+      engine.dirty(id,Domain.COMBAT);engine.submit(engine.poll(),Map.of("active",true));
+      assertEquals(1,bulk.q.size());assertEquals(1,realtime.q.size());
+      realtime.run();assertEquals(Domain.COMBAT,engine.completed().stamp().domain());
+      assertNull(engine.completed());bulk.run();assertEquals(Domain.GUI,engine.completed().stamp().domain());
+    }
+  }
+
+  @Test
+  void sharedClassMetadataIsExpandedOnWorkerWithoutChangingDefinitions(){
+    var worker=new Manual();try(var engine=new SnapshotEngine(worker,8)){
+      var id=UUID.randomUUID();engine.join(id);engine.dirty(id,Domain.GUI);
+      var metadata=new HashMap<String,Object>();metadata.put("description",List.of("original"));
+      var shared=FrozenValues.share(metadata);metadata.put("description",List.of("mutated"));
+      engine.submit(engine.poll(),Map.of("classRoster",List.of(Map.of("id","THOR","_classMetadata",shared))));worker.run();
+      var json=engine.completed().json();assertTrue(json.contains("original"));assertFalse(json.contains("mutated"));assertFalse(json.contains("_classMetadata"));
+    }
+  }
+
+  @Test
+  void realtimeCompletionOvertakesCompletedBulk() {
+    var worker=new Manual();try(var s=new SnapshotEngine(worker,8)) {
+      var id=UUID.randomUUID();s.join(id);s.dirty(id,Domain.BUNDLES);
+      s.submit(s.poll(),Map.of("offers",List.of()));worker.run();
+      s.dirty(id,Domain.VITALS);s.submit(s.poll(),Map.of("health",20));worker.run();
+      assertEquals(Domain.VITALS,s.completed().stamp().domain());
+      assertEquals(Domain.BUNDLES,s.completed().stamp().domain());
+    }
+  }
+
+  @Test
+  void bulkAdmissionCanBePausedWithoutBlockingRealtime() {
+    var e=new Manual();try(var s=new SnapshotEngine(e,8)) {
+      var id=UUID.randomUUID();s.join(id);s.dirty(id,Domain.BUNDLES);
+      assertNull(s.poll(false));s.dirty(id,Domain.VITALS);
+      var t=s.poll(false);assertEquals(Domain.VITALS,t.domain());s.skip(t);
+      assertEquals(Domain.BUNDLES,s.poll(true).domain());
+    }
+  }
+
+  @Test
   void staleGenerationAndRevisionCannotReachNetwork() {
     var e = new Manual();
     try (var s = new SnapshotEngine(e, 8)) {

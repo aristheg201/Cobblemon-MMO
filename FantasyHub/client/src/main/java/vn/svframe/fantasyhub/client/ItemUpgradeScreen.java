@@ -24,7 +24,8 @@ public final class ItemUpgradeScreen extends Screen {
  public ItemUpgradeScreen(Screen parent){super(tr("title"));this.parent=parent;}
  private static Text tr(String key,Object...args){return Text.translatable(KEY+key,args);}
  private JsonObject state(){var s=FantasyHubClient.state().getAsJsonObject("itemUpgrades");return s==null?new JsonObject():s;}
- private List<JsonObject> rows(){if(!state().has("items"))return List.of();var rows=new ArrayList<JsonObject>();for(var r:state().getAsJsonArray("items"))rows.add(r.getAsJsonObject());return rows;}
+ private JsonArray indexedSource;private List<JsonObject> indexedRows=List.of();
+ private List<JsonObject> rows(){var array=state().getAsJsonArray("items");if(array==null)return List.of();if(array!=indexedSource){indexedSource=array;icons.clear();var rows=new ArrayList<JsonObject>();for(var r:array)rows.add(r.getAsJsonObject());indexedRows=List.copyOf(rows);}return indexedRows;}
  private JsonObject selection(){return rows().stream().filter(r->r.get("slot").getAsInt()==selected).findFirst().orElse(null);}
  private ItemStack stack(String raw){return icons.computeIfAbsent(raw,s->{try{return ItemStack.fromNbt(client.world.getRegistryManager(),StringNbtReader.parse(s)).orElse(ItemStack.EMPTY);}catch(Exception e){LOG.error("Invalid native equipment preview in Fantasy HUD",e);return ItemStack.EMPTY;}});}
  public void refresh(){var row=selection();if(row==null||!confirmation.equals(row.get("quote").getAsString()))confirmation="";clearAndInit();}

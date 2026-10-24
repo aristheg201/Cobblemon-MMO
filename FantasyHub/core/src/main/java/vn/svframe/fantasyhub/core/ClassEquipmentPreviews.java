@@ -16,6 +16,7 @@ final class ClassEquipmentPreviews {
   private static Map<String, List<String>> cache = Map.of();
 
   static boolean prepare(ServerPlayerEntity player, long budgetNanos) {
+    if(budgetNanos<=0)return false;
     if (revision != SVFrameItems.registry().revision()) {
       building.clear();
       cache = Map.of();

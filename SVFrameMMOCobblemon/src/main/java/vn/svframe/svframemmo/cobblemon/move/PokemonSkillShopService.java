@@ -41,26 +41,58 @@ public final class PokemonSkillShopService implements PlayerAbilityShop {
       this.purchase(player,id,paymentOption,-1);
    }
 
-   public List<Map<String, Object>> catalog(ServerPlayerEntity player) {
-      List<Map<String, Object>> rows = new ArrayList<>();
-      boolean beastAvailable=economy.available("beconomy","secondary"),dollarsAvailable=economy.available("cobbledollars","cobbledollars");
+   private long indexSource=-1, catalogRevision;
+   private Object indexConfig;
+   private List<Offer> indexed=List.of();
+   private final Map<String,Map<String,Object>> metadata=new LinkedHashMap<>();
 
-      for (PokemonSkillShopService.Offer offer : this.offers(player.getUuid())) {
-         ClassSkill definition = CobblemonMoveSkillAdapter.definition(offer.moveId());
-         MoveTemplate move = Moves.getByName(offer.moveId());
-         if (move != null && definition != null) {
-            CobblemonMoveProfile profile = CobblemonMoveProfile.of(move);
-            PlayerData data = SVFrameMMO.playerData().get(player);
-            int level = Math.max(1, SVFrameMMO.externalProgression().level(player.getUuid(), offer.skillId()));
+   /** Main-thread definition fence. Native purchases never read this display cache. */
+   public long catalogRevision(){
+      Object cfg=SVFrameMMOCobblemon.config().pokemonSkills;long source=CobblemonMoveSkillAdapter.revision();
+      if(source!=indexSource||cfg!=indexConfig){
+         indexSource=source;indexConfig=cfg;metadata.clear();var next=new ArrayList<Offer>();
+         if(SVFrameMMOCobblemon.config().pokemonSkills.enabled)for(String moveId:PlayerMoveCoverage.purchaseAdapters()){
+            var definition=CobblemonMoveSkillAdapter.definition(moveId);
+            if(definition==null||definition.getSkill()==null||!PlayerMoveCoverage.purchasable(moveId))continue;
+            String skillId=definition.getSkill().getId(),name=definition.getSkill().getName();if(name==null||name.isBlank())name=moveId;
+            next.add(new Offer(moveId,skillId,name,SVFrameMMOCobblemon.config().pokemonSkills.payment(1,moveId,skillId).price(),false));
+         }
+         next.sort(Comparator.<Offer>comparingInt(o->PlayerMoveCoverage.family(o.moveId())==PlayerMoveCoverage.Family.SIGNATURE?0:1).thenComparing(Offer::name,String.CASE_INSENSITIVE_ORDER).thenComparing(Offer::moveId));
+         if(next.size()>4096)throw new IllegalStateException("Pokémon shop exceeds 4096 definitions");
+         indexed=List.copyOf(next);catalogRevision++;
+      }
+      return catalogRevision;
+   }
+
+   /** Optional sliced presentation API; each page captures only the requested live progression. */
+   public Map<String,Object> catalogPage(ServerPlayerEntity player,int start,int limit){
+      if(start<0||limit<1||limit>32)throw new IllegalArgumentException("Invalid Pokémon catalog slice");
+      long revision=catalogRevision();var rows=new ArrayList<Map<String,Object>>();
+      boolean beastAvailable=economy.available("beconomy","secondary"),dollarsAvailable=economy.available("cobbledollars","cobbledollars");
+      PlayerData data=SVFrameMMO.playerData().get(player);
+      for(int i=start;i<Math.min(indexed.size(),start+limit);i++){
+         Offer indexedOffer=indexed.get(i);Offer offer=new Offer(indexedOffer.moveId(),indexedOffer.skillId(),indexedOffer.name(),indexedOffer.price(),SVFrameMMO.externalProgression().isLearned(player.getUuid(),indexedOffer.skillId()));
+         ClassSkill definition=CobblemonMoveSkillAdapter.definition(offer.moveId());MoveTemplate move=Moves.getByName(offer.moveId());
+         if(move==null||definition==null)continue;
+         CobblemonMoveProfile profile=CobblemonMoveProfile.of(move);
+         int level=Math.max(1,SVFrameMMO.externalProgression().level(player.getUuid(),offer.skillId()));
             LinkedHashMap<String, Object> row = new LinkedHashMap<>();
-            row.put("id", offer.moveId());
-            row.put("skillId", offer.skillId());
-            row.put("name", offer.name());
-            row.put("nameKey", translation(move.getDisplayName()));
-            row.put("description", move.getDescription().getString());
-            row.put("descriptionKey", translation(move.getDescription()));
-            row.put("type", move.getElementalType().getName());
-            row.put("category", profile.isHeal() ? "healing" : profile.damageCategory());
+            row.putAll(metadata.computeIfAbsent(offer.moveId(),key->{var base=new LinkedHashMap<String,Object>();
+            base.put("id", offer.moveId());
+            base.put("skillId", offer.skillId());
+            base.put("name", offer.name());
+            base.put("nameKey", translation(move.getDisplayName()));
+            base.put("description", move.getDescription().getString());
+            base.put("descriptionKey", translation(move.getDescription()));
+            base.put("type", move.getElementalType().getName());
+            base.put("category", profile.isHeal() ? "healing" : profile.damageCategory());
+            base.put("range", profile.range());
+            base.put("radius", profile.radius());
+            base.put("requiredLevel", definition.getUnlockLevel());
+            base.put("effectKey", PlayerMoveCoverage.effectKey(offer.moveId()));
+            base.put("family", PlayerMoveCoverage.family(offer.moveId()).name().toLowerCase(Locale.ROOT));
+              return Map.copyOf(base);
+            }));
             row.put("owned", offer.owned());
             row.put("price", offer.price().toPlainString());
             row.put("currency","beastcoin");
@@ -73,21 +105,20 @@ public final class PokemonSkillShopService implements PlayerAbilityShop {
             row.put("mana", definition.getParameter("mana", level, data));
             row.put("stamina", definition.getParameter("stamina", level, data));
             row.put("cooldown", definition.getParameter("cooldown", level, data));
-            row.put("range", profile.range());
-            row.put("radius", profile.radius());
             row.put("level", level);
-            row.put("requiredLevel", definition.getUnlockLevel());
-            row.put("effectKey", PlayerMoveCoverage.effectKey(offer.moveId()));
-            row.put("family", PlayerMoveCoverage.family(offer.moveId()).name().toLowerCase(Locale.ROOT));
             row.put("damage", definition.getParameter("damage", level, data));
             row.put(
                "slots",
                PlayerSkillCatalog.allowedSlots(data, new vn.svframe.svframemmo.skill.PlayerSkillCatalog.Entry(definition, Origin.EXTERNAL, true, level))
             );
-            rows.add(Map.copyOf(row));
-         }
+         rows.add(Map.copyOf(row));
       }
+      return Map.of("revision",revision,"total",indexed.size(),"next",Math.min(indexed.size(),start+limit),"rows",List.copyOf(rows));
+   }
 
+   public List<Map<String,Object>> catalog(ServerPlayerEntity player){
+      var rows=new ArrayList<Map<String,Object>>();int cursor=0;
+      do{var page=catalogPage(player,cursor,32);for(var row:(List<?>)page.get("rows"))rows.add((Map<String,Object>)row);cursor=(Integer)page.get("next");}while(cursor<indexed.size());
       return List.copyOf(rows);
    }
 

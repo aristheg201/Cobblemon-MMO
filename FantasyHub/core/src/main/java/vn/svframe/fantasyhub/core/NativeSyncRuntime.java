@@ -28,12 +28,17 @@ final class NativeSyncRuntime {
         maxCapturesPerTick = 16,
         maxGuiCapturesPerTick = 2,
         mainBudgetMicros = 2000,
+        catalogPageSize = 16,
+        maxPacketsPerTick = 32,
+        maxDispatchBytesPerTick = 131072,
         vitalsIntervalTicks = 5,
         combatIntervalTicks = 5,
         extensionIntervalTicks = 5,
         balanceRefreshTicks = 20;
 
     void validate() {
+      if(catalogPageSize<1||catalogPageSize>32)throw new IllegalArgumentException("Invalid catalog page size");
+      if(maxPacketsPerTick<4||maxPacketsPerTick>128||maxDispatchBytesPerTick<16384||maxDispatchBytesPerTick>1048576)throw new IllegalArgumentException("Invalid dispatch budgets");
       if (workers < 1
           || workers > 4
           || queueCapacity < 16
@@ -61,6 +66,7 @@ final class NativeSyncRuntime {
   private final Map<UUID, Session> sessions = new LinkedHashMap<>();
   private final UiSyncGate views = new UiSyncGate();
   private SnapshotEngine engine;
+  private final CaptureAdmission admission=new CaptureAdmission();
   private Settings settings = new Settings();
   private static final Map<String, Object> WARM_PENDING = Map.of("_warmPending", true);
   private long tickStartedAt;
@@ -71,6 +77,10 @@ final class NativeSyncRuntime {
       latencyTimes = new SyncTimings(),
       hudCaptureTimes = new SyncTimings(),
       hudSerializeTimes = new SyncTimings();
+  private static final java.lang.management.ThreadMXBean THREADS=java.lang.management.ManagementFactory.getThreadMXBean();
+  private final SyncTimings probeTimes=new SyncTimings(),dispatchTimes=new SyncTimings(),tickCpuTimes=new SyncTimings();
+  private final EnumMap<Domain,SyncTimings> domainTimes=new EnumMap<>(Domain.class);
+  private final Map<String,SyncTimings> guiTimes=new LinkedHashMap<>();
   private long packets, packetChars, wireBytes, unchanged, failures, hudUpdates, definitionHits, definitionBuilds, catalogReuses;
   private final EnumMap<Domain, Long> domainCaptures = new EnumMap<>(Domain.class);
   private static final PlayerResource[] RESOURCES = PlayerResource.values();
@@ -85,7 +95,10 @@ final class NativeSyncRuntime {
     Object observedExtensions;
     Map<String, Object> observedBalance;
     boolean balanceInvalidated = true;
-    FrozenValues.Shared pokemonDefinitions, profileDetails;
+    FrozenValues.Shared profileDetails;
+    final CatalogStream pokemon=new CatalogStream();
+    long pokemonRevision=-1,pokemonReconcile;
+    boolean guiContinues;
     long dueVitals, dueCombat, dueExtensions, dueBalance, dueInventory;
     int inventory = -1;
     Object connection; // Main-thread identity only; never part of a snapshot.
@@ -103,6 +116,9 @@ final class NativeSyncRuntime {
     Map<String, Object> definitions = Map.of();
     final Map<String, Long> deadlines = new HashMap<>();
     long sentCatalog = -1;
+    int classCursor;
+    List<vn.svframe.svframemmo.api.player.profess.PlayerClass> classTypes;
+    final List<Object> classRows = new ArrayList<>();
   }
 
   NativeSyncRuntime(BiFunction<ServerPlayerEntity, String, Map<String, Object>> capture) {
@@ -110,6 +126,7 @@ final class NativeSyncRuntime {
   }
 
   void install() {
+    AccessorySyncEvents.install();
     ServerLifecycleEvents.SERVER_STARTED.register(
         server -> {
           try {
@@ -135,6 +152,7 @@ final class NativeSyncRuntime {
           SyncSignals.clear();
           FantasyHubCore.clearPresentationDefinitions();
           ClassEquipmentPreviews.clear();
+          AbilityCatalogAccess.clear();
         });
     ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
       UUID id=handler.player.getUuid();
@@ -204,7 +222,8 @@ final class NativeSyncRuntime {
       if (d == Domain.COMMERCE) s.balanceInvalidated = true;
       if (d == Domain.BUNDLES) s.catalogDirty = true;
       if (d == Domain.CLASS || d == Domain.EQUIPMENT || d == Domain.GUI) {
-        s.pokemonDefinitions = null;
+        s.classTypes=null; s.classRows.clear(); s.classCursor=0;
+        if(d==Domain.CLASS||d==Domain.EQUIPMENT)s.pokemon.invalidate();
         s.profileDetails = null;
       }
       if (d == Domain.CLASS || d == Domain.EQUIPMENT) {
@@ -247,7 +266,14 @@ final class NativeSyncRuntime {
     if (!views.open(id, scope, tick)) return;
     cancelView(id);
     var session = sessions.get(id);
-    if (session != null) session.openScope = scope;
+    if (session != null) {
+      session.openScope = scope;
+      if(scope.equals("pokemon")){
+        long revision=AbilityCatalogAccess.revision(vn.svframe.svframelib.skill.PlayerAbilityShop.get());
+        if(revision!=session.pokemonRevision){session.pokemon.invalidate();session.pokemonRevision=revision;}
+        session.pokemon.reopen();
+      }
+    }
     if ("shop".equals(scope)) {
       if (session != null && (session.catalogDirty || session.sentCatalog != CommerceRuntime.previewRevision()))
         engine.dirty(id, Domain.BUNDLES);
@@ -267,7 +293,7 @@ final class NativeSyncRuntime {
     engine.cancel(id, Domain.BUNDLES);
     engine.cancel(id, Domain.COMMERCE);
     var s = sessions.get(id);
-    if (s != null) s.openScope = "";
+    if (s != null) {s.openScope = "";s.guiContinues=false;}
   }
 
   void touch(ServerPlayerEntity p) {
@@ -481,7 +507,7 @@ final class NativeSyncRuntime {
         if (!CommerceRuntime.preparePreviews(
             p,
             Math.max(0, settings.mainBudgetMicros * 1000L - (System.nanoTime() - tickStartedAt)),
-            4)) yield s.loadingNoticeSent ? WARM_PENDING : Map.of("catalogLoading", true);
+            1)) yield s.loadingNoticeSent ? WARM_PENDING : Map.of("catalogLoading", true);
         var data = new LinkedHashMap<String, Object>();
         var shop = CommerceRuntime.capture(p);
         for (String key :
@@ -516,16 +542,26 @@ final class NativeSyncRuntime {
           definitionHits++;
           yield Map.of("_profile", s.profileDetails);
         }
-        if (scope.equals("pokemon") && s.pokemonDefinitions != null) {
-          definitionHits++;
-          yield Map.of("pokemonShop", s.pokemonDefinitions);
+        if(scope.equals("pokemon")) {
+          var provider=vn.svframe.svframelib.skill.PlayerAbilityShop.get();
+          var data=s.pokemon.next((start,limit)->AbilityCatalogAccess.page(provider,p,start,limit),settings.catalogPageSize);
+          s.guiContinues=Boolean.TRUE.equals(data.get("pokemonCatalogLoading"));
+          yield data;
         }
         definitionBuilds++;
-        var detail = uiCapture.apply(p, scope);
-        if (scope.equals("pokemon")) {
-          s.pokemonDefinitions = FrozenValues.share(detail.get("pokemonShop"));
-          yield Map.of("pokemonShop", s.pokemonDefinitions);
+        if(scope.equals("classes")) {
+          if(s.classTypes==null){s.classTypes=List.copyOf(SVFrameMMO.classes().getAll());s.classRows.clear();s.classCursor=0;}
+          long slice=System.nanoTime();
+          for(int n=0;s.classCursor<s.classTypes.size()&&n<4&&(n==0||System.nanoTime()-slice<300_000);n++) {
+            s.classRows.add(FrozenValues.share(FantasyHubCore.classRow(p,s.classTypes.get(s.classCursor++))));
+          }
+          if(s.classCursor<s.classTypes.size())yield WARM_PENDING;
+          var detail=uiCapture.apply(p,"classes-header");
+          detail.put("classRoster",List.copyOf(s.classRows));
+          s.classTypes=null;s.classRows.clear();s.classCursor=0;
+          yield detail;
         }
+        var detail = uiCapture.apply(p, scope);
         // An older GUI result must never overwrite newer realtime domain values.
         detail
             .keySet()
@@ -554,6 +590,7 @@ final class NativeSyncRuntime {
   void tick(MinecraftServer server) {
     if (engine == null) return;
     long started = System.nanoTime();
+    long cpuStarted=THREADS.isCurrentThreadCpuTimeSupported()?THREADS.getCurrentThreadCpuTime():0;
     tickStartedAt = started;
     tick++;
     long ir = vn.svframe.svframeitems.SVFrameItems.registry().revision(),
@@ -604,6 +641,10 @@ final class NativeSyncRuntime {
       }
       String scope = views.scope(id, tick);
       if (scope == null && !s.openScope.isEmpty()) cancelView(id);
+      if("pokemon".equals(scope)&&tick>=s.pokemonReconcile){
+        s.pokemonReconcile=tick+20;long revision=AbilityCatalogAccess.revision(vn.svframe.svframelib.skill.PlayerAbilityShop.get());
+        if(revision!=s.pokemonRevision){s.pokemonRevision=revision;s.pokemon.invalidate();engine.dirty(id,Domain.GUI);}
+      }
       if (scope != null && tick >= s.dueInventory) {
         s.dueInventory = tick + 20;
         int revision = p.getInventory().getChangeCount();
@@ -627,8 +668,10 @@ final class NativeSyncRuntime {
         if (s.sentCatalog != CommerceRuntime.previewRevision()) changed(id, Domain.BUNDLES);
       }
     }
+    probeTimes.add(System.nanoTime()-started);
+    long dispatchAt=System.nanoTime();int dispatchBytes=0;
     SnapshotEngine.Result result;
-    for (int i = 0; i < 128 && (result = engine.completed()) != null; i++) {
+    for (int i = 0; i < settings.maxPacketsPerTick && dispatchBytes<settings.maxDispatchBytesPerTick && (i==0||System.nanoTime()-dispatchAt<500_000) && (result = engine.completed()) != null; i++) {
       var tag = result.stamp();
       var p = server.getPlayerManager().getPlayer(tag.player());
       if (result.error() != null) {
@@ -652,6 +695,7 @@ final class NativeSyncRuntime {
         case COMMERCE -> s.lastBalance = s.capturedBalance;
         default -> {}
       }
+      if(tag.domain()==Domain.GUI&&s.guiContinues&&"pokemon".equals(views.scope(tag.player(),tick)))engine.dirty(tag.player(),Domain.GUI);
       if (tag.domain() == Domain.BUNDLES) {
         if (result.json().contains("\"catalogLoading\":true")) {
           s.loadingNoticeSent = true;
@@ -678,26 +722,28 @@ final class NativeSyncRuntime {
               tag.domain().name(),
               System.currentTimeMillis(),
               result.encoded()));
+      dispatchBytes+=result.encoded().length;
       packets++;
       packetChars += result.json().length();
       wireBytes += result.encoded().length;
     }
+    dispatchTimes.add(System.nanoTime()-dispatchAt);
     int gui = 0;
     for (int i = 0; i < settings.maxCapturesPerTick; i++) {
       if (i > 0 && System.nanoTime() - started > settings.mainBudgetMicros * 1000L) break;
-      var task = engine.poll();
+      var task = engine.poll(gui < settings.maxGuiCapturesPerTick);
       if (task == null) break;
-      if (task.domain().ordinal() >= Domain.GUI.ordinal()
-          && ++gui > settings.maxGuiCapturesPerTick) {
-        engine.abandon(task);
-        break;
-      }
+      if (task.domain().ordinal() >= Domain.GUI.ordinal()) gui++;
       var p = server.getPlayerManager().getPlayer(task.player());
       if (p == null) {
         engine.skip(task);
         continue;
       }
       long at = System.nanoTime();
+      String costKey=task.domain()==Domain.GUI?Objects.requireNonNullElse(views.scope(task.player(),tick),"closed"):task.domain().name();
+      if(task.domain().ordinal()>=Domain.GUI.ordinal()&&!admission.admit(costKey,at-started,settings.mainBudgetMicros*1000L)){
+        engine.abandon(task);continue;
+      }
       try {
         var data = capture(p, sessions.get(task.player()), task.domain());
         if (data == null) {
@@ -715,10 +761,14 @@ final class NativeSyncRuntime {
         LOG.error("Snapshot capture failed for {} domain {}", task.player(), task.domain(), e);
       }
       long captureNanos=System.nanoTime()-at;
+      admission.record(costKey,captureNanos);
       captureTimes.add(captureNanos);
+      domainTimes.computeIfAbsent(task.domain(),key->new SyncTimings()).add(captureNanos);
+      if(task.domain()==Domain.GUI)guiTimes.computeIfAbsent(Objects.requireNonNullElse(views.scope(task.player(),tick),"closed"),key->new SyncTimings()).add(captureNanos);
       if(task.domain().ordinal()<=Domain.EXTENSIONS.ordinal())hudCaptureTimes.add(captureNanos);
     }
     tickTimes.add(System.nanoTime() - started);
+    if(cpuStarted>0)tickCpuTimes.add(THREADS.getCurrentThreadCpuTime()-cpuStarted);
   }
 
   Map<String, Object> metrics() {
@@ -732,6 +782,9 @@ final class NativeSyncRuntime {
     m.put("definitionCacheBuilds",definitionBuilds);
     m.put("serialization", serializeTimes.view());
     m.put("tickWork", tickTimes.view());
+    m.put("tickCpu",tickCpuTimes.view());m.put("probes",probeTimes.view());m.put("dispatch",dispatchTimes.view());
+    var domainsTime=new LinkedHashMap<String,Object>();domainTimes.forEach((key,value)->domainsTime.put(key.name(),value.view()));m.put("domainCapture",domainsTime);
+    var guiTime=new LinkedHashMap<String,Object>();guiTimes.forEach((key,value)->guiTime.put(key,value.view()));m.put("guiCapture",guiTime);
     m.put("captureToDispatch", latencyTimes.view());
     m.put("commerce", CommerceRuntime.metrics());
     m.put("connectedPlayers", sessions.size());
@@ -753,6 +806,7 @@ final class NativeSyncRuntime {
     hudSerializeTimes.reset();
     hudUpdates=definitionHits=definitionBuilds=catalogReuses=0;
     tickTimes.reset();
+    tickCpuTimes.reset();probeTimes.reset();dispatchTimes.reset();domainTimes.clear();guiTimes.clear();
     serializeTimes.reset();
     latencyTimes.reset();
     CommerceRuntime.resetMetrics();

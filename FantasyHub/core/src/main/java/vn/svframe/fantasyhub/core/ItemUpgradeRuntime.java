@@ -43,7 +43,7 @@ public final class ItemUpgradeRuntime {
   for(int slot=0;slot<p.getInventory().size();slot++){
    var st=p.getInventory().getStack(slot);if(st.isOf(Registries.ITEM.get(CATALYST)))catalysts+=st.getCount();
    var identified=SVFrameItemsApi.identify(st);if(identified.isEmpty())continue;var item=identified.get();var t=template(st);var row=new LinkedHashMap<String,Object>();
-   row.put("slot",slot);row.put("item",encoded(p,st));row.put("definition",item.definitionId());row.put("level",item.upgradeLevel());row.put("max",t==null?item.upgradeLevel():t.maxLevel());
+   String preview=encoded(p,st);row.put("slot",slot);row.put("item",preview);row.put("definition",item.definitionId());row.put("level",item.upgradeLevel());row.put("max",t==null?item.upgradeLevel():t.maxLevel());
    String blocked=recovery?"recovery":st.getCount()>1&&p.getInventory().getEmptySlot()<0?"inventory_full":t==null?"not_upgradable":item.upgradeLevel()>=t.maxLevel()?"max_level":"";
    row.put("blocked",blocked);row.put("chance",t==null?0:t.chanceForNextLevel(item.upgradeLevel()));row.put("destroyOnFail",t!=null&&t.destroyOnFail());
    var costs=new ArrayList<Map<String,Object>>();if(t!=null)for(var cost:t.costs()){
@@ -51,7 +51,7 @@ public final class ItemUpgradeRuntime {
     if(cost.provider().equals("minecraft_item")&&Registries.ITEM.containsId(Identifier.of(cost.id())))c.put("item",encoded(p,new ItemStack(Registries.ITEM.get(Identifier.of(cost.id())))));
     costs.add(c);
    }
-   row.put("costs",costs);row.put("quote",blocked.isEmpty()?QUOTES.issue(p.getUuid(),slot,encoded(p,st),t.toString(),System.currentTimeMillis()):"");rows.add(row);
+   row.put("costs",costs);row.put("quote",blocked.isEmpty()?QUOTES.issue(p.getUuid(),slot,preview,t.toString(),System.currentTimeMillis()):"");rows.add(row);
   }
   out.put("catalysts",catalysts);out.put("recovery",recovery);out.put("items",rows);return out;
  }

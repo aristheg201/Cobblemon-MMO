@@ -30,7 +30,7 @@ final class SkillBarPresentation {
 
    static String cooldownLabel(double remaining) {
       if(remaining<=0)return "";
-      return remaining<1?String.format(java.util.Locale.ROOT,"%.1f",Math.ceil(remaining*10)/10):String.valueOf((int)Math.ceil(remaining));
+      return remaining<1?((int)Math.ceil(remaining*10)==10?"1.0":"0."+(int)Math.ceil(remaining*10)):String.valueOf((int)Math.ceil(remaining));
    }
 
    static JsonArray slots(JsonObject state) {

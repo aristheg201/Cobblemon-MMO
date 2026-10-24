@@ -26,6 +26,7 @@ final class SyncTimings {
         count,
         "meanMs",
         count == 0 ? 0 : total / 1e6 / count,
+        "p50Ms", n == 0 ? 0 : values[(n-1)/2]/1e6,
         "p95Ms",
         n == 0 ? 0 : values[(n - 1) * 95 / 100] / 1e6,
         "p99Ms",

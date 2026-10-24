@@ -18,9 +18,21 @@ final class ShopView {
   if(!catalog.has("offers"))return List.of();var out=new ArrayList<JsonObject>();
   for(var value:catalog.getAsJsonArray("offers")){var r=value.getAsJsonObject();String category=r.get("category").getAsString();if(switch(tab){case CLASS->category.equals("classes");case BUNDLE->category.equals("bundles");case SHOP->Set.of("items","materials","tickets","titles","seasonal").contains(category);})out.add(r);}return out;
  }
+ /** Identity fence: balances may mutate the containing object; only replacing offers rebuilds lists. */
+ static final class Index {
+  private JsonArray source;
+  private final EnumMap<Tab,List<JsonObject>> tabs=new EnumMap<>(Tab.class);
+  List<JsonObject> rows(JsonObject catalog,Tab tab){
+   JsonArray offers=catalog.getAsJsonArray("offers");
+   if(source!=offers||tabs.isEmpty()){source=offers;tabs.clear();for(var t:Tab.values())tabs.put(t,List.copyOf(ShopView.rows(catalog,t)));}
+   return tabs.get(tab);
+  }
+ }
  static String fit(String value,int width,ToIntFunction<String> measure){
   if(measure.applyAsInt(value)<=width)return value;if(width<measure.applyAsInt("…"))return "";
-  int end=value.length();while(end>0&&measure.applyAsInt(value.substring(0,end)+"…")>width)end=value.offsetByCodePoints(end,-1);return value.substring(0,end)+"…";
+  int low=0,high=value.codePointCount(0,value.length());
+  while(low<high){int mid=(low+high+1)>>>1;int end=value.offsetByCodePoints(0,mid);if(measure.applyAsInt(value.substring(0,end)+"…")<=width)low=mid;else high=mid-1;}
+  return value.substring(0,value.offsetByCodePoints(0,low))+"…";
  }
  static String amount(String raw){var value=new java.math.BigDecimal(raw).stripTrailingZeros();var format=java.text.NumberFormat.getNumberInstance(Locale.US);format.setMaximumFractionDigits(Math.max(0,value.scale()));return format.format(value);}
 }

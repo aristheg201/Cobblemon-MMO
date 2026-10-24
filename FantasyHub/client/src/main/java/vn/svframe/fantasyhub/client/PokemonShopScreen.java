@@ -35,6 +35,10 @@ public final class PokemonShopScreen extends Screen {
    private boolean ownedOnly;
    private boolean requested;
    private TextFieldWidget searchField;
+   private JsonArray indexedSource;
+   private String indexedType="",indexedCategory="",indexedQuery="",indexedLanguage="";
+   private boolean indexedOwned;
+   private List<JsonObject> indexedRows=List.of();
 
    public PokemonShopScreen() {
       super(Text.translatable("fantasyhub.shop.title"));
@@ -54,6 +58,9 @@ public final class PokemonShopScreen extends Screen {
       if (array == null) {
          return List.of();
       } else {
+         String language=net.minecraft.client.MinecraftClient.getInstance().options.language;
+         if(array==indexedSource&&type.equals(indexedType)&&category.equals(indexedCategory)&&query.equals(indexedQuery)&&ownedOnly==indexedOwned&&language.equals(indexedLanguage))return indexedRows;
+         indexedSource=array;indexedType=type;indexedCategory=category;indexedQuery=query;indexedOwned=ownedOnly;indexedLanguage=language;
          ArrayList<JsonObject> result = new ArrayList<>();
          String search = this.query.trim().toLowerCase(Locale.ROOT);
 
@@ -72,7 +79,7 @@ public final class PokemonShopScreen extends Screen {
             }
          }
 
-         return result;
+         indexedRows=List.copyOf(result);return indexedRows;
       }
    }
 
@@ -299,6 +306,12 @@ public final class PokemonShopScreen extends Screen {
     context.draw();
       FantasyPanel.frame(context, this.left, this.top, this.w, this.h);
       context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.left + this.w / 2, this.top + 12, -1588355);
+      var snapshot=FantasyHubClient.state();
+      if(snapshot.has("pokemonCatalogLoading")&&snapshot.get("pokemonCatalogLoading").getAsBoolean()){
+        int loaded=snapshot.has("pokemonShop")?snapshot.getAsJsonArray("pokemonShop").size():0;
+        int total=snapshot.has("pokemonCatalogTotal")?snapshot.get("pokemonCatalogTotal").getAsInt():0;
+        context.drawText(textRenderer,Text.translatable("fantasyhub.shop.catalog_loading",loaded,total),left+10,top+h-12,0xffcab680,false);
+      }
       JsonObject row = this.selection();
       if (row != null) {
          int x = this.left + this.w / 2 + 8;

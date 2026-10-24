@@ -14,11 +14,14 @@ public final class BeltEquipment {
       boolean accessories,
       Method component,
       Method equipped,
+      Method allBelts,
       Method reference,
       Method slot,
       Method stack) {}
 
   private static final List<Backend> BACKENDS = new ArrayList<>();
+  private static List<Item> BELT_ORDER=List.of();
+  private static final Predicate<ItemStack> IS_BELT = stack -> BeltEquipment.BELTS.containsKey(stack.getItem());
   public static Predicate<LivingEntity> classAllowed = entity -> true;
   private static final Map<Item, Predicate<LivingEntity>> BELTS = new LinkedHashMap<>();
 
@@ -36,6 +39,7 @@ public final class BeltEquipment {
     BELTS.put(Protocol.ryukiBelt, entity -> true);
     BELTS.put(Protocol.knightBelt, entity -> true);
     BELTS.put(Protocol.decadeBelt, entity -> true);
+    BELT_ORDER=List.copyOf(BELTS.keySet());
     register(
         "accessories",
         "io.wispforest.accessories.api.AccessoriesAPI",
@@ -105,6 +109,7 @@ public final class BeltEquipment {
                 true,
                 capability.getMethod("get", LivingEntity.class),
                 capability.getMethod("getEquipped", Item.class),
+                capability.getMethod("getEquipped", Predicate.class),
                 entry.getMethod("reference"),
                 reference.getMethod("slotName"),
                 entry.getMethod("stack")));
@@ -115,6 +120,7 @@ public final class BeltEquipment {
                 api.getMethod("getTrinketComponent", LivingEntity.class),
                 Class.forName("dev.emi.trinkets.api.TrinketComponent")
                     .getMethod("getEquipped", Item.class),
+                Class.forName("dev.emi.trinkets.api.TrinketComponent").getMethod("getEquipped", Predicate.class),
                 null,
                 Class.forName("dev.emi.trinkets.api.SlotReference").getMethod("getId"),
                 null));
@@ -130,11 +136,31 @@ public final class BeltEquipment {
   }
 
   public static ItemStack equippedAny(LivingEntity entity) {
-    for (Item belt : BELTS.keySet()) {
-      ItemStack stack = equipped(entity, belt);
-      if (!stack.isEmpty()) return stack;
+    // Each installed API/component is queried once, including Accessories' nested-slot handling.
+    // Never cache mutable stacks: equip/unequip is visible within the same tick.
+    var candidates = new ArrayList<List<ItemStack>>(BACKENDS.size());
+    try {
+      for (var backend : BACKENDS) {
+        Object component = backend.component().invoke(null, entity);
+        if (!backend.accessories()) component = ((Optional<?>) component).orElse(null);
+        if (component == null) continue;
+        var stacks = new ArrayList<ItemStack>();
+        for (Object row : (List<?>) backend.allBelts().invoke(component, IS_BELT)) {
+          if (backend.accessories()) {
+            if ("belt".equals(backend.slot().invoke(backend.reference().invoke(row))))
+              stacks.add((ItemStack) backend.stack().invoke(row));
+          } else {
+            var pair=(Pair<?,?>)row;
+            if (((String)backend.slot().invoke(pair.getLeft())).startsWith("legs/belt/"))
+              stacks.add((ItemStack)pair.getRight());
+          }
+        }
+        candidates.add(stacks);
+      }
+      return EquipmentPriority.first(BELT_ORDER, candidates, ItemStack::getItem, ItemStack.EMPTY);
+    } catch (ReflectiveOperationException failure) {
+      throw new IllegalStateException("Installed belt API failed", failure);
     }
-    return ItemStack.EMPTY;
   }
 
   public static ItemStack equipped(LivingEntity entity, Item belt) {

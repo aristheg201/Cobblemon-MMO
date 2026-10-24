@@ -12,6 +12,7 @@ def cmd(c):
  except Exception as e:r=str(e)
  with (root/'commands.jsonl').open('a') as f:f.write(json.dumps({'at':time.time(),'command':c,'result':r})+'\n')
  return r
+window=int(os.environ.get("FANTASY_WINDOW","60"));warmup=int(os.environ.get("FANTASY_WARMUP","30"));assert window>=30 and window%5==0 and warmup>=20
 for count in map(int,os.environ.get("FANTASY_COUNTS","1,5,10,20,40").split(",")):
  path=root/str(count);path.mkdir(exist_ok=True);env=dict(os.environ,BOT_PREFIX='Bench')
  proc=subprocess.Popen(['node','bots.cjs',str(count),'240'],cwd=Path(__file__).resolve().parent,env=env,stdout=(path/'bots.log').open('w'),stderr=subprocess.STDOUT)
@@ -27,31 +28,32 @@ for count in map(int,os.environ.get("FANTASY_COUNTS","1,5,10,20,40").split(","))
   for c in [f'tp {name} {83+(i%8)*2} 71 {83+(i//8)*2}',f'svframemmo admin class {name} THOR',f'svframemmo admin exp give {name} 200000',f'svframemmo skill unlock {name} THOR_THUNDEROUS_SLAM',f'execute as {name} run svframemmo skill bind 1 THOR_THUNDEROUS_SLAM',f'execute as {name} run commerceqa seed x 0']:
    cmd(c)
   if i%5==1:cmd(f'execute as {name} at @s run spawnpokemon pikachu lvl=50')
+ cmd('loadcatalogqa Bench01');import shutil;shutil.copy2(runtime/'config/FantasyHubLoadProbe/catalog.json',path/'catalog.json')
  cmd('effect give @a minecraft:instant_health 1 10 true');cmd('worldboss abort');
  result=cmd('worldboss test start thanos scheduled')
  if 'error' in result.lower():raise RuntimeError('WorldBoss fixture failed: '+result)
- time.sleep(30)
+ time.sleep(warmup)
  cmd('fantasyhubperf reset');cmd('loadprobe start');cmd('spark profiler cancel');time.sleep(.5)
- cmd('spark profiler start --timeout 60 --save-to-file')
+ cmd(f'spark profiler start --timeout {window} --save-to-file')
  at=time.monotonic();samples=[];pid=int((root/'server.pid').read_text())
- for step in range(12):
+ for step in range(window//5):
   time.sleep(max(0,at+5*(step+1)-time.monotonic()))
   data={'at':time.time(),'list':cmd('list'),'perf':cmd('fantasyhubperf')}
   try:data['processStat']=Path(f'/proc/{pid}/stat').read_text();data['processStatus']=[x for x in Path(f'/proc/{pid}/status').read_text().splitlines() if x.startswith(('VmRSS:','Threads:'))]
   except Exception:pass
   samples.append(data)
-  if step in [3,7]:
+  if step in [window//15,window//5-2]:
    for i in range(1,count+1,4):cmd(f'item replace entity Bench{i:02} armor.head with minecraft:iron_helmet');cmd(f'execute as Bench{i:02} run fantasyhubqa damage')
   if step==2:cmd('svframemmo admin class Bench01 FLASH')
   if step==3:cmd('svframemmo admin class Bench01 THOR')
-  if step==8:cmd('fantasyshop reload')
+  if step==window//5-2:cmd('fantasyshop reload')
  cmd(f'loadprobe stop {phase}-{count}');time.sleep(3);cmd('spark tps')
  import shutil
  shutil.copy2(runtime/f'config/FantasyHubLoadProbe/{phase}-{count}.json',path/'ticks.json')
  files=list((runtime/'config/spark').glob('*.sparkprofile'));latest=max(files,key=lambda x:x.stat().st_mtime);import shutil;shutil.copy2(latest,path/'cpu.sparkprofile')
  (path/'samples.json').write_text(json.dumps(samples,indent=2))
  if count==20:
-  cmd('spark profiler cancel');time.sleep(.5);cmd('loadprobe start');cmd('spark profiler start --alloc --timeout 60 --save-to-file');time.sleep(60);cmd(f'loadprobe stop {phase}-20alloc');time.sleep(3);files=list((runtime/'config/spark').glob('*.sparkprofile'));latest=max(files,key=lambda x:x.stat().st_mtime);shutil.copy2(latest,path/'alloc.sparkprofile')
+  cmd('spark profiler cancel');time.sleep(.5);cmd('loadprobe start');cmd(f'spark profiler start --alloc --timeout {window} --save-to-file');time.sleep(window);cmd(f'loadprobe stop {phase}-20alloc');time.sleep(3);files=list((runtime/'config/spark').glob('*.sparkprofile'));latest=max(files,key=lambda x:x.stat().st_mtime);shutil.copy2(latest,path/'alloc.sparkprofile')
  cmd('worldboss abort');cmd('kill @e[type=cobblemon:pokemon]')
  proc.terminate();proc.wait(timeout=15);cmd('kick @a[name=!QAClass024] matrix phase completed');time.sleep(2)
  cleanup=cmd('fantasyhubperf');(path/'cleanup.json').write_text(cleanup)

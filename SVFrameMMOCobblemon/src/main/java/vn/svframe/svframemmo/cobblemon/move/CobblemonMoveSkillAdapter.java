@@ -34,6 +34,7 @@ public final class CobblemonMoveSkillAdapter {
     private static final ConcurrentHashMap<String, ClassSkill> DEFINITIONS = new ConcurrentHashMap<>();
     private static volatile CobblemonMoveSkillAdapter active;
     private static volatile boolean sourceRegistered;
+    private static volatile long definitionsRevision;
 
     private final FusionService fusionService;
     private final MoveSemanticRegistry semantics;
@@ -83,12 +84,14 @@ public final class CobblemonMoveSkillAdapter {
 
         DEFINITIONS.clear();
         DEFINITIONS.putAll(next);
+        definitionsRevision++;
         SVFrameMMO.externalSkills().replace(REGISTRY_OWNER, next.values());
 
         if (SVFrameMMO.externalSkills().getByOwner(REGISTRY_OWNER).size() != next.size())
             throw new IllegalStateException("SVFrameMMO external skill registry did not retain the complete Cobblemon move catalog");
     }
 
+    public static long revision(){return definitionsRevision;}
     public static int size() { return DEFINITIONS.size(); }
     public static int providerSize() { return Moves.count(); }
     public static Map<String, ClassSkill> definitions() { return Map.copyOf(DEFINITIONS); }

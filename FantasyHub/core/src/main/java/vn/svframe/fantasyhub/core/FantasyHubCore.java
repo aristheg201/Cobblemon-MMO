@@ -27,7 +27,7 @@ import vn.svframe.svframemmo.skill.PlayerSkillCatalog;
 /** Presentation bridge consuming the existing authoritative MMO owner. */
 public final class FantasyHubCore implements ModInitializer {
   private static final Gson GSON = new Gson();
-  private static final Map<Object,Map<String,Object>> CLASS_METADATA = new IdentityHashMap<>();
+  private static final Map<Object,vn.svframe.fantasyhub.core.sync.FrozenValues.Shared> CLASS_METADATA = new IdentityHashMap<>();
   static void clearPresentationDefinitions(){CLASS_METADATA.clear();}
   private final Map<UUID,Long> nextAction=new HashMap<>(),nextObservation=new HashMap<>();
   private ExecutorService qaWriter;
@@ -430,10 +430,50 @@ public final class FantasyHubCore implements ModInitializer {
 
   private Map<String,Object> perfSnapshot(){var out=new LinkedHashMap<String,Object>(HudSyncMetrics.snapshot());out.putAll(sync.metrics());return out;}
   private static String state(ServerPlayerEntity player){return state(player,"all");}
-  private static String state(ServerPlayerEntity player,String scope){return GSON.toJson(stateMap(player,scope));}
+  private static String state(ServerPlayerEntity player,String scope){return GSON.toJson(vn.svframe.fantasyhub.core.sync.SnapshotEngine.presentation(vn.svframe.fantasyhub.core.sync.FrozenValues.freeze(stateMap(player,scope))));}
+  static Map<String,Object> classRow(ServerPlayerEntity player,vn.svframe.svframemmo.api.player.profess.PlayerClass type) {
+    var data=SVFrameMMO.playerData().get(player);
+      Map<String, Object> row = new LinkedHashMap<>();
+      row.put("id", type.getId());
+      row.put("name", type.getName());
+      var metadata = CLASS_METADATA.get(type);
+      if (metadata == null) {
+        if (CLASS_METADATA.size() >= 512) CLASS_METADATA.clear();
+        var definition = new LinkedHashMap<String,Object>();
+        definition.put("description", List.copyOf(type.getDescription()));
+        definition.put("attributeDescription", List.copyOf(type.getAttributeDescription()));
+        definition.put("maxLevel", type.getMaxLevel());
+        List<Map<String,Object>> classSkills = new ArrayList<>();
+        for (var skill : type.getConfiguredSkills()) {
+          var sr = new LinkedHashMap<String,Object>();
+          sr.put("id", skill.getSkill().getId());
+          sr.put("name", skill.getSkill().getName());
+          sr.put("passive", skill.getTrigger().isPassive());
+          sr.put("requiredLevel", skill.getUnlockLevel());
+          skillSupport(sr, skill.getSkill());
+          classSkills.add(Collections.unmodifiableMap(sr));
+        }
+        definition.put("skills", List.copyOf(classSkills));
+        metadata = vn.svframe.fantasyhub.core.sync.FrozenValues.share(definition);
+        CLASS_METADATA.put(type, metadata);
+      }
+      row.put("_classMetadata", metadata);
+      row.put("price", ClassSwitchService.offer(type.getId(), player, new HashMap<>()));
+      row.put("selectable", ClassSwitchService.selectable(type.getId()));
+      row.put("unlocked", ClassSwitchService.unlocked(player, type.getId()));
+      row.put("owned",ClassProgression.owns(data,type.getId()));row.put("unlockCost",ClassProgression.price(type.getId()));
+      row.put("current", data.getClassId().equals(type.getId()));
+      row.put("state",data.getClassId().equals(type.getId())?"ACTIVE":ClassProgression.owns(data,type.getId())?data.getClassSwitchAvailableAt()>System.currentTimeMillis()?"OWNED — COOLDOWN":"OWNED — READY":"LOCKED — PURCHASE AVAILABLE");
+      Map<String, Double> baseStats = new TreeMap<>();
+      for (String stat : type.getStats())
+        baseStats.put(stat, type.calculateBaseStat(stat, 1, data));
+      row.put("baseStats", baseStats);
+    return row;
+  }
   private static Map<String,Object> stateMap(ServerPlayerEntity player,String scope) {
     long started=System.nanoTime();HudSyncMetrics.states++;
     var data = SVFrameMMO.playerData().get(player);
+    if(scope.equals("classes-header"))return new LinkedHashMap<>(Map.of("classSwitch",ClassSwitchService.policy(data),"classPreviews",ClassEquipmentPreviews.snapshots(player)));
     Map<String, Object> out = new LinkedHashMap<>();
     out.put("schema", Protocol.VERSION);
     out.put("classId", data.getClassId());
@@ -488,41 +528,7 @@ public final class FantasyHubCore implements ModInitializer {
     Map<vn.svframe.svframelib.api.economy.CurrencyKey, java.math.BigDecimal> classBalances =
         new HashMap<>();
     for (var type : SVFrameMMO.classes().getAll()) {
-      Map<String, Object> row = new LinkedHashMap<>();
-      row.put("id", type.getId());
-      row.put("name", type.getName());
-      var metadata = CLASS_METADATA.get(type);
-      if (metadata == null) {
-        if (CLASS_METADATA.size() >= 512) CLASS_METADATA.clear();
-        metadata = new LinkedHashMap<>();
-        metadata.put("description", List.copyOf(type.getDescription()));
-        metadata.put("attributeDescription", List.copyOf(type.getAttributeDescription()));
-        metadata.put("maxLevel", type.getMaxLevel());
-        List<Map<String,Object>> classSkills = new ArrayList<>();
-        for (var skill : type.getConfiguredSkills()) {
-          var sr = new LinkedHashMap<String,Object>();
-          sr.put("id", skill.getSkill().getId());
-          sr.put("name", skill.getSkill().getName());
-          sr.put("passive", skill.getTrigger().isPassive());
-          sr.put("requiredLevel", skill.getUnlockLevel());
-          skillSupport(sr, skill.getSkill());
-          classSkills.add(Collections.unmodifiableMap(sr));
-        }
-        metadata.put("skills", List.copyOf(classSkills));
-        metadata = Collections.unmodifiableMap(metadata);
-        CLASS_METADATA.put(type, metadata);
-      }
-      row.putAll(metadata);
-      row.put("price", ClassSwitchService.offer(type.getId(), player, classBalances));
-      row.put("selectable", ClassSwitchService.selectable(type.getId()));
-      row.put("unlocked", ClassSwitchService.unlocked(player, type.getId()));
-      row.put("owned",ClassProgression.owns(data,type.getId()));row.put("unlockCost",ClassProgression.price(type.getId()));
-      row.put("current", data.getClassId().equals(type.getId()));
-      row.put("state",data.getClassId().equals(type.getId())?"ACTIVE":ClassProgression.owns(data,type.getId())?data.getClassSwitchAvailableAt()>System.currentTimeMillis()?"OWNED — COOLDOWN":"OWNED — READY":"LOCKED — PURCHASE AVAILABLE");
-      Map<String, Double> baseStats = new TreeMap<>();
-      for (String stat : type.getStats())
-        baseStats.put(stat, type.calculateBaseStat(stat, 1, data));
-      row.put("baseStats", baseStats);
+      var row = classRow(player,type);
       roster.add(row);
     }
     out.put("classRoster", roster);

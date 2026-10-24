@@ -41,10 +41,11 @@ public final class SnapshotEngine implements AutoCloseable {
 
   private final Map<UUID, Session> sessions = new HashMap<>();
   private final ArrayDeque<Key>[] queues;
-  private final ExecutorService executor;
-  private final ArrayBlockingQueue<Result> results;
+  private final ExecutorService executor, bulkExecutor;
+  private final ArrayBlockingQueue<Result> results, bulkResults;
   private final int capacity;
   private long generation, sequence;
+  private int bulkInFlight;
   private int inFlight, burst, fairnessCursor, inFlightAtReset;
   private volatile boolean closed;
   private final Thread owner = Thread.currentThread();
@@ -58,29 +59,33 @@ public final class SnapshotEngine implements AutoCloseable {
 
   @SuppressWarnings("unchecked")
   public SnapshotEngine(ExecutorService e, int capacity) {
-    this.executor = e;
+    this(e,e,capacity);
+  }
+
+  @SuppressWarnings("unchecked")
+  SnapshotEngine(ExecutorService realtime,ExecutorService bulk,int capacity) {
+    this.executor = realtime;
+    this.bulkExecutor = bulk;
     this.capacity = capacity;
     results = new ArrayBlockingQueue<>(capacity);
+    bulkResults = new ArrayBlockingQueue<>(capacity);
     queues = new ArrayDeque[Domain.values().length];
     Arrays.setAll(queues, i -> new ArrayDeque<>());
   }
 
-  public SnapshotEngine(int workers, int capacity) {
-    this(
-        new ThreadPoolExecutor(
-            workers,
-            workers,
-            0,
-            TimeUnit.MILLISECONDS,
-            new ArrayBlockingQueue<>(capacity),
-            r -> {
-              var t = new Thread(r, "fantasyhub-json-" + THREAD_IDS.incrementAndGet());
-              t.setDaemon(true);
-              return t;
-            },
-            new ThreadPoolExecutor.AbortPolicy()),
-        capacity);
+  private record Pools(ExecutorService realtime,ExecutorService bulk){}
+  private static ExecutorService pool(int workers,int capacity,String kind) {
+    return new ThreadPoolExecutor(workers,workers,0,TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(capacity),r->{
+      var t=new Thread(r,"fantasyhub-json-"+kind+"-"+THREAD_IDS.incrementAndGet());t.setDaemon(true);return t;
+    },new ThreadPoolExecutor.AbortPolicy());
   }
+  private static Pools pools(int workers,int capacity){
+    var realtime=pool(1,capacity,"realtime");
+    return new Pools(realtime,workers==1?realtime:pool(workers-1,capacity,"bulk"));
+  }
+  private SnapshotEngine(Pools p,int capacity){this(p.realtime,p.bulk,capacity);}
+  public SnapshotEngine(int workers,int capacity){this(pools(workers,capacity),capacity);}
+  private static boolean bulk(Domain d){return d.ordinal()>=Domain.GUI.ordinal();}
 
   public void join(UUID p) {
     requireOwner();
@@ -126,11 +131,15 @@ public final class SnapshotEngine implements AutoCloseable {
     queues[d.ordinal()].add(new Key(p, d));
   }
 
-  public Stamp poll() {
+  public Stamp poll() { return poll(true); }
+
+  /** Bulk admission can close independently of realtime work. */
+  public Stamp poll(boolean bulkAllowed) {
     requireOwner();
     if (closed || inFlight >= capacity) return null;
+    bulkAllowed &= bulkInFlight < Math.max(1,capacity / 4);
     int index = -1;
-    for (int i = 0; i < queues.length; i++)
+    for (int i = 0; i < (bulkAllowed ? queues.length : Domain.GUI.ordinal()); i++)
       if (!queues[i].isEmpty()) {
         index = i;
         break;
@@ -141,7 +150,7 @@ public final class SnapshotEngine implements AutoCloseable {
     if (++burst >= 8) {
       for (int offset = 1; offset <= queues.length; offset++) {
         int candidate = (fairnessCursor + offset) % queues.length;
-        if (candidate > index && !queues[candidate].isEmpty()) {
+        if (candidate > index && (bulkAllowed || candidate < Domain.GUI.ordinal()) && !queues[candidate].isEmpty()) {
           index = candidate;
           fairnessCursor = candidate;
           break;
@@ -151,10 +160,11 @@ public final class SnapshotEngine implements AutoCloseable {
     }
     Key k = queues[index].remove();
     var s = sessions.get(k.player);
-    if (s == null) return poll();
+    if (s == null) return poll(bulkAllowed);
     s.queued[index] = false;
     s.running[index] = true;
     inFlight++;
+    if(bulk(k.domain))bulkInFlight++;
     return new Stamp(k.player, s.generation, k.domain, s.rev[index], ++sequence, System.nanoTime());
   }
 
@@ -167,19 +177,19 @@ public final class SnapshotEngine implements AutoCloseable {
       throw e;
     }
     try {
-      executor.execute(
+      (bulk(t.domain)?bulkExecutor:executor).execute(
           () -> {
             long start = System.nanoTime();
             String json = null, error = null;
             byte[] encoded = null;
             try {
-              json = JSON.toJson(transform(frozen));
+              json = JSON.toJson(presentation(frozen));
               encoded = vn.svframe.fantasyhub.protocol.SnapshotEncoding.encode(json);
             } catch (RuntimeException e) {
               error = e.toString();
             }
             if (!closed)
-              results.offer(
+              (bulk(t.domain)?bulkResults:results).offer(
                   new Result(
                       t,
                       json,
@@ -198,12 +208,19 @@ public final class SnapshotEngine implements AutoCloseable {
   public void skip(Stamp t) {
     requireOwner();
     inFlight--;
+    if(bulk(t.domain))bulkInFlight--;
     var s = sessions.get(t.player);
     if (s != null && s.generation == t.generation) s.running[t.domain.ordinal()] = false;
   }
 
   @SuppressWarnings("unchecked")
-  private static Object transform(Object value) {
+  public static Object presentation(Object value) {
+    if(value instanceof Map<?,?> root && root.get("classRoster") instanceof List<?> roster) {
+      var out=new LinkedHashMap<String,Object>((Map<String,Object>)root);
+      var rows=new ArrayList<Map<String,Object>>(roster.size());
+      for(var raw:roster){var row=new LinkedHashMap<String,Object>((Map<String,Object>)raw);var metadata=row.remove("_classMetadata");if(metadata instanceof Map<?,?> m)row.putAll((Map<String,Object>)m);rows.add(row);}
+      out.put("classRoster",rows);return out;
+    }
     if(value instanceof Map<?,?> profile && profile.get("_profile") instanceof Map<?,?> details) return details;
     if (!(value instanceof Map<?, ?> root)
         || !(root.get("fantasyShop") instanceof Map<?, ?> shop)
@@ -233,6 +250,7 @@ public final class SnapshotEngine implements AutoCloseable {
 
   private void retry(Stamp t) {
     inFlight--;
+    if(bulk(t.domain))bulkInFlight--;
     var s = sessions.get(t.player);
     if (s != null && s.generation == t.generation) {
       s.running[t.domain.ordinal()] = false;
@@ -241,13 +259,16 @@ public final class SnapshotEngine implements AutoCloseable {
     }
   }
 
+  private Result nextResult(){var r=results.poll();return r!=null?r:bulkResults.poll();}
+
   public Result completed() {
     requireOwner();
     Result r;
-    while ((r = results.poll()) != null) {
+    while ((r = nextResult()) != null) {
       inFlight--;
       serializedNanos += r.nanos;
       var t = r.stamp;
+      if(bulk(t.domain))bulkInFlight--;
       var s = sessions.get(t.player);
       if (s == null || s.generation != t.generation) {
         stale++;
@@ -280,7 +301,9 @@ public final class SnapshotEngine implements AutoCloseable {
     m.put("pending", Arrays.stream(queues).mapToInt(ArrayDeque::size).sum());
     m.put("asyncQueue", inFlight);
     m.put("inFlightAtReset",inFlightAtReset);
-    m.put("completionQueue", results.size());
+    m.put("completionQueue", results.size()+bulkResults.size());
+    m.put("bulkInFlight",bulkInFlight);
+    if(bulkExecutor instanceof ThreadPoolExecutor pool)m.put("bulkWorkerQueue",pool.getQueue().size());
     if (executor instanceof ThreadPoolExecutor pool) {
       m.put("workerQueue", pool.getQueue().size());
       m.put("activeWorkers", pool.getActiveCount());
@@ -317,12 +340,15 @@ public final class SnapshotEngine implements AutoCloseable {
     requireOwner();
     closed = true;
     executor.shutdownNow();
+    if(bulkExecutor!=executor)bulkExecutor.shutdownNow();
     sessions.clear();
     for (var q : queues) q.clear();
     results.clear();
-    inFlight = 0;
+    bulkResults.clear();
+    inFlight = bulkInFlight = 0;
     try {
       executor.awaitTermination(500, TimeUnit.MILLISECONDS);
+      if(bulkExecutor!=executor)bulkExecutor.awaitTermination(500,TimeUnit.MILLISECONDS);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }

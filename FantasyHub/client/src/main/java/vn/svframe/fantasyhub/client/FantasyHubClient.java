@@ -205,7 +205,7 @@ public final class FantasyHubClient implements ClientModInitializer {
         });
     ClientPlayNetworking.registerGlobalReceiver(Protocol.Sync.ID,(payload,context)->{
       var client=context.client();if(client.player!=null&&!client.player.getUuid().toString().equals(payload.player()))return;
-      if(!syncInbox.apply(state,payload.generation(),payload.revision(),payload.sequence(),payload.domain(),payload.json(),payload.sentAt(),System.currentTimeMillis()))return;
+      if(!syncInbox.apply(state,payload.generation(),payload.revision(),payload.sequence(),payload.domain(),payload.json(),payload.sentAt(),System.currentTimeMillis())){if(syncInbox.resyncRequested())send("refresh","",0);return;}
       observed=false;
       if(payload.domain().equals("GUI")||payload.domain().equals("BUNDLES")||payload.domain().equals("COMMERCE")){
         if(client.currentScreen instanceof HubScreen screen)screen.refresh();

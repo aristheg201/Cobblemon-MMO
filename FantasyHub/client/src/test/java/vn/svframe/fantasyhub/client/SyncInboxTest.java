@@ -7,6 +7,17 @@ import org.junit.jupiter.api.Test;
 
 class SyncInboxTest {
   @Test
+  void catalogChunksAppendExactlyOnceAndGapsRequireResync(){
+    var inbox=new SyncInbox();var state=new JsonObject();
+    assertTrue(inbox.apply(state,1,1,1,"GUI","{\"pokemonShopPage\":{\"start\":0,\"rows\":[{\"id\":\"one\"}]}}",0,0));
+    assertTrue(inbox.apply(state,1,2,2,"GUI","{\"pokemonShopPage\":{\"start\":1,\"rows\":[{\"id\":\"two\"}]}}",0,0));
+    assertEquals(2,state.getAsJsonArray("pokemonShop").size());
+    assertFalse(inbox.apply(state,1,2,2,"GUI","{}",0,0));assertEquals(2,state.getAsJsonArray("pokemonShop").size());
+    assertFalse(inbox.apply(state,1,3,3,"GUI","{\"pokemonShopPage\":{\"start\":7,\"rows\":[]}}",0,0));
+    assertTrue(inbox.resyncRequested());assertEquals(2,state.getAsJsonArray("pokemonShop").size());
+  }
+
+  @Test
   void rejectsOlderSessionAndDomainRevisionButAllowsIndependentDomains() {
     var i = new SyncInbox();
     var state = new JsonObject();

@@ -29,6 +29,15 @@ public final class FantasyShopScreen extends Screen {
  @Override public void tick(){super.tick();long next=remaining();if(next!=lastCountdown){lastCountdown=next;refresh();}}
  private ShopView.Layout layout;
  private final Map<String,Visual> visuals=new HashMap<>();
+ private final ShopView.Index index=new ShopView.Index();
+ private final Map<JsonObject,List<Visual>> equipmentCache=new IdentityHashMap<>();
+ private final Map<String,String> moneyCache=new HashMap<>();
+ private record LayoutKey(String text,int width){}
+ private final Map<LayoutKey,List<net.minecraft.text.OrderedText>> wrapped=new HashMap<>();
+ private JsonElement visualRevision,offerRevision;
+ private List<JsonObject> filteredRows=List.of(),filterSource;
+ private ShopView.Tab filterTab;
+ private String filterClass="";
  private final List<GearHit> gearHits=new ArrayList<>();
  private ItemStack hoveredStack=ItemStack.EMPTY;
  private Text hoveredText;
@@ -43,12 +52,18 @@ public final class FantasyShopScreen extends Screen {
  private static String string(JsonObject row,String key,String fallback){return row.has(key)?row.get(key).getAsString():fallback;}
  private static boolean flag(JsonObject row,String key){return row.has(key)&&row.get(key).getAsBoolean();}
  private JsonObject shop(){var value=FantasyHubClient.state().getAsJsonObject("fantasyShop");return value==null?new JsonObject():value;}
- private List<JsonObject> rows(){return ShopView.rows(shop(),tab).stream().filter(r->classFilter.isBlank()||string(r,"classId","").equals(classFilter)).toList();}
+ private List<JsonObject> rows(){
+  var catalog=shop();var offers=catalog.get("offers");var previews=FantasyHubClient.state().get("shopPreviews");
+  if(offers!=offerRevision||previews!=visualRevision){offerRevision=offers;visualRevision=previews;equipmentCache.clear();visuals.clear();wrapped.clear();}
+  var source=index.rows(catalog,tab);
+  if(source!=filterSource||tab!=filterTab||!classFilter.equals(filterClass)){filterSource=source;filterTab=tab;filterClass=classFilter;filteredRows=classFilter.isBlank()?source:source.stream().filter(r->string(r,"classId","").equals(classFilter)).toList();}
+  return filteredRows;
+ }
  private JsonObject selection(){return rows().stream().filter(r->selected.equals(string(r,"product",""))).findFirst().orElse(null);}
  private Text className(JsonObject row){String key=KEY+"class."+string(row,"classId","").toLowerCase(Locale.ROOT);return I18n.hasTranslation(key)?Text.translatable(key):FantasyHubClient.name(string(row,"name",""));}
  private Text name(JsonObject row){if(!string(row,"classId","").isBlank()){var name=className(row);return string(row,"category","").equals("bundles")?tr(flag(row,"equipmentOnly")?"bundle_equipment":"bundle_class",name):name;}String key=KEY+"offer."+string(row,"product","")+".name";return I18n.hasTranslation(key)?Text.translatable(key):FantasyHubClient.name(string(row,"name",""));}
  private Text description(JsonObject row){if(tab==ShopView.Tab.CLASS)return tr(flag(row,"owned")?"class_owned_description":flag(shop(),"freeChoice")?"class_free_description":"class_purchase_description");if(tab==ShopView.Tab.BUNDLE)return tr(flag(row,"equipmentOnly")?"equipment_description":"bundle_description");String key=KEY+"offer."+string(row,"product","")+".description";return I18n.hasTranslation(key)?Text.translatable(key):FantasyHubClient.name(string(row,"description",""));}
- private String money(String raw){try{return ShopView.amount(raw);}catch(NumberFormatException e){return tr("unavailable").getString();}}
+ private String money(String raw){if(moneyCache.size()>128)moneyCache.clear();return moneyCache.computeIfAbsent(raw,key->{try{return ShopView.amount(key);}catch(NumberFormatException e){return tr("unavailable").getString();}});}
  private Text price(JsonObject row,int method){return Text.literal(money(string(row,method==1?"beast":"hunter","0"))+" "+(method==1?"BeastCoin":"HunterCoin"));}
  private String signature(JsonObject row,int method){return string(row,"id","")+":"+method+":"+string(row,"beast","")+":"+string(row,"hunter","")+":"+flag(row,"owned")+":"+flag(row,"active");}
  public void refresh(){var row=selection();if(row==null||(!confirmation.isBlank()&&!confirmation.equals(signature(row,1))&&!confirmation.equals(signature(row,2))))confirmation="";clearAndInit();}
@@ -90,14 +105,14 @@ public final class FantasyShopScreen extends Screen {
   else FantasyHubClient.send("shop_buy",string(row,"id",""),method);
  }
  private Text subtitle(JsonObject row){if(string(row,"category","").equals("classes"))return tr(flag(row,"active")?"active":flag(row,"owned")?(remaining()>0?"owned_cooldown":"owned_ready"):flag(shop(),"freeChoice")?"free_choice":"purchase_available");if(string(row,"category","").equals("bundles"))return tr(flag(row,"equipmentOnly")?"equipment_only":"class_equipment");return Text.literal(money(string(row,"beast","0"))+" BC · "+money(string(row,"hunter","0"))+" HC");}
- private Visual visual(String encoded){String resolved=encoded;if(encoded.startsWith("preview:")){var table=FantasyHubClient.state().getAsJsonObject("shopPreviews");resolved=table!=null&&table.has(encoded)?table.get(encoded).getAsString():"{}";}return visuals.computeIfAbsent(resolved,key->{ItemStack stack=ItemStack.EMPTY;String registryId="unknown";try{registryId=StringNbtReader.parse(key).getString("id");
-   stack=ItemStack.fromNbt(client.world.getRegistryManager(),StringNbtReader.parse(key)).orElseThrow(()->new IllegalArgumentException("Unknown item in preview NBT"));if(stack.isEmpty())throw new IllegalArgumentException("Empty item preview");
+ private Visual visual(String encoded){String resolved=encoded;if(encoded.startsWith("preview:")){var table=FantasyHubClient.state().getAsJsonObject("shopPreviews");resolved=table!=null&&table.has(encoded)?table.get(encoded).getAsString():"{}";}return visuals.computeIfAbsent(resolved,key->{ItemStack stack=ItemStack.EMPTY;String registryId="unknown";try{var nbt=StringNbtReader.parse(key);registryId=nbt.getString("id");
+   stack=ItemStack.fromNbt(client.world.getRegistryManager(),nbt).orElseThrow(()->new IllegalArgumentException("Unknown item in preview NBT"));if(stack.isEmpty())throw new IllegalArgumentException("Empty item preview");
    String id=Registries.ITEM.getId(stack.getItem()).toString();var custom=stack.get(DataComponentTypes.CUSTOM_DATA);String model=custom==null?"":custom.copyNbt().getString("SVFRAME_ITEM_MODEL");if(model.isBlank())model=Registries.ITEM.getId(stack.getItem()).getNamespace()+":item/"+Registries.ITEM.getId(stack.getItem()).getPath();var modelId=Identifier.of(model);String expected="assets/"+modelId.getNamespace()+"/models/"+modelId.getPath()+".json";
    var baked=client.getItemRenderer().getModel(stack,client.world,client.player,0);if(baked==client.getBakedModelManager().getMissingModel())throw new IllegalArgumentException("Missing model for "+id+"; expected "+expected);
    if(stack.getName().getString().equals(stack.getTranslationKey())&&!I18n.hasTranslation(stack.getTranslationKey()))throw new IllegalArgumentException("Missing item translation for "+id+": "+stack.getTranslationKey()+" in assets/"+Registries.ITEM.getId(stack.getItem()).getNamespace()+"/lang/"+client.options.language+".json");
    return new Visual(stack,true);
   }catch(Exception e){LOG.error("Shop preview disabled [{}]: {}",registryId,e.getMessage());return new Visual(stack,false);}});}
- private List<Visual> equipment(JsonObject row){var result=new ArrayList<Visual>();if(row.has("items"))for(var item:row.getAsJsonArray("items"))result.add(visual(item.getAsString()));return result;}
+ private List<Visual> equipment(JsonObject row){return equipmentCache.computeIfAbsent(row,key->{var result=new ArrayList<Visual>();if(key.has("items"))for(var item:key.getAsJsonArray("items"))result.add(visual(item.getAsString()));return List.copyOf(result);});}
  private boolean valid(JsonObject row){return visual(string(row,"icon","{}")).valid&&equipment(row).stream().allMatch(Visual::valid);}
  private ShopButton button(ShopView.Box box,Text label,Runnable action,boolean selected){return addDrawableChild(new ShopButton(box,label,action,selected,null));}
  private final class ShopButton extends ButtonWidget {
@@ -118,7 +133,10 @@ public final class FantasyShopScreen extends Screen {
   FantasyPanel.widgets(this,c,mx,my,dt);
   if(!hoveredStack.isEmpty())c.drawItemTooltip(textRenderer,hoveredStack,mx,my);else if(hoveredText!=null)c.drawTooltip(textRenderer,hoveredText,mx,my);
  }
- private int drawWrapped(DrawContext c,Text text,int x,int y,int width,int color){for(var line:textRenderer.wrapLines(text,Math.max(12,width))){c.drawText(textRenderer,line,x,y,color,false);y+=11;}return y;}
+ private List<net.minecraft.text.OrderedText> wrappedLines(Text text,int width){
+  if(wrapped.size()>256)wrapped.clear();return wrapped.computeIfAbsent(new LayoutKey(text.getString(),Math.max(12,width)),key->textRenderer.wrapLines(text,key.width));
+ }
+ private int drawWrapped(DrawContext c,Text text,int x,int y,int width,int color){for(var line:wrappedLines(text,width)){c.drawText(textRenderer,line,x,y,color,false);y+=11;}return y;}
  private void renderDetails(DrawContext c,JsonObject row,int mx,int my){
   var b=layout.preview();FantasyPanel.frame(c,b.x(),b.y(),b.w(),b.h());var gear=equipment(row);previewIndex=Math.min(previewIndex,Math.max(0,gear.size()-1));var preview=gear.isEmpty()?visual(string(row,"icon","{}")):gear.get(previewIndex);int size=Math.min(56,b.h()-12),ix=b.x()+7,iy=b.y()+(b.h()-size)/2;
   if(!preview.stack.isEmpty()){c.getMatrices().push();c.getMatrices().translate(ix,iy,0);c.getMatrices().scale(size/16f,size/16f,1);c.drawItem(preview.stack,0,0);c.getMatrices().pop();}

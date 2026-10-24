@@ -607,5 +607,6 @@
   "fantasyhub.item_upgrade.result.failed": "Upgrade failed; equipment retained at +%s.",
   "fantasyhub.item_upgrade.result.destroyed": "Upgrade failed; the equipment was destroyed.",
   "fantasyhub.item_upgrade.error.inventory_full": "Free one inventory slot to upgrade a single item from this stack.",
-  "fantasyhub.shop.loading": "Preparing item previews…"
+  "fantasyhub.shop.loading": "Preparing item previews…",
+  "fantasyhub.shop.catalog_loading": "Loading catalog: %s / %s"
 }

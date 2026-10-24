@@ -33,9 +33,9 @@ public final class CommerceRuntime {
  private static final Map<UUID,Map<String,Quote>> QUOTES=new HashMap<>();
  private static Config config=new Config();
  private static long revision;
- private static final SyncTimings VIEW_TIMES=new SyncTimings();
- static Map<String,Object> metrics(){return Map.of("view",VIEW_TIMES.view(),"previewCache",PREVIEWS.metrics(),"previewPrepared",warmIndex,"previewTotal",warm.size());}
- static void resetMetrics(){VIEW_TIMES.reset();PREVIEWS.resetMetrics();}
+ private static final SyncTimings VIEW_TIMES=new SyncTimings(),TX_TIMES=new SyncTimings(),SAVE_TIMES=new SyncTimings();
+ static Map<String,Object> metrics(){return Map.of("view",VIEW_TIMES.view(),"transaction",TX_TIMES.view(),"durableWait",SAVE_TIMES.view(),"previewCache",PREVIEWS.metrics(),"previewPrepared",warmIndex,"previewTotal",warm.size());}
+ static void resetMetrics(){VIEW_TIMES.reset();TX_TIMES.reset();SAVE_TIMES.reset();PREVIEWS.resetMetrics();}
  private static final Map<String,String> PREVIEW_DATA=new LinkedHashMap<>();
  private static final Map<String,Map<String,Object>> ROW_TEMPLATES=new LinkedHashMap<>();
  private static vn.svframe.fantasyhub.core.sync.FrozenValues.Shared sharedTemplates;
@@ -45,6 +45,7 @@ public final class CommerceRuntime {
  static long previewRevision(){return (revision<<32)^SVFrameItems.registry().revision();}
  static Map<String,String> previewTable(){return Map.copyOf(PREVIEW_DATA);}
  static boolean preparePreviews(ServerPlayerEntity p,long nanos,int count){
+  if(nanos<=0)return false;
   long rev=previewRevision();if(warmRevision!=rev){PREVIEWS.clear();PREVIEW_DATA.clear();ROW_TEMPLATES.clear();GEAR_VALIDITY.clear();sharedTemplates=null;var jobs=new LinkedHashMap<String,PreviewTask>();
    for(var rewards:config.equipment.values())for(var reward:rewards){String key="reward:"+reward.item+":"+reward.count;jobs.putIfAbsent(key,new PreviewTask(key,()->stack(reward)));}
    for(var offer:config.offers)if(offer.enabled){for(var reward:offer.items){String key="reward:"+reward.item+":"+reward.count;jobs.putIfAbsent(key,new PreviewTask(key,()->stack(reward)));}String key=iconKey(offer.classId,offer.icon);jobs.putIfAbsent(key,new PreviewTask(key,()->icon(offer.classId,offer.icon)));}
@@ -152,16 +153,16 @@ public final class CommerceRuntime {
   var d=SVFrameMMO.playerData().get(p);if(BUSY.contains(p.getUuid())||ClassProgression.busy(d)||ClassSwitchService.busy(d))return reject(p,"busy");
   var service=CurrencyService.get();if(!service.isAvailable(currency)||!service.has(p,currency,amount))return reject(p,"balance");
   var journal=new ClassSwitchJournal(p.getServer().getSavePath(WorldSavePath.ROOT),p.getUuid());var previous=journal.read();if(previous!=null){if(previous.transactionId().equals(d.getPreference(RECEIPT,"")))journal.clear();else return reject(p,"reconcile");}
-  BUSY.add(p.getUuid());var before=PlayerDataSnapshot.capture(d);boolean charged=false,committed=false,withdrawalUncertain=false;
+  long txStarted=System.nanoTime();BUSY.add(p.getUuid());var before=PlayerDataSnapshot.capture(d);boolean charged=false,committed=false,withdrawalUncertain=false;
   try{
    journal.prepare(new ClassSwitchJournal.Entry(token,d.getClassId(),"SHOP:"+product,currency.serialized(),amount.toPlainString(),service.balance(p,currency).toPlainString()));
    withdrawalUncertain=true;boolean withdrawn=service.withdraw(p,currency,amount);withdrawalUncertain=false;if(!withdrawn){journal.clear();return reject(p,"balance");}charged=true;
-   grant.run();d.setPreference(RECEIPT,token);SVFrameMMO.playerData().savePlayerDurably(d).join();committed=true;
+   grant.run();d.setPreference(RECEIPT,token);long saveAt=System.nanoTime();try{SVFrameMMO.playerData().savePlayerDurably(d).join();}finally{SAVE_TIMES.add(System.nanoTime()-saveAt);}committed=true;
    try{journal.clear();}catch(Exception cleanup){LOG.warn("Committed transaction journal retained: {}",token);}return true;
   }catch(Exception error){
    if(!committed){ClassProgression.restore(d,before);try{SVFrameMMO.playerData().savePlayerDurably(d).join();if(charged){/* Retain intent if refund throws; never automatically retry ambiguous deposit. */service.deposit(p,currency,amount);journal.clear();}else if(!withdrawalUncertain)journal.clear();else ClassProgression.quarantine(d);}catch(Exception recovery){ClassProgression.quarantine(d);error.addSuppressed(recovery);}}
    throw error;
-  }finally{BUSY.remove(p.getUuid());}
+  }finally{BUSY.remove(p.getUuid());TX_TIMES.add(System.nanoTime()-txStarted);}
  }
  public static void awardItemsOnce(ServerPlayerEntity p,String settlement,List<Reward> rewards){
   var d=SVFrameMMO.playerData().get(p);String marker="fantasyhub:item-settlement:"+settlement;if(d.getClaimCount(marker)>0)return;

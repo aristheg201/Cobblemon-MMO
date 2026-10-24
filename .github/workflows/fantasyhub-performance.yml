@@ -1,0 +1,45 @@
+name: FantasyHub Performance source release
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: fantasyhub-performance-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Restore exact unchanged equipment and mob source
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin 7dd7a2cef1f374e59746f222243f8f0ffb99fb4a
+          git archive FETCH_HEAD SVFrameItems | tar -xf -
+          git fetch --no-tags --depth=1 origin 1e79e92d772c849e265c15e2ef56f402355ce8f4
+          git archive FETCH_HEAD SVFrameMobs | tar -xf -
+      - name: Build actual source with pinned wrappers and run native smoke checks
+        run: python3 FantasyHub/tools/build_master_release.py --root .
+      - name: Build the test-only probe
+        run: bash FantasyHub/gradlew --no-daemon --max-workers=2 -p FantasyHub/qa/loadprobe build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: FantasyHub-source-build-${{ github.sha }}
+          path: |
+            FantasyHub/core/build/libs/*.jar
+            FantasyHub/client/build/libs/*.jar
+            FantasyHub/protocol/build/libs/*.jar
+            SVFrameMMOCobblemon/build/libs/*.jar
+            release-build-logs/
+            FantasyHub/*/build/test-results/test/*.xml
+            SVFrameMMOCobblemon/build/test-results/test/*.xml
+          retention-days: 14
