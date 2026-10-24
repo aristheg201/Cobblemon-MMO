@@ -69,7 +69,7 @@ final class AbilityHud {
             }
           } else c.drawCenteredTextWithShadow(client.textRenderer,client.textRenderer.trimToWidth(FantasyHubClient.name(skill.get("name").getAsString()).getString(),18),x+11,y+7,0xffdce6f2);
         }
-        double remaining=skill.get("cooldownRemaining").getAsDouble();
+        double remaining=SkillBarPresentation.remaining(skill);
         boolean recast=skill.has("recastAvailable")&&skill.get("recastAvailable").getAsBoolean();
         var params=skill.getAsJsonObject("parameters");
         boolean ready=params==null||(!params.has("mana")||FantasyHubClient.number("mana")>=params.get("mana").getAsDouble())&&(!params.has("stamina")||FantasyHubClient.number("stamina")>=params.get("stamina").getAsDouble());

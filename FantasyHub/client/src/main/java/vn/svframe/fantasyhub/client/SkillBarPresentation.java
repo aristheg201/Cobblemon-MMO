@@ -19,8 +19,10 @@ final class SkillBarPresentation {
       return new Layout((screenWidth-width)/2,Math.max(26,y),width,cell,height,gap);
    }
 
+   static double remaining(JsonObject skill){return remaining(skill,ClientSyncClock.now());}
+   static double remaining(JsonObject skill,long now){return skill.has("cooldownEnd")?Math.max(0,(skill.get("cooldownEnd").getAsLong()-now)/1000d):skill.has("cooldownRemaining")?skill.get("cooldownRemaining").getAsDouble():0;}
    static double cooldownFraction(JsonObject skill) {
-      double remaining=skill.has("cooldownRemaining")?skill.get("cooldownRemaining").getAsDouble():0;
+      double remaining=remaining(skill);
       var p=skill.getAsJsonObject("parameters");
       double total=p!=null&&p.has("cooldown")?p.get("cooldown").getAsDouble():remaining;
       return Math.clamp(total<=0?0:remaining/total,0,1);

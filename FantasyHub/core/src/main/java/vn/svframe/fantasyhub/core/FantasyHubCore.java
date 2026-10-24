@@ -27,30 +27,20 @@ import vn.svframe.svframemmo.skill.PlayerSkillCatalog;
 /** Presentation bridge consuming the existing authoritative MMO owner. */
 public final class FantasyHubCore implements ModInitializer {
   private static final Gson GSON = new Gson();
-  private final Map<UUID, String> snapshots = new HashMap<>();
-  private final Map<UUID, String> castingModes = new HashMap<>();
-  private final Map<UUID, String> hudSnapshots = new HashMap<>();
-  private final Map<UUID, Long> nextAction = new HashMap<>();
-  private final Map<UUID, Long> nextObservation = new HashMap<>();
+  private static final Map<Object,Map<String,Object>> CLASS_METADATA = new IdentityHashMap<>();
+  static void clearPresentationDefinitions(){CLASS_METADATA.clear();}
+  private final Map<UUID,Long> nextAction=new HashMap<>(),nextObservation=new HashMap<>();
   private ExecutorService qaWriter;
   private long tick;
-  private final UiSyncGate uiSync=new UiSyncGate();
-  private final Map<UUID,String> identities=new HashMap<>();
-  private final Map<UUID,Object> uiContexts=new HashMap<>();
-  private final Map<UUID,Map<String,Object>> shopStatus=new HashMap<>();
-  private final Map<UUID,Map<String,CachedUi>> uiCache=new HashMap<>();
-  private record CachedUi(Object context,String json){}
-  private void invalidate(UUID id){snapshots.remove(id);uiCache.remove(id);uiContexts.remove(id);uiSync.dirty(id);}
-  private void invalidateAll(){for(var id:List.copyOf(identities.keySet()))invalidate(id);}
-  private Object uiContext(ServerPlayerEntity p,String scope){
-    var d=SVFrameMMO.playerData().get(p);var attributes=new ArrayList<Integer>();for(var a:SVFrameMMO.attributes().getAll())attributes.add(d.getAttributes().getInstance(a).getBase());
-    return List.of(scope,d.getClassId(),System.identityHashCode(d.getProfess()),d.getLevel(),d.getAttributePoints(),d.getSkillPoints(),d.getAttributeReallocationPoints(),d.getClaimCounts(),d.getUnlockedItems(),attributes,p.getInventory().getChangeCount(),vn.svframe.svframeitems.SVFrameItems.registry().revision(),CommerceRuntime.revision(),System.identityHashCode(ClassProgression.settings()),scope.equals("pokemon")?tick/200:0L,scope.equals("classes")?List.of(ClassSwitchService.policy(d).get("beastBalance"),ClassSwitchService.policy(d).get("remainingSeconds").equals(0L)):List.of());
-  }
+  private final NativeSyncRuntime sync=new NativeSyncRuntime(FantasyHubCore::stateMap);
+  private void invalidate(UUID id){sync.invalidate(id);}
+  private void invalidateAll(){sync.invalidateAll();}
 
 
   @Override
   public void onInitialize() {
     Protocol.install();
+    sync.install();
     ClassProgression.install();
     CommerceRuntime.install();
     KabutoRuntime.install();
@@ -129,14 +119,14 @@ public final class FantasyHubCore implements ModInitializer {
         (request, context) -> {
           var player = context.player();
           if(request.action().equals("hero_input")){vn.svframe.fantasyhub.core.hero.HeroRuntime.input(player,request.slot());return;}
-          if(request.action().equals("ui_open")){uiSync.open(player.getUuid(),request.id(),tick);if(request.id().equals("shop"))CommerceRuntime.keepAlive(player);if(request.id().equals("upgrades"))ItemUpgradeRuntime.keepAlive(player);return;}
-          if(request.action().equals("ui_close")){uiSync.close(player.getUuid(),request.id());shopStatus.remove(player.getUuid());return;}
-          if(request.action().equals("ui_keepalive")){uiSync.touch(player.getUuid(),tick);if("shop".equals(uiSync.scope(player.getUuid(),tick)))CommerceRuntime.keepAlive(player);if("upgrades".equals(uiSync.scope(player.getUuid(),tick)))ItemUpgradeRuntime.keepAlive(player);return;}
+          if(request.action().equals("ui_open")){sync.open(player.getUuid(),request.id());return;}
+          if(request.action().equals("ui_close")){sync.close(player.getUuid(),request.id());return;}
+          if(request.action().equals("ui_keepalive")){sync.touch(player);return;}
           long now = tick;
           if (now < nextAction.getOrDefault(player.getUuid(), -1L)) return;
           nextAction.put(player.getUuid(), now + 2);
           var data = SVFrameMMO.playerData().get(player);
-          if (Boolean.TRUE.equals(ClassSwitchService.policy(data).get("busy"))
+          if ((ClassSwitchService.busy(data)||ClassProgression.busy(data))
               && !request.action().equals("refresh")) return;
           try {
             switch (request.action()) {
@@ -248,8 +238,7 @@ public final class FantasyHubCore implements ModInitializer {
     ServerLifecycleEvents.SERVER_STOPPING.register(
         server -> {
           invalidateAll();
-          castingModes.clear();
-          hudSnapshots.clear();
+
           nextAction.clear();
           nextObservation.clear();
           if (qaWriter != null) qaWriter.shutdown();
@@ -268,45 +257,14 @@ public final class FantasyHubCore implements ModInitializer {
             PersistentHudRuntime.setPresentationOwner(handler.player.getUuid(), true));
     ServerPlayConnectionEvents.DISCONNECT.register(
         (handler, server) -> {
-          snapshots.remove(handler.player.getUuid());
-          uiSync.remove(handler.player.getUuid());identities.remove(handler.player.getUuid());uiContexts.remove(handler.player.getUuid());uiCache.remove(handler.player.getUuid());shopStatus.remove(handler.player.getUuid());
-          castingModes.remove(handler.player.getUuid());
-          hudSnapshots.remove(handler.player.getUuid());
           nextAction.remove(handler.player.getUuid());
           nextObservation.remove(handler.player.getUuid());
           PersistentHudRuntime.setPresentationOwner(handler.player.getUuid(), false);
         });
-    ServerTickEvents.END_SERVER_TICK.register(
-        server -> {
-          ++tick;
-          for (var player : server.getPlayerManager().getPlayerList()) {
-            if (!ServerPlayNetworking.canSend(player, Protocol.State.ID)) continue;
-            String mode =
-                Objects.requireNonNullElse(SVFrameMMO.skillBar().mode(player.getUuid()), "");
-            if (tick % 5 != 0 && mode.equals(castingModes.get(player.getUuid()))) continue;
-            castingModes.put(player.getUuid(), mode);
-            String identity=SVFrameMMO.playerData().get(player).getClassId()+":"+SVFrameMMO.playerData().get(player).getLevel();
-            if(!identity.equals(identities.put(player.getUuid(),identity)))invalidate(player.getUuid());
-            String scope=uiSync.scope(player.getUuid(),tick);
-            if(tick%20==0&&scope!=null){
-              Object context=uiContext(player,scope);if(!context.equals(uiContexts.put(player.getUuid(),context)))uiSync.dirty(player.getUuid());
-              if(scope.equals("shop"))shopStatus.put(player.getUuid(),CommerceRuntime.status(player));
-            }
-            if(scope==null)shopStatus.remove(player.getUuid());
-            long start=System.nanoTime();var dynamic=hudState(player);var status=shopStatus.get(player.getUuid());if(status!=null)dynamic.put("shopStatus",status);String hud=GSON.toJson(dynamic);
-            long elapsed=System.nanoTime()-start;HudSyncMetrics.hud++;HudSyncMetrics.hudNanos+=elapsed;HudSyncMetrics.maxHudNanos=Math.max(HudSyncMetrics.maxHudNanos,elapsed);
-            if (ServerPlayNetworking.canSend(player, Protocol.Casting.ID)&&!hud.equals(hudSnapshots.put(player.getUuid(),hud))){ServerPlayNetworking.send(player,new Protocol.Casting(hud));HudSyncMetrics.hudBytes+=hud.length();}
-          }
-          var dispatch=uiSync.next(tick);
-          if(dispatch!=null){var p=server.getPlayerManager().getPlayer(dispatch.player());if(p!=null&&ServerPlayNetworking.canSend(p,Protocol.State.ID)){
-            Object context=uiContext(p,dispatch.scope());var cache=uiCache.computeIfAbsent(p.getUuid(),id->new HashMap<>());var saved=cache.get(dispatch.scope());String full;
-            if(saved!=null&&saved.context().equals(context))full=saved.json();else{full=state(p,dispatch.scope());cache.put(dispatch.scope(),new CachedUi(context,full));}
-            uiContexts.put(p.getUuid(),context);if(!full.equals(snapshots.put(p.getUuid(),full))){ServerPlayNetworking.send(p,new Protocol.State(full));HudSyncMetrics.stateBytes+=full.length();}
-          }}
-        });
+    ServerTickEvents.END_SERVER_TICK.register(server->{++tick;sync.tick(server);});
     CommandRegistrationCallback.EVENT.register(
         (dispatcher, access, environment) -> {
-          dispatcher.register(literal("fantasyhubperf").requires(c->c.hasPermissionLevel(2)).executes(c->{c.getSource().sendFeedback(()->Text.literal(GSON.toJson(HudSyncMetrics.snapshot())),false);return 1;}).then(literal("reset").executes(c->{HudSyncMetrics.reset();return 1;})));
+          dispatcher.register(literal("fantasyhubperf").requires(c->c.hasPermissionLevel(2)).executes(c->{c.getSource().sendFeedback(()->Text.literal(GSON.toJson(perfSnapshot())),false);return 1;}).then(literal("reset").executes(c->{HudSyncMetrics.reset();sync.reset();return 1;})));
           RpgLifecycleQa.register(dispatcher);
           EconomyPolicyQa.register(dispatcher);
           for (String alias : List.of("classmenu", "classes", "doiclass"))
@@ -321,7 +279,7 @@ public final class FantasyHubCore implements ModInitializer {
                         }));
           dispatcher.register(literal("fantasyshop").executes(c->{var p=c.getSource().getPlayerOrThrow();invalidate(p.getUuid());ServerPlayNetworking.send(p,new Protocol.Open("fantasy_shop"));return 1;})
             .then(literal("claim").executes(c->CommerceRuntime.claim(c.getSource().getPlayerOrThrow())))
-            .then(literal("reload").requires(c->c.hasPermissionLevel(2)).executes(c->{try{CommerceRuntime.reload();invalidateAll();return 1;}catch(Exception e){c.getSource().sendError(Text.literal(e.getMessage()));return 0;}})));
+            .then(literal("reload").requires(c->c.hasPermissionLevel(2)).executes(c->{try{CommerceRuntime.reload();sync.commerceReload();return 1;}catch(Exception e){c.getSource().sendError(Text.literal(e.getMessage()));return 0;}})));
           dispatcher.register(
               literal("svclass")
                   .then(
@@ -470,8 +428,10 @@ public final class FantasyHubCore implements ModInitializer {
         });
   }
 
+  private Map<String,Object> perfSnapshot(){var out=new LinkedHashMap<String,Object>(HudSyncMetrics.snapshot());out.putAll(sync.metrics());return out;}
   private static String state(ServerPlayerEntity player){return state(player,"all");}
-  private static String state(ServerPlayerEntity player,String scope) {
+  private static String state(ServerPlayerEntity player,String scope){return GSON.toJson(stateMap(player,scope));}
+  private static Map<String,Object> stateMap(ServerPlayerEntity player,String scope) {
     long started=System.nanoTime();HudSyncMetrics.states++;
     var data = SVFrameMMO.playerData().get(player);
     Map<String, Object> out = new LinkedHashMap<>();
@@ -497,6 +457,19 @@ public final class FantasyHubCore implements ModInitializer {
       out.put(name, data.getResource(resource));
       out.put(name + "Max", data.getMaxResource(resource));
     }
+    // These views do not consume class/attribute/skill trees. Capture only their own domain.
+    if (scope.equals("upgrades")) {
+      out.clear();
+      out.put("itemUpgrades", ItemUpgradeRuntime.view(player));
+      return out;
+    }
+    if (scope.equals("pokemon")) {
+      out.clear();
+      var abilities = vn.svframe.svframelib.skill.PlayerAbilityShop.get();
+      HudSyncMetrics.pokemon++;
+      out.put("pokemonShop", abilities == null ? List.of() : abilities.catalog(player));
+      return out;
+    }
     List<Map<String, Object>> attributes = new ArrayList<>();
     for (var attr : SVFrameMMO.attributes().getAll()) {
       var instance = data.getAttributes().getInstance(attr);
@@ -509,7 +482,7 @@ public final class FantasyHubCore implements ModInitializer {
       attributes.add(row);
     }
     out.put("attributes", attributes);
-    out.put("classSwitch", ClassSwitchService.policy(data));
+    out.put("classSwitch",scope.equals("classes")||scope.equals("all")?ClassSwitchService.policy(data):Map.of("busy",ClassProgression.busy(data)||ClassSwitchService.busy(data)));
     if(scope.equals("classes")||scope.equals("all")){
     List<Map<String, Object>> roster = new ArrayList<>();
     Map<vn.svframe.svframelib.api.economy.CurrencyKey, java.math.BigDecimal> classBalances =
@@ -518,9 +491,28 @@ public final class FantasyHubCore implements ModInitializer {
       Map<String, Object> row = new LinkedHashMap<>();
       row.put("id", type.getId());
       row.put("name", type.getName());
-      row.put("description", type.getDescription());
-      row.put("attributeDescription", type.getAttributeDescription());
-      row.put("maxLevel", type.getMaxLevel());
+      var metadata = CLASS_METADATA.get(type);
+      if (metadata == null) {
+        if (CLASS_METADATA.size() >= 512) CLASS_METADATA.clear();
+        metadata = new LinkedHashMap<>();
+        metadata.put("description", List.copyOf(type.getDescription()));
+        metadata.put("attributeDescription", List.copyOf(type.getAttributeDescription()));
+        metadata.put("maxLevel", type.getMaxLevel());
+        List<Map<String,Object>> classSkills = new ArrayList<>();
+        for (var skill : type.getConfiguredSkills()) {
+          var sr = new LinkedHashMap<String,Object>();
+          sr.put("id", skill.getSkill().getId());
+          sr.put("name", skill.getSkill().getName());
+          sr.put("passive", skill.getTrigger().isPassive());
+          sr.put("requiredLevel", skill.getUnlockLevel());
+          skillSupport(sr, skill.getSkill());
+          classSkills.add(Collections.unmodifiableMap(sr));
+        }
+        metadata.put("skills", List.copyOf(classSkills));
+        metadata = Collections.unmodifiableMap(metadata);
+        CLASS_METADATA.put(type, metadata);
+      }
+      row.putAll(metadata);
       row.put("price", ClassSwitchService.offer(type.getId(), player, classBalances));
       row.put("selectable", ClassSwitchService.selectable(type.getId()));
       row.put("unlocked", ClassSwitchService.unlocked(player, type.getId()));
@@ -531,17 +523,6 @@ public final class FantasyHubCore implements ModInitializer {
       for (String stat : type.getStats())
         baseStats.put(stat, type.calculateBaseStat(stat, 1, data));
       row.put("baseStats", baseStats);
-      List<Map<String, Object>> classSkills = new ArrayList<>();
-      for (var skill : type.getConfiguredSkills()) {
-        Map<String, Object> sr = new LinkedHashMap<>();
-        sr.put("id", skill.getSkill().getId());
-        sr.put("name", skill.getSkill().getName());
-        sr.put("passive", skill.getTrigger().isPassive());
-        sr.put("requiredLevel", skill.getUnlockLevel());
-        skillSupport(sr, skill.getSkill());
-        classSkills.add(sr);
-      }
-      row.put("skills", classSkills);
       roster.add(row);
     }
     out.put("classRoster", roster);
@@ -577,6 +558,8 @@ public final class FantasyHubCore implements ModInitializer {
       row.put(
           "cooldownRemaining",
           MMOPlayerData.setup(player).getCooldownMap().getCooldown(skill.getCooldownPath()));
+      double menuCooldown=MMOPlayerData.setup(player).getCooldownMap().getCooldown(skill.getCooldownPath());
+      row.put("cooldownEnd",menuCooldown<=0?0:System.currentTimeMillis()+Math.round(menuCooldown*1000));
       row.put("lore", skill.getSkill().getUiLore());
       row.put(
           "iconMaterial",
@@ -587,13 +570,13 @@ public final class FantasyHubCore implements ModInitializer {
     }
     out.put("skills", skills);
     out.put("loadoutSlots", PlayerSkillCatalog.slots(data));
-    out.put("casting", castingState(player));
+    if(scope.equals("all"))out.put("casting", castingState(player));
     var shop = vn.svframe.svframelib.skill.PlayerAbilityShop.get();
     if(scope.equals("pokemon")||scope.equals("all")){HudSyncMetrics.pokemon++;out.put("pokemonShop",shop==null?List.of():shop.catalog(player));}
     if(scope.equals("shop")||scope.equals("all"))out.put("fantasyShop",CommerceRuntime.view(player));
     if(scope.equals("upgrades")||scope.equals("all"))out.put("itemUpgrades",ItemUpgradeRuntime.view(player));
-    Map<Integer, String> loadout = new TreeMap<>();
-    PlayerSkillCatalog.bindings(data).forEach((slot, entry) -> loadout.put(slot, entry.id()));
+    Map<String, String> loadout = new LinkedHashMap<>();
+    PlayerSkillCatalog.bindings(data).forEach((slot, entry) -> loadout.put(Integer.toString(slot), entry.id()));
     out.put("loadout", loadout);
     Map<String, Double> stats = new TreeMap<>();
     for (String id :
@@ -605,7 +588,7 @@ public final class FantasyHubCore implements ModInitializer {
             "SKILL_DAMAGE",
             "MOVEMENT_SPEED")) stats.put(id, MMOPlayerData.setup(player).getStatMap().getStat(id));
     out.put("stats", stats);
-    String json=GSON.toJson(out);long elapsed=System.nanoTime()-started;HudSyncMetrics.stateNanos+=elapsed;HudSyncMetrics.maxStateNanos=Math.max(HudSyncMetrics.maxStateNanos,elapsed);return json;
+    long elapsed=System.nanoTime()-started;HudSyncMetrics.stateNanos+=elapsed;HudSyncMetrics.maxStateNanos=Math.max(HudSyncMetrics.maxStateNanos,elapsed);return out;
   }
 
   private static Map<String, Object> castingState(ServerPlayerEntity player) {

@@ -12,7 +12,10 @@
     "RiderDefenseMixin",
     "RiderControlMixin",
     "HeroFlightSaveMixin",
-    "BatmanGlideMixin"
+    "BatmanGlideMixin",
+    "PlayerDataSyncMixin",
+    "EquipmentSyncMixin",
+    "SkillRuntimeSyncMixin"
   ],
   "injectors": {
     "defaultRequire": 1

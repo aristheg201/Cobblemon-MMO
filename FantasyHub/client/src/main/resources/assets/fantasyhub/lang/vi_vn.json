@@ -606,5 +606,6 @@
   "fantasyhub.item_upgrade.result.success": "Nâng cấp thành công: +%s.",
   "fantasyhub.item_upgrade.result.failed": "Nâng cấp thất bại; giữ trang bị ở +%s.",
   "fantasyhub.item_upgrade.result.destroyed": "Nâng cấp thất bại; trang bị đã bị phá hủy.",
-  "fantasyhub.item_upgrade.error.inventory_full": "Cần trống một ô trong túi để nâng cấp một món trong stack này."
+  "fantasyhub.item_upgrade.error.inventory_full": "Cần trống một ô trong túi để nâng cấp một món trong stack này.",
+  "fantasyhub.shop.loading": "Đang chuẩn bị hình xem trước…"
 }

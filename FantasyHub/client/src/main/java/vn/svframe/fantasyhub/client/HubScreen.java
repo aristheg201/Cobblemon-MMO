@@ -127,7 +127,7 @@ public final class HubScreen extends Screen {
                     parameter(parameters, "mana"),
                     parameter(parameters, "stamina"),
                     parameter(parameters, "cooldown"),
-                    row.get("cooldownRemaining").getAsDouble());
+                    SkillBarPresentation.remaining(row));
             if (row.has("lore"))
               for (var raw : row.getAsJsonArray("lore")) {
                 String line = raw.getAsString();

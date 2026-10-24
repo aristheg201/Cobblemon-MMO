@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "minecraft-protocol": "^1.62.0"
+  },
+  "private": true,
+  "description": "Native Fabric network-client load fixture; not a graphical gameplay client",
+  "scripts": {
+    "load": "node bots.cjs",
+    "benchmark": "python3 run_matrix.py",
+    "report": "python3 report.py"
+  }
+}

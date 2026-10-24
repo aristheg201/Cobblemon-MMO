@@ -10,7 +10,13 @@ import net.minecraft.util.Pair;
 
 /** Optional public-API adapters. No third-party classes enter a mandatory class signature. */
 public final class BeltEquipment {
-  private record Backend(Class<?> api, Class<?> contract, Object accessory) {}
+  private record Backend(
+      boolean accessories,
+      Method component,
+      Method equipped,
+      Method reference,
+      Method slot,
+      Method stack) {}
 
   private static final List<Backend> BACKENDS = new ArrayList<>();
   public static Predicate<LivingEntity> classAllowed = entity -> true;
@@ -88,8 +94,31 @@ public final class BeltEquipment {
                 throw new UnsupportedOperationException(
                     "Unrecognized " + mod + " API method: " + m);
               });
-      for (Item belt : BELTS.keySet()) api.getMethod(method, Item.class, contract).invoke(null, belt, adapter);
-      BACKENDS.add(new Backend(api, contract, adapter));
+      for (Item belt : BELTS.keySet())
+        api.getMethod(method, Item.class, contract).invoke(null, belt, adapter);
+      if (mod.equals("accessories")) {
+        Class<?> capability = Class.forName("io.wispforest.accessories.api.AccessoriesCapability"),
+            entry = Class.forName("io.wispforest.accessories.api.slot.SlotEntryReference"),
+            reference = Class.forName("io.wispforest.accessories.api.slot.SlotReference");
+        BACKENDS.add(
+            new Backend(
+                true,
+                capability.getMethod("get", LivingEntity.class),
+                capability.getMethod("getEquipped", Item.class),
+                entry.getMethod("reference"),
+                reference.getMethod("slotName"),
+                entry.getMethod("stack")));
+      } else {
+        BACKENDS.add(
+            new Backend(
+                false,
+                api.getMethod("getTrinketComponent", LivingEntity.class),
+                Class.forName("dev.emi.trinkets.api.TrinketComponent")
+                    .getMethod("getEquipped", Item.class),
+                null,
+                Class.forName("dev.emi.trinkets.api.SlotReference").getMethod("getId"),
+                null));
+      }
     } catch (ReflectiveOperationException failure) {
       throw new IllegalStateException("Cannot initialize installed " + mod + " belt API", failure);
     }
@@ -112,44 +141,16 @@ public final class BeltEquipment {
     if (!BELTS.containsKey(belt)) return ItemStack.EMPTY;
     try {
       for (Backend backend : BACKENDS) {
-        if (backend.api().getName().contains("accessories")) {
-          Class<?> capability =
-              Class.forName("io.wispforest.accessories.api.AccessoriesCapability");
-          Object cap = capability.getMethod("get", LivingEntity.class).invoke(null, entity);
-          if (cap == null) continue;
-          for (Object row :
-              (List<?>)
-                  capability
-                      .getMethod("getEquipped", Item.class)
-                      .invoke(cap, belt)) {
-            Class<?> entry = Class.forName("io.wispforest.accessories.api.slot.SlotEntryReference");
-            Object ref = entry.getMethod("reference").invoke(row);
-            String slot =
-                (String)
-                    Class.forName("io.wispforest.accessories.api.slot.SlotReference")
-                        .getMethod("slotName")
-                        .invoke(ref);
-            if (slot.equals("belt")) return (ItemStack) entry.getMethod("stack").invoke(row);
-          }
-        } else {
-          Optional<?> component =
-              (Optional<?>)
-                  backend
-                      .api()
-                      .getMethod("getTrinketComponent", LivingEntity.class)
-                      .invoke(null, entity);
-          if (component.isEmpty()) continue;
-          Class<?> type = Class.forName("dev.emi.trinkets.api.TrinketComponent");
-          for (Object row :
-              (List<?>)
-                  type.getMethod("getEquipped", Item.class)
-                      .invoke(component.get(), belt)) {
+        Object component = backend.component().invoke(null, entity);
+        if (!backend.accessories()) component = ((Optional<?>) component).orElse(null);
+        if (component == null) continue;
+        for (Object row : (List<?>) backend.equipped().invoke(component, belt)) {
+          if (backend.accessories()) {
+            String slot = (String) backend.slot().invoke(backend.reference().invoke(row));
+            if (slot.equals("belt")) return (ItemStack) backend.stack().invoke(row);
+          } else {
             Pair<?, ?> pair = (Pair<?, ?>) row;
-            String slot =
-                (String)
-                    Class.forName("dev.emi.trinkets.api.SlotReference")
-                        .getMethod("getId")
-                        .invoke(pair.getLeft());
+            String slot = (String) backend.slot().invoke(pair.getLeft());
             if (slot.startsWith("legs/belt/")) return (ItemStack) pair.getRight();
           }
         }

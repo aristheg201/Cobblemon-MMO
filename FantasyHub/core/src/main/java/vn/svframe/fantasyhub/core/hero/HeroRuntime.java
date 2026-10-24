@@ -211,6 +211,8 @@ public final class HeroRuntime {
     var s=SESSIONS.get(e.getUuid());if(s==null||!valid(s))return false;
     return controlImmune(e)&&effect.equals(StatusEffects.SLOWNESS)||s.hero.id().equals("FLASH")&&(effect.equals(StatusEffects.POISON)||effect.equals(StatusEffects.WITHER)||effect.equals(StatusEffects.NAUSEA));
   }
+  /** HUD projection avoids debug-only equipment scans, flight probes and timeline dumps. */
+  public static Map<String,Object> hudState(ServerPlayerEntity p){var s=SESSIONS.get(p.getUuid());if(s==null)return Map.of();return Map.of("class",s.hero.id(),"resource",s.hero.resourceName(),"heat",s.heat,"speedLevel",s.speedLevel,"shield",HeroBarriers.amount(p.getUuid()),"axeOut",HeroAxeFlight.active(p.getUuid()));}
   public static Map<String,Object> inspect(ServerPlayerEntity p) {
     var s=session(p);if(s==null)return Map.of();
     var info=new LinkedHashMap<String,Object>();

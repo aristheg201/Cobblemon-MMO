@@ -18,6 +18,7 @@ import vn.svframe.fantasyhub.protocol.Protocol;
 
 public final class FantasyHubClient implements ClientModInitializer {
   private static JsonObject state = new JsonObject();
+  private static final SyncInbox syncInbox=new SyncInbox();
   private static final CastingState castingState = new CastingState();
   public static boolean hudEnabled = true;
   public static float hudScale = 1;
@@ -202,6 +203,18 @@ public final class FantasyHubClient implements ClientModInitializer {
                   new Protocol.Handshake(
                       Protocol.VERSION, Protocol.ASSET_REVISION, version, diagnostic));
         });
+    ClientPlayNetworking.registerGlobalReceiver(Protocol.Sync.ID,(payload,context)->{
+      var client=context.client();if(client.player!=null&&!client.player.getUuid().toString().equals(payload.player()))return;
+      if(!syncInbox.apply(state,payload.generation(),payload.revision(),payload.sequence(),payload.domain(),payload.json(),payload.sentAt(),System.currentTimeMillis()))return;
+      observed=false;
+      if(payload.domain().equals("GUI")||payload.domain().equals("BUNDLES")||payload.domain().equals("COMMERCE")){
+        if(client.currentScreen instanceof HubScreen screen)screen.refresh();
+        if(client.currentScreen instanceof ClassSelectionScreen screen)screen.refresh();
+        if(client.currentScreen instanceof FantasyShopScreen screen)screen.refresh();
+        if(client.currentScreen instanceof ItemUpgradeScreen screen)screen.refresh();
+        if(client.currentScreen instanceof PokemonShopScreen screen)screen.refresh();
+      }
+    });
     ClientPlayNetworking.registerGlobalReceiver(
         Protocol.State.ID,
         (payload, context) -> {
@@ -253,6 +266,7 @@ public final class FantasyHubClient implements ClientModInitializer {
         (handler, client) -> {
           state = new JsonObject();
           castingState.reset();
+          syncInbox.reset();
           KabutoVisuals.clear();
           RiderVisuals.clear();
           HeroVisuals.clear();

@@ -12,10 +12,11 @@ import net.minecraft.text.Text;
  */
 public final class ClassSelectionScreen extends Screen {
  @Override public void removed(){requested=false;FantasyHubClient.send("ui_close","classes",0);}
+  private static JsonObject switchPolicy(){var policy=FantasyHubClient.state().getAsJsonObject("classSwitch");return policy!=null&&policy.has("availableAt")&&policy.has("sigils")?policy:null;}
   private int left, top, panelWidth, panelHeight, page;
   private long lastCountdown=-1;
   private static long remaining(JsonObject policy){return policy==null||policy.get("remainingSeconds").getAsLong()==0?0:Math.max(0,(policy.get("availableAt").getAsLong()-System.currentTimeMillis()+999)/1000);}
-  @Override public void tick(){super.tick();long next=remaining(FantasyHubClient.state().getAsJsonObject("classSwitch"));if(next!=lastCountdown){lastCountdown=next;clearAndInit();}}
+  @Override public void tick(){super.tick();long next=remaining(switchPolicy());if(next!=lastCountdown){lastCountdown=next;clearAndInit();}}
   private String selected = "DRAGONBORN";
   private boolean confirming, requested;
   private final ClassModelPreview model = new ClassModelPreview();
@@ -128,7 +129,7 @@ public final class ClassSelectionScreen extends Screen {
             .dimensions(left + 40, top + panelHeight - 52, 24, 20)
             .build());
     var row = selection();
-    var policy = FantasyHubClient.state().getAsJsonObject("classSwitch");
+    var policy = switchPolicy();
     var choose =
         FantasyButton.builder(
                 Text.translatable(
@@ -211,7 +212,7 @@ public final class ClassSelectionScreen extends Screen {
           false);
       y += 16;
       if(row.has("state")){context.drawText(textRenderer,Text.literal(row.get("state").getAsString()),x,y,0xff96ceaa,false);y+=13;}
-      var timing=FantasyHubClient.state().getAsJsonObject("classSwitch");
+      var timing=switchPolicy();
       if(remaining(timing)>0){for(var line:textRenderer.wrapLines(Text.literal("Wait "+remaining(timing)+"s | Bypass "+timing.get("bypassFee").getAsString()+" BeastCoin | Balance "+timing.get("beastBalance").getAsString()),w)){context.drawText(textRenderer,line,x,y,0xffeecc88,false);y+=11;}}
       if (!row.get("unlocked").getAsBoolean()) {
         for (var line : textRenderer.wrapLines(Text.literal(row.get("selectable").getAsBoolean()?"Purchase with BeastCoin or HunterCoin in the Class Shop.":"Unavailable"), w)) {
@@ -280,7 +281,7 @@ public final class ClassSelectionScreen extends Screen {
           top + panelHeight - 60,
           mouseX,
           mouseY);
-    var policy = FantasyHubClient.state().getAsJsonObject("classSwitch");
+    var policy = switchPolicy();
     if (policy != null) {
       context.drawCenteredTextWithShadow(textRenderer,
           Text.literal(textRenderer.trimToWidth(Text.translatable("fantasyhub.classes.material_status", policy.get("sigils").getAsInt(), policy.get("starter").getAsBoolean() ? 1 : 0).getString(), panelWidth - 16)),

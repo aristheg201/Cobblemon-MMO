@@ -1,0 +1,1 @@
+{"schemaVersion":1,"id":"fantasyhub_loadprobe","version":"1.0.0-qa","name":"FantasyHub QA Load Probe — remove after testing","environment":"server","entrypoints":{"main":["vn.svframe.loadprobe.LoadProbe"]},"mixins":["loadprobe.mixins.json"],"depends":{"minecraft":"1.21.1","fabricloader":">=0.18.4","fabric-api":"*","java":">=21"}}
