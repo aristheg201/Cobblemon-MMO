@@ -6,6 +6,7 @@ final class CommerceQa {
   switch(action){
    case "seed"->{CurrencyService.get().setBalance(p,CommerceCurrencies.beast(),new BigDecimal("200000"));CurrencyService.get().setBalance(p,CurrencyKey.parse("beconomy:primary"),new BigDecimal("100"));}
    case "zero"->{CurrencyService.get().setBalance(p,CommerceCurrencies.payment(method),BigDecimal.ZERO);}
+   case "empty_wallet"->{var service=vn.svframe.svframelib.api.economy.CurrencyService.get();for(int option:new int[]{1,2}){var key=CommerceCurrencies.payment(option);var balance=service.balance(p,key);if(balance.signum()>0&&!service.withdraw(p,key,balance))throw new IllegalStateException("QA wallet reset rejected");}}
    case "cooldown"->{d.setClassSwitchAvailableAt(System.currentTimeMillis()+3600000);SVFrameMMO.playerData().savePlayerDurably(d).join();}
    case "ready"->{d.setClassSwitchAvailableAt(0);SVFrameMMO.playerData().savePlayerDurably(d).join();}
    case "starter"->ClassProgression.resetStarter(d,true);

@@ -135,8 +135,14 @@ public final class CommerceRuntime {
     if("items".equals(o.category))CommercePolicy.validateItemPrices(o.price.beast,o.price.hunter);
     if(!o.permission.isBlank()&&!SVFrameMMO.permissions().has(p,o.permission))return reject(p,"requirement");if(o.limit>0&&d.getClaimCount("fantasyhub:purchases:"+o.id)>=o.limit)return reject(p,"limit");price=o.price;rewards=o.items;effect=o.effect;
    }
+   var amount=price.get(method);CommercePolicy.positiveWhole(amount);
+   // Reject predictable failures before generating RPG items or fsyncing an unreferenced mailbox.
+   // paid() still revalidates the authoritative balance immediately before withdrawal.
+   if(BUSY.contains(p.getUuid())||ClassProgression.busy(d)||ClassSwitchService.busy(d))return reject(p,"busy");
+   var provider=CurrencyService.get();var selectedCurrency=CommerceCurrencies.payment(method);
+   if(!provider.isAvailable(selectedCurrency)||!provider.has(p,selectedCurrency,amount))return reject(p,"balance");
    var generated=new ArrayList<String>();for(var r:rewards){var st=stack(r);generated.add(st.encode(p.getRegistryManager()).toString());}
-   var amount=price.get(method);CommercePolicy.positiveWhole(amount);String entitlement=grant,fx=effect;
+   String entitlement=grant,fx=effect;
    String preparedMail=generated.isEmpty()?null:prepareMail(p,token,generated);
    boolean result=paid(p,token,offerId,CommerceCurrencies.payment(method),amount,()->{
     if(!entitlement.isBlank())ClassProgression.own(d,entitlement);
