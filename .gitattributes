@@ -7,3 +7,4 @@ gradlew text eol=lf
 *.mp4 binary
 *.zip binary
 *.bin binary
+FantasyHub/**/src/imported/resources/** -text

@@ -1,0 +1,19 @@
+{
+  "vfx_soul_blade": "config2/ModelEngine/blueprints/vfx_soul_blade.bbmodel",
+  "vfx_death_strike_1": "config2/ModelEngine/blueprints/vfx_death_strike_1.bbmodel",
+  "vfx_death_wings_1": "config2/ModelEngine/blueprints/vfx_death_wings_1.bbmodel",
+  "vfx_earthquake_rupture_1": "config2/ModelEngine/blueprints/Extras/vfx_earthquake_rupture_1.bbmodel",
+  "death_knight": "config2/ModelEngine/blueprints/death_knight.bbmodel",
+  "vfx_death_wings_2": "config2/ModelEngine/blueprints/vfx_death_wings_2.bbmodel",
+  "vfx_death_wings_3": "config2/ModelEngine/blueprints/vfx_death_wings_3.bbmodel",
+  "vfx_death_wings_4": "config2/ModelEngine/blueprints/vfx_death_wings_4.bbmodel",
+  "vfx_death_wings_5": "config2/ModelEngine/blueprints/vfx_death_wings_5.bbmodel",
+  "vfx_death_wings_6": "config2/ModelEngine/blueprints/vfx_death_wings_6.bbmodel",
+  "vfx_death_wings_7": "config2/ModelEngine/blueprints/vfx_death_wings_7.bbmodel",
+  "vfx_earthquake_rupture_2": "config2/ModelEngine/blueprints/Extras/vfx_earthquake_rupture_2.bbmodel",
+  "vfx_earthquake_rupture_3": "config2/ModelEngine/blueprints/Extras/vfx_earthquake_rupture_3.bbmodel",
+  "vfx_earthquake_rupture_4": "config2/ModelEngine/blueprints/Extras/vfx_earthquake_rupture_4.bbmodel",
+  "vfx_earthquake_rupture_5": "config2/ModelEngine/blueprints/Extras/vfx_earthquake_rupture_5.bbmodel",
+  "class:death_knight": "config2/MMOCore/classes/death_knight.yml",
+  "class:anti_mage_knight": "amk/MMOCore/classes/anti_mage_knight.yml"
+}

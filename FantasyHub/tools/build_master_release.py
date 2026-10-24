@@ -16,5 +16,9 @@ for module,wrapper,tasks in steps:
  if a.offline:cmd.append('--offline')
  cmd+=tasks
  print('Building',module,flush=True)
- with (logs/(module+'.log')).open('w') as f:subprocess.run(cmd,cwd=root,stdout=f,stderr=subprocess.STDOUT,check=True)
+ try:
+  with (logs/(module+'.log')).open('w') as f:subprocess.run(cmd,cwd=root,stdout=f,stderr=subprocess.STDOUT,check=True)
+ except subprocess.CalledProcessError:
+  print('\n'.join((logs/(module+'.log')).read_text().splitlines()[-80:]),flush=True)
+  raise
 print('Complete build passed. JARs are in each module build/libs; no ShadowCrates dependency.',flush=True)

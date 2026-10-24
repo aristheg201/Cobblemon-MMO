@@ -6,7 +6,7 @@ Implementation baseline: `91e337b3ef022b5d7a2ddbfea8df1a4bab4951d6`, the deliver
 
 The owner thread captures Minecraft, inventory, progression, native formula and currency data. FrozenValues rejects live objects and detaches collections. Immutable rows and shared immutable class definitions cross the worker boundary; Gson transformation and compression execute there. UUID/session generation/domain revision/sequence fence every result. Client generation and ordering checks remain authoritative for presentation. Gameplay authorization remains on the server.
 
-Two default worker threads are partitioned into one realtime and one bulk worker, rather than increasing the pool. A single-worker configuration shares one bounded executor. Realtime completions overtake bulk completions. Bulk admission reserves capacity for realtime work, and the existing rotating fairness pick is retained. Disconnect, dimension change and server stop cancel obsolete work.
+Two default worker threads are partitioned into one realtime and one bulk worker, rather than increasing the pool. A single-worker configuration shares one bounded executor. Realtime completions overtake bulk completions. Bulk admission reserves capacity for realtime work, and the existing rotating fairness pick is retained. Disconnect, dimension change and server stop cancel obsolete work. Connection generations are fenced before dispatch. Completed captures are drained before consuming ordinary resource dirty signals, so continuously changing vitals cannot be perpetually superseded before delivery. Direct class/purchase invalidations still reject superseded results.
 
 Captures remain limited by count and elapsed time. Class rosters are constructed in small slices. Pokémon catalogs capture at most 16 rows by default, with a provider limit of 32. An observed-cost admission model checks whether a bulk capture is likely to fit the remaining tick budget. One native operation cannot safely be preempted: this is an admission bound, not a hard real-time guarantee. Outlier observations are capped in the cost estimator so a GC pause cannot starve a view forever.
 
@@ -22,7 +22,7 @@ Per-session catalog streams cache frozen rows. Class/progression/equipment chang
 
 ## Equipment
 
-`BeltEquipment.equippedAny` resolves each installed Accessories/Trinkets component once and requests all belt candidates once. Selection still ranks item type first, then backend, then native slot order. Native nested-slot traversal is retained. Mutable stacks are never cached across calls, so unequip is visible in the same tick. Optional equip/unequip/container callbacks invalidate equipment/combat/vitals/extension/GUI domains without retaining player objects. Reconciliation probes remain available for non-event resource changes.
+`BeltEquipment.equippedAny` resolves each installed Accessories/Trinkets component once and requests all belt candidates once. Selection still ranks item type first, then backend, then native slot order. Native nested-slot traversal is retained. Mutable stacks are never cached across calls, so unequip is visible in the same tick. Empty container reconciliation, equal-stack notifications and empty Trinkets callbacks are ignored. Optional equip/unequip/container callbacks invalidate equipment/combat/vitals/extension/GUI domains without retaining player objects. Reconciliation probes remain available for non-event resource changes.
 
 ## Client
 

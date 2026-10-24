@@ -15,6 +15,9 @@ final class AccessorySyncEvents {
    Class<?> contract=Class.forName(contractName);Method entity=referenceName==null?null:Class.forName(referenceName).getMethod("entity");
    Object listener=Proxy.newProxyInstance(contract.getClassLoader(),new Class<?>[]{contract},(self,method,args)->{
     if(method.getDeclaringClass()==Object.class)return switch(method.getName()){case "toString"->"FantasyHub equipment invalidation";case "hashCode"->System.identityHashCode(self);case "equals"->self==args[0];default->null;};
+    if(contractName.endsWith("ContainersChangeCallback")&&!vn.svframe.fantasyhub.core.sync.EquipmentEventPolicy.containerChanged((java.util.Map<?,?>)args[2]))return null;
+    if(contractName.endsWith("AccessoryChangeCallback")&&!vn.svframe.fantasyhub.core.sync.EquipmentEventPolicy.stackChanged(net.minecraft.item.ItemStack.areEqual((net.minecraft.item.ItemStack)args[0],(net.minecraft.item.ItemStack)args[1])))return null;
+    if(contractName.startsWith("dev.emi.")&&((net.minecraft.item.ItemStack)args[0]).isEmpty())return null;
     Object wearer=entity==null?args[argument]:entity.invoke(args[argument]);
     if(wearer instanceof ServerPlayerEntity p)SyncSignals.changed(p.getUuid(),Domain.EQUIPMENT,Domain.COMBAT,Domain.VITALS,Domain.EXTENSIONS,Domain.GUI);
     return null;

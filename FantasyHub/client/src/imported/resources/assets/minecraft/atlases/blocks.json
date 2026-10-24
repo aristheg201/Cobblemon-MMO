@@ -1,0 +1,331 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "svframe:skyrim_iron/armor/skyrim_iron_helmet",
+      "sprite": "svframe:skyrim_iron/armor/skyrim_iron_helmet"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "svframe:skyrim_iron/armor/skyrim_iron_chestplate",
+      "sprite": "svframe:skyrim_iron/armor/skyrim_iron_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "svframe:skyrim_iron/armor/skyrim_iron_leggings",
+      "sprite": "svframe:skyrim_iron/armor/skyrim_iron_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "svframe:skyrim_iron/armor/skyrim_iron_boots",
+      "sprite": "svframe:skyrim_iron/armor/skyrim_iron_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "svframe:skyrim_iron/armor/skyrim_iron_hat",
+      "sprite": "svframe:skyrim_iron/armor/skyrim_iron_hat"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ender_dragonset:armor/ender_dragon_helmet_icon",
+      "sprite": "ender_dragonset:armor/ender_dragon_helmet_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ender_dragonset:armor/ender_dragon_chestplate_icon",
+      "sprite": "ender_dragonset:armor/ender_dragon_chestplate_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ender_dragonset:armor/ender_dragon_leggings_icon",
+      "sprite": "ender_dragonset:armor/ender_dragon_leggings_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "ender_dragonset:armor/ender_dragon_boots_icon",
+      "sprite": "ender_dragonset:armor/ender_dragon_boots_icon"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "svframe:halfmoon/half_moon_animation",
+      "sprite": "svframe:halfmoon/half_moon_animation"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "svframe:halfmoon/half_moon_texture",
+      "sprite": "svframe:halfmoon/half_moon_texture"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/halfmoon_chestplate",
+      "sprite": "fantasyhub:hunter/halfmoon_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/halfmoon_leggings",
+      "sprite": "fantasyhub:hunter/halfmoon_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/halfmoon_boots",
+      "sprite": "fantasyhub:hunter/halfmoon_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/feline_helmet",
+      "sprite": "fantasyhub:hunter/feline_helmet"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/feline_chestplate",
+      "sprite": "fantasyhub:hunter/feline_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/feline_leggings",
+      "sprite": "fantasyhub:hunter/feline_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/feline_boots",
+      "sprite": "fantasyhub:hunter/feline_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/griffin_helmet",
+      "sprite": "fantasyhub:hunter/griffin_helmet"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/griffin_chestplate",
+      "sprite": "fantasyhub:hunter/griffin_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/griffin_leggings",
+      "sprite": "fantasyhub:hunter/griffin_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/griffin_boots",
+      "sprite": "fantasyhub:hunter/griffin_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/ursine_helmet",
+      "sprite": "fantasyhub:hunter/ursine_helmet"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/ursine_chestplate",
+      "sprite": "fantasyhub:hunter/ursine_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/ursine_leggings",
+      "sprite": "fantasyhub:hunter/ursine_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/ursine_boots",
+      "sprite": "fantasyhub:hunter/ursine_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/kaer_morhen_helmet",
+      "sprite": "fantasyhub:hunter/kaer_morhen_helmet"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/kaer_morhen_chestplate",
+      "sprite": "fantasyhub:hunter/kaer_morhen_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/kaer_morhen_leggings",
+      "sprite": "fantasyhub:hunter/kaer_morhen_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/kaer_morhen_boots",
+      "sprite": "fantasyhub:hunter/kaer_morhen_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/wolven_helmet",
+      "sprite": "fantasyhub:hunter/wolven_helmet"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/wolven_chestplate",
+      "sprite": "fantasyhub:hunter/wolven_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/wolven_leggings",
+      "sprite": "fantasyhub:hunter/wolven_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:hunter/wolven_boots",
+      "sprite": "fantasyhub:hunter/wolven_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:author/kabuto_metals",
+      "sprite": "fantasyhub:author/kabuto_metals"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/kabuto_helmet",
+      "sprite": "fantasyhub:additions/kabuto_helmet"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/kabuto_chestplate",
+      "sprite": "fantasyhub:additions/kabuto_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/kabuto_leggings",
+      "sprite": "fantasyhub:additions/kabuto_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/kabuto_boots",
+      "sprite": "fantasyhub:additions/kabuto_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/grandmaster_wolven_chestplate",
+      "sprite": "fantasyhub:additions/grandmaster_wolven_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/grandmaster_wolven_leggings",
+      "sprite": "fantasyhub:additions/grandmaster_wolven_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/grandmaster_wolven_boots",
+      "sprite": "fantasyhub:additions/grandmaster_wolven_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_iron_helmet",
+      "sprite": "fantasyhub:additions/skyrim_iron_helmet"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_iron_hat",
+      "sprite": "fantasyhub:additions/skyrim_iron_hat"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_iron_chestplate",
+      "sprite": "fantasyhub:additions/skyrim_iron_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_iron_leggings",
+      "sprite": "fantasyhub:additions/skyrim_iron_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_iron_boots",
+      "sprite": "fantasyhub:additions/skyrim_iron_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_ebony_helmet",
+      "sprite": "fantasyhub:additions/skyrim_ebony_helmet"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_ebony_hat",
+      "sprite": "fantasyhub:additions/skyrim_ebony_hat"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_ebony_chestplate",
+      "sprite": "fantasyhub:additions/skyrim_ebony_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_ebony_leggings",
+      "sprite": "fantasyhub:additions/skyrim_ebony_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_ebony_boots",
+      "sprite": "fantasyhub:additions/skyrim_ebony_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_daedric_helmet",
+      "sprite": "fantasyhub:additions/skyrim_daedric_helmet"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_daedric_hat",
+      "sprite": "fantasyhub:additions/skyrim_daedric_hat"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_daedric_chestplate",
+      "sprite": "fantasyhub:additions/skyrim_daedric_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_daedric_leggings",
+      "sprite": "fantasyhub:additions/skyrim_daedric_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_daedric_boots",
+      "sprite": "fantasyhub:additions/skyrim_daedric_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_dragonbone_helmet",
+      "sprite": "fantasyhub:additions/skyrim_dragonbone_helmet"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_dragonbone_hat",
+      "sprite": "fantasyhub:additions/skyrim_dragonbone_hat"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_dragonbone_chestplate",
+      "sprite": "fantasyhub:additions/skyrim_dragonbone_chestplate"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_dragonbone_leggings",
+      "sprite": "fantasyhub:additions/skyrim_dragonbone_leggings"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:additions/skyrim_dragonbone_boots",
+      "sprite": "fantasyhub:additions/skyrim_dragonbone_boots"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:author/rider_metals",
+      "sprite": "fantasyhub:author/rider_metals"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:armor/heroes/thor_cape"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:armor/heroes/sorcerer_supreme_cape"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "fantasyhub:armor/heroes/batman_cape"
+    }
+  ]
+}

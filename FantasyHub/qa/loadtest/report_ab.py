@@ -18,6 +18,7 @@ for phase in sys.argv[2:]:
   before={row['name']:row for row in tick['gcStart']};gc={row['name']:{'collections':row['count']-before[row['name']]['count'],'pauseMs':row['timeMs']-before[row['name']]['timeMs']} for row in tick['gcEnd']}
   runs[phase][str(n)]={'seconds':seconds,'ticks':stats(tick['tickNanos']),'syncWall':stats(sync['wallNanos']),'syncCpu':stats(sync['cpuNanos']),'syncAllocationMBps':sum(sync['allocatedBytes'])/1e6/seconds,'mainAllocationMBps':sum(tick['mainAllocatedBytes'])/1e6/seconds,'cpuCorePercent':tick['processCpuNanos']/1e9/seconds*100,'gc':gc,'hudLatency':last.get('captureToDispatch'),'packets':last.get('packets'),'wireBytes':last.get('wirePayloadBytes'),'pipeline':last['pipeline'],'actor':actor,'commerce':last.get('commerce'),'captureErrors':last['captureErrors']}
   assert last['captureErrors']==0 and last['pipeline']['workerErrors']==0
+  assert last['pipeline']['completed']>0 and last['pipeline']['completed']>last['pipeline']['submitted']*.35,(phase,n,'snapshot starvation')
 (root/'ab-results.json').write_text(json.dumps(runs,indent=2)+'\n')
 print('| Run | Players | Server P50/P95/P99 ms | Sync P95/P99/max ms | Sync MB/s | Main MB/s |')
 print('|---|---:|---:|---:|---:|---:|')

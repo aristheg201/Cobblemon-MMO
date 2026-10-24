@@ -1,0 +1,81 @@
+display:
+  name: '&9&lDeath Knight Class'
+  lore:
+  - '&7Kỵ sĩ tử khí, không vội giết ngay; trước hết là trói, kéo, làm chậm rồi mới hỏi thăm.'
+  - '&7Khống chế mạnh, chống chịu tốt; sát thương giữ vừa phải vì khóa người ta lâu quá là mất vui.'
+  - '&8Vai trò: tank control / debuff / soul barrier.'
+  item: STONE_SWORD:2082
+exp-curve: levels
+max-level: 100
+exp-table: class_exp_table
+skills:
+  CLS_DEATH_KNIGHT_CURSED_SEAL:
+    level: 1
+    max-level: 30
+  CLS_DEATH_KNIGHT_DEATH_STRIKE_ST:
+    level: 1
+    max-level: 30
+  CLS_DEATH_KNIGHT_PHANTOM_CHARGE:
+    level: 5
+    max-level: 30
+  CLS_DEATH_KNIGHT_WRAITHBOUND_CHAINS:
+    level: 10
+    max-level: 30
+  CLS_DEATH_KNIGHT_SOUL_BARRIER:
+    level: 15
+    max-level: 20
+  CLS_DEATH_KNIGHT_NECROTIC_WHIRLWIND:
+    level: 20
+    max-level: 30
+  CLS_DEATH_KNIGHT_DEATH_SENTENCE:
+    level: 25
+    max-level: 20
+skill-slots:
+  1:
+    name: '&aSkill Slot I (Passive)'
+    formula: <PASSIVE>
+    unlocked-by-default: true
+    can-manually-bind: true
+  2:
+    name: '&aSkill Slot II'
+    unlocked-by-default: true
+    formula: <ACTIVE>
+  3:
+    name: '&aSkill Slot III'
+    unlocked-by-default: true
+    formula: <ACTIVE>
+  4:
+    name: '&aSkill Slot IV'
+    unlocked-by-default: true
+    formula: <ACTIVE>
+  5:
+    name: '&aSkill Slot V'
+    unlocked-by-default: true
+    formula: <ACTIVE>
+  6:
+    name: '&aSkill Slot VI'
+    unlocked-by-default: true
+    formula: <ACTIVE>
+  7:
+    name: '&aSkill Slot VII'
+    unlocked-by-default: true
+    formula: <ACTIVE>
+attributes:
+  max-health:
+    base: 28
+    per-level: 0.15
+  armor:
+    base: 4.5
+    per-level: 0.03
+  armor-toughness:
+    base: 2.0
+    per-level: 0.015
+  knockback-resistance:
+    base: 0.12
+    per-level: 0
+  attack-damage:
+    base: 1.4
+    per-level: 0.025
+  skill-damage:
+    base: 3.8
+    per-level: 0.045

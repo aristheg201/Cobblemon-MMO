@@ -1,0 +1,1157 @@
+{
+  "modelName": "stormbreaker",
+  "authorName": "JMCT",
+  "projVersion": 2,
+  "textureWidth": 256,
+  "textureHeight": 128,
+  "scale": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "cubeGroups": [],
+  "cubes": [
+    {
+      "name": "handle",
+      "dimensions": [
+        4,
+        4,
+        45
+      ],
+      "position": [
+        -2.0,
+        8.5,
+        -8.75
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        0,
+        0
+      ],
+      "txMirror": false,
+      "mcScale": -0.5,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "9<(b8w0czFv\"i$Sr648>"
+    },
+    {
+      "name": "handleOVER",
+      "dimensions": [
+        4,
+        4,
+        45
+      ],
+      "position": [
+        -2.0,
+        8.5,
+        -8.75
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        0,
+        79
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "K|M8r[k4RdHlw!~+[8`l"
+    },
+    {
+      "name": "blade0",
+      "dimensions": [
+        5,
+        1,
+        8
+      ],
+      "position": [
+        -2.25,
+        9.5,
+        -12.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        53,
+        36
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": ",_q%.jaM.U&KFJWx5Hw/"
+    },
+    {
+      "name": "bladeA",
+      "dimensions": [
+        4,
+        1,
+        6
+      ],
+      "position": [
+        -1.6,
+        10.0,
+        -11.55
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.3,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        53,
+        29
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "m<=YV<t'naFkkyf@gvR<"
+    },
+    {
+      "name": "bladeB",
+      "dimensions": [
+        4,
+        1,
+        8
+      ],
+      "position": [
+        -1.8,
+        10.5,
+        -12.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.4,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        53,
+        20
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "th6m]eoG* kai+jyL,.'"
+    },
+    {
+      "name": "bladeC",
+      "dimensions": [
+        4,
+        1,
+        10
+      ],
+      "position": [
+        -2.0,
+        11.0,
+        -12.5
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        53,
+        9
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "+o6cU9FP=4l~!i?HeK)b"
+    },
+    {
+      "name": "bladeD",
+      "dimensions": [
+        4,
+        1,
+        12
+      ],
+      "position": [
+        -2.0,
+        11.5,
+        -13.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        71,
+        31
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "z~eLaE_-+W$9*%[1:7dS"
+    },
+    {
+      "name": "bladeE",
+      "dimensions": [
+        4,
+        1,
+        14
+      ],
+      "position": [
+        -2.0,
+        12.0,
+        -13.5
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        69,
+        13
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "Mm.4**I>x\"\\'q>L5A68V"
+    },
+    {
+      "name": "bladeF",
+      "dimensions": [
+        4,
+        1,
+        16
+      ],
+      "position": [
+        -2.0,
+        12.5,
+        -14.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        87,
+        28
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "Hs0pRm=dH.$sP8-(0TlK"
+    },
+    {
+      "name": "bladeG",
+      "dimensions": [
+        4,
+        1,
+        14
+      ],
+      "position": [
+        -2.0,
+        13.0,
+        -13.5
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        105,
+        13
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "!p^}k?O]y)..XbmjD>^:"
+    },
+    {
+      "name": "bladeH",
+      "dimensions": [
+        4,
+        1,
+        12
+      ],
+      "position": [
+        -2.0,
+        13.5,
+        -13.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        71,
+        0
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "^?HQ&2QMw|0?^obe<`e,"
+    },
+    {
+      "name": "bladeI",
+      "dimensions": [
+        4,
+        1,
+        10
+      ],
+      "position": [
+        -2.0,
+        14.0,
+        -12.5
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        91,
+        13
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "'YO$GH0 1je_QDl\\]c;'"
+    },
+    {
+      "name": "bladeJ",
+      "dimensions": [
+        4,
+        1,
+        8
+      ],
+      "position": [
+        -2.0,
+        14.5,
+        -12.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        53,
+        0
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "K4!=iq[.[J@,G[nI!%'!"
+    },
+    {
+      "name": "bladesharp1",
+      "dimensions": [
+        3,
+        1,
+        18
+      ],
+      "position": [
+        -1.75,
+        13.0,
+        -14.5
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        0,
+        0
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "KEG6N2dLfh\"~D>d/Ki/@"
+    },
+    {
+      "name": "bladesharp2",
+      "dimensions": [
+        3,
+        2,
+        20
+      ],
+      "position": [
+        -1.75,
+        13.5,
+        -15.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        0,
+        49
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "n.%-n%^w7E!nX.@p*oN8"
+    },
+    {
+      "name": "bladesharp3",
+      "dimensions": [
+        3,
+        1,
+        18
+      ],
+      "position": [
+        -1.75,
+        14.5,
+        -14.5
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        26,
+        49
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "0?q_YMi:<,)sfOG5e[+>"
+    },
+    {
+      "name": "bladesharp4",
+      "dimensions": [
+        3,
+        1,
+        16
+      ],
+      "position": [
+        -1.75,
+        15.0,
+        -14.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        50,
+        49
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "yD~X*o4LL\"9~65{CJ>|/"
+    },
+    {
+      "name": "bladesharp5",
+      "dimensions": [
+        3,
+        1,
+        14
+      ],
+      "position": [
+        -1.6,
+        15.5,
+        -13.5
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.4,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        72,
+        49
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "j6=.(%B57rz9|sNn&q[y"
+    },
+    {
+      "name": "bladesharp6",
+      "dimensions": [
+        3,
+        1,
+        12
+      ],
+      "position": [
+        -1.45,
+        16.0,
+        -13.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.3,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        92,
+        49
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "uN]'8:<rfqSMrp% PiiR"
+    },
+    {
+      "name": "bladesharp7",
+      "dimensions": [
+        3,
+        1,
+        8
+      ],
+      "position": [
+        -1.3,
+        16.5,
+        -12.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.2,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        110,
+        49
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "V5m=]]L.S$$dHi2JA;w."
+    },
+    {
+      "name": "bladesharp8",
+      "dimensions": [
+        3,
+        1,
+        4
+      ],
+      "position": [
+        -1.15,
+        17.0,
+        -11.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.1,
+        0.3,
+        0.5
+      ],
+      "txOffset": [
+        93,
+        0
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "oIhGuXL$>Or`NIolB*3>"
+    },
+    {
+      "name": "backhead0",
+      "dimensions": [
+        5,
+        1,
+        8
+      ],
+      "position": [
+        -2.25,
+        9.0,
+        -12.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        53,
+        36
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": " y/8BX1g5G=\"I~`rO6U+"
+    },
+    {
+      "name": "backhead1",
+      "dimensions": [
+        4,
+        1,
+        6
+      ],
+      "position": [
+        -2.0,
+        8.5,
+        -11.5
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        0,
+        19
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "z\"m1TP~nW nS,EG=$Jg'"
+    },
+    {
+      "name": "backhead2",
+      "dimensions": [
+        4,
+        1,
+        4
+      ],
+      "position": [
+        -2.0,
+        8.0,
+        -11.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        0,
+        26
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "h0a-uU&SQGW$U~me^v9?"
+    },
+    {
+      "name": "backhead3",
+      "dimensions": [
+        6,
+        1,
+        6
+      ],
+      "position": [
+        -2.5,
+        7.5,
+        -11.5
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        0,
+        31
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "2/v~?-& g\\cPZFOO[@M="
+    },
+    {
+      "name": "backhead4",
+      "dimensions": [
+        8,
+        8,
+        8
+      ],
+      "position": [
+        -3.0,
+        3.5,
+        -12.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        53,
+        104
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "~y;0 nW<Uu3tyTW6O!2k"
+    },
+    {
+      "name": "backhead5",
+      "dimensions": [
+        8,
+        8,
+        8
+      ],
+      "position": [
+        -3.5,
+        4.0,
+        -12.5
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.6,
+        0.4,
+        0.6
+      ],
+      "txOffset": [
+        53,
+        104
+      ],
+      "txMirror": false,
+      "mcScale": 0.0,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "sxFU7%^h||(a[}}.mRGJ"
+    },
+    {
+      "name": "handleOVER",
+      "dimensions": [
+        4,
+        4,
+        45
+      ],
+      "position": [
+        -2.0,
+        8.5,
+        -8.75
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        98,
+        79
+      ],
+      "txMirror": false,
+      "mcScale": -0.25,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "ji+-Pts`o0X.{g =xyI."
+    },
+    {
+      "name": "backhead0",
+      "dimensions": [
+        5,
+        2,
+        8
+      ],
+      "position": [
+        -0.95,
+        9.5,
+        -10.0
+      ],
+      "offset": [
+        -2.5,
+        -1.0,
+        -4.0
+      ],
+      "rotation": [
+        0.0,
+        180.0,
+        180.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        0,
+        88
+      ],
+      "txMirror": false,
+      "mcScale": 0.5,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "I<os*\"!--1G\";xCuWn<+"
+    },
+    {
+      "name": "backhead0",
+      "dimensions": [
+        5,
+        2,
+        8
+      ],
+      "position": [
+        -2.25,
+        9.0,
+        -12.0
+      ],
+      "offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "txOffset": [
+        0,
+        88
+      ],
+      "txMirror": true,
+      "mcScale": 0.25,
+      "opacity": 100.0,
+      "hidden": false,
+      "children": [],
+      "identifier": "6S]?c&^sXuVc\"jKNy-`6"
+    }
+  ],
+  "anims": [],
+  "cubeCount": 73
+}

@@ -606,6 +606,72 @@ final class NativeSyncRuntime {
       departed.add(id);
     }
     if(departed!=null)for(UUID id:departed)leave(id);
+    // Fence replaced connections before dispatch. Drain completed captures before consuming
+    // this tick's resource signals, otherwise continuously changing vitals can starve forever.
+    for(var player:server.getPlayerManager().getPlayerList())if(ServerPlayNetworking.canSend(player,Protocol.Sync.ID)){
+      var session=sessions.get(player.getUuid());
+      if(session==null||session.connection!=player.networkHandler){leave(player.getUuid());join(player);}
+    }
+    long dispatchAt=System.nanoTime();int dispatchBytes=0;
+    SnapshotEngine.Result result;
+    for (int i = 0; i < settings.maxPacketsPerTick && dispatchBytes<settings.maxDispatchBytesPerTick && (i==0||System.nanoTime()-dispatchAt<500_000) && (result = engine.completed()) != null; i++) {
+      var tag = result.stamp();
+      var p = server.getPlayerManager().getPlayer(tag.player());
+      if (result.error() != null) {
+        failures++;
+        LOG.error(
+            "Snapshot worker failed for {} domain {}: {}",
+            tag.player(),
+            tag.domain(),
+            result.error());
+        continue;
+      }
+      if (p == null || !ServerPlayNetworking.canSend(p, Protocol.Sync.ID)) continue;
+      var s = sessions.get(tag.player());
+      switch (tag.domain()) {
+        case VITALS -> s.lastVitals = s.capturedVitals;
+        case COMBAT -> {
+          s.lastCombat = s.capturedCombat;
+          s.definitionsSent = true;
+        }
+        case EXTENSIONS -> s.lastExtensions = s.capturedExtensions;
+        case COMMERCE -> s.lastBalance = s.capturedBalance;
+        default -> {}
+      }
+      if(tag.domain()==Domain.GUI&&s.guiContinues&&"pokemon".equals(views.scope(tag.player(),tick)))engine.dirty(tag.player(),Domain.GUI);
+      if (tag.domain() == Domain.BUNDLES) {
+        if (result.json().contains("\"catalogLoading\":true")) {
+          s.loadingNoticeSent = true;
+          changed(p.getUuid(), Domain.BUNDLES);
+        } else {
+          s.sentCatalog = CommerceRuntime.previewRevision();
+          s.catalogDirty = false;
+          s.loadingNoticeSent = false;
+        }
+      }
+      serializeTimes.add(result.nanos());
+      if(tag.domain().ordinal()<=Domain.EXTENSIONS.ordinal()) {
+        hudUpdates++;
+        hudSerializeTimes.add(result.nanos());
+      }
+      latencyTimes.add(System.nanoTime() - tag.capturedAtNanos());
+      ServerPlayNetworking.send(
+          p,
+          new Protocol.Sync(
+              tag.player().toString(),
+              tag.generation(),
+              tag.revision(),
+              tag.sequence(),
+              tag.domain().name(),
+              System.currentTimeMillis(),
+              result.encoded()));
+      dispatchBytes+=result.encoded().length;
+      packets++;
+      packetChars += result.json().length();
+      wireBytes += result.encoded().length;
+    }
+    dispatchTimes.add(System.nanoTime()-dispatchAt);
+    long probeStarted=System.nanoTime();
     int balanceReads = 0;
     for (var p : server.getPlayerManager().getPlayerList()) {
       if (!ServerPlayNetworking.canSend(p, Protocol.Sync.ID)) continue;
@@ -668,66 +734,7 @@ final class NativeSyncRuntime {
         if (s.sentCatalog != CommerceRuntime.previewRevision()) changed(id, Domain.BUNDLES);
       }
     }
-    probeTimes.add(System.nanoTime()-started);
-    long dispatchAt=System.nanoTime();int dispatchBytes=0;
-    SnapshotEngine.Result result;
-    for (int i = 0; i < settings.maxPacketsPerTick && dispatchBytes<settings.maxDispatchBytesPerTick && (i==0||System.nanoTime()-dispatchAt<500_000) && (result = engine.completed()) != null; i++) {
-      var tag = result.stamp();
-      var p = server.getPlayerManager().getPlayer(tag.player());
-      if (result.error() != null) {
-        failures++;
-        LOG.error(
-            "Snapshot worker failed for {} domain {}: {}",
-            tag.player(),
-            tag.domain(),
-            result.error());
-        continue;
-      }
-      if (p == null || !ServerPlayNetworking.canSend(p, Protocol.Sync.ID)) continue;
-      var s = sessions.get(tag.player());
-      switch (tag.domain()) {
-        case VITALS -> s.lastVitals = s.capturedVitals;
-        case COMBAT -> {
-          s.lastCombat = s.capturedCombat;
-          s.definitionsSent = true;
-        }
-        case EXTENSIONS -> s.lastExtensions = s.capturedExtensions;
-        case COMMERCE -> s.lastBalance = s.capturedBalance;
-        default -> {}
-      }
-      if(tag.domain()==Domain.GUI&&s.guiContinues&&"pokemon".equals(views.scope(tag.player(),tick)))engine.dirty(tag.player(),Domain.GUI);
-      if (tag.domain() == Domain.BUNDLES) {
-        if (result.json().contains("\"catalogLoading\":true")) {
-          s.loadingNoticeSent = true;
-          changed(p.getUuid(), Domain.BUNDLES);
-        } else {
-          s.sentCatalog = CommerceRuntime.previewRevision();
-          s.catalogDirty = false;
-          s.loadingNoticeSent = false;
-        }
-      }
-      serializeTimes.add(result.nanos());
-      if(tag.domain().ordinal()<=Domain.EXTENSIONS.ordinal()) {
-        hudUpdates++;
-        hudSerializeTimes.add(result.nanos());
-      }
-      latencyTimes.add(System.nanoTime() - tag.capturedAtNanos());
-      ServerPlayNetworking.send(
-          p,
-          new Protocol.Sync(
-              tag.player().toString(),
-              tag.generation(),
-              tag.revision(),
-              tag.sequence(),
-              tag.domain().name(),
-              System.currentTimeMillis(),
-              result.encoded()));
-      dispatchBytes+=result.encoded().length;
-      packets++;
-      packetChars += result.json().length();
-      wireBytes += result.encoded().length;
-    }
-    dispatchTimes.add(System.nanoTime()-dispatchAt);
+    probeTimes.add(System.nanoTime()-probeStarted);
     int gui = 0;
     for (int i = 0; i < settings.maxCapturesPerTick; i++) {
       if (i > 0 && System.nanoTime() - started > settings.mainBudgetMicros * 1000L) break;

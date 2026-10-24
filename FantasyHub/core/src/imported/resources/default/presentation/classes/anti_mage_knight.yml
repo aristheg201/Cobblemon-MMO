@@ -1,0 +1,93 @@
+display:
+  name: '&7&lPhá Ma Kỵ Sĩ &8- &fAnti-Mage Knight'
+  lore:
+  - '&7Một pho tượng Kháng Ma Thạch tỉnh dậy mỗi khi ma thuật trỗi lên.'
+  - '&7Tank kháng phép, mở giao tranh, gồng chịu rồi phản lại cả bãi.'
+  - '&8Vai trò: tank / anti-mage / crowd control / counter-engage.'
+  item: AMETHYST_SHARD
+exp-curve: levels
+max-level: 100
+exp-table: class_exp_table
+attributes:
+  max-health:
+    base: 38
+    per-level: 0.18
+  armor:
+    base: 9
+    per-level: 0.06
+  armor-toughness:
+    base: 4
+    per-level: 0.03
+  damage-reduction:
+    base: 5
+    per-level: 0.04
+  magic-damage:
+    base: 5.5
+    per-level: 0.055
+  skill-damage:
+    base: 5
+    per-level: 0.05
+  attack-damage:
+    base: 3.5
+    per-level: 0.035
+  movement-speed:
+    base: 0
+    per-level: 0
+  cooldown-reduction:
+    base: 1.5
+    per-level: 0.015
+  max-mana:
+    base: 65
+    per-level: 0.2
+skills:
+  CLS_ANTI_MAGE_KNIGHT_PASSIVE:
+    level: 1
+    max-level: 30
+  CLS_ANTI_MAGE_KNIGHT_NORTHERN_GUST:
+    level: 1
+    max-level: 30
+  CLS_ANTI_MAGE_KNIGHT_CLAP:
+    level: 5
+    max-level: 30
+  CLS_ANTI_MAGE_KNIGHT_HEROIC_SURGE:
+    level: 10
+    max-level: 30
+  CLS_ANTI_MAGE_KNIGHT_OVERLOAD:
+    level: 15
+    max-level: 30
+  CLS_ANTI_MAGE_KNIGHT_HIT_ME:
+    level: 20
+    max-level: 30
+  CLS_ANTI_MAGE_KNIGHT_METEOR_LANDING:
+    level: 30
+    max-level: 30
+skill-slots:
+  1:
+    name: '&7Phá Ma Nội Tại'
+    formula: <PASSIVE>
+    unlocked-by-default: true
+    can-manually-bind: true
+  2:
+    name: '&7AMK Slot I'
+    unlocked-by-default: true
+    formula: <ACTIVE>
+  3:
+    name: '&7AMK Slot II'
+    unlocked-by-default: true
+    formula: <ACTIVE>
+  4:
+    name: '&7AMK Slot III'
+    unlocked-by-default: true
+    formula: <ACTIVE>
+  5:
+    name: '&7AMK Slot IV'
+    unlocked-by-default: true
+    formula: <ACTIVE>
+  6:
+    name: '&7AMK Slot V'
+    unlocked-by-default: true
+    formula: <ACTIVE>
+  7:
+    name: '&7AMK Slot VI'
+    unlocked-by-default: true
+    formula: <ACTIVE>

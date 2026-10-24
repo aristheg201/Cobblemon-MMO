@@ -1,0 +1,36 @@
+{
+  "distribution": "INTERNAL_ONLY",
+  "embeddedModBinaries": false,
+  "packs": [
+    {
+      "id": "detailed_animations",
+      "file": "DetailedAnimationsReworked - V1.15.zip",
+      "version": "dFBidLNv",
+      "project": "detailed-animations",
+      "sha512": "6ac0875c11908819d05680529e450bc91195a68894c94478775529ba7ca182775597cb64ed417fc3c9832c8bd23e06f6e19da2cffe0dd7799a81815ce1653fed",
+      "requires": [
+        "entity_model_features",
+        "entity_texture_features"
+      ],
+      "sourceFiles": 6,
+      "files": 6,
+      "adaptation": "explicit boolean casts for EMF 3 ASM; guard zero-frame velocity divisions and initial sprint divisor",
+      "url": "https://modrinth.com/resourcepack/detailed-animations/version/dFBidLNv"
+    },
+    {
+      "id": "e19_minimap_icons",
+      "file": "E19 Cobblemon Minimap Icons.zip",
+      "version": "MAumPyhV",
+      "project": "e19_cobblemon_minimap_icons",
+      "sha512": "f9eff4c718818a2b030aa7b6b86b73f384f869cb39fe1e4c189c07f8feb7aedd717a33d966face570ae89b67ee0c28c35fb611883b882677eecf0fa041b9088f",
+      "requires": [
+        "xaerominimap",
+        "cobblemon"
+      ],
+      "sourceFiles": 10151,
+      "files": 7976,
+      "adaptation": "minimap namespace only; retain current Cobblemon models",
+      "url": "https://modrinth.com/resourcepack/e19_cobblemon_minimap_icons/version/MAumPyhV"
+    }
+  ]
+}

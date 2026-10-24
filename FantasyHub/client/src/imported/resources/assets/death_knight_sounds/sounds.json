@@ -1,0 +1,44 @@
+{
+  "samus.death_knight.chain": {
+    "category": "master",
+    "sounds": [
+      "death_knight:samus/death_knight/chain"
+    ]
+  },
+  "samus.death_knight.claw_slash": {
+    "category": "master",
+    "sounds": [
+      "death_knight:samus/death_knight/claw_slash"
+    ]
+  },
+  "samus.death_knight.cursed_seal": {
+    "category": "master",
+    "sounds": [
+      "death_knight:samus/death_knight/cursed_seal"
+    ]
+  },
+  "samus.death_knight.death_sentence_smash": {
+    "category": "master",
+    "sounds": [
+      "death_knight:samus/death_knight/death_sentence_smash"
+    ]
+  },
+  "samus.death_knight.death_slash": {
+    "category": "master",
+    "sounds": [
+      "death_knight:samus/death_knight/death_slash"
+    ]
+  },
+  "samus.death_knight.soul_blade_slash": {
+    "category": "master",
+    "sounds": [
+      "death_knight:samus/death_knight/soul_blade_slash"
+    ]
+  },
+  "samus.death_knight.whirlwind": {
+    "category": "master",
+    "sounds": [
+      "death_knight:samus/death_knight/whirlwind"
+    ]
+  }
+}

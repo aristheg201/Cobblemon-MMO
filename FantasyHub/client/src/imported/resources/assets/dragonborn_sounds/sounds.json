@@ -1,0 +1,32 @@
+{
+  "samus.fus_ro_dah": {
+    "replace": false,
+    "sounds": [
+      { "name": "dragonborn:samus/dragonborn/fus_ro_dah", "stream": false }
+    ]
+  },
+  "samus.fire_breath": {
+    "replace": false,
+    "sounds": [
+      { "name": "dragonborn:samus/dragonborn/fire_breath", "stream": false }
+    ]
+  },
+  "samus.whirlwind_sprint": {
+    "replace": false,
+    "sounds": [
+      { "name": "dragonborn:samus/dragonborn/whirlwind_sprint", "stream": false }
+    ]
+  },
+  "samus.become_ethereal": {
+    "replace": false,
+    "sounds": [
+      { "name": "dragonborn:samus/dragonborn/become_ethereal", "stream": false }
+    ]
+  },
+  "samus.storm_call": {
+    "replace": false,
+    "sounds": [
+      { "name": "dragonborn:samus/dragonborn/storm_call", "stream": false }
+    ]
+  }
+}

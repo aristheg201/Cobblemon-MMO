@@ -1,0 +1,23 @@
+{
+  "version": "1.4.8-1.21.1-fabric",
+  "archiveSha512": "5a52c2bcc798f858aebc06547a682efa084a51c434021b5a235b62409707baca7c7132050e5eb2de29c3378181034e01ef684574bf76c6e3004b9582b0c75c93",
+  "source": "https://modrinth.com/mod/mariums-soulslike-weaponry",
+  "runtimeBundled": false,
+  "files": [
+    {
+      "source": "assets/soulsweapons/geo/mjolnir.geo.json",
+      "target": "assets/fantasyhub/native_geometry/heroes/soulslike_mjolnir.geo.json",
+      "sha256": "b790ddd12eab08150bd6d7004cdc9b4c1e347e1c834931cae19c71a44ad8ecac"
+    },
+    {
+      "source": "assets/soulsweapons/textures/entity/mjolnir.png",
+      "target": "assets/fantasyhub/textures/item/heroes/soulslike_mjolnir.png",
+      "sha256": "b81317d7d1ba0426950cd1502b43fa001214db568c2c418bf075e04459d151ec"
+    },
+    {
+      "source": "assets/soulsweapons/textures/entity/mjolnir_glowmask.png",
+      "target": "assets/fantasyhub/textures/item/heroes/soulslike_mjolnir_glowmask.png",
+      "sha256": "d438483c0512e341ad148fc013c8dd0a0fec63b959b3634eb74257d5031b5982"
+    }
+  ]
+}

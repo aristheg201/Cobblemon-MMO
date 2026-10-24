@@ -1,0 +1,51 @@
+{
+  "design": "Original modern black armored Batman; graphite plates, black bat emblem, white eye slits, black scalloped cape. Not Beyond or Classic.",
+  "generator": "tools/author_black_batman.py",
+  "sourcePixels": "none; authored UV faces and polygons",
+  "files": [
+    {
+      "path": "textures/armor/heroes/batman_head.png",
+      "sha256": "694ed49492074659831c252a975fa727740e8b572b83c7778ff1f2df556a8efa"
+    },
+    {
+      "path": "textures/armor/heroes/batman_chest.png",
+      "sha256": "9620ba6633a217df27ea57f14c45791554a02bcc32ded520c43f47a73685544e"
+    },
+    {
+      "path": "textures/armor/heroes/batman_legs.png",
+      "sha256": "bfdc114bf4d88f15b5c87c673c4adecf656b79b5cdb77d18d033e38fdd6031b3"
+    },
+    {
+      "path": "textures/armor/heroes/batman_feet.png",
+      "sha256": "f653c3100e15d7dffee361008615edf970613c95b4f8b8b7935b2e476e24a390"
+    },
+    {
+      "path": "textures/armor/heroes/batman_lights.png",
+      "sha256": "f87a449ea4aab5da9e209cf41b7b6b54f7c77797d0ad9857d6816f4133115a8d"
+    },
+    {
+      "path": "textures/armor/heroes/batman_cape.png",
+      "sha256": "541460da97144e988f49aa8089c2b4b9e8317294d0a5b5963cfcadd3c119b28f"
+    },
+    {
+      "path": "textures/armor/heroes/batman_glider.png",
+      "sha256": "541460da97144e988f49aa8089c2b4b9e8317294d0a5b5963cfcadd3c119b28f"
+    },
+    {
+      "path": "textures/item/heroes/hero_batman_helmet.png",
+      "sha256": "7683cc019904af44453f444780b31b90959691d66b1289f31fd5be467f1ffac7"
+    },
+    {
+      "path": "textures/item/heroes/hero_batman_chestplate.png",
+      "sha256": "3941dcc052fc2003b9e3cefcd0506880dfec6da3aeba8d075cbca641f9c77f58"
+    },
+    {
+      "path": "textures/item/heroes/hero_batman_leggings.png",
+      "sha256": "5a0833c971e0d8ea3968291304ece49a597829c2ec99ffe816029994a30a2ade"
+    },
+    {
+      "path": "textures/item/heroes/hero_batman_boots.png",
+      "sha256": "2c3f677b31ebfad300dcb729322704c769e45fbcd03109b4ef73c6d65dfdd47d"
+    }
+  ]
+}

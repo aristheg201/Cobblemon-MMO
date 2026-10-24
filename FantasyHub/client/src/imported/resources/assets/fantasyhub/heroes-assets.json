@@ -1,0 +1,372 @@
+{
+  "distribution": "INTERNAL_ONLY",
+  "binaryForgeRuntimeBundled": false,
+  "sources": [
+    {
+      "project": "FiskHeroes 2.4.0",
+      "url": "https://modrinth.com/mod/fiskheroes"
+    },
+    {
+      "project": "JMCT\u2019s Heropack 3.1.0",
+      "url": "https://www.curseforge.com/minecraft/customization/jmcts-heropack/files/4625355"
+    }
+  ],
+  "files": [
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/spider_man_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/spider_man_chest.png",
+      "sha256": "39bb3aa5ce73b4d9de1fec2171ead05fea1a1d66516855d622fd8041d1bfef3f"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/spider_man_layer2.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/spider_man_legs.png",
+      "sha256": "674440c0b2fe55cc222feed62d0491b04afb8abe6139e9d622600c2374642997"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/spider_man_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/spider_man_feet.png",
+      "sha256": "39bb3aa5ce73b4d9de1fec2171ead05fea1a1d66516855d622fd8041d1bfef3f"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/spider_man_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/spider_man_head.png",
+      "sha256": "39bb3aa5ce73b4d9de1fec2171ead05fea1a1d66516855d622fd8041d1bfef3f"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/spider_man_0.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_spider_man_helmet.png",
+      "sha256": "31ca8c6e9fea16fc235cfbcfbbecec09da78571875996032fc7ea8c6ea006af1"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/spider_man_1.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_spider_man_chestplate.png",
+      "sha256": "abda197643f3ca135e4893ba0178ce70f52a2c0d404527b04dd68abc81324016"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/spider_man_2.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_spider_man_leggings.png",
+      "sha256": "0be8da404c35bf014be29f7741628579ed54be9a5b1d250c9104634bfff9bd2d"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/spider_man_3.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_spider_man_boots.png",
+      "sha256": "dbad043b96762b989e3de3f992b7777e868f3c94e0583ef3ea27e2b4b173143e"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/doctor_strange_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/sorcerer_supreme_chest.png",
+      "sha256": "9c1d13e222b4e4eac8b1627a17085527186b75a1f0a8d38bfa56a15ee0edaf35"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/doctor_strange_pants_robes.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/sorcerer_supreme_legs.png",
+      "sha256": "2e8fc0d03f59436a452694b9fc4280c26f6ffa676a99c5ffe2cceca3ff64a772"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/doctor_strange_boots.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/sorcerer_supreme_feet.png",
+      "sha256": "385b0544d6b279ee89f6dd07e971928c469f6d0fe87b8deb026a4374618f3868"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/doctor_strange_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/sorcerer_supreme_head.png",
+      "sha256": "9c1d13e222b4e4eac8b1627a17085527186b75a1f0a8d38bfa56a15ee0edaf35"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/doctor_strange_1.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_sorcerer_supreme_chestplate.png",
+      "sha256": "a00f9314c250ad6d92e1ddf78110d096741351dfb7da5246b47fec2f6547c962"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/doctor_strange_2.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_sorcerer_supreme_leggings.png",
+      "sha256": "dc2c468b857d2e85f435cb7fc22454b1c360f8adc71799f28da54339339def9a"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/doctor_strange_3.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_sorcerer_supreme_boots.png",
+      "sha256": "d4eca87fa5843e8f3b117fa9d7a01207c6dfa7b08d2e89acce116d6adb065bd1"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/doctor_strange_cape.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/sorcerer_supreme_cape.png",
+      "sha256": "3b40753d0afa2a882ddb258706a51e75a97b8ef1fbffab3529b9813b0874d616"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/iron_man_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/iron_man_chest.png",
+      "sha256": "4bad38e63522cc87b40096fc324eebc2685c8dd322a1dd591bc5499132273e3f"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/iron_man_layer2.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/iron_man_legs.png",
+      "sha256": "74e8deb8480221f009320ca07ccfcaeacf082385be5ce205f5ac9526ffb5ea7d"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/iron_man_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/iron_man_feet.png",
+      "sha256": "4bad38e63522cc87b40096fc324eebc2685c8dd322a1dd591bc5499132273e3f"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/iron_man_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/iron_man_head.png",
+      "sha256": "4bad38e63522cc87b40096fc324eebc2685c8dd322a1dd591bc5499132273e3f"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/iron_man_0.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_iron_man_helmet.png",
+      "sha256": "9ac8483638c1a446bfd734b4c5d2fa18746aa62bb3c05b054b58b3b0545d5fd7"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/iron_man_1.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_iron_man_chestplate.png",
+      "sha256": "330fd67725c11b44da5ef1cd149e617f6616b64fb500975b3722aabdc72aaae0"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/iron_man_2.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_iron_man_leggings.png",
+      "sha256": "45943eeeb750a49dbcd65a4eaccee5dca0af990e39f532e4519e93ca060996a7"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/iron_man_3.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_iron_man_boots.png",
+      "sha256": "7c88cfa52863108e40036244223306907d0e73342b155f27a353f589c7763994"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/the_flash_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/flash_chest.png",
+      "sha256": "e2fa8873f8615d0a9bbe32fd1dfdee443c7ba0d47fd9d286566d075fb6311eff"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/the_flash_layer2.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/flash_legs.png",
+      "sha256": "43c251eebde4ed917a83810d951bde23c8edee581fe75bb3ace3344d216eafc7"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/the_flash_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/flash_feet.png",
+      "sha256": "e2fa8873f8615d0a9bbe32fd1dfdee443c7ba0d47fd9d286566d075fb6311eff"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/the_flash_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/flash_head.png",
+      "sha256": "e2fa8873f8615d0a9bbe32fd1dfdee443c7ba0d47fd9d286566d075fb6311eff"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/the_flash_0.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_flash_helmet.png",
+      "sha256": "161accb3d169bbb414ec35d89cfdd42d30d78d7caec144413cdd1d70fed797e1"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/the_flash_1.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_flash_chestplate.png",
+      "sha256": "1abbe4d34b68d1b32fd3b0ababdbc0d41187cecece0851cb4065bbb4000fa12c"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/the_flash_2.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_flash_leggings.png",
+      "sha256": "66c18a241667d1d34d90ac07c8af89ab3684c3e1a778096532522b518457a878"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/items/heroes/the_flash_3.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_flash_boots.png",
+      "sha256": "dcd848219106b460c0f5341b61e84829d04ee08d849db8a5d962e4b3f520c238"
+    },
+    {
+      "sourceArchive": "jmcthp-v3.1.0.zip",
+      "source": "assets/jmctheroes/textures/heroes/thor/thor_infinity_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/thor_chest.png",
+      "sha256": "59a9d3383dd8bd96667a7a5ff9db4b21be21dd4f8bfce9f03954fda775751932"
+    },
+    {
+      "sourceArchive": "jmcthp-v3.1.0.zip",
+      "source": "assets/jmctheroes/textures/heroes/thor/thor_infinity_layer2.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/thor_legs.png",
+      "sha256": "8056cba7f560f8e97f531a7c814a227f5d10b67e63bfeae652dc45f2ffbc9abd"
+    },
+    {
+      "sourceArchive": "jmcthp-v3.1.0.zip",
+      "source": "assets/jmctheroes/textures/heroes/thor/thor_infinity_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/thor_feet.png",
+      "sha256": "59a9d3383dd8bd96667a7a5ff9db4b21be21dd4f8bfce9f03954fda775751932"
+    },
+    {
+      "sourceArchive": "jmcthp-v3.1.0.zip",
+      "source": "assets/jmctheroes/textures/heroes/thor/thor_cape.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/thor_cape.png",
+      "sha256": "5a1498be7e52c36d75c7291c3111c8dc11576fd2b54074fe54c3b162d3c99ad6"
+    },
+    {
+      "sourceArchive": "jmcthp-v3.1.0.zip",
+      "source": "assets/jmctheroes/textures/items/heroes/thor_infinity_1.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_thor_chestplate.png",
+      "sha256": "8e9d1b9ac0f90496d576d34898ff4283b6326224b0cdb606c31d1f6340a42104"
+    },
+    {
+      "sourceArchive": "jmcthp-v3.1.0.zip",
+      "source": "assets/jmctheroes/textures/items/heroes/thor_infinity_2.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_thor_leggings.png",
+      "sha256": "aaa9ffc68bc15dd049d5d92fd2c8998e68db33f11989847ddbff2a1be6a3d73d"
+    },
+    {
+      "sourceArchive": "jmcthp-v3.1.0.zip",
+      "source": "assets/jmctheroes/textures/items/heroes/thor_infinity_3.png",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_thor_boots.png",
+      "sha256": "467c36e9a565c13f0189be7d400299eec304e5f8e28ef03223596e492b462751"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/iron_man_lights_layer1.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/iron_man_lights_layer1.png",
+      "sha256": "5239d28434af5d08df7304eb54dec7aaf30ed1d98cc1f8f848776ffb63a85c75"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/textures/heroes/iron_man_lights_layer2.png",
+      "target": "assets/fantasyhub/textures/armor/heroes/iron_man_lights_layer2.png",
+      "sha256": "3748460e043e24f49594111c6414a4b2dad804e6203e984ea9d3df8028b212e3"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/models/mesh/cape_default.mesh.json",
+      "target": "assets/fantasyhub/native_geometry/heroes/cape_default.json",
+      "sha256": "dae25e0113f59ba938c9c13097b9d966b5e8912160c7ebcc138799b62e3e1279"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/models/mesh/cape_batman.mesh.json",
+      "target": "assets/fantasyhub/native_geometry/heroes/cape_batman.json",
+      "sha256": "f3982bc0911e163f2297055258d10c92a170b7b4c55bd54d357c87abc409bb4c"
+    },
+    {
+      "sourceArchive": "FiskHeroes-1.7.10-2.4.0.jar",
+      "source": "assets/fiskheroes/models/shapes/tao_mandala.json",
+      "target": "assets/fantasyhub/native_geometry/heroes/tao_mandala.json",
+      "sha256": "93861f82ca03dd25333ed610d627eca4031f41397174d05dc60d0e2a1efb1727"
+    },
+    {
+      "sourceArchive": "jmcthp-v3.1.0.zip",
+      "source": "assets/jmctheroes/textures/heroes/thor/mjolnir.png",
+      "target": "assets/fantasyhub/textures/item/heroes/mjolnir.png",
+      "sha256": "94659c7114ca2355a643c7335c2b883ed609088a0520ff7c5db25ed72030e41d"
+    },
+    {
+      "sourceArchive": "jmcthp-v3.1.0.zip",
+      "source": "assets/jmctheroes/models/tabula/mjolnir.tbl!model.json",
+      "target": "assets/fantasyhub/native_geometry/heroes/mjolnir.json",
+      "author": "JMCT",
+      "sha256": "ea340295d050ee40291b44a02702f6aa05b3e92d6202b727b29a541e2addf89a"
+    },
+    {
+      "sourceArchive": "jmcthp-v3.1.0.zip",
+      "source": "assets/jmctheroes/textures/heroes/thor/stormbreaker.png",
+      "target": "assets/fantasyhub/textures/item/heroes/stormbreaker.png",
+      "sha256": "512c9219ad9f3d6e8b71fa7a0bf59cdf19e4fdf61b3caa4eaf7c2c0e308b3e5a"
+    },
+    {
+      "sourceArchive": "jmcthp-v3.1.0.zip",
+      "source": "assets/jmctheroes/models/tabula/stormbreaker.tbl!model.json",
+      "target": "assets/fantasyhub/native_geometry/heroes/stormbreaker.json",
+      "author": "JMCT",
+      "sha256": "118bfaab8641630b15c273950ad6c124fbf0addef181375744240974db2114ff"
+    },
+    {
+      "sourceArchive": null,
+      "source": "tools/author_black_batman.py (original procedural artwork)",
+      "target": "assets/fantasyhub/textures/armor/heroes/batman_head.png",
+      "sha256": "694ed49492074659831c252a975fa727740e8b572b83c7778ff1f2df556a8efa"
+    },
+    {
+      "sourceArchive": null,
+      "source": "tools/author_black_batman.py (original procedural artwork)",
+      "target": "assets/fantasyhub/textures/armor/heroes/batman_chest.png",
+      "sha256": "9620ba6633a217df27ea57f14c45791554a02bcc32ded520c43f47a73685544e"
+    },
+    {
+      "sourceArchive": null,
+      "source": "tools/author_black_batman.py (original procedural artwork)",
+      "target": "assets/fantasyhub/textures/armor/heroes/batman_legs.png",
+      "sha256": "bfdc114bf4d88f15b5c87c673c4adecf656b79b5cdb77d18d033e38fdd6031b3"
+    },
+    {
+      "sourceArchive": null,
+      "source": "tools/author_black_batman.py (original procedural artwork)",
+      "target": "assets/fantasyhub/textures/armor/heroes/batman_feet.png",
+      "sha256": "f653c3100e15d7dffee361008615edf970613c95b4f8b8b7935b2e476e24a390"
+    },
+    {
+      "sourceArchive": null,
+      "source": "tools/author_black_batman.py (original procedural artwork)",
+      "target": "assets/fantasyhub/textures/armor/heroes/batman_lights.png",
+      "sha256": "f87a449ea4aab5da9e209cf41b7b6b54f7c77797d0ad9857d6816f4133115a8d"
+    },
+    {
+      "sourceArchive": null,
+      "source": "tools/author_black_batman.py (original procedural artwork)",
+      "target": "assets/fantasyhub/textures/armor/heroes/batman_cape.png",
+      "sha256": "541460da97144e988f49aa8089c2b4b9e8317294d0a5b5963cfcadd3c119b28f"
+    },
+    {
+      "sourceArchive": null,
+      "source": "tools/author_black_batman.py (original procedural artwork)",
+      "target": "assets/fantasyhub/textures/armor/heroes/batman_glider.png",
+      "sha256": "541460da97144e988f49aa8089c2b4b9e8317294d0a5b5963cfcadd3c119b28f"
+    },
+    {
+      "sourceArchive": null,
+      "source": "tools/author_black_batman.py (original procedural artwork)",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_batman_helmet.png",
+      "sha256": "7683cc019904af44453f444780b31b90959691d66b1289f31fd5be467f1ffac7"
+    },
+    {
+      "sourceArchive": null,
+      "source": "tools/author_black_batman.py (original procedural artwork)",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_batman_chestplate.png",
+      "sha256": "3941dcc052fc2003b9e3cefcd0506880dfec6da3aeba8d075cbca641f9c77f58"
+    },
+    {
+      "sourceArchive": null,
+      "source": "tools/author_black_batman.py (original procedural artwork)",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_batman_leggings.png",
+      "sha256": "5a0833c971e0d8ea3968291304ece49a597829c2ec99ffe816029994a30a2ade"
+    },
+    {
+      "sourceArchive": null,
+      "source": "tools/author_black_batman.py (original procedural artwork)",
+      "target": "assets/fantasyhub/textures/item/heroes/hero_batman_boots.png",
+      "sha256": "2c3f677b31ebfad300dcb729322704c769e45fbcd03109b4ef73c6d65dfdd47d"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "fantasyhub:item/heroes/hero_iron_man_leggings"
+  }
+}

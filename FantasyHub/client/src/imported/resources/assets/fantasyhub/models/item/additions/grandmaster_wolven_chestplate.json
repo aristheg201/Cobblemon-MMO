@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "fantasyhub:additions/grandmaster_wolven_chestplate"
+  }
+}
