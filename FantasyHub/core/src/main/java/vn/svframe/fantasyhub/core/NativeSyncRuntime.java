@@ -27,7 +27,7 @@ final class NativeSyncRuntime {
         queueCapacity = 64,
         maxCapturesPerTick = 16,
         maxGuiCapturesPerTick = 2,
-        mainBudgetMicros = 2000,
+        mainBudgetMicros = 1500,
         catalogPageSize = 16,
         maxPacketsPerTick = 32,
         maxDispatchBytesPerTick = 131072,
@@ -507,7 +507,7 @@ final class NativeSyncRuntime {
         if (!CommerceRuntime.preparePreviews(
             p,
             Math.max(0, settings.mainBudgetMicros * 1000L - (System.nanoTime() - tickStartedAt)),
-            1)) yield s.loadingNoticeSent ? WARM_PENDING : Map.of("catalogLoading", true);
+            4)) yield s.loadingNoticeSent ? WARM_PENDING : Map.of("catalogLoading", true);
         var data = new LinkedHashMap<String, Object>();
         var shop = CommerceRuntime.capture(p);
         for (String key :

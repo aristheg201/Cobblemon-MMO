@@ -8,7 +8,7 @@ Keep the unchanged compatible foundations: SVFrameLib 1.7.2-fabric, SVFrameMMO 1
 
 Existing player, ownership, transaction, cooldown, mailbox, shop, arena and Infinity persistence formats are preserved. Do not delete userdata or commerce/WorldBoss configuration. Back up and retain pending transaction journals; never discard them to clear a purchase error.
 
-`config/FantasyHub/sync.json` remains compatible; absent new fields receive their safe defaults. Review the supplied reference file. Default worker count remains two. `catalogPageSize` bounds each Pokémon capture; do not compensate for overload by increasing queues or workers indiscriminately.
+`config/FantasyHub/sync.json` remains compatible; absent new fields receive their safe defaults. Apply the supplied reference file for the measured 1,500 µs main-thread bulk budget; older files may still specify 2,000 µs. Default worker count remains two. `catalogPageSize` bounds each Pokémon capture; do not compensate for overload by increasing queues or workers indiscriminately.
 
 After changing native class descriptions/names/icons, run the existing native reload and `/fantasyshop reload`. After changing the Pokémon move adapter/configuration, its revision invalidates the active catalog stream. Ordinary shop purchases and class/equipment mutations invalidate their relevant views automatically.
 
